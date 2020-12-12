@@ -1,0 +1,1194 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The Dirichlet Family
+\end_layout
+
+\begin_layout Author
+Matt Beverlin and Paul Johnson
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Dirichlet distribution is a multivariate distribution, meaning that
+ a single outcome is actually a vector of numbers.
+ The elements in this vector are are all between 0 and 1.
+ A particular observation from a Dirichlet distribution would look like
+ this
+\begin_inset Formula 
+\[
+(0.2,0.3,0.5)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+for a case describing a three dimensional outcome, or a 
+\begin_inset Formula $3-tuple$
+\end_inset
+
+ for short.
+ 
+\end_layout
+
+\begin_layout Standard
+The three numbers in this vector represent the probabilities of three different
+ mutually exclusive events.
+ Because the elements are probabilities, they sum to one.
+\end_layout
+
+\begin_layout Standard
+The Dirichlet distribution gives a formula which tells how likely we are
+ to observe a particular 
+\begin_inset Formula $3-tuple$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Any logically meaningful combination of the elements in the vector can occur.
+ Logically meaningful means that each element must be 
+\begin_inset Formula $0.0$
+\end_inset
+
+ or greater and that all of the numbers must sum to 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For example, suppose we are considering a situation in which a randomly
+ drawn person has black, red/blonde, or brown hair.
+ Speaking for myself as an individual, I would guess that the probabilities
+ would be like this:
+\begin_inset Formula 
+\[
+(0.15,\,0.2,\,0.65)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+You, on the other hand, might have the opinion that the probabilities are
+ like this: 
+\begin_inset Formula 
+\[
+(0.1,\,0.15,\,0.75)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+And your friend Bob says the probabilities are like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(0.33,\,0.33,\,0.34)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If we wanted to go through and find out what everybody thinks, we would
+ accumulate a lot of these vectors, and the only thing they seem to have
+ in common is that they all add up to 1.0.
+\end_layout
+
+\begin_layout Standard
+We would like to have a probability model that tells us how likely each
+ vector of beliefs is to appear in a sample.
+ That is what Dirichlet is for.
+ Dirichlet describes a wealth of possible distributions of opinion.
+ It can be as simple as the statement that 
+\begin_inset Quotes eld
+\end_inset
+
+all belief vectors are equally likely to occur
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It need not place equal weight on all probability assignments, however.
+ It has parameters which can lead you to expect that the most likely combination
+ is mine and that other combinations with high weight on blondes are less
+ likely.
+\end_layout
+
+\begin_layout Standard
+Here is a point of caution.
+ We are setting up a model that gives 
+\begin_inset Quotes eld
+\end_inset
+
+probabilities about probabilities.
+\begin_inset Quotes erd
+\end_inset
+
+ That's confusing.
+ There is inevitable confusion over various possible uses of the 
+\begin_inset Quotes eld
+\end_inset
+
+letter p
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Because the Dirichlet describes a vector of probabilities, the letter 
+\begin_inset Formula $p$
+\end_inset
+
+ is used to refer to the observed outcome.
+ Possible values are labeled as 
+\begin_inset Formula $p=(p_{1},p_{2},...,p_{L})$
+\end_inset
+
+.
+ Then we are going to want to calculate the probability of observing that
+ L-tuple.
+ If you use the letter 
+\begin_inset Formula $P$
+\end_inset
+
+ for probabilities, then you end up with silly-looking notation like 
+\begin_inset Formula $P(p)$
+\end_inset
+
+.
+ Who can stand that? It might be better if we used some other letter, such
+ as 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ or 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, and think of the vectors in the same way we would think about the outcomes
+ in any other kind of probability model.
+ But we are not doing that, because doing so would cloud the fact that we
+ really are discussing probabilities.
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+The Dirichlet Family generalizes the Beta family to a vector 
+\begin_inset Formula $p=(p_{0,}p_{1,...}p_{L})$
+\end_inset
+
+ in which 
+\begin_inset Formula ${\displaystyle {\textstyle \sum_{i=0}^{L}}}p_{i}=1$
+\end_inset
+
+ and the {
+\begin_inset Formula $p_{i}\}$
+\end_inset
+
+ are non-negative.
+ Remember that 
+\begin_inset Formula $p$
+\end_inset
+
+ describes the outcome variable, the 
+\begin_inset Formula $L-tuple$
+\end_inset
+
+, the one for which we want to calculate probability.
+\end_layout
+
+\begin_layout Standard
+The shape of the probability model is determined by 
+\begin_inset Formula $L$
+\end_inset
+
+ shape parameters, 
+\begin_inset Formula $(\alpha_{1},\alpha_{2},...,\alpha_{L})$
+\end_inset
+
+.
+ These shape parameters are used to 
+\begin_inset Quotes eld
+\end_inset
+
+tune
+\begin_inset Quotes erd
+\end_inset
+
+ the distribution, to make certain 
+\begin_inset Formula $L-tuples$
+\end_inset
+
+ more likely than others.
+ As the figures presented below will illustrate, the large values of 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ correspond to actions which make outcome 
+\begin_inset Formula $i$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+more likely
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let the sum of the shape parameters be 
+\begin_inset Formula $\alpha=\sum_{l=0}^{L}\alpha_{l}$
+\end_inset
+
+.
+ The density function takes the form:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f_{P}(p)=\frac{\Gamma(\alpha)}{\Gamma(\alpha_{0})\Gamma(\alpha_{L})}p_{0}^{\alpha_{0-1}}\times...\times p_{\Gamma}^{\alpha_{L-1}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula 
+\[
+\{p_{i}\}\geq0;\,\,\sum_{i=1}^{L}p_{i}=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\begin_inset Formula 
+\[
+\alpha\geq0;
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\sum_{i=0}^{L}\alpha_{i}=\alpha
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Recall that the Gamma function 
+\begin_inset Formula $\Gamma(k)$
+\end_inset
+
+ is a continuous variant of the factorial function.
+ For integers, 
+\begin_inset Formula $\Gamma(k)=(k-1)!$
+\end_inset
+
+ The Gamma function is described and illustrated in more depth in the discussion
+ of the Gamma probability model.
+\end_layout
+
+\begin_layout Section
+Dirichlet is useful in Bayesian analysis
+\end_layout
+
+\begin_layout Standard
+In Bayesian analysis, one needs probability models to summarize his/her
+ beliefs about the world.
+ Suppose you asked me the following.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+We are going to survey people and ask them what fraction of the population
+ has black, red/blonde, and brown hair.
+ What do you expect will be the distribution of outcomes?
+\begin_inset Quotes erd
+\end_inset
+
+ In response, I realize it is nonsense for me to simply give a univariate
+ prediction, such as 
+\begin_inset Quotes eld
+\end_inset
+
+the average proportion for brown will be 0.33.
+\begin_inset Quotes erd
+\end_inset
+
+ Not only must I specify probabilities for the other hair colors, I also
+ have to be more modes in my view of the world.
+ If I say the probabilities are 
+\begin_inset Formula 
+\[
+(0.2,0.15,0.65)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+I should not act as though I think those probabilities are exactly right.
+ This vector may represent my belief about the most likely combination,
+ but it does not summarize the entirety of my view of the world.
+ Instead, I should have some picture in my mind of how all other possible
+ 
+\begin_inset Formula $3-tuples$
+\end_inset
+
+ might will fit together into a mosaic.
+ I have an idea of what the most likely 3-tuple is, and I also am pretty
+ sure that 
+\begin_inset Formula 
+\[
+(0.05,0.90,0.05)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+will almost never occur.
+ But I don't think it is impossible.
+\end_layout
+
+\begin_layout Standard
+The Beta distribution is a way that we summarize the distribution of one
+ variable on the 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $1$
+\end_inset
+
+ continuum.
+ If two or more variables on 
+\begin_inset Formula $[0,1]$
+\end_inset
+
+ are being considered, then the Dirichlet is simply the multivariate generalizat
+ion of the Beta.
+ 
+\end_layout
+
+\begin_layout Section
+Means, Variance, and Covariances
+\end_layout
+
+\begin_layout Standard
+Consider a set of Dirichlet 
+\begin_inset Quotes eld
+\end_inset
+
+shape
+\begin_inset Quotes erd
+\end_inset
+
+ parameters 
+\begin_inset Formula $(\alpha_{1},\alpha_{2},\alpha_{3},...,\alpha_{L}$
+\end_inset
+
+), the sum of which is 
+\begin_inset Formula $\alpha$
+\end_inset
+
+(
+\begin_inset Formula $\alpha=\sum\alpha_{j})$
+\end_inset
+
+.
+ The expected value of any individual component is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E(p_{j})=\frac{\alpha_{j}}{\alpha_{1}+\alpha_{2}+\cdots+\alpha_{L}}=\frac{\alpha_{j}}{\alpha}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variance is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V(p_{j})=\frac{\alpha_{j}(\alpha-\alpha_{j})}{\alpha^{2}(\alpha+1)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the covariance between two values is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C(p_{i}p_{j})=-\frac{\alpha_{i}\alpha_{j}}{\alpha^{2}(\alpha+1)}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Please observe that Covariance is very much in the nature of the beast with
+ this distribution.
+ Since 
+\begin_inset Formula $\sum p_{j}=1$
+\end_inset
+
+, any change in any one of the values must change at least one of the others.
+\end_layout
+
+\begin_layout Section
+Graphic Representation
+\end_layout
+
+\begin_layout Standard
+Return again to the 3-tuple which gives the probability of black, red/blonde,
+ and brown hair.
+ If we specify the probability of black (
+\begin_inset Formula $p_{1}$
+\end_inset
+
+) and red/blonde (
+\begin_inset Formula $p_{2}$
+\end_inset
+
+), then the probability of brown is not open to question because the three
+ probabilities must sum to one.
+ 
+\begin_inset Formula 
+\[
+p_{3}=1-p_{1}-p_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Furthermore, we know that the probability of observing 
+\begin_inset Formula $p_{1}+p_{2}>1$
+\end_inset
+
+ is equal to 0.
+ It is impossible!
+\end_layout
+
+\begin_layout Standard
+With that in mind, we have created some illustrations of a 3-tuple under
+ the Dirichlet distribution in an effort to help the reader make a mental
+ picture.
+ The third element of the probability vector, 
+\begin_inset Formula $p_{3}$
+\end_inset
+
+ , is implicit in these graphs because we show only the probability of observing
+ 
+\begin_inset Formula $(p_{1},p_{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the package 
+\begin_inset Quotes eld
+\end_inset
+
+gtools
+\begin_inset Quotes erd
+\end_inset
+
+ the function ddirchlet gives the probability of observing any 3-tuple,
+ given a set of shape parameters.
+ The following R code will create the range of possible 3-tuples as inputs,
+ and it calculates the probability of observing each one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<1,echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library (gtools)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 100       
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <-seq(0.001, 0.999, length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <-seq(0.001, 0.999, length.out=N)   
+\end_layout
+
+\begin_layout Plain Layout
+
+z <- matrix (0,N,N) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myz <-function(a1,a2,a3){
+\end_layout
+
+\begin_layout Plain Layout
+
+   z <- matrix (NA,N,N)
+\end_layout
+
+\begin_layout Plain Layout
+
+   for (i in 1:N) {   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+       for (j in 1:N) {
+\end_layout
+
+\begin_layout Plain Layout
+
+         ddirchprob <- ddirichlet( c(y1[i],y2[j],1-y1[i]-y2[j]), c(a1,a2,a3))
+\end_layout
+
+\begin_layout Plain Layout
+
+         z[i,j] <- ifelse (y1[i]+y2[j]<1.02, ddirchprob, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+   }
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+z
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+z1 <-myz(1,1,1)
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(y1,y2,z1, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability",
+ ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the shape parameters for all dimensions are identical, say 
+\begin_inset Formula $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,1,1)$
+\end_inset
+
+ or 
+\begin_inset Formula $(2,2,2)$
+\end_inset
+
+, then all feasible 3-tuples are equally likely.
+ Any triplet of the form 
+\begin_inset Formula $(p_{1},p_{2},1-p_{1}-p_{2})$
+\end_inset
+
+ will be equally possible.
+ A figure which shows that all feasible outcomes are equally likely is presented
+ in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:The-Dirichlet-Density"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<2,echo=F,eval=T,fig=T,results=H,height=7,width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Dirichlet Density (1,1,1)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:The-Dirichlet-Density"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the other hand, suppose that there is decidedly less weight on the first
+ element, and more is placed on the other two, as in 
+\begin_inset Formula $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,3,3)$
+\end_inset
+
+.
+ That probability density is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Gammas1"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,results=HIDE,height=7,width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+z2 <- myz(1,3,3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(y1,y2,z2, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability",
+ ticktype="detailed" )
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Dirichlet (1,3,3)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Gammas1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,results=HIDE,height=7,width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+z2 <- myz(1,6,3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(y1,y2,z2, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability",
+ ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Dirichlet (1,6,3)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Dirichlet-(1,4,10)"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose that we hike up the shape parameter on the second dimension, so
+ that we have 
+\begin_inset Formula $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,6,3)$
+\end_inset
+
+.
+ That probability density is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Dirichlet-(1,4,10)"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Once can continue in this vein forever, of course (and, please believe we
+ have :)).
+ 
+\end_layout
+
+\end_body
+\end_document

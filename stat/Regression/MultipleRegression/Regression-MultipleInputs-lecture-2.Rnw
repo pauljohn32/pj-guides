@@ -1,0 +1,1184 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/MultipleRegression//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{amstext}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\lyxmathsym}[1]{\ifmmode\begingroup\def\b@ld{bold}
+  \text{\ifx\math@version\b@ld\bfseries\fi#1}\endgroup\else#1\fi}
+
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+%%not for article, but for presentation
+\mode<presentation>
+  \newcommand\makebeamertitle{\frame{\maketitle}}%
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+%%\newcommand\makebeamertitle{\frame{\maketitle}}
+
+%%only for presentation
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots2", recursive=T)
+dir.create("plots2", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots2/t,split=T,ae=F,height=5,width=7.5}
+\def\Sweavesize{\scriptsize} 
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Multiple Regression]{Lecture 2: Multiple Predictors in OLS Regression }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{2014}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{What the heck is this lecture about?}
+\begin{itemize}
+\item It's a grab-bag of multiple regression observations that accumulated
+from changing textbooks 3 times. 
+\item I'm trying to clear up the path from start to finish, but mostly it
+is about
+
+\begin{itemize}
+\item fitting models
+\item interpreting regressions
+\item with comments about matrix algebra thrown in (apparently at random)
+\item R coding for categorical predictors.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Choosing Variables: An Unsolved Problem}
+
+
+\lyxframeend{}\lyxframe{How to decide which variables belong in a model?}
+\begin{itemize}
+\item At its core, multiple regression has NOT MUCH to say about this.
+\item Regression models are fit with the assumption that the correct variables
+were selected.
+\item Leaving a variable out means you assume $\beta_{j}=0.$ There's nothing
+worth estimating
+\item ``Automatic'' variable selection tools are inadequate/misleading.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The ``Oracle'' Model, in a Perfect World}
+\begin{itemize}
+\item Suppose you have 100s of $x$ variables floating about. The general
+model would be too huge:
+\[
+y_{i}=\beta_{o}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+\beta_{4}x4_{i}+\beta_{5}x5_{i}+\ldots+\beta_{100}x100_{i}+\ldots+e_{i}
+\]
+
+\item Estimation would likely fail. Even if we could get estimates, they
+would have huge standard errors.
+\item Suppose the Oracle (a voice from God) tells you the ``true slope''
+is zero for most coefficients.
+\item The Oracle says ``set all of the irrelevant $\beta_{j}'s$ set to
+$0$'', so you fit
+\end{itemize}
+\[
+y_{i}=\beta_{o}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}
+\]
+
+
+
+\lyxframeend{}\lyxframe{If You Stop There, OK!}
+\begin{itemize}
+\item The statistical derivations we emphasize pre-suppose you stop at this
+point. Standard errors, p-values, etc, are derived with that assumption
+\item Danger arises from building a model ``stepwise'', especially ``building-up''
+by adding variables one-at-a-time if they have ``good'' p-values. 
+\item More commonly, we fit a model with a large number of coefficients,
+and then wrestle with the question of ``which ones should we throw
+out?
+\item You risk misleading yourself and others. 
+
+\begin{itemize}
+\item Edward Leamer. 1983. Lets Take the Con Out of Econometrics. \emph{American
+Economic Review}, 31-43.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Big Picture: Selection and Regularization}
+\begin{enumerate}
+\item Variable ``selection''. Exclude variables, assuming their true coefficient
+is actually 0
+
+\begin{enumerate}
+\item stepwise methods add and remove variables in a sequence
+\item ``best subset'' methods: systematic search over all possible regressions
+for the combination of predictors that reduces prediction error
+\end{enumerate}
+\item Parameter regularization. Try to estimate a giant vector $\beta=(\beta_{0},\beta_{1},\ldots,\beta_{100})$
+but use some criteria to ``stabilize'' the vector, to ``penalize''
+the estimates that are unstable and shrink them toward 0
+
+\begin{enumerate}
+\item ridge regression. 
+\item The ``lasso'' (described well in James et al, \emph{An Introduction
+to Statistical Learning},(2013))
+\end{enumerate}
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Don't Use Stepwise Variable Selection}
+\begin{itemize}
+\item Frank Harrell. 2001. \emph{Regression Modeling Strategies.} Stepwise
+regression is bad because it biases parameter estimates and often
+chooses the ``wrong'' variables.
+\item Flom and Cassell. 2007. ``Stopping Stepwise: Why stepwise and similar
+selection methods are bad, and what you should use.'' 
+\item Stata website: Problems with stepwise regression: \url{http://www.stata.com/support/faqs/stat/stepwise.html}
+\item Forward stepwise regression seems most dangerous to me. Many of us
+are ``closet'' practitioners of a subject ``backwards stepwise''
+approach that throws out variables
+\end{itemize}
+
+\lyxframeend{}\lyxframe{I suggest a hierarchical approach}
+\begin{itemize}
+\item Lets avoid all variants of automatic ``stepwise regression.''
+\item Don't try the ``lasso'' or other fancy tools unless you really understand
+them
+\item Lets 
+
+\begin{itemize}
+\item follow our substantive knowledge as far as it will guide us
+\item When uncertain, fit several models and compare side by side.
+\end{itemize}
+\item Basic idea: 
+
+\begin{itemize}
+\item If $\hat{\beta}_{j}$ is similar across various regressions, then
+we probably have a good estimate
+\item Otherwise, we have a problem that requires some hard thought.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Including Extra Variables: What Danger?}
+\begin{itemize}
+\item If extra $X$'s are 
+
+\begin{itemize}
+\item uncorrelated with your predictors that do belong,
+
+\begin{itemize}
+\item then you are doing no ``damage'' to your estimates.
+\end{itemize}
+\end{itemize}
+\item But, if those extra variables are correlated with your predictors
+that do belong, then 
+
+\begin{itemize}
+\item you are diluting the estimates of the ones that do belong, and
+\item causing ``inefficiency'' (higher variance) and 
+\item the estimated standard errors are inflated
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Excluding Variables: What Danger?}
+\begin{itemize}
+\item If you remove variables that really do belong, and those variables
+are
+
+\begin{itemize}
+\item uncorrelated with your predictors that are still included, then 
+
+\begin{itemize}
+\item your estimated slopes for the included variables are still unbiased
+\end{itemize}
+\end{itemize}
+\item But, if they are correlated with your other predictors, then 
+
+\begin{itemize}
+\item your estimated slopes for the included variables are biased. (omitted
+variable bias)
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Is there Insight in the Formula?}
+
+
+\lyxframeend{}\lyxframe{When I think of $\hat{\beta}$}
+\begin{itemize}
+\item I just think of $\hat{\beta}=(X^{T}X)^{-1}X^{T\,}y$
+
+\begin{itemize}
+\item $(X^{T}X)$ is a $p\times p$ square. The covariance of the $X$'s. 
+\item $X^{T}$ is $p\times N$.
+\item $(X^{T}X)^{-1}X^{T}$ is a $p\times N$ weighting matrix
+\end{itemize}
+\item Recalling the predicted value $\hat{y}$ is $X\hat{\beta}$. Insert
+$\hat{\beta}$ into that:
+\begin{equation}
+\mbox{\ensuremath{\hat{y}}=}\{X(X^{T}X)^{-1}X^{T}\}\,\, y
+\end{equation}
+
+\item The part in the squiggly braces \textbf{the Hat Matrix}, it turns
+observed $y$ into predictions $\hat{y}$
+\item For more on that, see Simon Wood's book, \emph{Generalized Additive
+Models: An Introduction with R}.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Foreshadowing the Theme}
+
+I expect when we are done here, you will conclude the following.
+\begin{enumerate}
+\item If the columns of $X$ are not correlated with each other, THEN regression
+is easy!
+
+\begin{enumerate}
+\item you get the same $\hat{\beta}$ for the variables you leave in!
+\end{enumerate}
+\item If the columns of $X$ are correlated with each other, THEN regression
+is difficult!
+
+\begin{enumerate}
+\item your $\hat{\beta}$ fluctuate as you put variables in. 
+\item it is difficult to know which variables ``truly belong'' in the
+model
+\end{enumerate}
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Translation Toolkit}
+\begin{itemize}
+\item Variance $\Longleftrightarrow$sums of squares 
+\begin{equation}
+\sum(x_{i}-\bar{x})^{2}\mbox{\,\ is the same as\,\ensuremath{(N-1)\widehat{Var[x_{i}]}}}
+\end{equation}
+
+\item CoVariance $\Longleftrightarrow$sums of ``cross products''
+\end{itemize}
+\begin{equation}
+\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})\,\mbox{is the same as \ensuremath{(N-1)\widehat{Cov[x1,x2]}\,\,}}
+\end{equation}
+
+\begin{itemize}
+\item Covariance $\Longleftrightarrow$Correlation
+\end{itemize}
+\begin{equation}
+\widehat{Cov[x1,x2]}=\mbox{\ensuremath{\widehat{Std.Dev.(x1)}\cdot\widehat{Std.Dev.}(x2)\cdot r_{x1,x2}}}
+\end{equation}
+
+\begin{itemize}
+\item Cohen et al, for example, show $\hat{\beta}_{j}$ in terms of correlation
+coefficients. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Recall the estimation formula for 2 predictors?}
+\begin{itemize}
+\item Here's the ``full formula'' using $x_{i}$ $y_{i}$ and $\overline{x}$
+and $\overline{y}$, for \emph{just} 2 predictors.
+\end{itemize}
+\begin{equation}
+\hat{\beta}_{1}=\frac{\left(\sum(x1_{i}-\overline{x1})(y_{i}-\bar{y})\right)\left(\sum(x2_{i}-\overline{x2})^{2}\right)-\left(\sum(x2_{i}-\overline{x2})(y_{i}-\bar{y})\right)\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2}\right)}{\left(\sum(x1_{i}-\overline{x1})^{2}\right)\left(\sum(x2{}_{i}-\overline{x2})^{2}\right)-\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})\right)^{2}}
+\end{equation}
+
+\begin{itemize}
+\item With ``mean centered'' data, $\overline{x}1=0$, $\overline{x2}=0$,
+$\overline{y}=0$, all the bars drop out, and it looks nicer!
+\end{itemize}
+\begin{equation}
+\hat{\beta}_{1}=\frac{\left(\sum x1_{i}y_{i}\right)\left(\sum x2_{i}{}^{2}\right)-\left(\sum x2_{i}y_{i}\right)\left(\sum x1_{i}x2_{i}\right)}{\left(\sum x1_{i}{}^{2}\right)\left(\sum x2{}_{i}{}^{2}\right)-\left(\sum x1_{i}x2_{i}\right)^{2}}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Standardized Data Simplifies this Further}
+\begin{itemize}
+\item Suppose $x1_{i}$ and $x2_{i}$ are ``standardized''. Then
+\[
+\mbox{\ensuremath{\overline{x1}}}=\overline{x2}=0\,\,\mbox{and\,\ensuremath{\widehat{Var[x1]}=\frac{\sum(x1_{i}-\overline{x1})^{2}}{N-1}}}\mbox{=\ensuremath{\widehat{Var[x2]}=\frac{\sum(x2_{i}-\overline{x2})^{2}}{N-1}=1}}
+\]
+ 
+\item Recalling $\widehat{Cov[x1,y]}=\frac{\sum(x1_{i}-\overline{x1})(y_{i}-\overline{y})}{N-1}$
+and $r_{y,x1}=\frac{\widehat{Cov[x1,y]}}{\sqrt{\widehat{Var[x1]}}\sqrt{\widehat{Var[y]}}}$:
+\end{itemize}
+\begin{equation}
+\hat{\beta}_{1}=\frac{r_{y,x1}-r_{y,x2}r_{x1,x2}}{1-r_{x1,x2}^{2}}
+\end{equation}
+
+\begin{itemize}
+\item Set $r_{x1,x2}=0,$ it all collapses to $\hat{\beta}_{1}=r_{y,x1}$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Virtues Orthogonal data}
+\begin{itemize}
+\item 2 columns are orthogonal if the deviations about the means are ``uncorrelated.''
+Formally, the inner products is zero:
+\end{itemize}
+\[
+\sum_{i=1}^{N}(x1_{i}-\overline{x1})\times(x2_{i}-\overline{x2})=(x1_{1}-\overline{x1})(x2_{1}-\overline{x2})+(x1_{2}-\overline{x1})(x2_{2}-\overline{x2})+(\ldots N\, times)=0
+\]
+
+\begin{itemize}
+\item Geometrically, they are ``perpendicular'', at right angles to one
+another
+\item Knowing a respondent's score on one variable implies nothing about
+the other ones.
+\item Some experimental designs can give us orthogonal data. We rarely find
+in ``real life samples.'' 
+\item Orthogonal =''no covariance''= ``no correlation''. Then
+\begin{equation}
+0=\cdot\widehat{Cov[x1,x2]}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Orthogonal data}
+\begin{itemize}
+\item With orthogonal data, we can isolate on one variable at a time. The
+formula drops down to
+\begin{equation}
+\hat{\beta}_{1}=\frac{\sum(x1_{i}-\overline{x1})(y_{i}-\bar{y})}{\sum(x1_{i}-\overline{x1})^{2}}=\frac{\widehat{Cov[y,x1]}}{\widehat{Var[x1]}}
+\end{equation}
+
+\item You see now why political scientists who collect data in the field
+are jealous of psychologists who design experiments so that their
+predictors are orthogonal.
+\end{itemize}
+
+\lyxframeend{}\section{Multiple $R^{2}$ and adjusted $R^{2}$}
+
+
+\lyxframeend{}\lyxframe{We Need to Revise $R^{2}$}
+\begin{itemize}
+\item If you were enthusiastic about $R^{2}$ before, wait till you hear
+this awesome news:
+
+\begin{exampleblock}
+{Ever Expanding R-Square }
+
+$R^{2}$ always gets bigger when more variables are added. Never gets
+smaller.
+
+\end{exampleblock}
+\item The Sum of Squared errors can't get worse, so we are mislead into
+adding more and more variables into a regression model. 
+\item Various ``corrections'' have been suggested, either 
+
+\begin{itemize}
+\item a revision of $R^{2}$ to include a penalty for more predictors, or
+\item alternative ``information criteria'' that help us to gauge the predictive
+fit of the model.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Adjusted (Shrunken) $R^{2}$}
+\begin{itemize}
+\item Proposal. Replace $R^{2}=1-\frac{ESS}{TSS}$ with 
+\begin{equation}
+adjusted\, R^{2}=1-\frac{ESS/(N-k-1)}{TSS/(N-1)}=\frac{MSE}{\widehat{Var[y]}}
+\end{equation}
+\[
+adjusted\, R^{2}=1-(1-R^{2})\frac{N-1}{N-k-1}
+\]
+
+\item $adjusted\, R^{2}$ can go down as more variables are added
+\item Sometimes called ``corrected $R^{2}$'' or ``shrunken $R^{2}$''.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Other Suggestions}
+
+I don't use information criteria very often, but I'm aware of guides
+like
+\begin{itemize}
+\item Akaike's Information Criterion (AIC)
+\item Mallow's $C_{p}$ statistic
+\end{itemize}
+These are decisions that are similar to $Adj\, R^{2}$ in a linear
+model, but they are much more widely applicable
+
+
+\lyxframeend{}\section{Which Variables are ``Important''?}
+
+
+\lyxframeend{}\lyxframe{Struggle to Assess Separate Effect of Predictors}
+\begin{itemize}
+\item We fit a model, and we want to report to our sponsors ``variable
+X1 is very influential'', and ``variable X2 doesn't have a very
+substantial effect.'' 
+\item We want to gauge the relative ``predictive power'' of the predictors.
+\item We want these things; I think they don't exist, aren't very meaningful
+\item But, nevertheless, I have to introduce
+
+\begin{itemize}
+\item ``partial correlation'' coefficients. 
+\item semi-partial correlations
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\subsection{The Famous Ballantine Graph of Cohen, et al}
+
+
+\lyxframeend{}\lyxframe{Ballantine Graph=Venn Diagram}
+
+Think of ``variance accounted for'' as areas in a Venn diagram (Cohen,
+et al, 3ed, p. 72)
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+
+Variance of $y$, Subdivided
+
+\resizebox{5cm}{!}{\input{0_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-1.pdftex_t}}
+
+Var(y)=a+b+c+e
+
+\column{7cm}
+\begin{itemize}
+\item e is error term's variance
+\item $R^{2}$ is represented by area (a + b + c)/(a+b+c+e)
+
+
+(separate plus shared parts =``accounted for'')
+
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Areas c and d are troublemakers}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+Variance of $y$, Subdivided
+
+\resizebox{4cm}{!}{\input{0_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-1.pdftex_t}}
+
+Var(y)=a+b+c+e
+
+\column{8cm}
+\begin{itemize}
+\item a and b are ``uniquely'' accounted for by predictors
+\item ``c'' is overlapped explanatory power--we can't tell which causes
+what
+\item c+d is ``multicollinearity'', overlap of 2 predictors
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{All is Well if there's no Overlap}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+Variance of $y$, Subdivided
+
+\resizebox{4cm}{!}{\input{1_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-2.pdftex_t}}
+
+\column{8cm}
+\begin{itemize}
+\item Here, x1 and x2 are ``orthogonal'', completely uncorrelated. 
+\item Separate regressions $y\sim x1$ and $y\sim x2$ would yield the same
+slope estimates as $y\sim x1+x2$
+\item Clearly, the separate effect of $x1$ is ``a''
+\item However, that is not true if x1 and x2 overlap (Multicollinearity)
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Big Overlap=Bad Problem}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+Variance of $y$, Subdivided
+
+\resizebox{4cm}{!}{\input{2_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-3.pdftex_t}}
+
+\column{8cm}
+\begin{itemize}
+\item When 2 predictors ``coincide'', it means we can't distinguish them.
+\item We can't say meaningfully that x1 has an effect that is separate from
+x2
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\subsection{Partial Correlation}
+
+
+\lyxframeend{}\lyxframe{Partial Correlation}
+\begin{description}
+\item [{partial~correlation~coefficient:}] $r_{yx1\cdot x2}$ Correlation
+between $y$ and $x1$, after ``accounting for'' or ``partialing
+out'' $x2$
+\end{description}
+Can be described as a sequence of regressions:
+\begin{itemize}
+\item Fit: $\hat{y}_{i}=\hat{c}_{0}+\hat{c}_{1}x2_{i}$ $and$ ~$\widehat{x1}_{i}=\hat{d}_{o}+\hat{d}_{1}x2_{i}$
+\item Create ``residuals'' $y_{i}*=y_{i}-\hat{y}_{i}$ and $x1_{i}^{*}=x1-\widehat{x1_{i}}$
+\item We have ``partialed out'' the effect of $x2$, so
+\item Correlation b/t $y*$ and $x1*$ equals the ``partial correlation
+between $x1$ and $y$.''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Partial Correlation}
+\begin{itemize}
+\item Lots of ways to write and re-organize this, Cohen, et al (p. 74):
+\end{itemize}
+\begin{equation}
+pr_{1}=r_{yx1\cdot x2}=\frac{r_{y,x1}-r_{y,x2}r_{x1,x2}}{\sqrt{1-r_{x1,x2}^{2}}\sqrt{1-r_{y,x2}^{2}}}
+\end{equation}
+
+\begin{itemize}
+\item Valid only if there are 2 predictors $x1$ and $x2$.
+\item Look what happens if $r_{x1,x2}=0$ (orthogonal variables!)
+\item I think this is ``harsh'' toward $x1$. $x2$ is given ``all the
+influence it can account for'' and $x1$ gets only ``what it can
+account for after $x2$ takes everything it can grab.''
+\item If $x1$ and $x2$ overlap substantially, meaning both have small
+partial correlations $y$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Partial in the Ballantine Graph}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+
+\resizebox{4cm}{!}{\input{0_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-1.pdftex_t}}
+
+Var(y)=a+b+c+e
+
+\column{8cm}
+\begin{itemize}
+\item Pearson correlations referred to as ``zero order'' correlations
+\item $r_{yx1}$ is correlation between $y$ and $x1,$ ignoring other variables
+\item Partial for X1 = $pr_{1}^{2}$ = $r_{yx1.x2}^{2}=(R^{2}\lyxmathsym{\textendash}r_{yx2}^{2})/(1-r_{yx2}^{2})$ 
+\item \textrm{In the diagram $r_{yx1.x2}^{2}$=a/(a+e)}
+\item Partial for $x2$ is same, just replace $x2$ with $x1$ 
+\item $r_{yx2.x1}^{2}$= b / (b + e)
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{I'd Never Calculated These Before 2010}
+\begin{itemize}
+\item They were not emphasized in Econometrics or political science when
+I was a student
+\item More popular with behavioral researchers. 
+\item I found various R packages, students ran into trouble with them. In
+2013, the rockchalk package introduced a function ``getPartialCor''
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Get Public Spending Regression}
+
+<<public10, include=F, echo=F, results=tex>>=
+library(rockchalk)
+dat <- read.table("/home/pauljohn/SVN/SVN-guides/stat/DataSets/PublicSpending/publicspending.txt", header=T)
+mod1 <- lm(EX ~ ECAB + MET + GROW + OLD + YOUNG + WEST, data = dat)
+outreg(mod1, tight=F)
+@
+
+\input{plots2/t-public10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Partial Regression Matrix from rockchalk::getPartialCor}
+
+<<public20, include=F, echo=T>>=
+mod1pcor <- getPartialCor(mod1, dvonly = FALSE)
+round(mod1pcor, 4)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{And We really want $pr^2$}
+
+<<public30, include=F, echo=T>>=
+round(mod1pcor^2, 4)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public30}
+
+Compare effect of Young and West.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Conduct "regression on residuals" to verify}
+
+\def\Sweavesize{\scriptsize}
+
+<<public40, include=F, echo=T>>=
+m1 <- lm(EX ~ MET + GROW + YOUNG + OLD + WEST, data=dat)
+EXStar <- resid(m1)
+m2 <- lm(ECAB ~ MET + GROW + YOUNG + OLD + WEST, data=dat)
+ECABStar <- resid(m2)
+m3 <- lm(EXStar ~ ECABStar)
+hopePcor <- summary(m3)
+hopePcor$r.squared
+@
+
+\input{plots2/t-public40}
+\begin{itemize}
+\item Oh, Sweet mystery of life at last I've found you! My regression result
+partial correlation matrix
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{It seems like we made progress, but we really didn't}
+\begin{itemize}
+\item Seems like we have a way to summarize each variable's separate ``explanatory
+power''
+\item But estimates not robust against changes in columns of the dataset
+\item Compare $pr^{2}$ with fewer variables
+\end{itemize}
+<<public60, include=F, echo=T>>=
+mod2 <- lm(EX ~ YOUNG + WEST, data = dat)
+mod2pcor <- getPartialCor(mod2, dvonly = FALSE)
+round(mod2pcor^2, 4)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public60}
+
+Compare effect of Young and West.
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{My conclusion about partial correlation estimates}
+\begin{itemize}
+\item I avoid partial correlations. Because:
+\item The conclusions depend VITALLY on which columns from X are included
+in the calculations
+\item If I knew the ``Oracle model,'' these might be useful.
+\item These don't help in choosing variables for a regression (because they
+are calculated on the initial assumption of which variables need to
+be included in the calculation of $pr^{2}$)
+\item So I'll file this in the category of ``something some people know,
+but I don't use''.
+\end{itemize}
+
+\lyxframeend{}\subsection{Semi-partial Correlation Coefficients}
+
+
+\lyxframeend{}\lyxframe{Semi-partial Correlation Coefficients}
+\begin{itemize}
+\item I never heard term ``semi-partial correlation'' before reading Cohen,
+et al, but have heard other names like delta-$R^{2}$.
+\item Simplest explanation I've found
+
+\begin{itemize}
+\item Fit the whole model, with all the predictors, get $R^{2}$
+\item Remove one predictor, re-estimate, calculate $\Delta R_{j}^{2}$ (change
+in $R^{2}$ from dropping $j'th$ variable).
+\item The $sr_{xj}^{2}$ is the change in the $R^{2}$ that results when
+$x_{j}$ is removed from the full model.
+\end{itemize}
+\item My ``gut'' reaction: still seems ``harsh''. $x1$ gets credit
+only for ``what it can account for by itself'', the part c is ``lost''
+as neither $x1$ nor $x2$ is given ``credit'' for it.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Semi-Partial in the Ballantine Graph}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+
+
+\resizebox{5cm}{!}{\input{0_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_ballantine-1.pdftex_t}}
+
+
+Var(y)=a+b+c+e
+
+
+\column{8cm}
+\begin{itemize}
+\item Pearson correlations referred to as ``zero order'' correlations
+\item zero order correlation $r_{yx1}$ is correlation between $y$ and
+$x1,$ ignoring other variables
+\item Notice the semipartial can be seen as
+
+\begin{itemize}
+\item $sr_{1}^{2}=R^{2}\lyxmathsym{\textendash}r_{yx2}^{2}=a/(a+b+c+e)$
+\item $sr_{2}^{2}$ = $R^{2}\lyxmathsym{\textendash}r_{yx1}^{2}=b/(a+b+c+e)$
+\end{itemize}
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Recently added to rockchalk: getDeltaRsquare for Semi-partial $R^2$}
+
+<<public105b, include=F, echo=T>>=
+EXfull <- lm(EX ~ ECAB + MET + GROW + YOUNG + OLD + WEST, data=dat)
+getDeltaRsquare(EXfull)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public105b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Calculate $\Delta R^2$ Explicitly To verify}
+
+$sr_{ECAB}^{2}$. Check the change in R-square that results when ECAB
+is removed
+
+<<public110, include=F, echo=T>>=
+EXfull <- lm(EX ~ ECAB + MET + GROW + YOUNG + OLD + WEST, data=dat)
+EXnoECAB <- lm(EX ~ MET + GROW + YOUNG + OLD + WEST, data=dat)
+(deltaRecab <- summary(EXfull)$r.square - summary(EXnoECAB)$r.square)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public110}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Semi-Partial $r^{2}$ is Unstable (Dependent on inclusion of columns
+in data frame)}
+\begin{itemize}
+\item semi-partial $r^{2}$ jumps around depending on what other variables
+are in the model.
+\item Since we don't know for sure which ones belong, hard to hold much
+faith in it (that's where I stand now, despite recent changes).
+\item Others are seeking ways to improve results.
+\end{itemize}
+
+\lyxframeend{}\subsection{relaimpo package}
+
+
+\lyxframeend{}\lyxframe{A ``New-ish'' Proposal}
+\begin{quote}%{}
+Grömping, U. (2006). Relative Importance for Linear Regression in
+R: The Package relaimpo. \emph{Journal of Statistical Software}, 17(1),
+1\textendash{}27. 
+
+Grömping, U. (2007). Estimators of Relative Importance in Linear Regression
+Based on Variance Decomposition. \emph{The American Statistician},
+61, 139-147. doi:10.1198/000313007X188252
+
+Discusses a number of criteria to decide how important each variable
+might be, how much variance it accounts for.
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{Grömping Proposes}
+\begin{itemize}
+\item Consider possible range of ``variance accounted for'' estimates,
+semi-partial correlations ($R^{2}$ changes) when a variable is put
+into a model.
+\item $sr^{2}$ biggest when the variable is by itself in the model
+\item $sr^{2}$ smallest when competing with other predictors in the model
+\item ``lmg'' procedure enters regression variables in all possible orders,
+and then averages the changes in the $R^{2}$.
+\item Implemented in the ``relaimpo'' package (see also package hier.part)
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Load relaimp}
+
+<<public150, include=F, fig=T, echo=T>>=
+library(relaimpo)
+EXFull <- lm(EX ~ ECAB+ MET + GROW + YOUNG + OLD + WEST, data=dat) 
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public150}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Test out relaimp}
+
+<<public151, include=F, fig=T, echo=T>>=
+(EXFull.relimp <- calc.relimp(EXFull, type=c("lmg"))) 
+plot(EXFull.relimp)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-public151}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{lmg model averages together the $sr^2$}
+
+\includegraphics[width=10cm]{plots2/t-public151.pdf}
+
+\end{frame}
+
+
+\lyxframeend{}\section{R Interactions (W\&R notation).}
+
+\begin{frame}[containsverbatim]
+\frametitle{R Uses W\&R Notation}
+\begin{itemize}
+\item Wilkinson \& Rogers introduced a system of notation, which R uses
+\item A simple additive model: 
+
+
+\begin{Sinput}
+mod <- lm(y ~ x1 + x2 + x3)
+\end{Sinput}
+
+
+asks R to estimate the theoretical model $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}$
+
+\item Note you get an intercept ``for free'' (to suppress that, insert
+-1 or 0 as a predictor)
+\item W\&R notation uses $":"$, $"*"$ and $"/"$ in special ways. .
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{In W\&R notation, "*" Means Multiplicative Interaction}
+\begin{itemize}
+\item Suppose x1 and x2 are numeric predictors. This notation
+
+
+\begin{Sinput}
+mod <- lm(y ~ x1*x2, data = dat)
+\end{Sinput}
+\begin{itemize}
+\item Is the same as
+\end{itemize}
+
+\begin{Sinput}
+mod <- lm(y ~ x1 + x2 + x1:x2, data = dat)
+\end{Sinput}
+\begin{itemize}
+\item R always inserts the ``main effects'' that sit underneath an interaction.
+You ask for x1{*}x2, get estimates for x1, x2, and x1:x2.
+\end{itemize}
+\item In R output, the product term ``$x1_{i}\times x2_{i}"$ will appear
+as $"x1:x2"$
+\item Interactions can fit together with other predictors as well, of course:
+
+
+\begin{Sinput}
+mod <- lm(y ~ x1 + x2*x3)
+\end{Sinput}
+
+\end{itemize}
+Asks R to estimate $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+\beta_{4}x2_{i}\times x3_{i}+e_{i}$
+
+It is considered gauche to write the request explicitly:
+
+\begin{Sinput}
+mod <- lm(y ~ x1 + x2 + x3 + x2:x3)
+\end{Sinput}
+
+In the design matrix, $x2:x3$ is a new constructed column, the product
+of $x2$ and $x3$.
+\begin{itemize}
+\item Combine several:
+
+
+\begin{Sinput}
+mod <- lm(y ~ x1*x2*x3)
+\end{Sinput}
+
+
+Asks R to fit: $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+\beta_{4}x1_{i}\times x2_{i}+\beta_{5}x1_{i}\times x3_{i}+\beta_{6}x2_{i}\times x3_{i}+\beta_{7}x1_{i}\times x2_{i}\times x3_{i}+e_{i}$
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interact a numeric with a categorical predictor}
+
+<<rdesmatrix,include=F,echo=T>>=
+set.seed(123123)
+xnum1 <- rnorm(100)
+xcat2 <- factor(sample(c("Female", "Male"), 100, replace = TRUE))
+z <- factor(sample(c("A","B","C","D"), 100, replace = TRUE))
+y <- rnorm(100)
+mod1 <- lm(y ~ xnum1 + xcat2 + z)
+dat <- model.frame(mod1)
+mod1mm <- model.matrix(mod1)
+dat$y <- mod1mm %*% c(0.1, 0.45, -0.1, 0.2, 0.35, -0.45) + 0.8 *rnorm(100)
+mod1 <- lm(y ~ xnum1 + xcat2 + z, data = dat)
+@
+
+<<WR55, include=F>>=
+mod2 <- lm(y ~ xnum1 * z, data = dat)
+mod2sum <- summary(mod2)
+coef(mod2sum)
+@
+
+\input{plots2/t-WR55}
+
+That estimated all of the parallel lines, plus 4 additional terms.
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Now let's see what happens with "*"}
+
+\begin{eqnarray}
+y_{i} & = & \beta_{0}+\beta_{1}x_{i}+\beta_{2}zB_{i}+\beta_{3}zC_{i}+\beta_{4}zD_{i}\nonumber \\
+ &  & +\beta_{5}(x\cdot zA_{i})+\beta_{6}(x\cdot zB_{i})+\beta_{7}(x\cdot zC_{i})+\beta_{5}(x\cdot zD_{i})+e_{i}
+\end{eqnarray}
+
+\begin{itemize}
+\item Think of $\beta_{0}$ and $\beta_{1}$ as the ``baseline'' estimates,
+for everybody. 
+\item Then we have to look specifically at groups $A$, $B$, $C$ and $D$
+to figure out what their predicted values need to be. 
+\item Group $A,$ which implies $zB_{i}$= $zC_{i}$= $zD_{i}=0$, so 
+\begin{eqnarray}
+Group\, A:\hat{y}_{i} & = & \hat{\beta}_{0}+\hat{\beta}_{1}x_{i}+\hat{\beta}_{5}x_{i}\nonumber \\
+ & = & \hat{\beta}_{0}+(\hat{\beta}_{1}+\hat{\beta}_{5})x_{i}
+\end{eqnarray}
+
+\item Group $B$, which implies $zB_{i}=1$ and $zC_{i}=zD_{i}=0$. Predicted
+values would be:
+\end{itemize}
+\begin{eqnarray}
+Group\, B:\,\hat{y}_{i} & = & \hat{\beta}_{0}+\hat{\beta}_{1}x_{i}+\hat{\beta}_{2}zB_{i}+\hat{\beta}_{6}(x\cdot zB_{i})\nonumber \\
+ & = & (\hat{\beta}_{0}+\hat{\beta}_{2})+(\hat{\beta}_{1}+\hat{\beta}_{6})x_{i}
+\end{eqnarray}
+
+\begin{itemize}
+\item $\beta_{2}$ is the ``intercept shift'' due to membership in group
+$B$
+\item $\beta_{6}$ is the ``slope shift'' due to membership in group $B$
+\item Lets check, and then plot, the predicted values for the 4 levels of
+$z$. Here's the predictOMatic() output. We don't really need this
+now, but we will later.
+\end{itemize}
+<<WR56, fig=T, include=F>>=
+mod4pmo <- predictOMatic(mod2, predVals = list(z = levels(dat$z), xnum1 = range(dat$xnum1)))
+mod4pmo
+@
+
+\input{plots2/t-WR56}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{rockchalk::plotSlopes output}
+
+<<WR60, fig=T, include=F>>=
+plotSlopes(mod2, plotx = "xnum1", modx = "z")
+@
+
+\includegraphics[width=8cm]{plots2/t-WR60.pdf}
+
+\input{plots2/t-WR60}
+
+\end{frame}
+
+
+\lyxframeend{}\section{}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+
+\lyxframeend{}
+
+\small
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Problems}
+\begin{enumerate}
+\item {\small{}\label{Prob 1}If you want to see an example of really bad
+``overlapping'' variables, download the cystic fibrosis data set
+from the DataSets folder. Try to predict the DV ``pemax'' as a function
+of these variables age + sex + height + weight. }Wow. That's discouraging.
+
+\begin{enumerate}
+\item Make a regression table to summarize the results and try to write
+a paragraph about the effect of height in contrast with that of weight.
+\item Write out the formula for the theory you are fitting, and the equation
+for the predicted values.
+\item Conduct a ``fancy'' t test to find out if the effect of height is
+different from that of weight. Computing hint. If the fitted model
+is ``mod1'', run ``vcov(mod1)'' to review the var/covar matrix,
+then pick the ones you need for the denominator. You can do this calculation
+with a calculator, but you can make R do it if you learn how to grab
+rows and columns from a matrix. I can help you with that if you like.
+\end{enumerate}
+\item \label{Prob2}Continue with cystfibr. Run a regression with each independent
+variable separately entered. 
+
+
+Compare the findings of these one-at-a-time models, try to make sense
+out of the ``statistical significance'' of the coefficients.
+
+
+You have to stare at this one a while, it really puzzled me at first.
+It helped me to run termplot so I could see the problem graphically.
+
+\item Test out R's ``anova'' function to to a test of the null hypothesis
+that several coefficients are actually 0. Any data set with several
+predictors will do. Suppose the ``unrestricted'' model is $m1$,
+and the restricted model is $m2$
+
+
+\begin{lstlisting}
+m1 <- lm(y ~ x1 + x2 + x3 + x4 + x5 + x6, data=dat)
+m2 <- lm(y ~ x1 + x5 + x6, data=dat)
+anova(m2, m1, test="F")
+\end{lstlisting}
+
+
+
+Your idea here is that variables x3 and x4 do not belong, so you need
+to test the null that $\beta_{3}=\beta_{4}=0$. Can you interpret
+the results? 
+
+\item Practice making professional looking regression tables. Make a table
+that summarizes the ``full'' model from problem \ref{Prob 1} and
+also includes columns for one or two of the ``partial'' models in
+problem \ref{Prob2}.
+
+
+To do that work, I've used some R functions that generate \LaTeX{}
+tables. The outreg function in new-ish rockchalk can create html files,
+which Word can import. If you like word.{\small{}\newpage{}}{\small \par}
+
+\item {\small{}While you have that cystfibr data open, here are a few fun
+things to do. }{\small \par}
+
+\begin{enumerate}
+\item {\small{}Create a correlation matrix showing the bivariate (one-on-one)
+correlations of all the predictors. (code hint: Run ``cor(dat)''
+if your data set is named dat. To round numbers after 3 decimal values,
+do ``round(cor(dat), 3)''. Then try to think of some way to wrestle
+that into a document. (For me, that's a hassle).}{\small \par}
+\item {\small{}Regress each IVs on the other IVs. Do the $R_{j}^{2}$ of
+these ``auxiliary'' regressions differ much from the bivariate correlations? }{\small \par}
+\item {\small{}Get the squared partial and semi-partial correlation coefficients.
+I implemented those in rockchalk, getPartialCor and getDeltaRsquare,
+but I'm sure you'll find other packages with similar}{\small \par}
+\item {\small{}If you have relaimpo, that's interesting. Run ``calc.relimp(mod1)''.
+It gives a somewhat different conclusion than the correlation coefficients.
+calc.relimp has a lot of options I've not tested yet.}{\small \par}
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

@@ -1,0 +1,3450 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+
+
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 0
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+GLM with a Gamma-distributed Dependent Variable
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+I started out to write about why the Gamma distribution in a GLM is useful.
+ 
+\end_layout
+
+\begin_layout Standard
+In the end, I've found it difficult to find an example which proves that
+ is true.
+ If you fit a GLM with the correct link and right-hand side functional form,
+ then using the Normal (or Gaussian) distributed dependent variable instead
+ of a Gamma will probably not result in disaster.
+ 
+\end_layout
+
+\begin_layout Standard
+However, I did find out something really important, something which is mentioned
+ in Myers, Montgomery, and Vining at several points, but I did not appreciate
+ it until now.
+ The GLM really is different than OLS, even with a Normally distributed
+ dependent variable.
+ Using OLS with 
+\begin_inset Quotes eld
+\end_inset
+
+manually transformed
+\begin_inset Quotes erd
+\end_inset
+
+ data leads to horribly wrong parameter estimates.
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ be the dependent variable with mean 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+.
+ Your theory is that the link is the 
+\begin_inset Quotes eld
+\end_inset
+
+inverse
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $g(\mu_{i})=1/\mu_{i}$
+\end_inset
+
+ or the 
+\begin_inset Quotes eld
+\end_inset
+
+natural log
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $g(\mu_{i})=ln(\mu_{i})$
+\end_inset
+
+.
+ The OLS and GLM estimates will differ for any nonlinear link function,
+ and for any right hand side.
+ For example, put what you want in place of 
+\begin_inset Formula $g(\mu_{i})$
+\end_inset
+
+ in your theory: 
+\begin_inset Formula 
+\[
+ln(\mu_{i})=f(X_{i},b)=b_{0}+b_{1}/x_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+1/\mu_{i}=f(X_{i},b)=b_{0}+b_{1}/x_{i}
+\]
+
+\end_inset
+
+then you estimate a Generalized Linear model with a Gamma distribution with
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+glm(y~I(1/x), family = Gamma(link="log"))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+glm(y~I(1/x), family = Gamma(link="inverse")).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you mistakenly use a Normal, as in
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+glm(y~I(1/x), family = gaussian(link="log"))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+glm(y~I(1/x),family = gaussian(link = "inverse"))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then the estimated b's from the Gamma and Normal models will probably be
+ similar.
+ If your dependent variable is truly Gamma, the Gaussian is 
+\begin_inset Quotes eld
+\end_inset
+
+wrong
+\begin_inset Quotes erd
+\end_inset
+
+ on a variety of levels, but the predicted values are 
+\begin_inset Quotes eld
+\end_inset
+
+about right.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, if you think you can just transform the variables yourself and
+ run this through an OLS program, as in 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(ln(y)~I(1/x))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(I(1/y)~I(1/x))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then the parameter estimates will be far from the mark.
+ That happens because you have not transformed the expected values, but
+ rather the observed values.
+ 
+\end_layout
+
+\begin_layout Standard
+The only time that the GLM and OLS estimates line up is when the link function
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+identity
+\begin_inset Quotes erd
+\end_inset
+
+ function
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+glm(y~I(1/x), family = Gamma(link = identity))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+will be similar to the OLS estimates from
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(y~I(1/x))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What do I conclude from this? You can't stay with your old friend OLS.
+ You really must learn and understand the GLM.
+ My feeling then is similar to the comment attributed to NBA great Bill
+ Russell: 
+\begin_inset Quotes eld
+\end_inset
+
+They scheduled the game.
+ We have to play.
+ We might as well win.
+\begin_inset Quotes erd
+\end_inset
+
+ If you have to learn the GLM anyway, and you use it, you might as well
+ use the correct distribution while you are doing it.
+\end_layout
+
+\begin_layout Section
+Review the Gamma Handout
+\end_layout
+
+\begin_layout Standard
+The Gamma handout is available in the Distributions folder of my web site.
+\end_layout
+
+\begin_layout Standard
+To review briefly, let the shape parameter be 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ and scale be 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+.
+ For the i'th case being considered, we are acting as though there are individua
+lized parameters for each case.
+ It is annoying to keep all of this indexed by 
+\begin_inset Formula $i$
+\end_inset
+
+ , but sometimes it pays off.
+ The probability density of observing a particular value 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ given parameters 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(y_{i})=\frac{1}{\beta_{i}^{\alpha_{i}}\Gamma(\alpha_{i})}y_{i}^{(\alpha_{i}-1)}e^{-(y_{i}/\beta_{i})}\, y_{i,}\alpha_{i},\beta_{i}>0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\begin_inset Formula 
+\[
+E(y_{i})=\alpha_{i}*\beta_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(y_{i})=\alpha_{i}*\beta_{i}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Regression with the gamma model is going to use input variables 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ and coefficients to make a prediction about the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, but in actuality we are really focused on the scale parameter 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+.
+ This is so because we assume that 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ is the same for all observations, and so variation from case to case in
+ 
+\begin_inset Formula $\mu_{i}=\beta_{i}\alpha$
+\end_inset
+
+ is due simply to variation in 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+.
+ The shape parameter is just a multiplier (which is equal to the inverse
+ of the 
+\begin_inset Quotes eld
+\end_inset
+
+dispersion parameter
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\phi$
+\end_inset
+
+ that is defined for all distributions that are members of the exponential
+ family).
+ 
+\end_layout
+
+\begin_layout Section
+Note the linkage between mean and variance
+\end_layout
+
+\begin_layout Standard
+The ratio of the mean to the variance is a constant--the same no matter
+ how large or small the mean is.
+ As a result, when the expected value is small--near zero--the variance
+ is small as well.
+ Conversely, when the expected value is larger, the observed scores are
+ less predictable in absolute terms.
+\begin_inset Formula 
+\[
+\frac{Var(y_{i})}{E(y_{i})}=\frac{\alpha_{i}\beta_{i}^{2}}{\alpha_{i}\beta_{i}}=\beta_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If your Gamma variable has an expected value of 
+\begin_inset Formula $100$
+\end_inset
+
+, the variance has to be 
+\begin_inset Formula $100\cdot\beta_{i}$
+\end_inset
+
+.
+ Strange, but true.
+\end_layout
+
+\begin_layout Standard
+The so-called coefficient of variation, which is used in introductory statistics
+ as a summary of variability, is the ratio of standard deviation to mean.
+ It is also a constant
+\begin_inset Formula 
+\[
+CV=\frac{\sqrt{Var(y_{i})}}{E(y_{i})}=\frac{\sqrt{\alpha_{i}\cdot\beta_{i}^{2}}}{\alpha_{i}\beta_{i}}=\frac{\sqrt{\alpha_{i}}\beta_{i}}{\alpha_{i}\beta_{i}}=\frac{1}{\sqrt{\alpha_{i}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If your Gamma variable's expected value is 100, the standard deviation is
+ 
+\begin_inset Formula $100/\sqrt{\alpha_{i}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It seems odd (surprising, interesting, possibly mistaken) to me that the
+ ratio 
+\begin_inset Formula $Var/E$
+\end_inset
+
+ depends on 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+ but the ratio of 
+\begin_inset Formula $StdDev/E$
+\end_inset
+
+ depends on 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The relationship between mean and variance here is different than some other
+ distributions because it is 
+\begin_inset Quotes eld
+\end_inset
+
+adjustable
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In contrast, the Poisson or Negative Binomial distributions have no such
+ tuning parameter.
+\end_layout
+
+\begin_layout Section
+Gamma as a member of the Exponential Family
+\end_layout
+
+\begin_layout Standard
+In order to treat this as the basis for a Generalized Linear Model, you
+ act as though 
+\begin_inset Formula $\alpha$
+\end_inset
+
+is a known feature, the same for all observations.
+ So we don't need to write subscripts on 
+\begin_inset Formula $\alpha$
+\end_inset
+
+.
+ Then we treat 
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+--the scale parameter--as the parameter of interest.
+ That is what we are trying to predict.
+\end_layout
+
+\begin_layout Standard
+Recall the exponential family has this form, 
+\begin_inset Formula $exp[(y_{i}\cdot\theta_{i}-c(\theta_{i}))/\phi+h(y_{i},\phi)$
+\end_inset
+
+.
+ Rearrange the density for the Gamma as follows: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+exp\{-y_{i}/\beta_{i}+(\alpha-1)ln(y_{i})-ln[\beta_{i}^{alpha}]-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+exp\{-y_{i}/\beta_{i}+(\alpha-1)ln(y_{i})-\alpha ln[\beta_{i}]-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+exp\{-y_{i}/\beta_{i}-\alpha ln[\beta_{i}]+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now a sneaky math guy trick appears.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Guess
+\begin_inset Quotes erd
+\end_inset
+
+ that the natural parameter is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\theta_{i}=-\frac{1}{\alpha\beta_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Consequently, 
+\begin_inset Formula 
+\[
+\frac{-1}{\beta_{i}}=\theta_{i}\alpha
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\beta_{i}=-\frac{1}{\theta_{i}\alpha}
+\]
+
+\end_inset
+
+Using those findings in the previous expression, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{1}{\theta_{i}\alpha})-\alpha ln(\alpha)+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{\alpha}{\theta_{i}\alpha})+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{1}{\theta_{i}})+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+exp\{\alpha(y_{i}\theta_{i}-ln(-\frac{1}{\theta_{i}}))+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That was quite a lot of work to find out that 
+\begin_inset Formula $\alpha=1/\phi$
+\end_inset
+
+ and that 
+\begin_inset Formula $c(\theta_{i})=ln(-1/\theta_{i})$
+\end_inset
+
+.
+ But if we re-arrange just one more time, we find the Gamma in the form
+ of the exponential density.
+\begin_inset Formula 
+\[
+exp\{\frac{y_{i}\theta_{i}-ln(-1/\theta_{i})}{\phi}+(\frac{1-\phi}{\phi})ln(y_{i})-ln[\Gamma(\phi^{-1})]\}
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Then you can use the GLM Facts described on my GLM handout #1.
+\end_layout
+
+\begin_layout Standard
+GLM Fact #1 states that 
+\begin_inset Formula $\mu_{i}=dc(\theta_{i})/d\theta_{i}$
+\end_inset
+
+, and so that implies the Gamma's 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+\frac{dc(\theta_{i})}{d\theta_{i}}=\frac{dln(-1/\theta_{i})}{d\theta_{i}}=-\frac{dln(\theta_{i})}{d\theta_{i}}=-\frac{1}{\theta_{i}}=\alpha_{i}\beta_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+GLM Fact #2 states that 
+\begin_inset Formula $V(\mu_{i})=d^{2}c(\theta_{i})/d\theta_{i}^{2}$
+\end_inset
+
+, and so, in this case, 
+\begin_inset Formula 
+\[
+V(\mu_{i})=\frac{d}{d\theta_{i}^{2}}(-1/\theta)=\frac{1}{\theta_{i}^{2}}=\mu^{2}=(\alpha\beta_{i})^{2}
+\]
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+These findings are internally consistent with what we know already (or can
+ check in textbooks).
+ 
+\end_layout
+
+\begin_layout Standard
+Recall from the GLM notes that the observed variance of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ has two components: .
+\begin_inset Formula 
+\[
+Var(y_{i})=\phi_{i}V(\mu_{i})
+\]
+
+\end_inset
+
+ For the Gamma, we already know that 
+\begin_inset Formula $E(y_{i})=\mu_{i}=\alpha*\beta$
+\end_inset
+
+ and 
+\begin_inset Formula $Var(y_{i})=\alpha*\beta^{2}$
+\end_inset
+
+.
+ The variance function is 
+\begin_inset Formula $V(\mu_{i})=\mu_{i}^{2}=\alpha^{2}*\beta^{2}$
+\end_inset
+
+, and the dispersion parameter 
+\begin_inset Formula $\phi_{i}$
+\end_inset
+
+ must be equal to the reciprocal of the shape parameter 
+\begin_inset Formula $1/\alpha$
+\end_inset
+
+.
+ You can easily verify that all of these separate pieces work together in
+ a logical way: 
+\begin_inset Formula 
+\[
+Var(y_{i})=\phi_{i}V(\mu)=\phi_{i}\cdot a^{2}\beta^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\alpha\beta^{2}\, where\,\phi_{i}=\frac{1}{\alpha}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Keep in mind, then, that when the GLM routine estimates dispersion--
+\begin_inset Formula $\phi$
+\end_inset
+
+--it is estimating the reciprocal of the shape parameter.
+\end_layout
+
+\begin_layout Section
+The Reciprocal is the Canonical Link
+\end_layout
+
+\begin_layout Standard
+The canonical link for the GLM with a Gamma-distributed dependent variable
+ is the reciprocal, 
+\begin_inset Formula $1/\mu_{i}$
+\end_inset
+
+.
+ That means that the expected value of your observed 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, (
+\begin_inset Formula $E(y_{i})=\mu_{i})$
+\end_inset
+
+, is related to your input variables as, for example,
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}x1_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which obviously implies
+\begin_inset Formula 
+\[
+\mu_{i}=\frac{1}{b_{0}+b_{1}x1_{i}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Plot that! In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Reciprocal-Link"
+
+\end_inset
+
+, you see there is some serious potential for funny business with this function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Reciprocal Link
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Reciprocal-Link"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<1,fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par (mfrow=c(2,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xseq <- seq(0,20,by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,1/(3+ .25 * xseq),main="1/(3+0.25*x)",type="l")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,1/(3-0.25 * xseq),main="1/(3-0.25*x)",type="l")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,1/(-5+.25*xseq),main="1/(-5+0.25*x)",type="l")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,1/(-5-.25*xseq),main="1/(-5-0.25*x)",type="l")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Why would you want a Gamma-distributed dependent variable?
+\end_layout
+
+\begin_layout Standard
+This is a difficult question.
+ Theoretically, the Gamma should be the right choice when the dependent
+ variable is real-valued on a range from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $\infty.$
+\end_inset
+
+ And the Gamma is suitable when you suspect the linkage between mean and
+ variance is 
+\begin_inset Quotes eld
+\end_inset
+
+fixed
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If you expect a small value of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, you should also expect only a small amount of variability in observed
+ values.
+ Conversely, if you expect a huge value of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, you should expect a lot of variability.
+\end_layout
+
+\begin_layout Standard
+However, after some testing, I have developed some doubts about the need
+ to change from a model based on the Normal distribution to a model based
+ on the Gamma.
+ The Gamma may be 
+\begin_inset Quotes eld
+\end_inset
+
+theoretically right
+\begin_inset Quotes erd
+\end_inset
+
+ but there are several cases in which the old 
+\begin_inset Quotes eld
+\end_inset
+
+theoretically wrong
+\begin_inset Quotes erd
+\end_inset
+
+ Normal OLS model seems to do about as well.
+ 
+\end_layout
+
+\begin_layout Standard
+This is especially true if the Gamma parameters are tuned so that the distributi
+on is symmetrical, but even when it is pretty badly skewed, I find the OLS
+ predictions are as good.
+\end_layout
+
+\begin_layout Standard
+However, I find some cases where using the GLM with a Gamma distribution
+ has a dramatic impact.
+ The differences hinge on the functional form being investigated.
+ 
+\end_layout
+
+\begin_layout Standard
+So I've prepared some vignettes.
+\end_layout
+
+\begin_layout Section
+Reciprocal Relationship: 
+\begin_inset Formula $\mu_{i}=b_{o}+b_{1}/x_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some simulated data is presented in Figure
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Gamma-DV"
+
+\end_inset
+
+.
+ The line represents the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ value of 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+, the expected value of the dependent variable.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Gamma Dependent Variable 
+\begin_inset Formula $\mu_{i}=1+65/x_{i},$
+\end_inset
+
+shape=
+\begin_inset Formula $1.5$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Gamma-DV"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<2,fig=T, echo=F,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(223456)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xseq<- seq(3, 20, length.out=800)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+yobs <- vector()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mu <- vector()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for ( i in 1:800){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  mu[i] <- 1 + 65 / xseq[i]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  yobs[i] <- rgamma(1, shape=1.5, scale=mu[i]/1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,yobs,type="n",main="Gamma DV, mu= 1 + 65/x",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(xseq,yobs,pch=16,cex=0.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,mu, lty=1,lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+GLM fit for the Reciprocal Model
+\end_layout
+
+\begin_layout Standard
+The Generalized Linear Model can be fit with the 
+\begin_inset Quotes eld
+\end_inset
+
+identity
+\begin_inset Quotes erd
+\end_inset
+
+ link with these commands.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+agam <- glm(yobs ~ I(1/xseq), family = Gamma(link = "identity"), control
+ = glm.control(maxit=100),start=c(1,65))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myshape <- gamma.shape(agam)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gampred <- predict(agam,type="response", se=T, dispersion=1/myshape$alpha)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(Side note about estimating dispersion: This uses the MASS library's function
+ gamma.shape to calculate a more precise estimate of the gamma distribution's
+ shape parameter, which is equal to the reciprocal of the GLM's dispersion
+ 
+\begin_inset Formula $\alpha=1/\phi$
+\end_inset
+
+.
+ This is useful because the estimate of the dispersion offered by the default
+ GLM summary command does not take into account the special information
+ about the dispersion that can be calculated by using the Gamma distribution.
+ Not all GLMs have a model-specific, enhanced way to estimate dispersion.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(agam,dispersion=1/myshape$alpha)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Linear Model Fit with the Normal Distribution
+\end_layout
+
+\begin_layout Standard
+Suppose you make the mistaken assumption that this data is Normally distributed.
+ The default settings of the glm estimator in R lead to estimates for a
+ Normally distributed dependent variable with the identity link.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+lmmod <- glm(yobs~ I(1/xseq))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lmpred <- predict(lmmod, se=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have asked predict for the standard errors because they are useful for
+ plots shown below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lmmod)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please note that you get the same parameter estimate if you put the same
+ relationship through the ordinarly least squares regression procedure,
+ lm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+lmmod1a <- lm ( yobs~I(1/xseq))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lmmod1a)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Is the Normal Model 
+\begin_inset Quotes eld
+\end_inset
+
+Just as Good
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+No, of course it isn't.
+ It is the wrong model.
+ But if you mistakenly used OLS, would you make a major mistake? In this
+ test case, the answer is no.
+ 
+\end_layout
+
+\begin_layout Enumerate
+The parameter estimates from the two models are 
+\begin_inset Quotes eld
+\end_inset
+
+about the same.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Gamma\, GLM:\hat{\mu}_{i}=0.77+67.72/x_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Normal\, GLM:\hat{\mu}_{i}=0.37+71.60/x_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Consequently, the predicted values from the two models are 
+\begin_inset Quotes eld
+\end_inset
+
+about the same.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Fitted Models for Gamma Dependent Variable
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Fitted-Models-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<3,fig=T,echo=F,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,yobs,type="n", xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(xseq,yobs,pch=16,cex=0.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,lmpred$fit,lty=2,lwd=5,col="purple")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,gampred$fit, lty=3, lwd=5, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Consider the plotted lines in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Fitted-Models-1"
+
+\end_inset
+
+.
+ It is difficult to distinguish the two lines representing the predicted
+ values.
+ I had a hard time believing that the two lines could actually be so close
+ to one another, so I printed out the first 10 observations of the two models:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+cbind(glmGamma=gampred$fit[1:10],glmNormal=lmpred$fit[1:10])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The plotted estimates of the means, along with the 
+\begin_inset Quotes eld
+\end_inset
+
+confidence intervals
+\begin_inset Quotes erd
+\end_inset
+
+ , are illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Predicted-Values-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Predicted Values from glm with Gamma and Gaussian Distributions
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Predicted-Values-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,gampred$fit,type="l",xlab="x",ylab="y", main="Gamma, link=identity")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, gampred$fit+2*gampred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, gampred$fit-2*gampred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,lmpred$fit,type="l",xlab="x",ylab="y", main="Gaussian, link=identity")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, lmpred$fit+2*lmpred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, lmpred$fit-2*lmpred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+If you (mistakenly) choose models by T statistics, you will be wrong.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+It upsets me when students say one model is 
+\begin_inset Quotes eld
+\end_inset
+
+more significant
+\begin_inset Quotes erd
+\end_inset
+
+ to mean that a model has coefficients with bigger t values.
+ In this case, the t value for the coefficient of 
+\begin_inset Formula $1/x_{i}$
+\end_inset
+
+ in the Normal model is 
+\begin_inset Formula $17.76$
+\end_inset
+
+, while the comparable value from the Gamma fit is 
+\begin_inset Formula $12.42$
+\end_inset
+
+.
+ That does not mean the Normal model is better, for many reasons.
+ The fact is that these tests assume you have chosen the correct model and
+ then estimate on the variability of the 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ based on your specification.
+ They do not constitute a way to choose between two models.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The Deviance is different: Gamma looks significantly better.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The residual deviance of the Gamma fit is 599.11 on 798 degrees of freedom,
+ and the Akaike Information Criterion is 4765.
+ The residual deviance of the Normal model is 43992 on 798 degrees of freedom,
+ and the AIC is 5482.
+ The model with the smaller AIC is preferred.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Michaelson-Morley model: 
+\begin_inset Formula $\mu_{i}=x_{i}/(b_{1}+b_{0}x_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In several fields, scholars have proposed a model with this functional form:
+\begin_inset Formula 
+\[
+\mu_{i}=\frac{x_{i}}{b_{1}+b_{0}x_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Note: the numbering of the coeffients is not mistaken.
+ 
+\end_layout
+
+\begin_layout Standard
+Write it like this and you see why the reciprocal link (the canonical link)
+ makes sense:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i}}=\frac{b_{1}+b_{0}x_{i}}{x_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Write it like this and it should remind you of a logistic regression.
+\begin_inset Formula 
+\[
+\mu_{i}=\frac{1}{b_{0}+b_{1}(1/x_{i})}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+One should graph that.
+ For 
+\begin_inset Formula $x_{i}=0,$
+\end_inset
+
+ this is undefined (just as Gamma density is undefined).
+ For very small values of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, say 0.001, you can see the expected value is a very small number.
+ As 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ gets bigger and bigger, the expected value tends to 
+\begin_inset Formula $1/b_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Variants of this are known in ecology, biochemistry, and physics.
+ In R, one finds it discussed as the Michaelson-Morley model.
+ 
+\end_layout
+
+\begin_layout Standard
+A hypothetical example of Gamma distributed data with 
+\begin_inset Formula $\mu_{i}=x_{i}/(3+0.25x_{i})$
+\end_inset
+
+ with the Gamma shape parameter equal to 
+\begin_inset Formula $1.5$
+\end_inset
+
+ is presented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Gamma-Dependent-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Gamma Dependent Variable 
+\begin_inset Formula $\mu_{i}=x_{i}/(3+0.25x_{i})$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Gamma-Dependent-2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(223456)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xseq <- seq(3, 20, length.out=800)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+yobs2 <- vector()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mu2 <- vector()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for ( i in 1:800){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  mu2[i] <- xseq[i]/(3 + 0.25 * xseq[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  yobs2[i] <- rgamma(1, shape=1.5, scale=mu2[i]/1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(xseq,yobs2,pch=16,cex=0.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, mu2, lty=1,lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+GLM fit with a Gamma Variable and Log Link
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:GLM-Gamma2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If one algebraically re-arranged the model as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+then one would have to transform the input variable in the regression model,
+ but the glm procedure will handle the transformation of the left hand side.
+ One should write the glm formula as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y~I(1/x)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+but specify the link as the 
+\begin_inset Quotes eld
+\end_inset
+
+inverse
+\begin_inset Quotes erd
+\end_inset
+
+, so that the left hand side is 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is transformed.
+\end_layout
+
+\begin_layout Standard
+The glm procedure to fit a Gamma distributed dependent variable of this
+ sort is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+agam2<-glm(yobs2~ I(1/xseq), family=Gamma(link="inverse"), control=glm.control(ma
+xit=100),start=c(2,4))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myshape2 <- gamma.shape(agam2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gampred2 <- predict(agam2,type="response", se=T, dispersion=1/myshape2$alpha)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This uses the MASS library's gamma.shape method to get a better estimate
+ of the dispersion parameter, which is then used in making predictions and
+ also in preparing the summary output.
+ The estimate of the dispersion coefficient affects the standard errors,
+ but not the estimates of the 
+\begin_inset Formula $b$
+\end_inset
+
+'s.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(agam2, dispersion=1/myshape2$alpha)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+What if you used OLS?
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:OLS-2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can translate this into a form that looks like an ordinary regression
+ model: just 
+\begin_inset Quotes eld
+\end_inset
+
+tack on an error term
+\begin_inset Quotes erd
+\end_inset
+
+ (recall OLS: expected value of 0, constant variance):
+\begin_inset Formula 
+\[
+\frac{1}{y_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}+e_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and create transformed variables 
+\begin_inset Formula $1/y_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $1/x_{i}$
+\end_inset
+
+ and estimate this with OLS.
+ How gauche.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lmmod2 <- lm(I(1/yobs2)~I(1/xseq))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lmpred2 <- predict(lmmod2, se=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are a number of reasons why you should not do that.
+ It violates the usual OLS assumptions.
+ It assumes the mismatch between the expected and observed is of a very
+ peculiar sort, 
+\begin_inset Formula $E(e_{i})=0$
+\end_inset
+
+ and constant variance.
+ 
+\end_layout
+
+\begin_layout Standard
+The most important reason why you should not fit these parameters with OLS
+ is that the resulting parameter estimates are grossly wrong.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lmmod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note, the predicted values from this model are presented on a reciprocal
+ scale, so the predicted values must be transformed as 
+\begin_inset Formula $1/predicted$
+\end_inset
+
+ in order to be plotted on the scale of the original, untranformed data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Fitted Models for 
+\begin_inset Formula $\mu=x_{i}/(3+.25x_{i})$
+\end_inset
+
+ with a Gamma Distributed Variable
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(xseq,yobs2,pch=16,cex=0.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,1/lmpred2$fit,lty=2,lwd=2,col="purple")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,gampred2$fit, lty=5, lwd=3, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+legend(.2*max(xseq),.7*max(yobs2), legend=c("lm-Normal","glm-Gamma"), lty=c(2,5),c
+ol=c("purple","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Predicted Values from glm-Gamma and lm-Normal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,gampred2$fit,type="l",xlab="x",ylab="y", main="Gamma, link=inverse")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, gampred2$fit+2*gampred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, gampred2$fit-2*gampred$se,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,1/lmpred2$fit,type="l",xlab="x",ylab="y", main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ypsem<- lmpred2$fit-1.96*lmpred$se
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ypsep<- lmpred2$fit+1.96*lmpred$se
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, 1/ypsem,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq, 1/ypsep,lty=2,col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+But did you really need the Gamma in the glm?
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:GLM-Normal2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here we are back to the main question: is it the functional form that is
+ the source of the trouble, or is it the assumed statistical distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+The reason that the OLS estimation fails so dramatically is that all of
+ the 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ values are transformed.
+ We really only wanted to represent the transformation 
+\begin_inset Formula $1/\mu_{i}$
+\end_inset
+
+, but in the lm framework, doing os requires us to transform the observe
+ values 
+\begin_inset Formula $1/y_{i}$
+\end_inset
+
+.
+ We really want only to model the transformation of the mean and GLM does
+ that.
+\end_layout
+
+\begin_layout Standard
+Now we can use glm with a Gaussian distribution but with an inverse link.
+ And, unlike the model discussed in the previous section, there IS a difference
+ between using lm and glm on the same data.
+ 
+\end_layout
+
+\begin_layout Standard
+To estimate the model with GLM, 
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+
+\end_inset
+
+ the following R commands are used:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lmmod3 <- glm(yobs2 ~ I(1/xseq), family=gaussian(link="inverse"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lmmod3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the parameter estimates coincide with the GLM-Gamma estimates
+ of the earlier analysis.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:GLM2-fit3"
+
+\end_inset
+
+ plots the predicted values for the glm models fit with the Normal and Gamma
+ distributions.
+ The predicted values once-again coincide in these two models fit with glm.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Fitted Models for 
+\begin_inset Formula $\mu=x_{i}/(3+.25x_{i})$
+\end_inset
+
+ with a Gamma Distributed Variable
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:GLM2-fit3"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=8,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+lmpred3 <- predict(lmmod3, se=T, type="response")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(xseq,yobs2,pch=16,cex=0.15)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,lmpred3$fit,lty=2,lwd=6,col="purple")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xseq,gampred2$fit, lty=5, lwd=3, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+legend(.2*max(xseq),.7*max(yobs2), legend=c("glm-Normal","glm-Gamma"), lty=c(2,5),
+col=c("purple","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+In the end, its all about the deviance
+\end_layout
+
+\begin_layout Standard
+The residual deviance for the GLM-Gamma model in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:GLM-Gamma2"
+
+\end_inset
+
+ was 599.09 on 798 degrees of freedom with an AIC of 2479.4.
+ The GLM-Normal model has deviance of 2156.6 and the AIC was 3069.6.
+\end_layout
+
+\begin_layout Section
+How does Gamma GLM fix that?
+\end_layout
+
+\begin_layout Standard
+You might have noticed that the Gamma is a two-parameter distribution.
+ However, it is not necessary to know 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ before doing the estimates of the slope coefficients.
+ After fitting the slope coefficients, then the dispersion can be estimated
+ (similar in the way OLS estimates the slopes and then the variance of the
+ error term).
+ 
+\end_layout
+
+\begin_layout Standard
+If your theory stated the M-M relationship, 
+\begin_inset Formula 
+\[
+\mu_{i}=\frac{x_{i}}{b_{1}+b_{0}x_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+you would re-arrange like so
+\begin_inset Formula 
+\[
+\frac{1}{\mu_{i{}}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+So your link function is the inverse function (reciprocal).
+ If 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is distributed as a Gamma with that mean, then the R glm procedure would
+ be invoked as
+\end_layout
+
+\begin_layout LyX-Code
+glm(y~I(1/x),family=Gamma(link='inverse'))
+\end_layout
+
+\begin_layout Standard
+It is necessary to 
+\begin_inset Quotes eld
+\end_inset
+
+manually
+\begin_inset Quotes erd
+\end_inset
+
+ transform the right hand side.
+ You are completely free to use any formula you like.
+ This specifies 
+\begin_inset Formula $1/x$
+\end_inset
+
+ in order to match the M-M model.
+ As long as your formula is additive on the right hand side, one can make
+ any legitimate transformations, such as logs, squares, square roots, sines,
+ or cosines.
+ However, it is not necessary to transform the left hand side in the formula.
+ That is taken care of by specifying the link as the inverse.
+\end_layout
+
+\begin_layout Standard
+The inverse is the canonical link, but R's glm will fit models that specify
+ the log or identity links.
+ Thus one could theorize that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is Gamma-distibuted and that its mean is related to the input variables
+ as 
+\begin_inset Formula 
+\[
+log(\mu_{i})=b_{0}+b_{1}x_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+This implies, of course, that you think the relationship between your linear
+ predictor 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ and the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is exponential
+\begin_inset Formula 
+\[
+\mu_{i}=exp[b_{0}+b_{1}x_{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or one can have a simple linear relationship with the identity link
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mu_{i}=b_{0}+b_{1}x_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

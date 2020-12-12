@@ -1,0 +1,8612 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8x
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=5,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Splines and Loess and So Forth 
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Get a Rubber Ruler
+\end_layout
+
+\begin_layout Itemize
+Previous approach was 
+\begin_inset Quotes eld
+\end_inset
+
+guess a formula
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+try to estimate its coefficients
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Change gears now, and say 
+\begin_inset Quotes eld
+\end_inset
+
+I don't know what the formula might be, I will use a flexible ruler to get
+ the best predicted value I can get.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There are MANY details in this enterprise, TOO MANY different rubber rulers
+ to use.
+ Sorry.
+\end_layout
+
+\begin_layout Section
+Difficult Test Case
+\end_layout
+
+\begin_layout BeginFrame
+From the locfit package for R
+\end_layout
+
+\begin_layout Standard
+Suppose the data looks like this (awful!)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<2a,echo=F,fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#setting seed so this thing looks the same every time!
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(2314)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- 10 * runif(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 5*sin(x)+rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[order(dat$x), ]
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- dat$x
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- dat$y
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (x, y, main="Curvish data from Locfit example", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-2a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Straight Line Not right
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<2b,echo=F,fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (x, y, main="Curvish data from Locfit example", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(lm(y~x))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-2b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Would a Quadratic Term Help?
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+People Say 
+\begin_inset Quotes eld
+\end_inset
+
+Throw in a Squared Term
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+People often include 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+ to 
+\begin_inset Quotes eld
+\end_inset
+
+check for nonlinearity
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{y}_{i} & = & 3.8\,\,\,-\,\,\,1.1x_{i}+0.09\cdot x_{i}^{2}\\
+ &  & (0.96)*\,(0.44)*\,\,(0.042)*
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+0.09 is 
+\begin_inset Quotes eld
+\end_inset
+
+statistically significant
+\begin_inset Quotes erd
+\end_inset
+
+ and positive.
+ So?
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<4,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod1 <- lm(y ~ x+I(x^2), data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+ndat  <- data.frame(x = seq(0,10, length.out = 100))
+\end_layout
+
+\begin_layout Plain Layout
+
+predict1 <- predict(mymod1, newdata = ndat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, main = "Adding x squared", pch = 16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ndat$x, predict1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-4}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Does a "Significant" b2 Mean Anything Here?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+What does the star mean to you?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<5,echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Unfortunately, to most people, the star is evidence that 
+\begin_inset Quotes eld
+\end_inset
+
+the quadratic model is right
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Add Higher Order Terms, Get Closer to the Right Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Build a more detailed polynomial: include more terms, 
+\begin_inset Formula $x_{i}^{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i}^{4}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall Taylor's Theorem
+\end_layout
+
+\begin_layout Itemize
+Fact: A polynomial has one fewer 
+\begin_inset Quotes eld
+\end_inset
+
+hump
+\begin_inset Quotes erd
+\end_inset
+
+ than it has terms.
+ Since our graph has 3 
+\begin_inset Quotes eld
+\end_inset
+
+humps
+\begin_inset Quotes erd
+\end_inset
+
+, the fitted model would need to include (at least) 
+\begin_inset Formula $x_{i}^{4}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\hat{y_{i}}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x_{i}^{3}+\hat{b}_{4}x_{i}^{4}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted Values of 4th Degree Polynomial: OK!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<6,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod2 <- lm(y~x+I(x^2)+I(x^3)+I(x^4), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,10, length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict2 <- predict(mymod2, newdata=data.frame(x=newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, main = expression(paste("Adding ", x^2, ",", x^3, ", and ", x^4)),
+ pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,predict2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{This almost never works in practice.}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Observed data is not as symmetrical, may require even more terms.
+\end_layout
+
+\begin_layout Itemize
+Noisy data obscures the true shape, parameter variances large, standard
+ errors large.
+\end_layout
+
+\begin_layout Itemize
+Unless your 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ data is measured across a very wide range, coefficients for 
+\begin_inset Formula $x^{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $x^{4}$
+\end_inset
+
+ won't be estimated with much precision.
+ (Even if we 
+\begin_inset Quotes eld
+\end_inset
+
+mean-center
+\begin_inset Quotes erd
+\end_inset
+
+ or use orthogonal polynomials).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Generalized Additive Models (GAM)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{GAM is our LONG TERM GOAL}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Start out with the usual: 
+\begin_inset Formula $y_{i}=b_{o}+b_{1}x1_{i}+b_{i}x2_{i}+b_{3}x3_{i}+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose there's some 
+\begin_inset Quotes eld
+\end_inset
+
+wiggle
+\begin_inset Quotes erd
+\end_inset
+
+ in the effect of 
+\begin_inset Formula $x3_{i}$
+\end_inset
+
+, but we don't know what it is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{GAM = Semi-parametric Regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Wouldn't it be great to fit a generalized model, where we use some smoother
+ for 
+\begin_inset Formula $x3_{i}$
+\end_inset
+
+'s effect? 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+gam(y ~ x1 + x2 + s(x3), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+s(x3) is 
+\begin_inset Quotes eld
+\end_inset
+
+some good smoother function
+\begin_inset Quotes erd
+\end_inset
+
+, may depend on parameters
+\end_layout
+
+\begin_layout Itemize
+Generalized Additive Model (GAM): We can estimate some parametric terms,
+ x1 and x2, and then let the rubber ruler fit the others.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Kinds of rubber rulers}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Natural Cubic Splines (recommended by Harrell, Regression Modeling Strategies)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Segments of X and limited curvature changes.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Loess (Locally Weighted Regression): Most intuitive, I think
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Separately predict each case! Reduce weight on more distant observations
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Smoothing Splines.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Allow the predictive line to 
+\begin_inset Quotes eld
+\end_inset
+
+wiggle
+\begin_inset Quotes erd
+\end_inset
+
+ at any point, but with a penalty
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{GAM: Generalized Additive Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Leading R packages that can combine the usual regression with various kinds
+ of 
+\begin_inset Quotes eld
+\end_inset
+
+smoothed
+\begin_inset Quotes erd
+\end_inset
+
+ predictor functions.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+gam
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Hastie, T.
+ and Tibshirani, R.
+ (1990) 
+\emph on
+Generalized Additive Models
+\emph default
+.
+ London: Chapman and Hall.
+ A very famous book by the authors who founded this area of study.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+mgvc
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Wood S.N.
+ (2006) 
+\emph on
+Generalized Additive Models: An Introduction with R
+\emph default
+.
+ Chapman and Hall/CRC Press.
+ This is my favorite regression book of all time and I strongly urge any
+ regression modeler to get a copy! It has a superior introduction to regression,
+ the generalized linear model, and random effects (mixed) models.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Other R packages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+rms: 
+\emph on
+Regression Modeling Strategies
+\emph default
+ (Frank Harrell).
+ Another favorite regression book.
+ This is where I learned about natural cubic splines 
+\end_layout
+
+\begin_layout Itemize
+polspline: Polynomial Spline routines (recommended by Harrell)
+\end_layout
+
+\begin_layout Itemize
+locfit: loess as evolved out of Bell Labs (C.
+ Loader)
+\end_layout
+
+\begin_layout Itemize
+np: Nonparametric Econometrics (Tristen Hayfield and Jeffrey Racine).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Natural (and other) Splines
+\end_layout
+
+\begin_layout BeginFrame
+Nonlinear Spline Overview
+\end_layout
+
+\begin_layout Itemize
+A 
+\begin_inset Quotes eld
+\end_inset
+
+piecewise linear spline
+\begin_inset Quotes erd
+\end_inset
+
+ connects straight lines.
+\end_layout
+
+\begin_layout Itemize
+A 
+\begin_inset Quotes eld
+\end_inset
+
+cubic spline
+\begin_inset Quotes erd
+\end_inset
+
+ connects cubic functions.
+\end_layout
+
+\begin_layout Itemize
+A 
+\begin_inset Quotes eld
+\end_inset
+
+natural spline
+\begin_inset Quotes erd
+\end_inset
+
+ is a cubic spline with some restrictions on the end points.
+\end_layout
+
+\begin_layout Subsection
+Straight Line Splines
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Linear Splines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Appears simple, parsimonious
+\end_layout
+
+\begin_layout Itemize
+Divide the x-axis into sections
+\end_layout
+
+\begin_layout Itemize
+Estimate regression lines for each one
+\end_layout
+
+\begin_layout Itemize
+But don't allow 
+\begin_inset Quotes eld
+\end_inset
+
+breaks
+\begin_inset Quotes erd
+\end_inset
+
+ between segments.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Getting Different Slopes on Different Sections of $x_i$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Many authors use a 
+\begin_inset Quotes eld
+\end_inset
+
+plus function
+\begin_inset Quotes erd
+\end_inset
+
+ notation
+\begin_inset Formula 
+\begin{eqnarray}
+(x_{i}-\tau_{1})_{+} & = & 0\, if\, x_{i}<\tau_{1}\\
+ &  & x_{i}-\tau_{1}\, otherwise
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Literally, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+up to a knot (or 
+\begin_inset Quotes eld
+\end_inset
+
+break point
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ has no effect.
+ 
+\end_layout
+
+\begin_layout Itemize
+Above 
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+, the effect is (
+\begin_inset Formula $x_{i}-\tau_{1})_{+}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Fitted model with one knot: 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x+\hat{b}_{2}(x_{i}-\tau_{1})_{+}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7a,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knot <- c(1.8, 4.2, 8.0)
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf <- data.frame(x=x, y=y)
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf <- thedf[order(thedf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#handy function to create "plus variables"
+\end_layout
+
+\begin_layout Plain Layout
+
+createplusvar <- function(input,k) { it <- ifelse(input > k, input-k, 0)}
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp1 <- createplusvar(thedf$x, knot[1])
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp2 <- createplusvar(thedf$x, knot[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp3 <- createplusvar(thedf$x, knot[3])
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod0 <- lm (y ~ x + xp1 + xp2 + xp3, data = thedf)
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(round(min(x),1), round(max(x)+0.5,1),by=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(x = newx, xp1 = createplusvar(newx, knot[1]),  xp2 =
+ createplusvar(newx,knot[2]), xp3 = createplusvar(newx,knot[3]))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$pred <- predict(mymod0, newdata = newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+mytitle <- paste ("Manual Regression spline knots", knot[1], knot[2], knot[3])
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(thedf$x, thedf$y, main = mytitle, type = "n")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(thedf$x, thedf$y, pch = 16, cex = 0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$x, newdf$pred)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(thedf, mymod0, newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plot of Manual Spline Results}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+For the curvy locfit data considered, I guessed 3 breakpoints.
+\end_layout
+
+\begin_layout Itemize
+I manually estimate the model.
+\end_layout
+
+\begin_layout Itemize
+I did not guess the breakpoints for the splines quite right (but close).
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-7a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Routines to Guess Knots and Splines simultaneously}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+R package 
+\begin_inset Quotes eld
+\end_inset
+
+segmented
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Nice interface!
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Fit a regression
+\end_layout
+
+\begin_layout Itemize
+Give that lm object to segmented() with a request
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Somewhat fragile (my experience).
+ Good initial guesses for the break points (the option psi) needed.
+ 
+\end_layout
+
+\begin_layout Itemize
+segmented() provides a test for the significance of the assumption that
+ the line segments connect at the break points.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7b,echo=T,include=F, echo=T, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(segmented)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod0 <- lm(y ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+segmod <- segmented(mymod0, seg.Z = ~x, psi=list(x = c(1.8,4.2,8.0)), it.max
+ = 200)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(segmod)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- data.frame(x=x, fitted = segmod$fitted.values)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- mynewdf[order(mynewdf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, main = "Lines, cutpoints estimated by segmented", pch = 16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mynewdf$x, mynewdf$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+detach("package:segmented")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{segmented results}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-7b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Multivariate Adaptive Regression Splines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+R package 
+\begin_inset Quotes eld
+\end_inset
+
+mda
+\begin_inset Quotes erd
+\end_inset
+
+ (Trevor Hastie), routine: MARS: Multivariate Adaptive Regression Splines
+ (see Venables & Ripley, MASS, 4ed, p.
+ 235)
+\end_layout
+
+\begin_layout Itemize
+number of knots estimated from the data
+\end_layout
+
+\begin_layout Itemize
+Has options to 
+\begin_inset Quotes eld
+\end_inset
+
+curve
+\begin_inset Quotes erd
+\end_inset
+
+ the segments as well!
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7c,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mda)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars <- mars(x, y, degree=1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymars)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars$cuts
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars$gcv 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- data.frame(x, y, fitted = mymars$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- mydf[order(mydf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, main = "Linear splines: mars output", pch = 16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mydf$x,mydf$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(mymars)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-7c}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MARS Plot Code With Fewer Breakpoints}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Standard
+Try a restricted number of breakpoints.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7d,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mda)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2 <- mars(x,y, degree=1, nk=6) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymars2)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2$gcv 
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2$cuts
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- data.frame(x,y,fitted=mymars2$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- mydf[order(mydf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Linear splines: mars output nk=6", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mydf$x,mydf$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(mymars2, mydf)
+\end_layout
+
+\begin_layout Plain Layout
+
+detach("package:mda")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-7d}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Do We Like Linear Splines (on a Theoretical Level)?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Kinks.
+ Do our theories really have 
+\begin_inset Quotes eld
+\end_inset
+
+kinks
+\begin_inset Quotes erd
+\end_inset
+
+? 
+\end_layout
+
+\begin_layout Itemize
+Does effect of x remain constant until an instant where it changes from
+ 
+\begin_inset Formula $b_{2}$
+\end_inset
+
+ to 
+\begin_inset Formula $b_{3}$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Itemize
+Should model have them?
+\end_layout
+
+\begin_layout Itemize
+Big philosophical question.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A Smoother Spline
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Splines without Kinks}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There are more types of spline models than you can shake a stick at.
+ 
+\end_layout
+
+\begin_layout Itemize
+We focus on the natural cubic spline.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Cubic Spline Basics}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+input variable 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is subdivided into 
+\begin_inset Formula $k$
+\end_inset
+
+ segments with end points 
+\begin_inset Formula $(\tau_{0}$
+\end_inset
+
+,
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+,
+\begin_inset Formula $\ldots,$
+\end_inset
+
+
+\begin_inset Formula $\tau_{k+1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Segments with 4 knots in the interior of the line.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<8,include=F,fig=T, echo=F, height=2>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(seq(-1,10,length.out=100), type="n", axes=F,ylab="", xlab="",xlim=c(-1,11),
+ ylim=c(-1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1, at = c(0,4,5,7,9,10), labels = expression(tau[0], tau[1], tau[2],
+ tau[3], tau[4], tau[5]))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=11cm]{plots/t-8}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Cubic Spline Basics}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+On each interval, we can imagine a cubic model, 
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x_{i}^{3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<9b,include=F,fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knots<- c(1.7,4.63,7.9)
+\end_layout
+
+\begin_layout Plain Layout
+
+int0 <- ifelse (x<knots[1], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+xp0 <- ifelse (x<knots[1], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+int1 <- ifelse(x>knots[1]&x<knots[2], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+xp1 <- ifelse(x>knots[1]&x<knots[2], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+int2 <- ifelse(x>knots[2]&x<knots[3], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+xp2 <- ifelse(x>knots[2]&x<knots[3], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+int3<- ifelse( x>knots[3],1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+xp3 <- ifelse(x>knots[3], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mycubic <- lm(y~-1+ int0+ xp0+ I(xp0^2)+ I(xp0^3) + int1+ xp1+ I(xp1^2)
+ + I(xp1^3)+ int2 + xp2 + I(xp2^2)+ I(xp2^3)+ int3+ xp3+I(xp3^2)+I(xp3^3))
+\end_layout
+
+\begin_layout Plain Layout
+
+b<-coef(mycubic)
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(round(min(x)),ceiling(max(x)),length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- b[1]+b[2]*newx +b[3]*newx^2+b[4]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- ifelse(newx <= knots[1], y1, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- b[5]+b[6]*newx +b[7]*newx^2+b[8]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- ifelse(newx > knots[1] & newx <= knots[2], y2, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- b[9]+b[10]*newx +b[11]*newx^2+b[12]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- ifelse(newx > knots[2] & newx <= knots[3], y3, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+y4 <- b[13]+b[14]*newx +b[15]*newx^2+b[16]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+y4 <- ifelse(newx > knots[3], y4, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Unrestricted cubic splines",type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y4)
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,cex=0.4)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm (newx,y1, y2, y3, y4,int0,int1,int2,int3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-9b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{First Fix: Smooth Cubic Splines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Each segment's spline must blend smoothly into the next.
+ So assume:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+No gaps at the knots.
+\end_layout
+
+\begin_layout Enumerate
+Smooth Connections between parts.
+ No pointy kinks at the knots.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Those 2 assumptions have VERY MUCH power on simplifying the problem.
+ In particular, they mean that the slope and second derivatives at the knot
+ points have to match exactly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Adapt the "plus function" notation for the Cubic Spine}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+squared plus function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+(x_{i}-\tau)_{+}^{2} & = & 0\, if\, x_{i}<\tau\\
+ &  & (x_{i}-\tau)^{2}\, otherwise
+\end{eqnarray}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Cubic plus function:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+(x_{i}-\tau)_{+}^{3} & = & 0\, if\, x_{i}<\tau\\
+ &  & (x_{i}-\tau)^{3}\, otherwise
+\end{eqnarray}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+I believe these are called 
+\begin_inset Quotes eld
+\end_inset
+
+truncated power basis
+\begin_inset Quotes erd
+\end_inset
+
+ splines.
+ These are the 
+\begin_inset Quotes eld
+\end_inset
+
+teaching version
+\begin_inset Quotes erd
+\end_inset
+
+ of cubic splines
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Simplifying the Cubic Splines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The model would be too overwhelming if we try to estimate a separate cubic
+ equation within every segment.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\\
+ &  & \hat{b}_{4}+\hat{b}_{5}(x_{i}-\tau_{1})_{+}+\hat{b}_{6}(x_{i}-\tau_{1})_{+}^{2}+\hat{b}_{7}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\\
+ &  & \hat{b}_{8}+\hat{b}_{9}(x_{i}-\tau_{2})_{+}+\hat{b}_{10}(x_{i}-\tau_{2})_{+}^{2}+\hat{b}_{11}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)
+\end{eqnarray*}
+
+\end_inset
+
+But we can throw away many of those coefficients 
+\end_layout
+
+\begin_layout Itemize
+no gaps: 
+\begin_inset Formula $b_{4}=$
+\end_inset
+
+ 
+\begin_inset Formula $b_{8}=0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+no kinks at knots: 
+\begin_inset Formula $b_{5}=$
+\end_inset
+
+ 
+\begin_inset Formula $b_{6}=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+no kinks at knots: 
+\begin_inset Formula $b_{6}=$
+\end_inset
+
+
+\begin_inset Formula $b_{10}=0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{And so Restricted Cubic Spline Model Boils Down To}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Renumbering the coefficients in a sane way, we are left with 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\nonumber \\
+ &  & +\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\label{eq:Urcs}\\
+ &  & +\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)\nonumber \\
+ &  & and\, so\, forth
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+After the first interior knot, add 
+\begin_inset Formula $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+After the second knot, we have BOTH 
+\begin_inset Formula $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$
+\end_inset
+
++ 
+\begin_inset Formula $\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Emphasize: a change in the coefficient for one segment may have a 
+\begin_inset Quotes eld
+\end_inset
+
+ripple effect
+\begin_inset Quotes erd
+\end_inset
+
+ across all of the others.
+ If one segment's coefficient gets tuned 
+\begin_inset Quotes eld
+\end_inset
+
+high,
+\begin_inset Quotes erd
+\end_inset
+
+ then the others have to adjust to compensate.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Natural Splines: One more restriction}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+outside
+\begin_inset Quotes erd
+\end_inset
+
+ segments are 
+\begin_inset Quotes eld
+\end_inset
+
+unteathered
+\begin_inset Quotes erd
+\end_inset
+
+ on the edges.
+ 
+\end_layout
+
+\begin_layout Itemize
+To stabilize the fit there, a 
+\series bold
+restricted (or natural) cubic spline
+\series default
+ allows only a linear relationship on those segments.
+ (see Harrell's 
+\emph on
+Regression Modeling Strategies
+\emph default
+, p.
+ 20).
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+theoretical
+\begin_inset Quotes erd
+\end_inset
+
+ view, then, is just a linear equation supplemented by a bunch of cubic
+ 
+\begin_inset Quotes eld
+\end_inset
+
+plus
+\begin_inset Quotes erd
+\end_inset
+
+ functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}(x_{i}-\tau_{1})_{+}^{3}+\hat{b}_{3}(x_{i}-\tau_{2})_{+}^{3}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{More Sophisticated Computer Tricks Behind the Scenes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We could manually create the power variables 
+\begin_inset Formula $(x_{i}-\tau_{j})_{+}^{3}$
+\end_inset
+
+ and fit with OLS.
+ 
+\end_layout
+
+\begin_layout Itemize
+However, that is not the 
+\begin_inset Quotes eld
+\end_inset
+
+numerically most stable
+\begin_inset Quotes erd
+\end_inset
+
+ approach.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+The truncated power basis is attractive because the plus-function terms
+ are intuitive and maybe entered as covariates in standard regression packages.
+ However, the number of plus-functions requiring evaluation increase with
+ the number of breakpoints, and these terms often become collinear, just
+ as terms in a standard polynomial regression do.
+\begin_inset Quotes erd
+\end_inset
+
+ (Lynn A Sleeper and David P.
+ Harrington, 
+\begin_inset Quotes eld
+\end_inset
+
+Regression Splines in a Cox Model with Application to Covariate Effects
+ in Liver Disease
+\begin_inset Quotes erd
+\end_inset
+
+,
+\emph on
+ Journal of the American Statistical Association
+\emph default
+, 85(412) December 1990, p.943 (941-949 )).
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+b-spline
+\begin_inset Quotes erd
+\end_inset
+
+ encoding is more numerically stable approach.
+ Harrell states that the difference is not usually substantial.
+ On the other hand, Wood emphasizes the b-spline quite a bit.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Examples? Let's use Frank Harrell's rms Package}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<10,echo=T,results=hide, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rms)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Harrell's rcs() function creates the 
+\begin_inset Quotes eld
+\end_inset
+
+truncated power basis natural spline
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+rcs(x, parms=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+By default, rcs will position knots so that the data is divided into equally
+ sized subgroups (quintiles, etc.).
+ 
+\end_layout
+
+\begin_layout Itemize
+R package: splines.
+ Function 
+\begin_inset Quotes eld
+\end_inset
+
+ns
+\begin_inset Quotes erd
+\end_inset
+
+ creates the 
+\begin_inset Quotes eld
+\end_inset
+
+numerically more stable
+\begin_inset Quotes erd
+\end_inset
+
+ b-spline representation for a natural cubic splines
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+ns(x, df=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fit a Regression with a Restricted Natural Cubic Spline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We can use either 
+\begin_inset Formula $rcs(x,nk=knots)$
+\end_inset
+
+ or 
+\begin_inset Formula $ns(x,df=k-1)$
+\end_inset
+
+ as regression model inputs:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+m5 <- lm(y ~ rcs(x,5), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<12, echo=T, include=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod5 <- lm(y ~ rcs(x, parms=5), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict5 <- mymod5$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(dat$x, dat$y,main="Using lm(y~rcs(x,parms=5))", type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(dat$x, dat$y, pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots/t-12}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Model Summary Output Difficult to Understand, Though}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<14,echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-14}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predictions from b-spline "ns" and Truncated "rcs" Very Similar}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+m5 <- lm(y ~ ns(x,df=4), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<14compare,echo=F, include=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(splines)
+\end_layout
+
+\begin_layout Plain Layout
+
+modbs <- lm(y ~ ns(x, df=4), data=dat) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(predict5, modbs$fitted, main="scatter of predictions from ns and rcs",
+ xlab="predicted with rcs(x, parms=5)", ylab="predicted with ns(x, df=4)")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-14compare}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Choosing the number of knots}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Harrell writes that the conventional wisdom, following studies by Stone,
+ is that the positioning of the knots is not very influential.
+ If the knots section off the data into evenly sized groups, then the fit
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+pretty good.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+But the number of knots is important.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Usually need at least 4 knots
+\end_layout
+
+\begin_layout Itemize
+Usually more than 7 knots not helpful.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Clearly, 3 knots is not Enough}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<15-4,include=F,fig=T,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod3 <- lm(y ~ rcs(x,parms=3), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict3 <- mymod3$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="3 Knots! Using lm(y~rcs(x,parms=3))", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict3)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-15-4}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{6 Knots Not So Bad}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<15-6,include=F,fig=T,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod6 <- lm(y ~ rcs(x,parms=6), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict6 <- mymod6$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="6 Knots! Using lm(y~rcs(x,parms=6))", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict6)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod6)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-15-6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Several different values for knots}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<15-all,include=F,fig=T,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod7 <- lm(y ~ rcs(x,7), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict7 <- mymod7$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod8 <- lm(y ~ rcs(x,8), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict8 <- mymod8$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod9 <- lm(y ~ rcs(x,9), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+predict9 <- mymod9$fitted.values
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="5- 9 Knots!", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict5, col=1, lty=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict6, col=2, lty=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict7, col=3, lty=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict8, col=4, lty=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$x, predict9, col=5, lty=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("top",legend=paste("knots",5:9),col=1:5,lty=1:5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-15-all}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Danger of Over-Fitting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Over-fitting: customizing the model to quirks of one random sample.
+ 
+\end_layout
+
+\begin_layout Itemize
+Theoretically, want a manageable model: get rid of many knots as possible.
+\end_layout
+
+\begin_layout Itemize
+Should penalize use of knots, somehow
+\end_layout
+
+\begin_layout Itemize
+Cross Validation is a concept that can be used as a guide in deciding on
+ the appropriate number of knots
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Cross Validation: Choosing the number of knots}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Basic Idea: Choose your modeling approach, including number of knots.
+\end_layout
+
+\begin_layout Itemize
+Estimate model for a subset
+\end_layout
+
+\begin_layout Itemize
+Check if fitted model works well for other cases that were not used in fitting
+\end_layout
+
+\begin_layout Itemize
+For evaluating 
+\begin_inset Quotes eld
+\end_inset
+
+out of sample
+\begin_inset Quotes erd
+\end_inset
+
+ predictions, we use a 
+\begin_inset Quotes eld
+\end_inset
+
+misfit indicator
+\begin_inset Quotes erd
+\end_inset
+
+* 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Such as 
+\begin_inset Quotes eld
+\end_inset
+
+mean square error
+\begin_inset Quotes erd
+\end_inset
+
+ or Akaike's Information Criterion, Deviance, etc (for more advanced application
+s).
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{"Leave One Out" Cross Validation}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Remove the 
+\begin_inset Formula $i'th$
+\end_inset
+
+ observation, Re-calculate the predictive curve on 
+\begin_inset Formula $N-\{i\}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Calculate a 
+\begin_inset Quotes eld
+\end_inset
+
+leave-one-out prediction
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\check{y}_{i}$
+\end_inset
+
+.
+ Meaning: use the model estimated on 
+\begin_inset Formula $N-\{i\}$
+\end_inset
+
+ to predict for the 
+\begin_inset Formula $i'th$
+\end_inset
+
+ observation.
+\end_layout
+
+\begin_layout Itemize
+How bad was that prediction? Easy: 
+\begin_inset Formula $(y_{i}-\check{y}_{i})^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Repeat procedure for all observations.
+ Calculate the average of squared errors.
+ 
+\begin_inset Formula 
+\[
+CV=\frac{1}{N}\sum_{i=1}^{N}(y_{i}-\check{y}_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{When the Dust Clears}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Calculate CV for models with 4 knots, then 5 knots, and so forth
+\end_layout
+
+\begin_layout Itemize
+Choose number of knots that minimizes the CV measure
+\end_layout
+
+\begin_layout Itemize
+Many Variants, "Generalized Cross Validation"
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Loess 
+\end_layout
+
+\begin_layout BeginFrame
+Sometimes Called 
+\begin_inset Quotes eld
+\end_inset
+
+Nonparametric
+\begin_inset Quotes erd
+\end_inset
+
+ Regression
+\end_layout
+
+\begin_layout Itemize
+LOESS: Locally Weighted Error Sum of Squares regression.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Cleveland, W.
+ S.
+ and Devlin, S.
+ J.
+ (1988).
+ Locally weighted regression: An approach to regression analysis by local
+ fitting.
+ 
+\emph on
+Journal of the American Statistical Association
+\emph default
+ 83, 596–610.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Fit a separate predictive model for each observation!
+\end_layout
+
+\begin_layout Itemize
+Model is 
+\begin_inset Quotes eld
+\end_inset
+
+nonparametric
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that we do not emphasize estimation of 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+\shape italic
+the
+\series default
+\shape default
+ 
+\series bold
+\shape italic
+slope
+\series default
+\shape default
+
+\begin_inset Quotes erd
+\end_inset
+
+ for a particular 
+\begin_inset Quotes eld
+\end_inset
+
+coefficient
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Now we estimate 
+\begin_inset Quotes eld
+\end_inset
+
+the slope
+\begin_inset Quotes erd
+\end_inset
+
+ for 100s of separate points.
+ Loess is not 
+\begin_inset Quotes eld
+\end_inset
+
+nonparametric
+\begin_inset Quotes erd
+\end_inset
+
+ in my view.
+ It is mega-parametric! 
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+LOESS
+\end_layout
+
+\begin_layout Enumerate
+Make a separate regression model for each value of the input variable.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Construct each regression so it puts most 
+\begin_inset Quotes eld
+\end_inset
+
+weight
+\begin_inset Quotes erd
+\end_inset
+
+ on observed scores that are close.
+\end_layout
+
+\begin_layout Enumerate
+Output is a column of predictions, one for each observation.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Weights for Points Close to $x'$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Fit one regression for each value of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ Concentrate on one now 
+\begin_inset Formula $x'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Points outside the span of 
+\begin_inset Formula $h$
+\end_inset
+
+ have 0 Weight.
+\end_layout
+
+\begin_layout Itemize
+Closer points inside the span have more weight
+\end_layout
+
+\begin_layout Itemize
+Typical: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Weight\,(x_{i})=\begin{cases}
+(1-|\frac{x_{i}-x'}{h}|^{3})^{3} & \,\, if\,\,|\frac{x_{i}-x'}{h}|<1\\
+0 & otherwise
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<18,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x3 <- seq(0,10,length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+xprime <- 4
+\end_layout
+
+\begin_layout Plain Layout
+
+bandwidth <- 3.1
+\end_layout
+
+\begin_layout Plain Layout
+
+weight <- (1- (abs((x3-xprime)/bandwidth))^3)^3
+\end_layout
+
+\begin_layout Plain Layout
+
+weight <- ifelse(abs(xprime-x3)>bandwidth,0,weight)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x3,weight,type="l",main="Default loess weighting for x=4, bandwidth=3.1")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-18}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How Weights Affect Predictions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In 
+\begin_inset Quotes eld
+\end_inset
+
+ordinary least squares,
+\begin_inset Quotes erd
+\end_inset
+
+ there are no weights.
+ Minimize this:
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}(y_{i}-\hat{y}_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Loess uses weighted local regression to de-emphasize the far-away values.
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}W(x_{i})[y_{i}-\hat{y_{i}}]^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The predictor can be 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+linear model, 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+quadratic model, 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Using locfit's local polynomial estimator}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+locfit is a generalized framework for loess with linear and generalized
+ regression models.
+\end_layout
+
+\begin_layout Itemize
+Author: C.
+ Loader early developer of code for loess at AT&T
+\end_layout
+
+\begin_layout Itemize
+The plotter makes the points look like a smooth line.
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<locex, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(locfit)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<18c,echo=T, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- locfit(y~lp(x,nn=0.5)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(fit1,main="Local fitting, 0.5 nearest neighbors included",ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-18c}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<18d,echo=T, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- locfit(y~lp(x,nn=0.5)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+pred1 <- predict(fit1, newdata=data.frame(x), se.fit=TRUE, band="local")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(fit1,main="Local fitting, 0.5 nearest neighbors included",ylim=c(-6,6),
+ band="local")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<locMASS,echo=T,fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit2 <- loess(y~x,span=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+pred2 <- fit2$fitted
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="loess with span=0.5",ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x, pred2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<loesscompare,echo=T,fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(pred2, pred1$fit, main="Compare locfit and loess with span=0.5", xlab="loess
+ predictions", ylab="locfit predictions", ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Add 95
+\backslash
+% Local Confidence Interval}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+The 95% band can be calculated in a variety of ways
+\end_layout
+
+\begin_layout Itemize
+This uses the local estimate of the variance to customize the 95% confidence
+ interval
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-18d}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare Against loess Function output}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-locMASS}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-loesscompare}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Extension to several input variables}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Second Generation loess tools include the ability to add more predictor
+ variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+The transition from one to several variables is very simple in theory.
+ The weights simply depend on distance, which can be measured in various
+ ways.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Curse of dimensionality
+\begin_inset Quotes erd
+\end_inset
+
+ makes fitting these 
+\begin_inset Quotes eld
+\end_inset
+
+nonparametric
+\begin_inset Quotes erd
+\end_inset
+
+ curves very costly if there are more than 3 predictors.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Smoothing Splines
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Smoothing Splines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Smoothing Splines: marriage of Splines and Loess
+\end_layout
+
+\begin_layout Itemize
+Every 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ becomes a knot.
+\end_layout
+
+\begin_layout Itemize
+Build a natural spline model that 
+\begin_inset Quotes eld
+\end_inset
+
+wiggles
+\begin_inset Quotes erd
+\end_inset
+
+ between every pair of points.
+\end_layout
+
+\begin_layout Itemize
+We penalize wiggliness.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Here is the objective function}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Goal is to minimize a Sum of Squared Errors Plus a penalty for 
+\begin_inset Quotes eld
+\end_inset
+
+wiggliness
+\begin_inset Quotes erd
+\end_inset
+
+ (a roughness penalty).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+SS(f,\lambda)=\sum_{i=1}^{N}\left(y_{i}-f(x_{i})\right)^{2}+\lambda\int_{x_{min}}^{x_{max}}(f''(x))^{2}dx
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A theorem in Wood demonstrates that 
+\begin_inset Formula $f(x_{i})$
+\end_inset
+
+ will be cubic.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{$
+\backslash
+lambda$ is a Smoothing Parameter}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is too small, 
+\begin_inset Formula $f$
+\end_inset
+
+ offers no simplification, it fits the data exactly.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\lambda=\infty$
+\end_inset
+
+, a harsh penalty leads to a straight line model (no curves)
+\end_layout
+
+\begin_layout Itemize
+May manually set 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+or use some algorithm to estimate models for various 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ and compare results by Cross Validation.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{One Way To Summarize "degrees of freedom" used}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose you have the 
+\begin_inset Quotes eld
+\end_inset
+
+smoother matrix
+\begin_inset Quotes erd
+\end_inset
+
+ that maps from observed 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ to the predicted 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ For each 
+\begin_inset Formula $i$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=h_{i1}y_{1}+h_{i2}y_{2}+h_{i3}y_{3}+\ldots+h_{iN}y_{N}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If 
+\begin_inset Formula $h_{ii}=1$
+\end_inset
+
+, and 
+\begin_inset Formula $h_{ij}=0$
+\end_inset
+
+ , then this just 
+\begin_inset Quotes eld
+\end_inset
+
+reproduces
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+But, if 
+\begin_inset Formula $h_{ii}=0$
+\end_inset
+
+, it means that case 
+\begin_inset Formula $i$
+\end_inset
+
+ is just 
+\begin_inset Quotes eld
+\end_inset
+
+receiving
+\begin_inset Quotes erd
+\end_inset
+
+ its prediction from the other cases.
+ We use no 
+\begin_inset Quotes eld
+\end_inset
+
+unique information
+\begin_inset Quotes erd
+\end_inset
+
+ in predicting 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Thus, the sum of the 
+\begin_inset Quotes eld
+\end_inset
+
+smoother coefficients
+\begin_inset Quotes erd
+\end_inset
+
+ (the diagonal elements if you view 
+\begin_inset Formula $[h_{ii}]$
+\end_inset
+
+ as an 
+\begin_inset Formula $N\times\mbox{\ensuremath{N}}$
+\end_inset
+
+ matrix) 
+\begin_inset Formula 
+\begin{equation}
+\sum h_{ii}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+serves as an indicator of the 
+\begin_inset Quotes eld
+\end_inset
+
+customization
+\begin_inset Quotes erd
+\end_inset
+
+ needed to make a set of predictions.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+That sum is 
+\begin_inset Quotes eld
+\end_inset
+
+effective degrees of freedom.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Sorry.
+ Necessary to Read Manual on Parameters and Settings}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Models can be fit by various methods
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Possible to set value of 
+\begin_inset Quotes eld
+\end_inset
+
+effective degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+In that case, the smoothing parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is adjusted so the final model uses the desired df.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+User may instead specify a smoothing parameter, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ (or the like), and then the 
+\begin_inset Quotes eld
+\end_inset
+
+effective degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+ used will come out as a logical consequence.
+\end_layout
+
+\begin_layout Itemize
+Software may use Cross Validation to choose a value of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, possibly beginning calculations at the user's best initial guess for 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Many Routines Available}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+smooth.spline in R core (thanks to Brian Ripley and Martin Maechler).
+ 
+\end_layout
+
+\begin_layout Itemize
+package 
+\begin_inset Quotes eld
+\end_inset
+
+pspline
+\begin_inset Quotes erd
+\end_inset
+
+ has smooth.Pspline (defaults to natural cubic smoothing spline)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I Find the pspline Manual Most Understandable}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+method=1 forces the use of the designated spar, which defaults to 0 (no
+ smoothing) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline10,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(pspline)
+\end_layout
+
+\begin_layout Plain Layout
+
+#dat <- data.frame(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+#dat <- dat[order(x), ]
+\end_layout
+
+\begin_layout Plain Layout
+
+#x <- dat$x
+\end_layout
+
+\begin_layout Plain Layout
+
+#y <- dat$y
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline10b, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp10 <- smooth.Pspline(x, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp10
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline10b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=1, spar=0}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline10c, echo=T, include=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline Method 1 Follows Orders, spar=0")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp10$x, psp10$ysmth)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline10c}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method 1, with More Smooothing (spar=0.8)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline15a,echo=T, include=F, fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp15 <- smooth.Pspline(x, y, spar=0.8, method=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp15
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline15a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method 1, spar=0.8}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline15b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline with spar=0.8")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp15$x, psp15$ysmth)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline15b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=1, spar=10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline17a,echo=T, include=F, fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp17 <- smooth.Pspline(x, y, spar=10, method=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp17
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline17a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=1, spar=10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline17b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline with spar=10")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp17$x, psp17$ysmth)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline17b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=2, df=5 (calculates spar)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline25a,echo=T, include=F, fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp25 <- smooth.Pspline(x, y, df=5, method=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp25
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline25a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=2, df=5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline25b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline, df=5")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp25$x, psp25$ysmth, pch=3, cex=1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline25b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=2, df=10 (calculates spar)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline26a,echo=T, include=F, fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp26 <- smooth.Pspline(x, y, df=10, method=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp26
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline26a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=2, df=10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline26b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline method=2, df=10")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp26$x, psp26$ysmth, pch=3, cex=1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline26b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method=4; let CV decide df and spar}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline35a,echo=T, include=F, fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+psp35 <- smooth.Pspline(x, y, method=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+psp35
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pspline35a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Pspline method 4, let CV decide spar (df)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline35b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline with CV selection of smooth parameter")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp35$x, psp35$ysmth)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline35b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Look at the Psplines side by side}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pspline50,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="pspline with CV selection of smooth parameter")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp10$x, psp10$ysmth, lty=4, lwd=0.6)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp15$x, psp15$ysmth, lty=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp26$x, psp26$ysmth, lty=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(psp35$x, psp35$ysmth, lty=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("top", legend=c("spar=0","spar=0.8","df=10","CV"),lty=4:1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-pspline50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Wish I could demonstrate the smooth.spline function}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But I keep running into weird little mismatches between what I expect and
+ what it does, so I'm leaving this reminder here.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+     Fits a cubic smoothing spline to the supplied data.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Usage:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+smooth.spline(x, y = NULL, w = NULL, df, spar = NULL,
+\end_layout
+
+\begin_layout Plain Layout
+
+cv = FALSE, all.knots = FALSE, nknots = NULL,
+\end_layout
+
+\begin_layout Plain Layout
+
+keep.data = TRUE, df.offset = 0, penalty = 1,
+\end_layout
+
+\begin_layout Plain Layout
+
+control.spar = list())
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+df: the desired equivalent number of degrees of freedom (trace of the smoother
+ matrix).
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+spar: smoothing parameter, typically (but not necessarily) in (0,1].
+ The coefficient lambda of the integral of the squared second derivative
+ in the fit (penalized log likelihood) criterion is a monotone function
+ of 'spar', see the details below.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Note Note
+status open
+
+\begin_layout Itemize
+The option all.knots=T implements the 
+\begin_inset Quotes eld
+\end_inset
+
+smoothing spline approach,
+\begin_inset Quotes erd
+\end_inset
+
+ but one also has option to specify a smaller number of knots to obtain
+ a cubic spline.
+\end_layout
+
+\begin_layout Itemize
+df, spar (proportional to 
+\begin_inset Formula $\lambda$
+\end_inset
+
+), nknots, or can let system choose by 
+\begin_inset Quotes eld
+\end_inset
+
+leave one out
+\begin_inset Quotes erd
+\end_inset
+
+ CV.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<20a,echo=T,include=F,fig=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0 <- smooth.spline(x,y, all.knots=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0a <- smooth.spline(x,y, all.knots=T, cv=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0a
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0a <- smooth.spline(x,y, all.knots=TRUE, df=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+ss0a
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ss1 <- smooth.spline(x,y, all.knots=TRUE, spar=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+ss1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ss2 <- smooth.spline(x,y, all.knots=FALSE, nknots=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(ss2)
+\end_layout
+
+\begin_layout Plain Layout
+
+ss3 <- smooth.spline(x,y, cv=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-20a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<20b,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, type="n", main="Comparing smooth.spline results")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ss1$x, ss1$y,lty=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ss2$x, ss2$y,lty=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ss3$x, ss3$y, lty=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend(.7,-3, c("all.knots=T","knots=4","cv=TRUE"), lty=c(1,4,3))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,cex=0.5, col=gray(.8))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-20b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+AVAS
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Bend the Line or Re-Number the Data.
+ Same Thing?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tibshirani, Rob (1987), ``Estimating Optimal Transformations for Regression''.
+ Journal of the American Statistical Association 83, 394.
+\end_layout
+
+\begin_layout Standard
+Outlines a transformation process that stretches and squishes the data into
+ a scatterplot suitable for a linear regression with homogeneous variance.
+\end_layout
+
+\begin_layout Standard
+R package: acepack .
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Bend the Line or Re-Number the Data.
+ Same Thing?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The transformed 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ are quite pleasantly linear and the linear model fits very nicely.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<22,echo=T,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(acepack)
+\end_layout
+
+\begin_layout Plain Layout
+
+avasfit <- avas(x, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$tx, avasfit$ty,main="avas Function With the Sine Wave Data",xlab="t
+ransformed values of x",ylab="transformed values of y",type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(avasfit$tx, avasfit$ty,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(lm(avasfit$ty~avasfit$tx))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-22}
+\end_layout
+
+\end_inset
+
+w
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why Does That Work?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What do we have to do to 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ in order to achieve such a beautiful finding?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<23,echo=T,include=F,fig=T,height=6, width=9>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$x, avasfit$tx,ylab="transformed x",xlab="original x")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$y, avasfit$ty,ylab="transformed y",xlab="original y")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-23}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Would you rather bend the line, or bend the data, or both? 
+\end_layout
+
+\begin_layout Standard
+The avas procedure can be applied to many independent variables, and the
+ user can require the program to leave some untransformed or subject some
+ only to monotonic transformations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+More Examples
+\end_layout
+
+\begin_layout Subsection
+Corruption and Political Freedom
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Quadratic vs Loess}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi10, fig=T, echo=F, include=F, width=8, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(foreign)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- read.dta("/home/pauljohn/ps/SVN-guides/stat/DataSets/QoG/QoG_c_s_v6Apr11.dt
+a")
+\end_layout
+
+\begin_layout Plain Layout
+
+vars <- c("p_polity2", "fh_ipolity2", "fh_pr", "gir_gii", 
+\end_layout
+
+\begin_layout Plain Layout
+
+"kk_gg", "qs_impar", "ti_cpi", "wbgi_cce", "ht_regtype", 
+\end_layout
+
+\begin_layout Plain Layout
+
+"hf_efiscore", "qs_proff", "bti_mes", "bti_ep", "bti_wr")
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[ , vars]
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- locfit(ti_cpi ~ lp(fh_pr, nn=0.5), data=dat) 
+\end_layout
+
+\begin_layout Plain Layout
+
+pred1 <- predict(fit1, newdata=data.frame(fh_pr=dat$fh_pr), se.fit=TRUE, band="loc
+al")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(fit1, main="Locfit(nn=0.5) with Confidence Intervals", type="l", lwd=3,
+ band="local", xlab="Political rights (Freedom House)", ylab="TI Corruptions
+ Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(ti_cpi ~ fh_pr, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2b <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+fh_pr_seq <- sort(unique(dat$fh_pr))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame( fh_pr=fh_pr_seq, fh_pr_sq = fh_pr_seq^2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+m2bpred <- as.data.frame(predict(m2b, newdata=newdf, interval="confidence"))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$fit, lty=1, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$lwr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$upr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cpi10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Corruption and political freedom: Quadratic vs Loess}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi20, fig=T, echo=F, include=F, width=8, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- locfit(ti_cpi ~ lp(fh_pr, nn=0.75), data=dat) 
+\end_layout
+
+\begin_layout Plain Layout
+
+pred1 <- predict(fit1, newdata=data.frame(fh_pr=dat$fh_pr), se.fit=TRUE, band="loc
+al")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(fit1, main="Locfit(nn=0.75) with Confidence Intervals", type="l", lwd=3,
+ band="local", xlab="Political rights (Freedom House)", ylab="TI Corruptions
+ Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(ti_cpi ~ fh_pr, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2b <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2bpred <- as.data.frame(predict(m2b, newdata=newdf, interval="confidence"))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$fit, lty=1, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$lwr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred$upr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cpi20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Corruption and political freedom: rcs}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi40, fig=T, echo=F, include=F, width=8, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[order(dat$fh_pr),  ]
+\end_layout
+
+\begin_layout Plain Layout
+
+m3a <- lm(ti_cpi ~ rcs(fh_pr, 4), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3apred <- predict(m3a, newdata=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m3a)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)",
+ ylab="TI Corruptions Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+#m3apred <- as.data.frame(predict(m3a, newdata=newdf, interval="confidence"))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(dat$fh_pr, m3apred, lty=1, lwd=2, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+#lines(newdf$fh_pr, m3apred$fit, lty=1, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+#lines(newdf$fh_pr, m3apred$lwr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+#lines(newdf$fh_pr, m3apred$upr, lty=2, lwd=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cpi40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-cpi40.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Corruption and political freedom: Feeling Silly now}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Freedom House political rights is a categorical variable (ordinal factor
+ at best)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi60, fig=T, echo=F, include=F, width=8, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$fh_prf <- factor(dat$fh_pr)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4a <- lm(ti_cpi ~ fh_prf, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+#newdf <- data.frame(fh_prf=levels(dat$fh_prf))
+\end_layout
+
+\begin_layout Plain Layout
+
+#m4apred <- predict(m3a, newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4a)
+\end_layout
+
+\begin_layout Plain Layout
+
+termplot(m4a, partial=T, se=T, xlab="Political rights (Freedom House)",
+ ylab="TI Corruptions Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cpi60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-cpi60.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Nonparametric-1-lecture-problems.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

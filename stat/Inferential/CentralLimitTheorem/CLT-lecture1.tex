@@ -1,0 +1,932 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,english]{beamer}
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+%=============================================================================
+%
+
+
+
+\title[CLT I] % (short title, use only with long paper titles)
+{Central Limit Theorem}
+
+\subtitle{The Deepest Thought Ever Thunk}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2020] % (optional, should be abbreviation of conference name)
+{\today}
+
+\subject{CLT}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+\input{figs/t-Roptions}
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+%____________________________________
+%\begin{frame}
+%  \frametitle{You Want to Write R Data To Excel?}
+%  \begin{itemize}
+%    \item That seems like a dubious mission
+%    \item Google reports several proposed packages for Writing to Excel
+%  \end{itemize}
+%\end{frame}
+%
+%____________________________________
+
+\section{The Difference Between A Sample and The Truth}
+
+\begin{frame}
+  \frametitle{We think of one survey, one estimate}
+
+  \begin{itemize}
+  \item Nature has a ``data generating
+    mechanism:''
+  \item Nature's probability density function is never fully
+    revealed to us, we only get samples.
+  \item Samples flucturate: no two
+    samples are the same.
+  \item From that one sample, we try to
+    want to answer a LOT of questions.
+    \begin{itemize}
+    \item we calculate an \textbf{estimate}: a single
+      number that represents something.
+    \item We estimate a distribution's Expected Value, Variance,
+      or other parameters
+    \item Develop a model of the PDF of the estimator.  Almost NEVER
+      are we interested in estimating Natures PDF that generates the
+      data. Almost Always, we want to know the PDF of the estimator.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Normal Distribution PDF depends on $\mu$ and $\sigma^2$}
+  \begin{columns}%{}
+
+    \column{8cm}
+
+    \includegraphics[width=8cm]{importfigs/Normal-2009}
+
+    \column{4cm}
+
+    \begin{itemize}
+    \item Single Peaked
+    \item Symmetric
+    \item $E[x]=\mu$
+    \item $Var[x]=\sigma^{2}$
+    \item $SD[x]=\sigma$
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{$\mu$ and $\sigma^2$ are Parameters}
+  \begin{itemize}
+    \item Every distribution can have its ``own letters'' for parameters
+    \item For generality, refer to them as $\theta$
+    \item I say: The estimates from sample data have hats:
+      \begin{displaymath}
+        \hat{\mu}\ \ \ \ \ \ \widehat{\sigma^2}
+      \end{displaymath}
+    \item Some people prefer notation like:  $\bar{x}$ and $s^2$.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Theoretical PDF Is This:}
+
+\includegraphics{figs/t-simple20}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw one Normal Sample from $N(5.353, 4.55^{2})$ }
+
+\includegraphics{figs/t-simple10a}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{But the Observed Sample (Kernel) Density Differs}
+
+\includegraphics{figs/t-simple30}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Histogram with PDF and KDE Superimposed}
+
+\includegraphics{figs/t-simple40}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw another}
+
+\includegraphics{figs/t-simple10b}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw another}
+
+\includegraphics{figs/t-simple10c}
+\end{frame}
+
+
+\section{Sampling Distribution}
+
+
+\begin{frame}
+  \frametitle{Important Term: Sampling Distribution}
+  \begin{itemize}
+  \item Definition: Sampling Distribution is the PDF of an estimator. like $\bar{x}$
+  \item The ``true'' sampling distribution is a theoretical ``thing''
+    (process?). Like the data generating process, it is never observed.
+  \item Math can give us some ``exact'' characterizations about
+    sampling distributions
+  \item We can simulate repeated-sampling to visualize sampling distributions.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Visualize a Sampling Distribution Via Simulation}
+  \begin{itemize}
+    \item Suppose you could repeatedly draw samples
+    \item Calculate an estimate from each sample
+      \begin{itemize}
+        \item Perhaps $\hat{\mu} \equiv \bar{x}$ (the mean) for each sample
+        \item More generally, any $\hat{\theta}$
+   \item Create a histogram of those observed estimates
+   \item We want to know
+     \begin{itemize}
+      \item Are the estimates close to the ``true'' value?
+      \item Are the estimates symmetrically distributed?
+      \item Are there any abstract patters worth finding in these
+        distributions of estimates?
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{General Claims about the Sampling Distribution of $\bar{x}$}
+  This is true for the Normal distribution, AND ALL OTHER
+  DISTRIBUTIONS we will work with!
+  \begin{itemize}
+  \item If the expected value is of $x$ is $\mu$, the expected value of the mean
+    of a sample is also $\mu$.
+    \begin{displaymath}
+      If \ E[x] = \mu, then E[\bar{x}]=\mu
+    \end{displaymath}
+
+  \item If the variance of $x$ is $\sigma^2$, the Variance of the
+    sampling distribution of the mean is $\frac{1}{N}Var[x]$
+    \begin{displaymath}
+      If Var[x] = \sigma^{2}, then Var[\bar{x}]=\frac{Var[x]}{N}
+    \end{displaymath}
+  \item Which implies $SD[\bar{x}]=\frac{SD[x]}{\sqrt(N)}$
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{In Other Words...}
+
+  The distribution of $\bar{x}$
+  \begin{itemize}
+  \item Is Centered on the same spot as $x_{i}$
+  \item But $\bar{x}$ is clustered much  more ``tightly'
+    than the distribution of $x_{i}$ itself.
+  \end{itemize}
+
+  That's impossibly easy to see
+
+  \begin{itemize}
+  \item Algebraically.
+  \item By simulation.
+  \end{itemize}
+
+  I've moved the algebraic proof to the end of these notes, but
+  have just one comment about it on the next 2 slides.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Spotlight on one Tricky Bit: One Observation $x_i$ Has Expected Value and
+    Variance!}
+  \begin{itemize}
+  \item Think of a ``variable'' as one single observation from a distribution
+    \begin{equation}
+      x_i
+    \end{equation}
+  \item In past, we discussed $x={x_1,x_2,\ldots,x_N}$ as a collection
+    of observations. Easy to think of the ``mean'' or ``variance'' of
+    sample and expected value $E[x]$ and variance $Var[x]$
+  \item We said $x$ is normally distributed, thinking of $x$ as a
+    variety of outcomes. In your mind, a ``histogram'' with PDF curve.
+    \item We can't calculate a sample mean from a single observation,
+      but that one observation still has an ``expected value'' because
+      its drawn from a data generating process.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Spotlight on one Tricky Bit: One Observation $x_i$ Has Expected Value and
+    Variance!}
+  \begin{itemize}
+  \item Now think of $x_1$, $x_2$ and so forth as separate variates
+    from the same distribution.
+  \item Appeal to Intuition. Each individual draw has the same
+    expected value. So $E[x] = E[x_1] = E[x_2]= \ldots E[x_N]$
+  \item Similarly, each draw has same variance.
+  \item It should be obvious how we derive the claim that the expected
+    value of an average is the expected value.
+    \begin{displaymath}
+      E[\bar{x}] = E[\frac{x_1 + x_2 + \ldots + x_N}{N}]
+    \end{displaymath}
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{And the Variance of the Estimated Mean is Manageable as well}
+
+  \begin{itemize}
+    \item Again, we are supposing we know $Var(x) = \sigma_{x}^2$.
+    \item If we calculate the average of a sample,
+      \begin{displaymath}
+        \bar{x} = \frac{x_1 + x_2 + \ldots + x_N}{N}
+      \end{displaymath}
+    \item Apply the variance operator to both sides
+      \begin{displaymath}
+        Var(\bar{x}) = Var(\frac{x_1 + x_2 + \ldots + x_N}{N})
+      \end{displaymath}
+      its pretty easy to get the result we want.
+
+   \end{itemize}
+ \end{frame}
+
+
+ \begin{frame}[allowframebreaks]
+   \frametitle{The Variance of a Sampling Distribution is REALLY Important}
+   \begin{itemize}
+
+   \item We don't care about means, in particular. We care about
+     all kinds of parameter estimates, $\hat{\theta}$
+
+   \item We want to have precise estimates
+
+   \item The route to a small variance of the estimate is especially
+     clear in the case of the estimated mean:
+     \begin{displaymath}
+       Var(\bar{x}) = \frac{1}{N}Var(x).
+     \end{displaymath}
+     But not all estimators have such a clear, simple
+     formula that makes it easy to see how to reduce the estimator's variance
+
+     % \begin{itemize}
+
+     % \item  If we had the PDF of the estimate $\hat{\theta}$, we could
+     %   calculate the variance.
+
+     % \item If $\hat{\theta}$ were a discrete variable, this would be
+     %   easy to write down. By analogy to sample variance, the
+     %   variance of $\hat{\theta}$ would be the
+     %   average of squared errors (aka ``mean square error'')
+
+     %   \begin{displaymath}
+     %     Var(\hat{\theta}) = \sum Prob.(\hat{\theta_j})(\hat{\theta}_{j}-E[\hat{\theta}])^{2}\label{eq:-7}
+     %   \end{displaymath}
+
+     %   where $Prob()$ is the probability of observing a particular estimate.
+
+     % \item Estimator distributions are not usually discrete, but the main idea is the same:
+     %   estimators have uncertainty, we want to know how much.
+     % \end{itemize}
+
+   \item For just a few kinds of parameter estimates, we can actually
+     know  $Var(\hat{\theta})$
+
+   \item Most often, we have to estimate $Var(\hat{\theta})$. I'm
+     entertained by the two hat notation:
+     \begin{displaymath}
+      \widehat{Var(\hat{\theta})}
+    \end{displaymath}
+    an estimate of our uncertainty about of an estimate.
+
+  \item In Regression analysis, we won't write $\widehat{Var(\hat{\theta})}$
+    very often. We instead talk about its square root, which by
+    custom is called
+    \begin{displaymath}
+      s.e.(\hat{theta}): the standard\ error\ of\ \hat{\theta}
+    \end{displaymath}
+    i.e., standard error is an estimate of the standard deviation of a
+    sampling distribution
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The Distribution of the Mean is ``Spike-ish''}
+
+Please observe the illustration of the effect of sample size on the
+variance of $\bar{x}$.
+
+\end{frame}
+
+
+\input{figs/t-p10}
+
+\begin{frame}
+
+\frametitle{Distribution of $x \sim Normal(0, 3^{2})$}
+
+\includegraphics{figs/t-normal1}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+ \frametitle{Distribution of Mean, Sample=100 ($Normal(0,3^{2}/100)$)}
+\includegraphics{figs/t-normal2}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{Distribution of Mean, Sample=2000 ($Normal(0,3^{2}/2000)$)}
+\includegraphics{figs/t-normal3}
+\end{frame}
+
+
+\section{Asymptotic Properties}
+
+\begin{frame}
+  \frametitle{Terms}
+  \begin{itemize}
+  \item Asymptotic: related to very large (tending to infinite)
+    sample sizes
+  \item Consistency: an estimator (formula's result) 'tends to' the
+    correct value as sample size tends to infinity
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Law of Large Numbers}
+
+As the Sample Size Increases, $\bar{x}$ tends to the Expected Value
+(The True Mean)
+
+This is the {}``law of large numbers''.
+
+\end{frame}
+
+\section{The Central Limit Theorem}
+
+\begin{frame}
+  \frametitle{The Basic Idea of the CLT}
+  \begin{itemize}
+    \item For ANY DISTRIBUTION (not just the normal) of $x$, the
+      distribution of $\bar{x}$ approaches a normal distribution
+      as the size of the sample upon which $\bar{x}$ is calculated
+      tends to infinity.
+    \item This one is difficult to prove algebraically, but it is
+      quite easy to demonstrate with simulation
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The CLT with 0,1 data}
+
+  Draw 50 observations where the probability of success on each one is 0.30.
+
+\includegraphics[width=8cm]{figs/t-bin10}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Draw Another Sample}
+
+\includegraphics[width=8cm]{figs/t-bin10b}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Draw Another Sample}
+
+\includegraphics[width=8cm]{figs/t-bin10c}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Draw Another Sample}
+
+\includegraphics[width=8cm]{figs/t-bin10d}
+
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{What about those means?}
+
+  \begin{itemize}
+    \item Do that over and over again.
+    \item what do you guess the distribution of the means would look like?
+    \item I'll make a guess.  It will be tightly clustered around
+      ``0.30'' and it will be normally distributed
+  \end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Lots of means from 0,1 data}
+100 samples, each including 50 random draws
+\includegraphics[width=8cm]{figs/t-bin20a}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Lots of means from 0,1 data}
+1000 samples, each including 2000 random draws
+\includegraphics[width=8cm]{figs/t-bin20b}
+
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{Take the Poisson Distribution for another example}
+
+\includegraphics{figs/t-p30}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=10 }
+ \includegraphics{figs/t-pois10}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=100 }
+ \includegraphics{figs/t-pois20}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=2000 }
+
+ \includegraphics{figs/t-pois30}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=10000 }
+ \includegraphics{figs/t-pois40}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Means of 1000 Poisson Samples, Sample Size 10\label{fig:PoissonMeans}.}
+
+ \includegraphics{figs/t-pois81}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poissons, Sample Size=100}
+ \includegraphics{figs/t-pois82}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poisson samples, Sample Size=2000}
+
+ \includegraphics{figs/t-pois83}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poisson samples, Sample Size=10000}
+
+ \includegraphics{figs/t-pois84}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Same thing, bigger picture (N=10000)}
+
+ \includegraphics{figs/t-pois85}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Consider the Uniform Distribution}
+
+\includegraphics{figs/t-U10}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=30}
+
+ \includegraphics{figs/t-u21}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=500}
+
+ \includegraphics{figs/t-u22}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=2000}
+
+ \includegraphics{figs/t-u23}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{OK, Challenge Me With Your Beta(0.9,0.9)}
+
+\includegraphics{figs/t-b10}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Beta Samples, Sample Size=2000}
+
+\includegraphics{figs/t-b23}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{My Mantra}
+
+From whatever distribution you pick, the Central Limit Theorem (CLT)
+says the {}``Sampling Distribution of the Mean is Normal''.
+
+\end{frame}
+
+\section{Next Step}
+\begin{frame}
+  \frametitle{The CLT generalizes to any sum of random variables}
+  \begin{itemize}
+  \item We are not interested primarily in the distribution of the
+    mean
+  \item But we have many other estimators that are weighted sums
+    of random variables.
+  \item Example: the estimated slope of a regression line
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What is the Benefit of the CLT?}
+  \begin{itemize}
+  \item Consider an estimator $\hat{\theta}$ that follows the CLT.
+  \item Suppose the $E[\hat{\theta}]$ = 0.
+    \begin{itemize}
+      \item Why? We usually think of $\hat{\theta}$ as fluctuations around an
+      estimator around the true value. $\hat{\theta}$ is "unbiased".
+    \end{itemize}
+  \item IF (IF IF) we knew the standard deviation of the sampling
+    distribution, then this would be a ``standardized Normal variable''
+    \begin{equation}
+       \frac{\hat{\theta}}{true\, std.dev.(\hat{\theta})}
+    \end{equation}
+  \item I mean, it would be $N(0,1)$, a VERY manageable quantity.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{T Distribution Fix: If we don't know the true standard deviation of $\hat{\theta}$ }
+  \begin{itemize}
+  \item Divide this (which is $N(0,1)$)
+    \begin{equation}
+      \frac{\hat{\theta}}{true\,std.dev(\hat{\theta})}
+    \end{equation}
+  \item By this
+
+\begin{equation}
+\frac{\widehat{std.dev(\hat{\theta})}}{true\, std.dev.(\hat{\theta})}
+\end{equation}
+  \item Gosset proved that the ratio follows a distribution that we
+    now call T.  T depends on the number of cases used to calculate
+    the estimate, a number we call degrees of freedom.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Division cancels the unknown true $std.dev.(\hat{\theta})$ }
+
+  \begin{equation}
+\frac{\frac{\hat{\theta}}{true\, std.dev(\hat{\theta})}}{\frac{\widehat{std.dev(\hat{\theta})}}{true\, std.dev.(\hat{\theta})}}
+\end{equation}
+\begin{itemize}
+  \item After division, it is
+    \begin{equation}
+      \frac{\hat{\theta}}{\widehat{std.dev(\hat{\theta}})}
+    \end{equation}
+  \item We give a special name to the estimated standard deviation of
+    the sampling distribution. It is called \emph{standard error.}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\hat{\theta}/std.err.(\hat{\theta})$ is Everpresent in Stats}
+  \begin{itemize}
+  \item the T distribution is almost like the Normal(0,1).
+  \item If the degrees of freedom is large (more than 1000), T and
+    N(0,1) are virtually identical.
+  \item Thus, the range $\hat{\theta} \pm
+    1.96*std.err.(\hat{theta})$ contains about 95\% of the distribution
+  \item By implication, outcomes outside that 95\% region are deemed
+    ``unusual'' (2.5\% of cases at either tail of distribution)
+  \item If degrees of freedom is smaller, we just replace 1.96 with a
+    slightly larger magic number (see ``T table'').
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{For Other Estimators, Much Detailed Research is Required }
+  \begin{itemize}
+  \item We (applied social scientists) usually don't have training
+    or interest in developing new math for sampling distributions.
+  \item We do have some simulation tools to approximate unknown
+    sampling distributions
+  \item Simulation based ideas
+    \begin{itemize}
+    \item Bootstrap: draw many samples from the data sample,
+      re-calculate the estimate for each. The resulting
+      distribution may approximate the sampling distribution.
+    \item Markov Chain Monte Carlo (MCMC): a computer simulation
+      model developed during WWII as a way to explore complex
+      probability models. Described in my review essay.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\section{Proof}
+
+\subsection{Expected Value}
+\begin{frame}
+\frametitle{The Algebraic Argument for $E[\bar{x}]=E[x]$}
+
+The average (estimate of mean) of a sample ${x_1, x_2, x_3, \ldots,x_N}$ is:
+
+\begin{equation}
+\bar{x}=\frac{1}{N} \sum_{i}^{N} x_{i}\label{eq:-2}
+\end{equation}
+
+If we have data on the frequency of each possible score $x_{j}$, calculate proportions
+
+\begin{equation}
+  Prop.(x_{j})=\frac{Frequency(x=x_{j})}{N}
+ \end{equation}
+
+\begin{equation}
+Mean(x_{i})=\bar{x} = \sum_{j=1}^{m} Prop(x_{j})x_{j}\label{eq:-3}\end{equation}
+
+where $Prop(x_{j})$ is the proportion of observations that
+have value $x_{j}$. (sums across possible values of $x_j$, rather than
+summing across all individuals observed).
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The Expected Value of x, $E[x]$}
+
+  \begin{itemize}
+  \item EV sometimes thought of as the {}``population mean'' or ``true mean''
+  \item  Recall, population=the random process that generates $x_{i}$.
+  \item Consider a discrete distribution $f$. Note
+    $\bar{x}$ and $E[x]$
+    \begin{itemize}
+    \item  $f$ is a {}``probability mass function''
+      \begin{equation}
+        Expected\, Value[x]=E[x]=\sum f(x_{j})x_{j}\label{eq:-4}\end{equation}
+    \item Same as sample mean formula, except replace the {}``observed
+      proportion'' ($Prop(x_{j})$) with the {}``theoretical probability'' $f(x_{j})$.
+    \end{itemize}
+  \item Similar for a continuous distribution with pdf $f(x)$
+    \begin{equation}
+      E[x] = \int_{-\infty}^{+\infty}f(x)\, x\, dx.
+    \end{equation}
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proof of claim that Expected Value of $\bar{x}$ equals
+    Expected Value of $x$}
+  Calculate the expected value of $\bar{x}$
+  \begin{eqnarray*}
+    \bar{x} = & \frac{x_1 + x_2 + x_3 + \ldots + x_N}{N}\\
+    E[\bar{x}] = & E\left[\frac{x_1+x_2 +x_3+\ldots +x_N}{N}\right]\\
+    & = \frac{1}{N} \left\{E[x_1]+E[x_2]+E[x_3]+\ldots + E[x_N] \right\}\\
+    & = \frac{1}{N} \left\{N \cdot E[x] \right\} \\
+    & = E[x]
+  \end{eqnarray*}
+
+   Conclusion: The expected value of the mean is the same as the
+   expected value of one draw from a given distribution.
+
+   Implication: $\bar{x}$ is an \textbf{unbiased estimator} of $E[x]$
+\end{frame}
+
+\subsection{Variance}
+
+\begin{frame}
+  \frametitle{Recall the Variance of A Sum}
+
+The variance of a sum of two variables $x1$ and $x2$ can be found:
+
+\begin{equation}
+Var[x1+x2] = Var[x1]+ Var[x2] + 2Cov[x1,x2]\label{eq:VarianceX1X2}\end{equation}
+
+And
+
+\begin{equation}
+Var[ax1+bx2]=a^{2} Var[x1]+b^{2} Var[x2] + 2abCov[x1,x2]\label{eq:VarianceOfSum}\end{equation}
+
+Here $a$ and $b$ are constants.
+
+We want a simple result, so we often assume the $Cov[x1,x2]=0$
+on the grounds that the observations are {}``statistically independent.''
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Calculate the Variance of the Mean}
+
+What is the variance of the mean itself?
+
+\begin{equation}
+Var[\bar{x}]=Var[\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N}]\label{eq:VarOfMean1}\end{equation}
+
+
+Invoking the ``statistical independence'' principle to eliminate
+the Covariance terms, we apply the ``Variance of a sum'' rule
+
+\begin{eqnarray}
+Var(\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N})= \\
+  \frac{1}{N^{2}}Var(x_{1})+\frac{1}{N^{2}}Var(x_{2})+\ldots+\frac{1}{N^{2}}Var(x_{N})\label{eq:VarOfMean2}\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{}
+
+If all the observations were drawn from the same random process--the
+same population--then they all have the same variance, which is just
+$Var(x_{i})$. So the previous instantly reduces to this:
+
+\begin{equation}
+Var(\bar{x})=\frac{1}{N^{2}}\frac{NVar(x_{i})}{1}\label{eq:-8}\end{equation}
+
+
+\begin{equation}
+=\frac{1}{N}Var(x_{i})\label{eq:varN2}
+\end{equation}
+
+\end{frame}
+
+%
+% ==========================================================
+\end{document}

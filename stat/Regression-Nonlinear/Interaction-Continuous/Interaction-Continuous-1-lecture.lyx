@@ -1,0 +1,6128 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+logicalmkup
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\columnsep 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=165, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(75645)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Interaction-Continuous Predictors
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+2014
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note: This demonstrates some features in rockchalk
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Definition: Interaction
+\end_layout
+
+\begin_layout Itemize
+Linear Model: 
+\begin_inset Formula 
+\[
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Social/Behavioral researchers often assert an additional 
+\begin_inset Quotes eld
+\end_inset
+
+interaction effect
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Why 
+\begin_inset Formula $x1_{i}\cdot x2_{i}$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout BeginFrame
+Justification 1.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+Moderated Slope
+\begin_inset Quotes erd
+\end_inset
+
+ Model
+\end_layout
+
+\begin_layout Itemize
+My best explanation in English: 
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+The effect of one variable depends on another.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Moderator: name for a variable that 
+\begin_inset Quotes eld
+\end_inset
+
+moderates
+\begin_inset Quotes erd
+\end_inset
+
+ (changes) the effect of a variable
+\end_layout
+
+\begin_layout BeginFrame
+Examples Of Interaction in Literature
+\end_layout
+
+\begin_layout Itemize
+Corruption temptation caused by electoral uncertainty depends on intra-party
+ competition.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Nyblade, Benjamin and Steven Reed.
+ 2008.
+ Who Cheats?Who Loots? Political Competition and Corruption in Japan, 1947–1993.
+ 
+\emph on
+American Journal of Political Science
+\emph default
+, 52(4): 926–941.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Effect of Parliamentarianism depeds on level of ethnic fragmentation 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Selway, Joel.
+ 2011.
+ The Myth of Consociationalism? Conflict Reduction in Divided Societies.
+ 
+\emph on
+Comparative Political Studies
+\emph default
+.
+ 45: 1542-1571.
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Visualize the Slope's Dependence: $x1_i$ influence depends}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<example10, echo=T, fig=T, include=F, height=6, width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(123412)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2,-0.1,0.1,0.3))
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1*x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- plotPlane(m1, plotx1="x1", plotx2="x2", plotPoints=F, drawArrows=F,
+ ticktype="detailed", theta=-20, npp=10, x1floor = 3, x2floor = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots/t-example10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Suppose: 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+ moderates 
+\begin_inset Formula $x1.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Re-group the terms so that this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x2_{i}\cdot x1_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+becomes this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+(b_{1}+b_{3}x2_{i})\,x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $b_{3}$
+\end_inset
+
+ is an 
+\begin_inset Quotes eld
+\end_inset
+
+interaction effect
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $b_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $b_{2}$
+\end_inset
+
+ often called the 
+\begin_inset Quotes eld
+\end_inset
+
+main effects
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Concentrate: Interpret Coefficients!
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $y_{i}=b_{0}+(b_{1}+b_{3}x2_{i})x1_{i}+b_{2}x2_{i}+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note substantive importance of 
+\begin_inset Formula $b_{1}\gtreqqless-b_{3}x2_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $>$
+\end_inset
+
+, the marginal effect of 
+\begin_inset Formula $x1$
+\end_inset
+
+ is positive
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if 
+\begin_inset Formula $<$
+\end_inset
+
+, the marginal effect of 
+\begin_inset Formula $x1$
+\end_inset
+
+ is negative
+\end_layout
+
+\begin_layout Itemize
+If =, then 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ has no marginal effect
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+I'll explain how to make this later:
+\end_layout
+
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<demo10,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2", modxVals = "std.dev")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(testSlopes(m1ps))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-demo10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Warning: Always include 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ if you fit 
+\begin_inset Formula $x1:x2$
+\end_inset
+
+ as well
+\end_layout
+
+\begin_layout Itemize
+If a model includes an interaction 
+\begin_inset Formula $x1\cdot x2$
+\end_inset
+
+, it should always include 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ (even if they appear to be 
+\begin_inset Quotes eld
+\end_inset
+
+not statistically significant
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ are said to be 
+\begin_inset Quotes eld
+\end_inset
+
+marginal
+\begin_inset Quotes erd
+\end_inset
+
+ to 
+\begin_inset Formula $x1\cdot x2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Wm Venables, 
+\begin_inset Quotes eld
+\end_inset
+
+Exegesis on Linear Models
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.stats.ox.ac.uk/pub/MASS3/Exegeses.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Reason 2: Approximation of a Function
+\end_layout
+
+\begin_layout Itemize
+Taylor's Theorem says that any function 
+\begin_inset Formula $f$
+\end_inset
+
+ at a point 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula $f(x1,x2)$
+\end_inset
+
+, can be approximated by a clever choice of coefficients.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+y & = & f(x1_{0},x2_{0})+\beta_{1}(x1-x1_{o})+\beta_{2}(x2-x2{}_{0})\\
+ &  & +\beta_{3}(x1-x1_{0})(x2-x2_{0})+\frac{1}{2}\beta_{4}(x1-x1_{o})^{2}+...
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $(x1_{0},x2_{0})$
+\end_inset
+
+ is value where we 
+\begin_inset Quotes eld
+\end_inset
+
+approximate from
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If curvature of 
+\begin_inset Formula $f$
+\end_inset
+
+ is mild, then the Taylor approximation will stay close to true values.
+\end_layout
+
+\begin_layout Itemize
+We throw away the higher order terms, asserting/hoping they are small.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+An Identification Problem
+\end_layout
+
+\begin_layout Itemize
+Identification: Ability to estimate parameters with data at hand.
+\end_layout
+
+\begin_layout Itemize
+The theoretical model boils down to this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Expression (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+
+\end_inset
+
+) is equivalent to both of these interpretations:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+'s slope depends on 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+(b_{1}+b_{3}x2_{i})\cdot x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+'s slope depends on 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+(b_{2}+b_{3}x1_{i})\cdot x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Data cannot differentiate those 2 models, hence we say there is an 
+\begin_inset Quotes eld
+\end_inset
+
+identification problem
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Simple Slopes
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[allowframebreaks]
+\end_layout
+
+\end_inset
+
+Same Advice, many disciplines
+\end_layout
+
+\begin_layout AlertBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Recent Chorus:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Must compare predicted values from various predictor combinations to understand
+ their effects.
+\end_layout
+
+\begin_layout AlertBlock
+Each predictors 
+\begin_inset Quotes eld
+\end_inset
+
+example values
+\begin_inset Quotes erd
+\end_inset
+
+ must be set and understood while focusing on some particular values.
+\end_layout
+
+\begin_layout Itemize
+Psychology
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Aiken, L.
+ S., & West, S.
+ G.
+ (1991).
+ 
+\emph on
+Multiple regression: Testing and interpreting interactions.
+
+\emph default
+ Newbury Park: Sage.
+ 
+\end_layout
+
+\begin_layout Itemize
+Preacher, Kristopher J, Curran, Patrick J.,and Bauer, Daniel J.
+ (2006).
+ Computational Tools for Probing Interactions in Multiple Linear Regression,
+ Multilevel Modeling, and Latent Curve Analysis.
+ 
+\emph on
+Journal of Educational and Behavioral Statistics
+\emph default
+.
+ 31,4, 437-448.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Political Science: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Brambor, Thomas, Clark, William, & Golder, Matt.
+ 2006.
+ Understanding interaction models: Improving empirical analyses.
+ 
+\emph on
+Political Analysis
+\emph default
+, 14, 63-82.
+\end_layout
+
+\begin_layout Itemize
+King, Gary, Michael Tomz, and Jason Wittenberg.
+ 2000.
+ Making the Most of Statistical Analyses: Improving Interpretation and Presentat
+ion.
+ 
+\emph on
+American Journal of Political Science
+\emph default
+ 44: 341–355.
+\end_layout
+
+\begin_layout Standard
+Economics:
+\end_layout
+
+\begin_layout Itemize
+Norton, E.C., Wang, H., and Ai, C.
+ 2004 Computing interaction effects and standard errors in logit and probit
+ models.
+ 
+\emph on
+Stata Journal
+\emph default
+ 4(2): 154-167.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Choose Some 
+\begin_inset Quotes eld
+\end_inset
+
+For Instance
+\begin_inset Quotes erd
+\end_inset
+
+ Values of One Variable, Plot the other
+\end_layout
+
+\begin_layout Itemize
+We want to make a 2D plot of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ on 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+User must supply some 
+\begin_inset Quotes eld
+\end_inset
+
+substantively interesting values
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+, say 1,2,3, so that this
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+(b_{1}+b_{3}x2_{i})\cdot x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Generates a family of lines,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+x2_{i}=1 & : & y_{i}=(b_{0}+b_{2}\cdot(1))+(b_{1}+b_{3}(1))\cdot x1_{i}+e_{i}\\
+x2_{i}=2 & : & y_{i}=(b_{0}+b_{2}\cdot(2))+(b_{1}+b_{3}(2))\cdot x1_{i}+e_{i}\\
+x2_{i}=3 & : & y_{i}=(b_{0}+b_{2}\cdot(3))+(b_{1}+b_{3}(3))\cdot x1_{i}+e_{i}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Marginal Effect of x1 is 
+\begin_inset Formula $(b_{1}+b_{3}\times moderator_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The full model might be
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+You choose 
+\begin_inset Formula $x2_{i}=whatever\,value\,is\,interesting\,for\,the\,moderator:$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\underbrace{(b_{0}+b_{2}\cdot(whatever))}+\underbrace{(b_{1}+b_{3}\cdot(whatever))}\cdot x1_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+After you set a particular 
+\begin_inset Formula $x2_{i}=whatever$
+\end_inset
+
+, then the line for the 
+\begin_inset Quotes eld
+\end_inset
+
+simple slope
+\begin_inset Quotes erd
+\end_inset
+
+ has
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+New Intercept:
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $(b_{0}+b_{2}whatever)$
+\end_inset
+
+: AKA 
+\begin_inset Quotes eld
+\end_inset
+
+shifted intercept
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+New Slope:
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $(b_{1}+b_{3}whatever)$
+\end_inset
+
+: AKA the 
+\begin_inset Quotes eld
+\end_inset
+
+marginal effect
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{In 3 Dimensions} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<persp10, include=F, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq(0, 10, length=50)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(-20, 30, length=50)
+\end_layout
+
+\begin_layout Plain Layout
+
+yfn <- function(x1,x2) 2 + 0.5 * x1 + 0.2 * x2 + 0.03 * x1 *x2
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- outer(x1, x2, yfn)
+\end_layout
+
+\begin_layout Plain Layout
+
+matr <- persp(x=x1, y=x2, z=y, xlab="x1", ylab="x2", zlab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $y_{i}=2+0.5\cdot x1+0.2\cdot x2+0.03\cdot x1\cdot x2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-persp10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{One Line Per Value of $x2_i$ while plotting Simple Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<persp20, fig=T, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x1, y=plotSeq(range(y), length(x1)), type="n", ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+intr <- function(x) 2 + 0.2 *x
+\end_layout
+
+\begin_layout Plain Layout
+
+sloper <- function(x) 0.5 + 0.03*x
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=intr(-20), b=sloper(-20), lty=1, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=intr(-10), b=sloper(-10), lty=2, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=intr(10), b=sloper(10), lty=3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=intr(20), b=sloper(20), lty=4, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft",c("x2=-20", "x2=-10", "x2=10", "x2=20"), lty=c(1,2,3,4),
+ lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-persp20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Translate Between 3-D and the Simple Slopes in 2-D} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<persp22, include=F, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+matr <- persp(x=x1, y=x2, z=y, xlab="x1", ylab="x2", zlab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+for(j in c(1,11,31,41)){
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(trans3d(x1, x2[j], y[,j], pmat=matr), col="yellow", lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-persp20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+These four lines are highlighted in yellow in the graph on the right.
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots/t-persp22}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Ways To Choose "whatever" Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Problem specific interesting cases that suit your project!
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Fahrenheight temperatures? Pick {32, 100, 212}
+\end_layout
+
+\begin_layout Itemize
+Salary (dollars)? Pick {20,000, 100,000, 500,000, 1,000,000}
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The rockchalk package has routines to choose, based either on 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+quantiles (break a range into values that correspond with, for example,
+ the lowest 25%, the median (50%), and the top 75%.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+I originally developed the plotSlopes function with this in mind
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+standard deviation-based ranges.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+psychologists suggest it is easier for them to conceptualize special values
+ like the mean, the mean - 1 standard deviation, mean + 1 standard deviation,
+ and so forth.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A Special Hypothesis Test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The simple line 
+\begin_inset Formula $y_{i}=(2+0.2*x2_{i})+(0.5+0.03*x2_{i})*x1_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Concentrate on the slope, the 
+\begin_inset Quotes eld
+\end_inset
+
+marginal effect
+\begin_inset Quotes erd
+\end_inset
+
+: For a given value of 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+ , of course, that is just a sum like
+\begin_inset Formula 
+\begin{eqnarray}
+\mbox{for\,}x2_{i} & :whatever, & \,the\,slope\,is:\,0.5+0.03*whatever
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Some people ask, 
+\begin_inset Quotes eld
+\end_inset
+
+is that particular slope statistically significantly different from 
+\begin_inset Formula $0$
+\end_inset
+
+?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{And a Fancy T-Test Pops Out (Not Entirely Unexpected)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $whatever=10.$
+\end_inset
+
+ They are asking 
+\begin_inset Quotes eld
+\end_inset
+
+is the estimate 
+\begin_inset Formula $(0.5+0.03*10)$
+\end_inset
+
+ statistically significantly different from 0?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And if you put in estimates from a regression, that's a fancy t-test
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+H_{0}:b_{1}+b_{3}x2_{0}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1}+\hat{b}_{3}x2_{0})}},\,x2_{0}is\,selected\,value
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1})+x2_{0}^{2}Var(\hat{b}_{3})+2\,x2_{0\,}Cov(\hat{b}_{1},\hat{b}_{3})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{J-N Interval: The 
+\backslash
+emph{whatever} over and over problem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Imagine letting your research director says, over and over again, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+What if 
+\begin_inset Formula $x2_{0}=10$
+\end_inset
+
+, Is it significant then?
+\end_layout
+
+\begin_layout Itemize
+What if 
+\begin_inset Formula $x2_{0}=13$
+\end_inset
+
+, Is it significant then?
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+That drives you crazy! Over and over, you calculate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1})+x2_{0}^{2}Var(\hat{b}_{3})+2\,x2_{0\,}Cov(\hat{b}_{1},\hat{b}_{3})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Wish you could find a formula to say 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $\hat{b}_{1}+\hat{b}_{3}x2$
+\end_inset
+
+ is statistically significant if 
+\begin_inset Formula $x2$
+\end_inset
+
+ is in 
+\begin_inset Quotes eld
+\end_inset
+
+this range
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Itemize
+It is necessary to solve for 
+\begin_inset Formula $|\hat{t}|>1.98$
+\end_inset
+
+, to get the values of 
+\begin_inset Formula $x2_{0}$
+\end_inset
+
+ that cause 
+\begin_inset Formula $\hat{t}$
+\end_inset
+
+ to be statistically different from zero.
+ 
+\end_layout
+
+\begin_layout Itemize
+That interval is known as the Johnson-Neyman interval.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+rockchalk plotting approaches for both of these
+\end_layout
+
+\begin_layout Itemize
+Described in vignette (run vignette(
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+) with rockchalk version 1.5.4 or later).
+\end_layout
+
+\begin_layout Itemize
+Step 1: use regression to fit a model with multiplicative terms
+\end_layout
+
+\begin_layout Itemize
+Plot Type 1: plotSlopes() will to draw the 2 dimensional plot with several
+ lines, one for each value of a moderator
+\end_layout
+
+\begin_layout Itemize
+Plot Type 2: The 
+\begin_inset Quotes eld
+\end_inset
+
+J-N interval
+\begin_inset Quotes erd
+\end_inset
+
+ plot.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The testSlopes() function finds an interval on which the marginal effect
+ is not 0.
+\end_layout
+
+\begin_layout Itemize
+A plot method for testSlopes objects creates a 
+\begin_inset Quotes eld
+\end_inset
+
+marginal effect
+\begin_inset Quotes erd
+\end_inset
+
+ plot.
+ I find these confusing, but some people love them!
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Basic Idea Behind: plotSlopes, plotCurves, plotPlane}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Fit any regression with interactions and as many other variables you like
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1*x2 + x3 + x4, data=dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+You want to focus on the predictive effect of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+draw a plot with 
+\begin_inset Formula $x2$
+\end_inset
+
+ on the horizontal axis and a line for some focal values of 
+\begin_inset Formula $modx$
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1ps <- plotSlopes(m1, plotx = "x2", modx = "x1")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+That creates a plot, but also an output object for further analysis.
+ 
+\end_layout
+
+\begin_layout Itemize
+Give the output to testSlopes(), like so:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1psts <- testSlopes(m1ps)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+There is a plot method for that type of object
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plot(m1psts)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Make a reasonable 3D plot of the pair of variables:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+the defaults are mostly good
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1pp <- plotPlane(m1, plotx1="x1", plotx2="x2")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+there are many options that can customize
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1pp <- plotPlane(m1, plotx1="x1", plotx2="x2", plotPoints=F, drawArrows=F,
+ ticktype="detailed", theta=-20, npp=7)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+plotSlopes has to generate a particular kind of output object for its eventual
+ input into testSlopes().
+ If we ignore that problem, then we can have a more flexible line plotter.
+ That is calle plotCurves().
+ 
+\end_layout
+
+\begin_layout Itemize
+Unlike plotSlopes(), the plotCurves() and plotPlane() functions can handle
+ many types of nonlinear functions.
+ They do work (or should work) on formula like
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+alpha <- 2
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1*log(x2 + alpha) + sin(x3) + x4, data=dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+In rockchalk 1.6.3, a new function called addLines() was introduced.
+ It can take the lines from a 
+\begin_inset Quotes eld
+\end_inset
+
+plotSlopes()
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+plotCurves()
+\begin_inset Quotes erd
+\end_inset
+
+ and superimpose them on the 3d output from plotPlane.
+ That 
+\emph on
+should 
+\emph default
+make a plot of the sort displayed above 
+\begin_inset Quotes eld
+\end_inset
+
+Translate Between 3-D and ...
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Default plotSlopes output}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn10, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-jn10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plotSlopes variations}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn11a, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2", modxVals = "std.dev", n = 2,
+ interval = "conf")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-jn11a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn11a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plotSlopes or plotCurves equivalents are in the literature}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename importfigs/Nyblade-2008-Fig2.png
+	width 8cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Admittedly, that's a nonlinear model, but it shows the same basic thing.
+ predicted values for 2 moderator values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Ask plotSlopes for Confidence Intervals if you want}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn11b, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps2 <- plotSlopes(m1, plotx="x1", modx="x2", interval = "conf", modxVals
+ = round(range(dat$x2, na.rm=TRUE), 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-jn11b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn11b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{J-N confidence interval: testSlopes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn20, include=T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1psts <- testSlopes(m1ps)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Rather than calculating that interval, some would plot it}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename importfigs/Selway_Fig3.png
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plot.testSlopes tries to make this type of plot more clear}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn40, fig=T, include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m1psts)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-jn40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{To me, this is a more understandable representation}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn50, fig=T, include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2a <- genCorrelatedData(N=400, rho=.1, stde=300, means =c(50,0), beta=c(2,
+ -2.4, 0.1, 0.44))
+\end_layout
+
+\begin_layout Plain Layout
+
+m2a <- lm(y ~ x1*x2, data=dat2a)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn50a, fig=T, include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2aps <- plotSlopes(m2a, plotx="x1", modx="x2")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn50a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I like the 3d representation for a simple problem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn50b, fig=T, include=F, echo=T, height = 8, width = 8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2app <- plotPlane(m2a, plotx1="x1", plotx2="x2", npp = 7, llwd = .5, plwd
+ = 0.7, pcex = 0.75, pcol = gray(.6))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-jn50b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Superimpose one on the other}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-jn50a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn50c, fig=T, include=F, echo=T, height = 8, width = 8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2app <- plotPlane(m2a, plotx1="x1", plotx2="x2", npp = 7, llwd = .5, plwd
+ = 0.7, pcex = 0.75, pcol = gray(.6))
+\end_layout
+
+\begin_layout Plain Layout
+
+addLines(from = m2aps, to = m2app)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-jn50c}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Alternative J-N Plot is Preferred by Many}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn50d, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2apsts <- testSlopes(m2aps)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m2apsts)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%%
+\backslash
+input{plots/t-jn50d}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-jn50d}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{testSlopes can have various patterns of significant regions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<jn51, fig=T, include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2b <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2, 0, 0.3, 0.05),
+ means = c(50,0), sds = c(10, 40))
+\end_layout
+
+\begin_layout Plain Layout
+
+m2b <- lm(y ~ x1*x2, data=dat2b)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2bps <- plotSlopes(m2b, plotx="x1", modx="x2")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(testSlopes(m2bps))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-jn51}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Weird t / p Value problem and the Mirage of 
+\begin_inset Quotes eld
+\end_inset
+
+Centering
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Centering: My Theme
+\end_layout
+
+\begin_layout Itemize
+rockchalk vignette has long-ish explanation of mean-centering
+\end_layout
+
+\begin_layout Itemize
+Recall quadratic regression lecture, 
+\begin_inset Quotes eld
+\end_inset
+
+centering does not really help
+\begin_inset Quotes erd
+\end_inset
+
+ with multicollinearity between 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+If you 
+\begin_inset Quotes eld
+\end_inset
+
+really understand
+\begin_inset Quotes erd
+\end_inset
+
+ regression, you should see that centering doesn't help here either
+\end_layout
+
+\begin_layout Itemize
+It does not 
+\begin_inset Quotes eld
+\end_inset
+
+fix
+\begin_inset Quotes erd
+\end_inset
+
+ a multicollinearity problem, it was a mistake for its proponents to think
+ so
+\end_layout
+
+\begin_layout Itemize
+Centering does facilitate superficial interpretation in one situation:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+centering of all x's has effect of making the intercept the predicted value
+ for the 
+\begin_inset Quotes eld
+\end_inset
+
+mean case
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Intercept is same as using non-centered model to calculate predicted value:
+ 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}\overline{x1}+\hat{b}_{2}\overline{x2}+\hat{b}_{3}\overline{x3}+...$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{3 Variables I Found Lying About}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg11, echo=T, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- genCorrelatedData(N=400, rho=.1, stde=250, beta=c(2,0.1,-0.1,0.5))
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1 + x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- plotPlane(m1, plotx1="x1", plotx2="x2", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg11.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That manufactures data with the true coefficients
+\begin_inset Formula 
+\begin{equation}
+y=2+0.1x1-0.1x2+0.3x1\cdot x2_{i}+e_{i},\,e_{i}\sim N(0,300^{2})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The 3D Plot for that}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots/t-reg11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Fitted Linear Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg15, echo=F, fig=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg15}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{That model seems persuasive!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg15b, echo=F,include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg15b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Plenty of 
+\begin_inset Quotes eld
+\end_inset
+
+stars
+\begin_inset Quotes erd
+\end_inset
+
+ indicating statistical significance!
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Easy to interpret parameter estimates
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{"Throw In" an Interaction to "See" if it is Needed}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Researcher wonders, 
+\begin_inset Quotes eld
+\end_inset
+
+should I add 
+\begin_inset Formula $x1\times x2$
+\end_inset
+
+ as a predictor?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Code change
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Change the model from
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1 <- lm(y~x1+x2, data=dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+To:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m2 <- lm(y~x1*x2, data=dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+R will automatically return equivalent of
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1 + x2 + x1:x2, data=dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Oh My God! Your p's Exploded}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg25, echo=T, fig=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1*x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg25}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Interactive Model: Oh, Hell!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg20, echo=T, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- plotPlane(m2, plotx1="x1", plotx2="x2", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Problem: 
+\begin_inset Quotes eld
+\end_inset
+
+Nothing is significant anymore!
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-reg20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg25b, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m2, tight=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg25b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{"Mean-Centering" to the Rescue}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Aiken & West (later, Cohen, Cohen, West and Aiken) claim the constructed
+ variable 
+\begin_inset Formula $x1_{i}\cdot x2_{i}$
+\end_inset
+
+ is multi-collinear with 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+, thus causing the results to become 
+\begin_inset Quotes eld
+\end_inset
+
+poor.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+As we recall, multicollinearity causes standard errors to inflate, and 
+\begin_inset Formula $\hat{t}$
+\end_inset
+
+'s shrink.
+ 
+\end_layout
+
+\begin_layout Itemize
+They recommend 
+\begin_inset Quotes eld
+\end_inset
+
+mean-centering
+\begin_inset Quotes erd
+\end_inset
+
+ as a way to ameliorate the 
+\begin_inset Quotes eld
+\end_inset
+
+nonessential collinearity
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{CCWA advice}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+p.
+ 266
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+
+\size footnotesize
+\begin_inset Quotes eld
+\end_inset
+
+We recommend that continuous predictors be centered before being entered
+ into regression analyses containing interactions.
+ ...
+ Doing so yields two straightforward, meaningful interpretations of each
+ first-order regression coefficient of predictors entered into the regression
+ equation: (1) effects of the individual predictors at the mean of the sample,
+ and (2) average effects of each individual predictors across the range
+ of the other variables.
+ Doing so also eliminates nonessential multicollinearity between first-order
+ predictors and predictors that carry their interaction with other predictors.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+This advice has been followed VERY widely.
+ 
+\end_layout
+
+\begin_layout Itemize
+My counter-argument will be that 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+benefits 1 and 2 are not wrong, but not beneficial either, and 
+\end_layout
+
+\begin_layout Itemize
+the 
+\begin_inset Quotes eld
+\end_inset
+
+nonessential multicollinearity
+\begin_inset Quotes erd
+\end_inset
+
+ argument is just completely wrong.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Run Again, But Center the Data First}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We 
+\begin_inset Quotes eld
+\end_inset
+
+manually
+\begin_inset Quotes erd
+\end_inset
+
+ center predictors (either use R's scale() function or the more literal):
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg30, echo=T, fig=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x1c <- dat$x1 - mean(dat$x1, na.rm = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x2c <- dat$x2 - mean(dat$x2, na.rm = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(y ~ x1c * x2c, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+meanCenter() in rockchalk will do this for us:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg31, echo=F, fig=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2centered <- meanCenter(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2centered)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg31b, echo=T, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- plotPlane(m2centered, plotx1="x1c", plotx2="x2c", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T, include=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<reg31>>
+\end_layout
+
+\begin_layout Plain Layout
+
+<<reg31b>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{meanCenter Output}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg31}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plots Same, but moving Y-axis makes fitted models appear different!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Columns
+The NON CENTERED FIT
+\end_layout
+
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-reg20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Columns
+The CENTERED FIT
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-reg31b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Itemize
+Recall beginning of course: rescaling by subtraction shifts intercept, does
+ not change slope
+\end_layout
+
+\begin_layout Itemize
+Find the 
+\begin_inset Quotes eld
+\end_inset
+
+y axis
+\begin_inset Quotes erd
+\end_inset
+
+ in each plot.
+ Understand why centering seems to matter now?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Look at your p's.
+ The Centered Fit Is Super Awesome!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg35, echo=T, fig=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m2centered)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg35}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Don't Get Carried Away: Its The SAME MODEL!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg40, echo=F, fig=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m2, m2centered), tight=F, modelLabels=c("Not Centered", "Centered"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As CCWA observe, the estimates for the 
+\begin_inset Quotes eld
+\end_inset
+
+highest order
+\begin_inset Quotes erd
+\end_inset
+
+ slope coefficients are same in both models.
+\end_layout
+
+\begin_layout Standard
+So is 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+, 
+\begin_inset Formula $RMSE$
+\end_inset
+
+, etc.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted Values of The Two Models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg50, echo=T, fig=T, include=F, height=5, width=5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+pfit2 <- fitted(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+pfit3 <- fitted(m2centered)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(pfit2, pfit3, xlab="Predicted from Uncentered Model", ylab="Predicted
+ from Centered Model")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-reg50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{See why they are the Same Model?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Same predicted values from same values of input X values
+\end_layout
+
+\begin_layout Itemize
+Same estimates of 
+\begin_inset Quotes eld
+\end_inset
+
+slopes
+\begin_inset Quotes erd
+\end_inset
+
+ at any given combination of X values
+\end_layout
+
+\begin_layout Itemize
+Same uncertainty (variance) of slope estimates at any given combination
+ of X values
+\end_layout
+
+\begin_layout Itemize
+Why the interaction coefficient the same in the 2 models?
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Answer: it is the only parameter that is a 
+\begin_inset Quotes eld
+\end_inset
+
+constant
+\begin_inset Quotes erd
+\end_inset
+
+ in the nonlinear model (cross partial derivative same at all points)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered
+ Model Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Un Centered Model fit is
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}\cdot x2_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The predicted value AT THE MEANS 
+\begin_inset Formula $\overline{x1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overline{x2}$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{y}_{mean}=\hat{b}_{0}+\hat{b}_{1}\overline{x1}+\hat{b}_{2}\overline{x2}+\hat{b}_{3}\overline{x1}\cdot\overline{x2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg60, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+bs <- coef(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+yhatmean <- bs[1] + bs[2] * mean(dat$x1) + bs[3] * mean(dat$x2) + bs[4]*mean(dat
+$x1)*mean(dat$x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+yhatmean
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which is the estimated intercept of the 
+\begin_inset Quotes eld
+\end_inset
+
+centered regression
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered
+ Model Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Uncentered: 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}\times x2_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The partial slope--the effect of a change in either IV--can be evaluated
+ AT THE MEANS 
+\begin_inset Formula $\overline{x1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overline{x2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The effect of 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+(for example) is:
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial y_{i}}{\partial x_{i}}=\hat{b}_{1}+\hat{b}_{3}\overline{x2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg70, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+partialx1 <- bs[2] + bs[4] * mean(dat$x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+partialx1
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg70}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which is the estimated slope of x1 in the 
+\begin_inset Quotes eld
+\end_inset
+
+centered regression
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered
+ Model Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Previous showed the partial slope at the mean of x1,x2 is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial y_{i}}{\partial x_{i}}=\hat{b}_{1}+\hat{b}_{3}\overline{x2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calculate the Variance of that estimated value:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var[\hat{b}_{1}+\hat{b}_{2}\overline{x2}]=Var[\hat{b}_{1}]+\overline{x2}^{2}Var[\hat{b}_{3}]+2\overline{x2}Cov(\hat{b}_{1},\hat{b}_{3})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg80, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+V <- vcov(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+varsum <- V[2,2]+mean(dat$x2)^2*V[4,4]+2*mean(dat$x2)*V[2,4]
+\end_layout
+
+\begin_layout Plain Layout
+
+varsum
+\end_layout
+
+\begin_layout Plain Layout
+
+sqrt(varsum)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg80}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Notice that the square root of the estimated 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $Var[\hat{b}_{1}+\hat{b}_{2}\overline{x2}]$
+\end_inset
+
+ is EXACTLY the same standard error that is reported in the Centered Regression
+ for the coefficient 
+\begin_inset Formula $x1c$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+How To Explain 
+\begin_inset Quotes eld
+\end_inset
+
+Centered Mirage
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+Two components cause the illusion that the Centered Regression Line is somehow
+ better
+\end_layout
+
+\begin_layout Itemize
+Recall the uncertainty around a regression line is hour shaped.
+ If we place the y axis into the center of the data, we are going to the
+ smallest part of the hourglass, so the standard errors are at their smallest
+ possible values.
+\end_layout
+
+\begin_layout Itemize
+Centering (accidentally, really) may move from a 
+\begin_inset Quotes eld
+\end_inset
+
+flat spot
+\begin_inset Quotes erd
+\end_inset
+
+ on the curving surface to a place that has steeper slope.
+ This will make the estimated coefficients 
+\begin_inset Quotes eld
+\end_inset
+
+bigger
+\begin_inset Quotes erd
+\end_inset
+
+ because we are at a steeper spot
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+intercept is 
+\begin_inset Formula $y$
+\end_inset
+
+ at 
+\begin_inset Formula $x1=$
+\end_inset
+
+
+\begin_inset Formula $x2=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+slope coefficients 
+\begin_inset Formula $\hat{b}_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{b}_{3}$
+\end_inset
+
+ are linear effects of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ at 
+\begin_inset Formula $x1=x2=0$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Look Again
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-reg20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-reg31b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Not Centered Data
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Centered Data
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Where to Read More about this?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Echambadi, R., & Hess, J.
+ D.
+ (2007).
+ Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple
+ Regression Models.
+ 
+\emph on
+Marketing Science
+\emph default
+, 26(3), 438-445.
+\end_layout
+
+\begin_layout Standard
+"Many empirical marketing researchers commonly mean-center their moderated
+ regression data hoping that this will improve the precision of estimates
+ from ill conditioned, collinear data, but unfortunately, this hope is futile.
+ Therefore, researchers using moderated regression models should not mean-center
+ in a specious attempt to mitigate collinearity between the linear and the
+ interaction terms.
+ Of course, researchers may wish to mean-center for interpretive purposes
+ and other reasons."
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Where to Read More about this? (cont)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+"Specifically, we demonstrate that (1) in contrast to Aiken and West’s (1991)
+ suggestion, mean centering does not improve the accuracy of numerical computati
+on of statistical parameters, (2) it does not change the sampling accuracy
+ of main effects, simple effects, and/or interaction effects (point estimates
+ and standard errors are identical with or without meancentering), and (3)
+ it does not change overall measures of fit such as R2 and adjusted-R2.
+ It does not hurt, but it does not help, not one iota." 
+\end_layout
+
+\begin_layout Standard
+See Also:
+\end_layout
+
+\begin_layout Standard
+Kromrey, J.
+ D., & Foster-Johnson, L.
+ (1998).
+ Mean Centering in Moderated Multiple Regression: Much Ado about Nothing.
+ 
+\emph on
+Educational and Psychological Measurement
+\emph default
+, 58(1), 42 -67.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

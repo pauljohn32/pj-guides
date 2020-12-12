@@ -1,0 +1,1812 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+\usepackage{simpsons}
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+%  \usetheme{KU}
+\usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+logicalmkup
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 4.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Welcome 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2015
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+2011
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+Orientation
+\end_layout
+
+\begin_layout BeginFrame
+PSYC650/790 POLS 706
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\size larger
+What is this Course?
+\end_layout
+
+\begin_layout Itemize
+Regression: 
+\begin_inset Quotes eld
+\end_inset
+
+standard
+\begin_inset Quotes erd
+\end_inset
+
+ first graduate course in stat 
+\begin_inset Quotes eld
+\end_inset
+
+modeling
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+What's regression: prediction of a dependent variable from a formula you
+ create!
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Prerequisites: statistics and college algebra
+\end_layout
+
+\begin_layout Itemize
+Calculus not 
+\begin_inset Quotes eld
+\end_inset
+
+required
+\begin_inset Quotes erd
+\end_inset
+
+, but will help in understanding
+\end_layout
+
+\begin_layout Itemize
+Determination, computer savvy required
+\end_layout
+
+\begin_layout BeginFrame
+Online material in 2 Locations
+\end_layout
+
+\begin_layout Itemize
+KU Blackboard
+\end_layout
+
+\begin_layout Itemize
+My Dreamhost account: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Course Homepage: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/stat
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lectures, etc 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Partially Flipped
+\end_layout
+
+\begin_layout Itemize
+On Wednesdays, I'll generally ask you to watch a video online, then we'll
+ discuss that for 30 minutes or so, after which a lab session will occur.
+\end_layout
+
+\begin_layout Itemize
+Will schedule 1 or 2 other lab sessions during the week to address same/similar
+ material.
+\end_layout
+
+\begin_layout BeginFrame
+Exercises,Homeworks and Tests
+\end_layout
+
+\begin_layout Itemize
+We will have graded homework assignments (probably 5 of them).
+ You must hand them in 
+\emph on
+on paper.
+\end_layout
+
+\begin_layout Itemize
+Expect some glitches, we constantly try to keep this interesting by swapping
+ in new data sets
+\end_layout
+
+\begin_layout Itemize
+I like this idea for exams.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Create a 
+\begin_inset Quotes eld
+\end_inset
+
+take home
+\begin_inset Quotes erd
+\end_inset
+
+ exam based on student-specific data sets
+\end_layout
+
+\begin_layout Enumerate
+Ask students (on their own) to prepare tables and graphs 
+\end_layout
+
+\begin_layout Enumerate
+During the 
+\begin_inset Quotes eld
+\end_inset
+
+in class
+\begin_inset Quotes erd
+\end_inset
+
+ portion of the test, ask for 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+25% of the tables and graphs
+\end_layout
+
+\begin_layout Enumerate
+explanations and analysis of those tables
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout BeginFrame
+Homework vs Tests
+\end_layout
+
+\begin_layout Itemize
+Worried about the tests? Please go look at the old ones.
+ They are available in the Blackboard website.
+ Look under the Course Documents.
+\end_layout
+
+\begin_layout Itemize
+We are trying to make the homeworks 
+\begin_inset Quotes eld
+\end_inset
+
+representative
+\begin_inset Quotes erd
+\end_inset
+
+ of the tests--not more difficult, but not easier.
+ This is difficult.
+ You should look at the old tests to see what kinds of questions I tend
+ to ask.
+ 
+\end_layout
+
+\begin_layout Section
+Regression
+\end_layout
+
+\begin_layout BeginFrame
+Where does Regression fit into the long term plan of study?
+\end_layout
+
+\begin_layout Itemize
+Most of the things you would publish are taught in courses that are 1 or
+ 2 steps downstream from here.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[
+\backslash
+Maggie]
+\end_layout
+
+\end_inset
+
+Undergrad 
+\begin_inset Quotes eld
+\end_inset
+
+baby stats
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[
+\backslash
+Lisa]
+\end_layout
+
+\end_inset
+
+You Are Here: Regression is the analytical foundation of everything that
+ follows
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[
+\backslash
+Bart]
+\end_layout
+
+\end_inset
+
+Courses on regression diagnostics & applications, generalized linear models,
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[
+\backslash
+Homer]
+\end_layout
+
+\end_inset
+
+ repeated measures(aka longitudinal), hierarchical models, time series,
+ structural equation models 
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+My Slogans
+\end_layout
+
+\begin_layout Itemize
+Scholars work at one level 
+\begin_inset Quotes eld
+\end_inset
+
+below
+\begin_inset Quotes erd
+\end_inset
+
+ their level of understanding.
+ 
+\end_layout
+
+\begin_layout Itemize
+You'll understand this class when you take the next stats class.
+\end_layout
+
+\begin_layout Itemize
+Work on small example problems that isolate particular elements.
+\end_layout
+
+\begin_layout Itemize
+Study math and computers wherever possible.
+\end_layout
+
+\begin_layout Itemize
+Write down what you learn, you are likely to forget it.
+\end_layout
+
+\begin_layout BeginFrame
+I'm just warning you...
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<+->
+\end_layout
+
+\end_inset
+
+ I expect you to work hard, all the time.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<+->
+\end_layout
+
+\end_inset
+
+ Graduate school is supposed to be a full time job.
+ I spent 60hrs per week on school as a student.
+ You should too.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<+->
+\end_layout
+
+\end_inset
+
+I'm hypocritical.
+ I am usually behind schedule, but expect you to be on time, on schedule.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+What About Software?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Software}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For statistics, I use R.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+ package for R I prepared for this class
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+install.packages("rockchalk", dep = TRUE, repos="http://rweb.quant.ku.edu/cran")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+I don't insist you use R, but you probably should try it.
+ 
+\end_layout
+
+\begin_layout Itemize
+I can give you some help if you use SAS.
+ If you use Stata, I can sit with you and read the manual.
+\end_layout
+
+\begin_layout Itemize
+Everybody needs a good programmer's file editor that can interact with R
+ (Emacs, RStudio, or Notepad++ are leading contenders).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Why Prefer R?
+\end_layout
+
+\begin_layout Itemize
+Free 
+\end_layout
+
+\begin_layout Itemize
+Open Source
+\end_layout
+
+\begin_layout Itemize
+Extensible
+\end_layout
+
+\begin_layout Itemize
+Plenty of Good Documentation
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Documents are built into R (Run 
+\begin_inset Quotes eld
+\end_inset
+
+help.start()
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Running R
+\end_layout
+
+\begin_layout Itemize
+This is not an 
+\begin_inset Quotes eld
+\end_inset
+
+R Programming
+\begin_inset Quotes erd
+\end_inset
+
+ course.
+ We are only teaching you enough to 
+\begin_inset Quotes eld
+\end_inset
+
+get by
+\begin_inset Quotes erd
+\end_inset
+
+ in the regression course.
+\end_layout
+
+\begin_layout Itemize
+We have some elementary guides available.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Summer Stat Institute R lectures 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://crmda.ku.edu/summer-institute
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Paul Johnson's R Web resource 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/R
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Basic R Steps 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/Rcourse/First-R
+\end_layout
+
+\end_inset
+
+.
+ Slides prepared for interns.
+\end_layout
+
+\begin_layout Itemize
+KUANT Guide R writeups (more advanced) 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://crmda.ku.edu/kuant-guides
+\end_layout
+
+\end_inset
+
+.
+ Look for guides 20, 21, 25.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Replication is Important.
+\end_layout
+
+\begin_layout Description
+Don't 
+\begin_inset Quotes eld
+\end_inset
+
+type commands into a program
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Use Pull Down Menus
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+DO Write out a 
+\begin_inset Quotes eld
+\end_inset
+
+script
+\begin_inset Quotes erd
+\end_inset
+
+ of commands that can be re-run, exactly.
+ 
+\end_layout
+
+\begin_layout Itemize
+This is true not just with R, but also SAS, SPSS, Stata, etc.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+You need to know exactly what you did
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Neatness counts! 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Leave your code in a runable state, from top to bottom
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Creature Comforts Depend on Type of Computer
+\end_layout
+
+\begin_layout Itemize
+I push everybody to learn to use Emacs with R (see Vincent Goulet's website
+ for special versions of Emacs for Windows and Macintosh)
+\end_layout
+
+\begin_layout Itemize
+Many novices drawn to RStudio (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.rstudio.org
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Trouble setting up your Windows computer? 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://crmda.ku.edu/windows-admin-tips
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Document Preparation
+\end_layout
+
+\begin_layout Itemize
+I use LaTeX and LyX (www.lyx.org)
+\end_layout
+
+\begin_layout Itemize
+You too can learn to use LaTeX
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+KU Grad School a LaTeX template for theses/dissertations (written by a fine
+ professor you know)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/Computing-HOWTO/KU-thesis
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+latex tip sheet 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/latex
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Word is frustrating, but you can learn to use it.
+ Learn to use the equation editor and shortcut keys.
+ And Style Sheets.
+\end_layout
+
+\begin_layout Itemize
+rockchalk has R functions to make regression tables, in 2014 (for the first
+ time) in a format that Libre Office and MS Word can import.
+\end_layout
+
+\begin_layout Section
+Class Management
+\end_layout
+
+\begin_layout BeginFrame
+This Class is Large
+\end_layout
+
+\begin_layout Itemize
+Assignments have to be turned in on time.
+\end_layout
+
+\begin_layout Itemize
+I have to be more scripted, more 
+\begin_inset Quotes eld
+\end_inset
+
+mapped out
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+I upload everything to 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Its a mirror of my working folder.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+stat
+\end_layout
+
+\begin_layout Itemize
+Computing-HOWTO
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The online content includes everything, all the files I use to make the
+ lectures.
+\end_layout
+
+\begin_layout Itemize
+Material is 
+\begin_inset Quotes eld
+\end_inset
+
+Sweaved
+\begin_inset Quotes erd
+\end_inset
+
+: The document runs the statistical analysis runs, weaves the results 
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Different types of files}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Browse a folder: 
+\series bold
+http://pj.freefaculty.org/guides/stat/Regression/Overview
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},tabsize=3"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Regression-Overview-Lecture.lyx (I edit that) 
+\end_layout
+
+\begin_layout Plain Layout
+
+Regression-Overview-Lecture.pdf (Results you see)
+\end_layout
+
+\begin_layout Plain Layout
+
+Regression-Overview-Lecture.Rnw (The Noweb file, an intermediate stage document)
+\end_layout
+
+\begin_layout Plain Layout
+
+Regression-Overview-Lecture.R (R code extracted from lecture)
+\end_layout
+
+\begin_layout Plain Layout
+
+plots: 	 folder of output files from R (not just plots, also statistical
+ output)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Other Material
+\end_layout
+
+\begin_layout Itemize
+http://pj.freefaculty.org/R: Rtips, Working Examples
+\end_layout
+
+\begin_layout Description
+Limited
+\begin_inset space ~
+\end_inset
+
+Use
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+Blackboard
+\end_layout
+
+\begin_layout Itemize
+Use Blackboard for Announcements, Assignments, Readings.
+ 
+\end_layout
+
+\begin_layout Itemize
+Why? Uploading and revising material in Blackboard is too tedious, frustrating,
+ awful, and difficult.
+\end_layout
+
+\begin_layout BeginFrame
+FAQ
+\end_layout
+
+\begin_layout Itemize
+Why don't you number out your lectures 1, 2, 3, etc, in a single folder
+\end_layout
+
+\begin_layout Itemize
+I tried that, but got sick of re-numbering everything all the time
+\end_layout
+
+\begin_layout Itemize
+The guide folder is topical, I do have a 
+\begin_inset Quotes eld
+\end_inset
+
+lecture map
+\begin_inset Quotes erd
+\end_inset
+
+ on the homepage (http://pj.freefaculty.org/stat).
+\end_layout
+
+\begin_layout Section
+Worked Example
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Data Analysis Proceeds in Stages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Read in the Data
+\end_layout
+
+\begin_layout Enumerate
+Summarize it
+\end_layout
+
+\begin_layout Enumerate
+Estimate with it
+\end_layout
+
+\begin_layout Enumerate
+Prepare results
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Step 1.
+ Read in the data}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<example1, include=F, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- read.table("/home/pauljohn/SVN/SVN-guides/stat/DataSets/AcademicSalary/aca
+demicsalary.txt", header = TRUE, sep = "
+\backslash
+t")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Create a directory structure where the project will live
+\end_layout
+
+\begin_layout Itemize
+Copy the data file into that directory
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Through whatever means, copy this file 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/DataSets/AcademicSalary/academicsalary.txt
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Create an R file and write some commands that bring in the data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- read.table("academicsalary.txt", header = TRUE, sep = "
+\backslash
+t")
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Get descriptives}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<example10,include=F,echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Could use R's summary function, but 
+\end_layout
+
+\begin_layout Plain Layout
+
+## rockchalk summarize is my favorite
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+summarize(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-example10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{summarize output}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+<<example11, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<example10>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-example11.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Then we look for relationships}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Regression analysis is THE bedrock on which many advanced research methods
+ rest.
+\end_layout
+
+\begin_layout Itemize
+I have written an Overview of regression in a separate set of slides, so
+ lets go look at them
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

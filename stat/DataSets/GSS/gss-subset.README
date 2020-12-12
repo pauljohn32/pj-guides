@@ -1,0 +1,46 @@
+Paul Johnson
+
+Two excerpts from the GSS2006.  subset1 is all variables for which there is a reasonably large number of not-missing values.
+
+subset2 is a small excerpt of data from the 2006 General Social Survey.
+
+ [1] "hrs1"     "wrkslf"   "marital"  "sex"      "race"     "educ"    
+ [7] "partyid"  "age"      "polint"   "news"     "newsfrom" "income06"
+[13] "realinc"  "gunlaw"   "owngun"   "vote00"   "pres00"   "vote04"  
+[19] "pres04"   "sexfreq"  "polviews" "sei"      "mhgvthlt" "mhgvthme"
+[25] "lessreg"  "numwomen" "nummen"   "sexsex5"  "evstray" 
+
+
+Those files are produced from the original gss data, which
+was obtained in an SPSS sav format. 
+
+
+########
+library(foreign)
+
+dat <- read.spss("gss2006.sav", to.data.frame=T, trim.factor.names=T)
+
+### Before 2010-02-26, that would fail.  Now it just gives warnings.
+
+
+### Many variables are all <NAP>, not asked in 2006.
+### Note huge amount of <NAP> in data
+sout <- sapply( dat, function(x) length(x[x == "NAP"]))
+
+### which variables have less than 4000 cases NAP
+wsout <- which(sout < 4000)
+
+### choose those variables
+dat <- dat[, wsout]
+
+### Save to R data frame, in case we want all variables later
+save(dat, file="gss-subset1.Rda")
+
+
+### Grab some variables using subset with names from data frame
+dat <- subset (dat, select=c(hrs1, wrkslf,  marital, sex, race, educ, partyid , age, polint, news, newsfrom, income06, realinc, gunlaw, owngun, vote00, pres00,  vote04, pres04, sexfreq, polviews, sei,  mhgvthlt, mhgvthme, lessreg, numwomen, nummen, sexsex5, evstray))
+ 
+
+### Save to R data frame
+save(dat, file="gss-subset2.Rda")
+

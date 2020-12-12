@@ -1,0 +1,231 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/TrueMounted/ps/SVN-guides/stat/Regression/StandardizedBeta//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\small
+\begin{frame}[allowframebreaks]
+\frametitle{Standardized Regression Coefficients}
+\begin{enumerate}
+\item Take any ``real life'' data set you want that has (at least) 3 numeric
+variables. For ease of exposition, I will call the DV y and the IV
+x1, x2, and so forth, but you of course can use the ``real names''
+when you describe the model. 
+
+\begin{enumerate}
+\item Regress $y$ on $x1$. Do the usual chores: Create a scatterplot,
+draw the regression line, write a sentence to describe the estimated
+relationship. From the line you drew, pick 2 interesting values of
+$x1$ and write a sentence comparing the predicted values.
+\item Create histograms for $y$ and $x1$ and super-impose the kernel density
+curves in order to get a mental image of the distributions. Calculate
+the mean and standard deviations.
+\item Create standardized variables $yst$ and $x1st$. Run the regression
+of $yst$ on $x1st$. Create a scatterplot of $yst$ on $x1st$, draw
+the predicted line. For the 2 interesting values of $x1$ from the
+previous case, calculate the corresponding values of $xst$ and figure
+out what the predicted value of $yst$ is for those particular values.
+Then write a sentence comparing the predicted values of $yst$ for
+those two cases.
+\item In your opinion, did standardization improve your ability to interpret
+the effect of $x1$ and $x1st$?
+\end{enumerate}
+\item Repeat the same exercise, except this time include two or more numeric
+predictors. When you conduct part a), pick interesting values for
+all of your IV's, and make a predicted value table of this sort (I've
+included example ``interesting values'' for x1 and x2).
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+ &
+\multicolumn{3}{c}{value combinations}\tabularnewline
+\hline 
+ &
+x1 &
+x2 &
+predicted y\tabularnewline
+\hline 
+ &
+9 &
+3.2 &
+?\tabularnewline
+\hline 
+ &
+9 &
+4.6 &
+?\tabularnewline
+\hline 
+ &
+32 &
+3.2 &
+?\tabularnewline
+\hline 
+ &
+32 &
+4.7 &
+?\tabularnewline
+\hline 
+\end{tabular}
+
+
+I could show you how to make a 3D scatterplot (see the Multicollinearity
+lecture), but it is probably not worth your effort.
+
+\item Find a dataset with a dichotomous predictors. Or create your own dichotomous
+predictor by categorizing a numeric variable (In R I use the ``cut''
+function for that). Conduct the same exercise again. Try to describe
+the regression model with unstandardized data, and then conduct the
+standardized model. 
+\item Let's concentrate on categorical predictors with many categories.
+We need data with a numeric variable for y and multi-category predictor.
+If x1 is type of profession, for example, then when R fits the regression
+of y on x1, R will create the ``dummy variables'' for g-1 categories
+when it fits a regression. You can create your own dummy variables
+if you want, but in R there is an easier way because you can ask the
+regression model to keep the data for you after it is done fitting.
+So instead of just running
+
+
+mod1 <- lm(y \textasciitilde{} x, data=dat)
+
+
+run this
+
+
+mod2 <- lm(y1\textasciitilde{}x2, data=dat, x=T, y=T)
+
+
+After that, the dependent variable will be saved in the model object
+as mod2\$y and the matrix of input variables will be saved as mod2\$x.
+So you can grab those into a new data frame like so
+
+
+myNewDF <- data.frame(mod2\$y, mod2\$x)
+
+
+Here's a ``real life'' example I just ran to make sure that works.
+
+
+library(car)
+
+
+mod1 <- lm(prestige \textasciitilde{} type, data=Prestige, x=TRUE,
+y=TRUE) 
+
+
+dat2 <- data.frame(mod1\$y, mod1\$x)
+
+
+In dat2, the variables now are:
+
+
+mod1.y X.Intercept. typeprof typewc
+
+
+But I can beautify the names like so
+
+
+colnames(dat2) <- c(``prestige'', ``int'', ``prof'', ``wc'')
+
+
+The ``baseline'' value of the ``type'' is ``bc'', but that variable
+disappeared into the intercept, but we can re-create it easily. 
+
+
+dat2\$bc <- dat2\$int - dat2\$prof - dat2wc
+
+
+See what I mean? bc is what remains after you remove the prof and
+wc.
+
+
+After that, you can create standardized variables for ``prestige'',
+'bc'' ``prof'' and ``wc'' and then run a regression with them. 
+
+
+I'm a little worried that the separate standardization of the dummy
+variables prof and wc throws away the information that flows from
+the fact that they are indicators for the same variable. Do you know
+what I mean? When they are ``bc'' ``prof'' and ``wc'', we know
+that they are 0 or 1 in a logical pattern. I'll have to think harder
+on that when I get some free time. Or else, you will work it out for
+me and then I'll not have to do any hard thinking.
+
+\end{enumerate}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

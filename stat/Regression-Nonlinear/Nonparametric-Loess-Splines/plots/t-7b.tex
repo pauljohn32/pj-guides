@@ -1,0 +1,45 @@
+\begin{Schunk}
+\begin{Sinput}
+ library(segmented)
+ mymod0 <- lm(y ~ x)
+ segmod <- segmented(mymod0, seg.Z = ~x, psi=list(x = c(1.8,4.2,8.0)), it.max = 200)
+ summary(segmod)
+\end{Sinput}
+\begin{Soutput}
+	***Regression Model with Segmented Relationship(s)***
+
+Call: 
+segmented.lm(obj = mymod0, seg.Z = ~x, psi = list(x = c(1.8, 
+    4.2, 8)), it.max = 200)
+
+Estimated Break-Point(s):
+         Est.  St.Err
+psi1.x 1.613 0.06512
+psi2.x 4.786 0.07299
+psi3.x 7.876 0.06311
+
+t value for the gap-variable(s) V:  0 0 0 
+
+Meaningful coefficients of the linear terms:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  -0.2572     0.4726  -0.544    0.588    
+x             3.7733     0.4481   8.421 4.75e-13 ***
+U1.x         -7.5525     0.4893 -15.434       NA    
+U2.x          7.8046     0.2963  26.341       NA    
+U3.x         -8.3813     0.3615 -23.183       NA    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.9086 on 92 degrees of freedom
+Multiple R-Squared: 0.9224,  Adjusted R-squared: 0.9165 
+
+Convergence attained in 4 iterations with relative change -1.439032e-14 
+\end{Soutput}
+\begin{Sinput}
+ mynewdf <- data.frame(x=x, fitted = segmod$fitted.values)
+ mynewdf <- mynewdf[order(mynewdf$x),]
+ plot(x, y, main = "Lines, cutpoints estimated by segmented", pch = 16)
+ lines(mynewdf$x, mynewdf$fitted)
+ detach("package:segmented")
+\end{Sinput}
+\end{Schunk}

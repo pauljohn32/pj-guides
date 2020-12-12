@@ -1,0 +1,4806 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8x
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(75645)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Date
+Oct 6, 2011 Updated for newer R, LyX, etc
+\begin_inset Newline newline
+\end_inset
+
+Orig: Jan 29, 2006
+\end_layout
+
+\begin_layout Title
+
+\series bold
+\size large
+Splines, Loess, etc
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Everything good in life is linear
+\end_layout
+
+\begin_layout Standard
+The linear equation is the basis of much social science research.
+ In the following, the 
+\begin_inset Quotes eld
+\end_inset
+
+intercept
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+constant
+\begin_inset Quotes erd
+\end_inset
+
+) is 30 and the slope is 1.4.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y=30+1.4\cdot x
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note how the slope does not change as x moves from left to right.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<1,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(from=0, to=50, length.out=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 30 + 1.4 * x + 6*rnorm(200)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (x, y, main="Linear Equation",xlim=c(0,50), ylim=c(-10,100))
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(lm(y~x))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Oops.
+\end_layout
+
+\begin_layout Standard
+What if your data is not a 
+\begin_inset Quotes eld
+\end_inset
+
+straight line
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Suppose it is created by this process, which I've borrowed from the documentati
+on on the locfit program for R.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<2,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#setting seed so this thing looks the same every time!
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(2314)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- 10 * runif(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 5*sin(x)+rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (x, y, main="Curvish data from Locfit example", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(lm(y~x))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Square that x!
+\end_layout
+
+\begin_layout Standard
+Sometimes people say 
+\begin_inset Quotes eld
+\end_inset
+
+there might be nonlinearity
+\begin_inset Quotes erd
+\end_inset
+
+ and then they throw in a squared input variable.
+ This is one of the simplest (short-sighted, silly, etc) things to do.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y=3+4\cdot x-0.09\cdot x^{2}
+\]
+
+\end_inset
+
+If you run a regression with 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+ as an in put variable, and the coefficient is not significantly different
+ from 0, then you are 
+\begin_inset Quotes eld
+\end_inset
+
+home free.
+\begin_inset Quotes erd
+\end_inset
+
+ Right? Well, it is not completely wrong, but almost all wrong.
+ Many political scientists seem to think that it is a sufficient test for
+ nonlinearity.
+\end_layout
+
+\begin_layout Standard
+That is called a 
+\begin_inset Quotes eld
+\end_inset
+
+quadratic
+\begin_inset Quotes erd
+\end_inset
+
+ equation.
+ The plot illustrating that curve is either a 
+\begin_inset Quotes eld
+\end_inset
+
+hill
+\begin_inset Quotes erd
+\end_inset
+
+ or a 
+\begin_inset Quotes eld
+\end_inset
+
+bowl,
+\begin_inset Quotes erd
+\end_inset
+
+ depending on whether the coefficient on the squared term is negative (hill)
+ or positive (bowl).
+\end_layout
+
+\begin_layout Standard
+It is completely easy to see the hill or bowl does nothing to help us with
+ the curvy locfit data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<4,echo=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod1 <- lm(y~x+I(x^2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,10, length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+predict1 <- predict(mymod1, newdata=data.frame(x=newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Adding x squared", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,predict1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<5,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The good news is that the significance of the squared term in the regression
+ would give you a warning that there is nonlinearity.
+ Unfortunatly, to most people, it would just be evidence that 
+\begin_inset Quotes eld
+\end_inset
+
+the quadratic model is right
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Polynomial
+\end_layout
+
+\begin_layout Standard
+If you add in many more terms, say 
+\begin_inset Formula $x^{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $x^{4}$
+\end_inset
+
+, then you have a polynomial.
+ See my handout on approximations.
+ There's a theorem that states that if you keep adding terms, you can approximat
+e any function as closely as you like.
+ To approximate this one, we really do need to add a lot of terms.
+ 
+\end_layout
+
+\begin_layout Standard
+A polynomial has one fewer 
+\begin_inset Quotes eld
+\end_inset
+
+hump
+\begin_inset Quotes erd
+\end_inset
+
+ than it has terms.
+ Since our graph has 3 
+\begin_inset Quotes eld
+\end_inset
+
+humps
+\begin_inset Quotes erd
+\end_inset
+
+, the fitted model would need to include 
+\begin_inset Formula 
+\[
+\hat{y_{i}}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x_{i}^{3}+\hat{b}_{4}x_{i}^{4}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<6,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod1 <- lm(y~x+I(x^2)+I(x^3)+I(x^4))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,10, length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+predict2 <- predict(mymod1, newdata=data.frame(x=newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Adding x^2, x^3, and x^4", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,predict2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the data has any more random noise in it, then fitting a polynomial like
+ that will be pretty dicey.
+ Work out an example for yourself.
+\end_layout
+
+\begin_layout Standard
+Why isn't this good enough? Sometimes the data is not quite so regular as
+ this example, so one must add many powers.
+ Perhaps the degress of freedom are used up.
+ Usually, the most serious problem is that there is severe multicollinearity
+ between 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i}^{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i}^{3}$
+\end_inset
+
+, and so the parameter estimates are very unstable, often not statistically
+ significantly different from 0.
+ There is a way to transform those variables so that they are not correlated
+ with each other at all.
+ That method is known as 
+\begin_inset Quotes eld
+\end_inset
+
+orthogonal polynomials.
+\begin_inset Quotes erd
+\end_inset
+
+ The predicted values from an orthogonal polynomial model are the same as
+ in a model fit with the ordinary values of 
+\begin_inset Formula $x_{i}^{p}$
+\end_inset
+
+.
+ The standard errors are smaller, however, and one may get some hints about
+ whether the higher order terms are really needed.
+ It is quite unclear to me, however, how to decide because the transformed
+ orthogonal polynomial coding does not translate into something that is
+ understandable in terms of the original problem.
+ I've been working on an example of that.
+\end_layout
+
+\begin_layout Section
+A straight line spline
+\end_layout
+
+\begin_layout Standard
+If you divide the x-axis into sections, and estimate lines, then you can
+ approximate the underlying relationship.
+ If you start with the idea that the underlying truth is 
+\begin_inset Formula $y=b_{0}+b_{1}x$
+\end_inset
+
+ up to some 
+\begin_inset Quotes eld
+\end_inset
+
+break point
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+, and then after that the line changes slope, then a convenient way to do
+ that is to construct a new variable that is equal to 0 if 
+\begin_inset Formula $x_{i}<\tau_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{i}-\tau_{1}$
+\end_inset
+
+ if 
+\begin_inset Formula $x_{i}\ge\tau_{1}$
+\end_inset
+
+.
+ Represent that by this symbol:
+\begin_inset Formula 
+\[
+(x_{i}-\tau_{1})_{+}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The underlying truth is then represented by 
+\begin_inset Formula 
+\[
+y=b_{0}+b_{1}x_{i}+b_{2}(x_{i}-\tau_{1})_{+}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If there is no change at 
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+, then 
+\begin_inset Formula $b_{2}=0$
+\end_inset
+
+.
+ The coefficient 
+\begin_inset Formula $b_{2}$
+\end_inset
+
+ represents the additional (or lessened) slope to the right of 
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+.
+ Of course, you can put in as many break points as you want.
+ For the curvy data considered here, we need 3 breakpoints.
+\end_layout
+
+\begin_layout Standard
+You can specify the break points manually and estimate the model with this
+ R code.
+ The fiddling about with newdf is necessary in order to make the plotted
+ lines look nice.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7a,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knot <- c(1.8, 4.2, 8.0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf <- data.frame(x=x, y=y)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf <- thedf[order(thedf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#handy function to create "plus variables"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+createplusvar <- function(input,k) { it <- ifelse(input>k, input-k, 0)}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp1<- createplusvar(thedf$x, knot[1])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp2<- createplusvar(thedf$x, knot[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thedf$xp3<- createplusvar(thedf$x, knot[3])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod0 <- lm (y~x+xp1+xp2+xp3, data=thedf)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(round(min(x),1), round(max(x)+0.5,1),by=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(x=newx, xp1=createplusvar(newx,knot[1]),  xp2=createplusvar(n
+ewx,knot[2]), xp3=createplusvar(newx,knot[3]))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$pred <- predict(mymod0, newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mytitle <- paste ("Manual Regression spline knots", knot[1], knot[2], knot[3])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(thedf$x, thedf$y, main=mytitle, type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(thedf$x, thedf$y, pch=16, cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$x,newdf$pred)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(thedf,mymod0,newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can see in the figure that I did not guess the splines quite right.
+ I wanted to have a model estimate the break points.
+ I tested 2 packages, 
+\begin_inset Quotes eld
+\end_inset
+
+segmented
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+mda
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+I've heard that developing algorithms to calculate the knots is quite a
+ difficult business.
+ This shows that the 
+\begin_inset Quotes eld
+\end_inset
+
+segmented
+\begin_inset Quotes erd
+\end_inset
+
+ package does work, but only in a fragile way.
+ If you don't specify the starting estimates for the break points (the option
+ psi) correctly--with the correct number and values of the break points--then
+ the estimator blows up.
+ This particular example is not one that allows it to guess the correct
+ number of break points and give you everything you want.
+ I found it very tough to use the ordinary predict() function with this
+ model, and so to make a plotted line, I had to take some steps that seemed
+ unusual to me.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7b,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(segmented)
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod0 <- lm (y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+segmod <- segmented(mymod0, seg.Z=~x, psi=list(x=c(1.8,4.2,8.0)), it.max=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(segmod)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- data.frame(x=x,fitted=segmod$fitted.values)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- mynewdf[order(mynewdf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Lines, cutpoints estimated by segmented", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mynewdf$x,mynewdf$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+detach("package:segmented")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Except for the difficulty of fitting this, the result is pretty encouraging,
+ at least to the eye.
+ The predicted line seems to 
+\begin_inset Quotes eld
+\end_inset
+
+go along
+\begin_inset Quotes erd
+\end_inset
+
+ with the data pretty well.
+ Oh, I should mention, we also assumed away the possibility of gaps, or
+ discontinuities.
+ segmented() provides a test for the significance of the assumption that
+ the line segments connect at the break points.
+\end_layout
+
+\begin_layout Standard
+In Venables & Ripley, 4ed p.
+ 235, the MARS (Multiple Adaptive Regression Splines) method is mentioned,
+ which can be found in the 
+\begin_inset Quotes eld
+\end_inset
+
+mda
+\begin_inset Quotes erd
+\end_inset
+
+ package.
+ This is a linear spline model in which the knots are estimated from the
+ data and the estimation is much more robust:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7c,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mda)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars <- mars(x,y, degree=1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymars)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars$cuts
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars$gcv 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- data.frame(x,y,fitted=mymars$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf2 <- mydf[order(mydf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Linear splines: mars output", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mydf2$x,mydf2$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(mymars)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It could be worse.
+ I tried this with a restricted number of cutpoints.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<7d,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mda)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2 <- mars(x,y, degree=1, nk=5) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymars2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2$gcv 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymars2$cuts
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf <- data.frame(x,y,fitted=mymars2$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mydf2 <- mydf[order(mydf$x),]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Linear splines: mars output nk=5", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mydf2$x,mydf2$fitted)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(mymars2, mydf, mydf2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+detach("package:mda")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A big philosophical objection against this model is the 
+\begin_inset Quotes eld
+\end_inset
+
+kinked
+\begin_inset Quotes erd
+\end_inset
+
+ nature of this result.
+ There are sharp turns that we know, for a fact, are 
+\begin_inset Quotes eld
+\end_inset
+
+wrong
+\begin_inset Quotes erd
+\end_inset
+
+ (in the sense that the true relationship does not have kinks).
+\end_layout
+
+\begin_layout Section
+A Smoother Spline
+\end_layout
+
+\begin_layout Standard
+There are more splines models than you can shake a stick at.
+ There seem to be statisticians who spend their whole lives debating whether
+ we should use 
+\begin_inset Quotes eld
+\end_inset
+
+tensor product splines
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+b-splines
+\begin_inset Quotes erd
+\end_inset
+
+ or whatever else.
+ Let's focus on the simpler idea of a cubic spline.
+ Consider an input variable 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and it is defined on an interval with end points 
+\begin_inset Formula $(\tau_{0}$
+\end_inset
+
+,
+\begin_inset Formula $\tau_{k+1})$
+\end_inset
+
+ that is subdivided into 
+\begin_inset Formula $k$
+\end_inset
+
+ segments.
+ Here's an example of how the 
+\begin_inset Formula $x$
+\end_inset
+
+ axis might be segmented with 4 knots in the interior of the line.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<8,fig=T, echo=F, height=2>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(seq(-1,10,length.out=100),type="n",axes=F,ylab="",xlab="",xlim=c(-1,11),ylim
+=c(-1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ axis(1, at = c(0,4,5,7,9,10),labels=expression(tau[0],tau[1],tau[2],tau[3],tau[
+4],tau[5]))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On each interval, we can imagine a cubic model, 
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x^{3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A cubic model will be 
+\begin_inset Quotes eld
+\end_inset
+
+curvy enough
+\begin_inset Quotes erd
+\end_inset
+
+ to fit most relationships.
+ If it does not fit, add more break points (called 
+\begin_inset Quotes eld
+\end_inset
+
+knots
+\begin_inset Quotes erd
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+How to 
+\begin_inset Quotes eld
+\end_inset
+
+link together
+\begin_inset Quotes erd
+\end_inset
+
+ all of these separate cubic models? This is where the adventure begins.
+ If you were completely barefoot, you might just allow them to be completely
+ separate from each other.
+ How much uglier could it get than this? Here's just a phony example I created
+ to get the idea across:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+<<9,fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,100,length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+knots<- c(0,24,61,100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+parama<-c(1,2,-3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+paramb<-c(4,-5,8)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+paramc<-c(1,1.1,.9)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+paramd<-c(0.1,-0.2,-0.01)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- parama[1]+paramb[1]*newx +paramc[1]*newx^2+paramd[1]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- ifelse(newx < knots[2], y1, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- parama[2]+paramb[2]*newx +paramc[2]*newx^2+paramd[2]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- ifelse(newx >= knots[2] & newx < knots[3],y2, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- parama[3]+paramb[3]*newx +paramc[3]*newx^2+paramd[3]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- ifelse(newx >= knots[3],y3, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newy <- ifelse(newx < knots[2], y1, ifelse(newx > knots[2] & newx < knots[3],y2,
+ y3))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(newx,newy,main="Unrestricted cubic splines",type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm (newx, newy, parama, paramb, paramc, paramd, y1, y2, y3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows what happens if you fit 4 separate cubic polynomials to the sine
+ wave data that we have been investigating.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<9b,fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+knots<- c(1.7,4.63,7.9)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int0 <- ifelse (x<knots[1], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xp0 <- ifelse (x<knots[1], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int1 <- ifelse(x>knots[1]&x<knots[2], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xp1 <- ifelse(x>knots[1]&x<knots[2], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int2 <- ifelse(x>knots[2]&x<knots[3], 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xp2 <- ifelse(x>knots[2]&x<knots[3], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int3<- ifelse( x>knots[3],1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xp3 <- ifelse(x>knots[3], x, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mycubic <- lm(y~-1+ int0+ xp0+ I(xp0^2)+ I(xp0^3) + int1+ xp1+ I(xp1^2)
+ + I(xp1^3)+ int2 + xp2 + I(xp2^2)+ I(xp2^3)+ int3+ xp3+I(xp3^2)+I(xp3^3))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+b<-coef(mycubic)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(round(min(x)),ceiling(max(x)),length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- b[1]+b[2]*newx +b[3]*newx^2+b[4]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- ifelse(newx <= knots[1], y1, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- b[5]+b[6]*newx +b[7]*newx^2+b[8]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- ifelse(newx > knots[1] & newx <= knots[2], y2, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- b[9]+b[10]*newx +b[11]*newx^2+b[12]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y3 <- ifelse(newx > knots[2] & newx <= knots[3], y3, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y4 <- b[13]+b[14]*newx +b[15]*newx^2+b[16]*newx^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+y4 <- ifelse(newx > knots[3], y4, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Unrestricted cubic splines",type="n",xlab="x",ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx,y4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,cex=0.4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm (newx, parama, paramb, paramc, paramd, y1, y2, y3, y4,int0,int1,int2,int3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+(Connected) Cubic Splines: First Fix
+\end_layout
+
+\begin_layout Standard
+If you think the unconnected, discontinuous splines are no good, what do
+ you do to fix it? What do you want?
+\end_layout
+
+\begin_layout Standard
+Each segment's spline must blend smoothly into the next.
+ So assume:
+\end_layout
+
+\begin_layout Enumerate
+No gaps at the knots.
+\end_layout
+
+\begin_layout Enumerate
+Smooth Connections between parts.
+ No pointy kinks at the knots.
+ 
+\end_layout
+
+\begin_layout Standard
+Those 2 assumptions have VERY MUCH power on simplifying the problem.
+ In particular, they mean that the slope and second derivatives at the knot
+ points have to match exactly.
+\end_layout
+
+\begin_layout Standard
+Recall that the 
+\begin_inset Quotes eld
+\end_inset
+
+pluss function
+\begin_inset Quotes erd
+\end_inset
+
+ notation 
+\begin_inset Formula $(x_{i}-\tau)_{+}$
+\end_inset
+
+ refers to a variable that is equal to 0 if 
+\begin_inset Formula $x_{i}<\tau$
+\end_inset
+
+ and it is equal to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ if 
+\begin_inset Formula $x_{i}>\tau$
+\end_inset
+
+.
+ Similarly, one can define 
+\begin_inset Formula $(x_{i}-\tau)_{+}^{2}$
+\end_inset
+
+ or 
+\begin_inset Formula $(x_{i}-\tau)_{+}^{3}$
+\end_inset
+
+ to refer to variables that are 0 up to 
+\begin_inset Formula $\tau$
+\end_inset
+
+ and are then equal to 
+\begin_inset Formula $x_{i}^{2}$
+\end_inset
+
+ or 
+\begin_inset Formula $x_{i}^{3}$
+\end_inset
+
+ after.
+ 
+\end_layout
+
+\begin_layout Standard
+I believe these are called 
+\begin_inset Quotes eld
+\end_inset
+
+truncated power basis
+\begin_inset Quotes erd
+\end_inset
+
+ splines.
+ Note how there is obviously a lot of multicollinearity in data columns
+ that are created in this way.
+ (Obvious, right?)
+\end_layout
+
+\begin_layout Standard
+There is an alternative encoding of the spline variables called the b-spline
+ the multicollinearity is reduced.
+ Harrell's Regression Modeling Strategies states that the difference is
+ not usually substantial (and I trust his judgment).
+\end_layout
+
+\begin_layout Standard
+A first try at a formula for a cubic spline might have us trying to write
+ down a cubic equation for each knot, something silly like
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\\
+ &  & \hat{b}_{4}+\hat{b}_{5}(x_{i}-\tau_{1})_{+}+\hat{b}_{6}(x_{i}-\tau_{1})_{+}^{2}+\hat{b}_{7}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\\
+ &  & \hat{b}_{8}+\hat{b}_{9}(x_{i}-\tau_{2})_{+}+\hat{b}_{10}(x_{i}-\tau_{2})_{+}^{2}+\hat{b}_{11}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+But you should see right off that we can't really use all of this detail.
+ Because of the restriction that the cubic equations must meet at the knots
+ (no gaps!), it must be that 
+\begin_inset Formula $b_{4}=$
+\end_inset
+
+ 
+\begin_inset Formula $b_{8}=0$
+\end_inset
+
+.
+ So kick those parameters out.
+ And because the slopes of the cubics must be the same at the knots, we
+ are not allowed to have 
+\begin_inset Formula $b_{5}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{6}$
+\end_inset
+
+ be nonzero.
+ And there is the condition that the second derivatives must match as well,
+ so 
+\begin_inset Formula $b_{6}$
+\end_inset
+
+and 
+\begin_inset Formula $b_{10}$
+\end_inset
+
+ have to be eliminated.
+ 
+\end_layout
+
+\begin_layout Standard
+After throwing away the gaps and changes in slope and curvature at the knots,
+ the cubic spline formula is just
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\nonumber \\
+ &  & +\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\label{eq:Urcs}\\
+ &  & +\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)\nonumber \\
+ &  & and\, so\, forth
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+We suppose that the 
+\begin_inset Quotes eld
+\end_inset
+
+basic part
+\begin_inset Quotes erd
+\end_inset
+
+ of the relationship--which applies all across the range of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+-- is 
+\begin_inset Formula $\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}$
+\end_inset
+
+ and then as 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+moves from left to right, the model 
+\begin_inset Quotes eld
+\end_inset
+
+picks up
+\begin_inset Quotes erd
+\end_inset
+
+ additional terms.
+ After the first interior knot, we have added a quantity 
+\begin_inset Formula $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\hat{b}_{4}$
+\end_inset
+
+ equals 0, it means the relationship on the second segment is the same as
+ the first.
+ After the second knot, we have BOTH the additional curvature from the first
+ knot and the second knot, so we add on: 
+\begin_inset Formula $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$
+\end_inset
+
++ 
+\begin_inset Formula $\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}$
+\end_inset
+
+.
+ That means there are 4 parameters estimated for the basic cubic equation
+ and then there is one additional parameter for each of the segments after
+ the first.
+\end_layout
+
+\begin_layout Standard
+You still have 
+\begin_inset Quotes eld
+\end_inset
+
+knots
+\begin_inset Quotes erd
+\end_inset
+
+ when you use smooth splines.
+ But you don't have kinks.
+\end_layout
+
+\begin_layout Standard
+These can be estimated manually, in a method that exactly matches the linear
+ spline discussed above.
+ There does not seem to be a pre-packaged routine to estimate this primitive
+ version of the model.
+ It is considered a bad idea.
+\begin_inset Quotes eld
+\end_inset
+
+The truncated power basis is attractive because the plus-function terms
+ are intuitive and maybe entered as covariates in standard regression packages.
+ However, the number of plus-functions requiring evaluation increase with
+ the number of breakpoints, and these terms often become collinear, just
+ as terms in a standard polynomial regression do.
+\begin_inset Quotes erd
+\end_inset
+
+ (Lynn A Sleeper and David P.
+ Harrington, 
+\begin_inset Quotes eld
+\end_inset
+
+Regression Splines in a Cox Model with Application to Covariate Effects
+ in Liver Disease
+\begin_inset Quotes erd
+\end_inset
+
+, Journal of the American Statistical Association, 85(412) December 1990,
+ p.943 (941-949 )).
+ 
+\end_layout
+
+\begin_layout Standard
+I want to emphasize very much that a change in the coefficient for one segment
+ may have a 
+\begin_inset Quotes eld
+\end_inset
+
+ripple effect
+\begin_inset Quotes erd
+\end_inset
+
+ across all of the others.
+ If one segment's coefficient gets tuned 
+\begin_inset Quotes eld
+\end_inset
+
+way high
+\begin_inset Quotes erd
+\end_inset
+
+ then the others have to adjust to compensate.
+ So it is not really as if the cubic model with 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i}^{2}$
+\end_inset
+
+, and 
+\begin_inset Formula $x_{i}^{3}$
+\end_inset
+
+ is estimated on the first piece, then the rest are 
+\begin_inset Quotes eld
+\end_inset
+
+layered on
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Rather, they are all estimated at once, so all of those 
+\begin_inset Formula $\hat{b}'s$
+\end_inset
+
+ influence each other.
+\end_layout
+
+\begin_layout Subsection*
+Restricted (
+\begin_inset Quotes eld
+\end_inset
+
+natural
+\begin_inset Quotes erd
+\end_inset
+
+) cubic splines
+\end_layout
+
+\begin_layout Standard
+Note that the coherence and structure of the splined relationship flows
+ from the fact that the curvature within any segment depends on its relationship
+ to its neighboring segment.
+ For the segments on the left end and the right end, there is no stabilizing
+ influence of a neighbor.
+\end_layout
+
+\begin_layout Standard
+A restricted cubic spline is one that insists that, on those outer segments,
+ the prediction is based on a linear model, rather than a cubic one.
+ In the unrestricted cubic spline model, there are 
+\begin_inset Formula $k+4$
+\end_inset
+
+ parameters to estimate (including the intercept).
+ Harrell observes that the number of parameters (including the intercept)
+ is reduced to 
+\begin_inset Formula $k$
+\end_inset
+
+ if we adopt a restricted cubic spline.
+\end_layout
+
+\begin_layout Standard
+It is a bit difficult to understand how we lose 4 parameters in the transition
+ from unrestricted to restricted spline.
+ The only no-brainer is this:
+\end_layout
+
+\begin_layout Description
+Linear
+\begin_inset space ~
+\end_inset
+
+Segment
+\begin_inset space ~
+\end_inset
+
+1: 
+\begin_inset Formula $\hat{b}_{2}=\hat{b}_{3}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I 
+\emph on
+think
+\emph default
+ the two other boundary conditions are
+\end_layout
+
+\begin_layout Description
+Spline
+\begin_inset space ~
+\end_inset
+
+Coefficients
+\begin_inset space ~
+\end_inset
+
+sum
+\begin_inset space ~
+\end_inset
+
+to
+\begin_inset space ~
+\end_inset
+
+0: 
+\begin_inset Formula $\sum_{j=1}^{k}\hat{b}_{j+3}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+??How
+\begin_inset space ~
+\end_inset
+
+To
+\begin_inset space ~
+\end_inset
+
+Name
+\begin_inset space ~
+\end_inset
+
+this
+\begin_inset space ~
+\end_inset
+
+one??: 
+\begin_inset Formula $\sum_{j=1}^{k}\tau_{j}\hat{b}_{k+3}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Harrell says Stone and Koo found a way to recode the input variable.
+ Suppose you could somehow magically create these new variables 
+\begin_inset Formula $z_{1i},$
+\end_inset
+
+ 
+\begin_inset Formula $z_{2i}$
+\end_inset
+
+, and 
+\begin_inset Formula $z_{3i}$
+\end_inset
+
+ so that you could estimate a model with 5 knots as
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{b}_{o}+\hat{b}_{1}x_{i}+\hat{c}_{1}z_{1i}+\hat{c}_{2}z_{2i}+\hat{c}_{3}z_{3i}\label{eq:rcs2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and after estimating that, translate the estimates of these coefficients
+ back into the form given by a more substantively appealing expression like
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}(x_{i}-\tau_{1})^{3}+\hat{b}_{3}(x_{i}-\tau_{2})_{+}^{3}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What is the magical encoding? See Harrell p.
+ 20.
+ 
+\begin_inset Formula 
+\[
+z_{ji}=(x_{i}-\tau_{j})_{+}^{3}+(x_{i}-\tau_{k-1})_{+}^{3}\frac{\tau_{k}-\tau_{j}}{\tau_{k}-\tau_{k-1}}+(x_{i}-\tau_{k})_{+}^{3}\frac{\tau_{k-1}-\tau_{j}}{\tau_{k}-\tau_{k-1}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What the hell is that? Will you settle for examples?
+\end_layout
+
+\begin_layout Standard
+I load the Design package with the library () command first:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<10,echo=T,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(Design)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Design has a function 
+\begin_inset Quotes eld
+\end_inset
+
+rcs
+\begin_inset Quotes erd
+\end_inset
+
+ that can create the new component variables for us.
+ That loads the splines library as well because Design requires it.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<11,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+asequence <- 1:20
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+splineMatrix <- rcs(asequence,4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+splineMatrix
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have to specify either the number of knots or a vector of positions for
+ knots.
+ If we don't specify the exact positions of the knots, rcs will position
+ them so that the data is divided into equally sized subgroups (quintiles,
+ etc.).
+ We can use 
+\begin_inset Formula $rcs(x)$
+\end_inset
+
+ in as an input variable in a regression model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<12, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod4 <- lm(y ~ rcs(x,4))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,10, length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+predict4 <- predict(mymod1, newdata=data.frame(x=newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="Using lm(y~rcs(x,4))", type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y, pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx, predict4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<13,fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<12>>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The summary information on the fitted model, well, only its Mother could
+ love it:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<14,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What if you make the number of knots much higher, say 10?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<15,fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod4 <- lm(y ~ rcs(x,10))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- seq(0,10, length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+predict4 <- predict(mymod1, newdata=data.frame(x=newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,main="10 Knots! Using lm(y~rcs(x,10))", pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newx, predict4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And if you thought the other output was ugly, dig this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<16,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mymod4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+rm (mymod4, predict4, newx)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Choosing the number of knots
+\end_layout
+
+\begin_layout Standard
+The conventional wisdom, following studies by Stone, is that the positioning
+ of the knots is not very influential.
+ If the knots section off the data into evenly sized groups, then the fit
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+pretty good.
+\begin_inset Quotes erd
+\end_inset
+
+ But the number of knots is important.
+ The conventional wisdom also says that the number of knots should usually
+ be between 4 and 7, and my testing confirms that adding more than 7 knots
+ usually does not affect the predictions very much.
+\end_layout
+
+\begin_layout Standard
+There is a danger of 
+\begin_inset Quotes eld
+\end_inset
+
+over-fitting,
+\begin_inset Quotes erd
+\end_inset
+
+ of creating a too-complicated model that would not fit against a sample
+ from the same data-generating process.
+ So one would like to get rid of as many knots as possible while preserving
+ the fit of the predictions.
+ 
+\end_layout
+
+\begin_layout Standard
+The Cross Validation (CV) and Generalized Cross Validation (GCV) are frequently
+ discussed criteria.
+ As far as I understand it, these were developed for the 
+\begin_inset Quotes eld
+\end_inset
+
+smoothing splines
+\begin_inset Quotes erd
+\end_inset
+
+ models (see below; Craven, P.
+ and Wahba, G.
+ (1979).
+ Smoothing noisy data with spline functions.
+ Numer.
+ Math., 31: 377-403) but they are applicable to any of these fitting procedures.
+ As indicated in the MARS example, the gcv is calculated with each fitted
+ model.
+ 
+\end_layout
+
+\begin_layout Standard
+The AIC from fitted models can also be used to decide if the number of splines.
+\end_layout
+
+\begin_layout Subsubsection*
+Cross Validation 
+\end_layout
+
+\begin_layout Standard
+CV stands for Cross Validation.
+ It is a 
+\begin_inset Quotes eld
+\end_inset
+
+leave-one-out
+\begin_inset Quotes erd
+\end_inset
+
+ analysis of the fit.
+ Remove the 
+\begin_inset Formula $i'th$
+\end_inset
+
+ observation and re-calculate the predictive curve.
+ Figure out what the prediction is for the input values of that 
+\begin_inset Formula $i'th$
+\end_inset
+
+ observation.
+ Call that leave-one-out prediction 
+\begin_inset Formula $\check{y}_{i}$
+\end_inset
+
+.
+ Cycle through all of the observations and average the squared errors.
+ The Cross Validation estimate of prediction error is
+\begin_inset Formula 
+\[
+CV=\frac{1}{N}\sum_{i=1}^{N}(y_{i}-\check{y}_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The calculation of CV may be very time-consuming.
+ The model must be re-estimated 
+\begin_inset Formula $N$
+\end_inset
+
+ times.
+\end_layout
+
+\begin_layout Subsubsection*
+Generalized Cross Validation
+\end_layout
+
+\begin_layout Standard
+Think of translating the CV into a generalized linear model framework.
+\end_layout
+
+\begin_layout Standard
+In the R package called 
+\begin_inset Quotes eld
+\end_inset
+
+mgcv
+\begin_inset Quotes erd
+\end_inset
+
+, one finds a set of methods that will fit models (spline models) to optimize
+ the GCV.
+ In the mgcv documentation, the GCV statistic is defined as
+\begin_inset Formula 
+\[
+GCV=\frac{nD}{(n-df)^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where deviance is an indicator of the badness of fit (recall the GLM?),
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ is the sample size and 
+\begin_inset Formula $df$
+\end_inset
+
+ is the effective degrees of freedom.
+ The effective degrees of freedom reflects the number of degrees of freedom
+ that are used to estimate the model--something like the number of cutpoints
+ or the amount of curvature allowed in the spline.
+\end_layout
+
+\begin_layout Standard
+An alternative criterion in 
+\begin_inset Quotes eld
+\end_inset
+
+mgcv
+\begin_inset Quotes erd
+\end_inset
+
+ is the Unbiased Risk Estimator
+\begin_inset Formula 
+\[
+UBRE=\frac{D}{n}+\frac{2s\cdot df}{n}-s
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $s$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+scale parameter
+\begin_inset Quotes erd
+\end_inset
+
+ of the generalized linear model (variance of error term in Normal/linear
+ model).
+\end_layout
+
+\begin_layout Standard
+I used the 
+\begin_inset Quotes eld
+\end_inset
+
+gam
+\begin_inset Quotes erd
+\end_inset
+
+ function in mgcv to experiment with the impact of changing the number of
+ knots in a cubic spline model.
+ The following code illustrates the fitting of one gam model for which the
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ (knot) parameter is set to 4, and it then fits models for 
+\begin_inset Formula $k=3,4,...,10$
+\end_inset
+
+ and chooses the best one by finding the lowest GCV.
+ The mgcv procedure is supposed to automate this choice for us, but for
+ me it just churns up CPU time and never responds.
+ I'm bookmarked that one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<17,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mgcv)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gam(y~s(x,k=4,bs="cr"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mygams <- list()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for ( i in 3:10 ) { 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mygams[[i-2]] <- gam(y~s(x,k=i,bs="cr"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gcvresults <- vector()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:7){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gcvresults[i] <- mygams[[i]]$gcv.ubre
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gcvresults
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+bestone <- mygams[[which.min(gcvresults)]]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(bestone)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(bestone)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,pch=16,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#G<-gam(y~s(x),fit=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#mgfit<-mgcv(G$y,G$X,G$sp,G$S,G$off,G$rank,C=G$C)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Smoother Matrix and effective degrees of freedom
+\end_layout
+
+\begin_layout Standard
+Recall 
+\begin_inset Formula $GCV$
+\end_inset
+
+, where the effective degrees of freedom is used.
+ In the locfit documentation, it is claimed that
+\begin_inset Formula 
+\[
+GCV=\frac{n\sum_{i=1}^{b}(y_{i}-\hat{y}_{i})^{2}}{(n-tr(S))^{2}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $S$
+\end_inset
+
+ represents the smoother matrix, which is the nonparametric equivalent of
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+hat matrix
+\begin_inset Quotes erd
+\end_inset
+
+ in OLS regression.
+ The symbol 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $tr(S)$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ stands for the trace of 
+\begin_inset Formula $S$
+\end_inset
+
+, which is the sum of the diagonal elements.
+\end_layout
+
+\begin_layout Standard
+First, what is a 
+\begin_inset Quotes eld
+\end_inset
+
+Smoother Matrix
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+Recall the 
+\begin_inset Quotes eld
+\end_inset
+
+OLS hat matrix
+\begin_inset Quotes erd
+\end_inset
+
+ is the matrix 
+\begin_inset Formula $H$
+\end_inset
+
+ against which you multiply 
+\begin_inset Formula $y$
+\end_inset
+
+ to convert observations into predictions (
+\begin_inset Formula $\hat{y}=Hy$
+\end_inset
+
+).
+ The Smoother matrix is performing exactly that same role,
+\begin_inset Formula 
+\[
+\hat{y}=Sy
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Imagine an extreme case in which the Smoother Matrix is diagonal, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+S=\left[\begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That would be an 
+\begin_inset Quotes eld
+\end_inset
+
+interpolation
+\begin_inset Quotes erd
+\end_inset
+
+ that gives back each point's actual value as a prediction.
+ It is using 
+\begin_inset Formula $N$
+\end_inset
+
+ (sum of diagonal) degrees of freedom.
+ On the other hand, if the smoother matrix has small values along the diagonal,
+ then the observations are 
+\begin_inset Quotes eld
+\end_inset
+
+gaining strength from each other
+\begin_inset Quotes erd
+\end_inset
+
+ and the estimates of each one are not completely separate.
+ Not as much separate information is being used to make each prediction.
+\end_layout
+
+\begin_layout Standard
+The effective degrees of freedom is given by the trace of the Smoother matrix
+ (
+\begin_inset Formula $df=trace(S)$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The CV value can be calculated using the Smoother matrix, where 
+\begin_inset Formula $S_{ii}$
+\end_inset
+
+ is the i't diagonal element.
+\begin_inset Formula 
+\[
+CV=\frac{1}{N}\sum_{i=1}^{N}\left[\frac{y_{i}-\hat{y}_{i}}{1-S_{ii}}\right]^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This does not require the fitting of N separate leave-one-out models, but
+ I'm not sure it helps that much because calculating the Smoother matrix
+ itself might be expensive.
+ Hutchison and de Hoog (1985) found an algorithm to calculate the diagonal
+ elements of 
+\begin_inset Formula $S$
+\end_inset
+
+ efficiently.
+\end_layout
+
+\begin_layout Standard
+The GCV as a generalization of CV is seen most readily in light of this
+ latter definition of CV.
+ replace the computationally difficult values 
+\begin_inset Formula $S_{ii}$
+\end_inset
+
+ with the average 
+\begin_inset Formula $S_{ii}$
+\end_inset
+
+ value, which is 
+\begin_inset Formula $\frac{trace(S)}{N}$
+\end_inset
+
+.
+ Inserting that into the CV formula gives all N terms a comon denominator,
+ and this it can be re-written
+\begin_inset Formula 
+\[
+CV=\frac{\frac{1}{N}\sum(y_{i}-\hat{y}_{i})^{2}}{(1-\frac{trace(S)}{N})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The use of the trace of 
+\begin_inset Formula $S$
+\end_inset
+
+ as an estimate of the degrees of freedom has motivation in the OLS model.
+ In the OLS model, the hat matrix is 
+\begin_inset Formula $H_{ii}$
+\end_inset
+
+, and it is known that 
+\begin_inset Formula $trace(H_{ii})=p,$
+\end_inset
+
+ the number of fitted parameter estimates.
+ I have a separate handout that describes the hat matrix in depth.
+ It is called 
+\begin_inset Quotes eld
+\end_inset
+
+Regression Diagnostics.
+\begin_inset Quotes erd
+\end_inset
+
+ Thus, one might refer to the unbiased estimated variance of the error term
+ in OLS as
+\begin_inset Formula 
+\[
+\hat{\sigma}^{2}=\frac{\sum(y_{i}-\hat{y}_{i})^{2}}{N-p}=\frac{\sum(y_{i}-\hat{y}_{i})^{2}}{N-trace(H)}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Extension to multi-dimensional predictors
+\end_layout
+
+\begin_layout Standard
+As the 
+\begin_inset Quotes eld
+\end_inset
+
+fields
+\begin_inset Quotes erd
+\end_inset
+
+ package (and web documentation) illustrates so well, several predictor
+ variables can be used.
+ The leading method is called 
+\begin_inset Quotes eld
+\end_inset
+
+thin plate splines.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Local Smoothing Regressions: Lowess (Loess)
+\end_layout
+
+\begin_layout Standard
+Spline approaches try to think of a segmented a relationship in a way that
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+wholistic.
+\begin_inset Quotes erd
+\end_inset
+
+ It fits the relationship of the 
+\begin_inset Quotes eld
+\end_inset
+
+whole line
+\begin_inset Quotes erd
+\end_inset
+
+ at once while tailoring some pieces for different parts.
+\end_layout
+
+\begin_layout Standard
+Take a radically different approach by simply calculating a predicted value,
+ one for each 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ Base the prediction only on observations that are 
+\begin_inset Quotes eld
+\end_inset
+
+close to
+\begin_inset Quotes erd
+\end_inset
+
+ each particular point.
+ The original proposal was called 
+\begin_inset Quotes eld
+\end_inset
+
+lowess
+\begin_inset Quotes erd
+\end_inset
+
+ and a revised approach was called (loess).
+\end_layout
+
+\begin_layout Standard
+Consider a particular point, 
+\begin_inset Formula $x'$
+\end_inset
+
+ (pronounced 
+\begin_inset Quotes eld
+\end_inset
+
+x prime
+\begin_inset Quotes erd
+\end_inset
+
+).
+ What is close to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+? That's where the bandwidth, 
+\begin_inset Formula $h$
+\end_inset
+
+, comes into play.
+ Observations that are further than 
+\begin_inset Formula $h$
+\end_inset
+
+ units away don't matter at all, while the ones inside that bandwith have
+ more weight when they are closer to 
+\begin_inset Formula $x'$
+\end_inset
+
+.
+ In the locfit package, as in other loess implementations I'm aware of,
+ the default weight placed on each neighboring observation depends on 
+\begin_inset Formula $\frac{|x_{i}-x'|}{h}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+W(x_{i})=Weight\, on\,(x_{i})=\begin{array}{cc}
+(1-|\frac{x_{i}-x'}{h}|^{3})^{3} & if\,|\frac{x_{i}-x'}{h}|<1\\
+0 & otherwise
+\end{array}
+\]
+
+\end_inset
+
+What does that look like, I wonder to myself.
+ Lucky there's R to show it:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<18,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x3 <- seq(0,10,length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xprime <- 4
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+bandwidth <- 3.1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+weight <- (1- (abs((x3-xprime)/bandwidth))^3)^3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+weight <- ifelse(abs(xprime-x3)>bandwidth,0,weight)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x3,weight,type="l",main="Default loess weighting for x=4, bandwidth=3.1")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any kind of formula can be used to calculate predicted values.
+ We might, for simplicity, just use a linear model, 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}$
+\end_inset
+
+, or a quadratic model, 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}$
+\end_inset
+
+.
+ In 
+\begin_inset Quotes eld
+\end_inset
+
+ordinary least squares,
+\begin_inset Quotes erd
+\end_inset
+
+ there are no weights:
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}(y_{i}-\hat{y}_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But the weighted local regression uses the 
+\begin_inset Formula $W(x_{i})$
+\end_inset
+
+ to de-emphasize the far-away values.
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}W(x_{i})[y_{i}-\hat{y}]^{2}=\sum_{i=1}^{n}W(x_{i})[y_{i}-(\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}]^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the MASS package's loess method, and in locfit as well, the bandwidth
+ is not described as a constant, but rather it is an interval wide enough
+ to include a given fraction of the observations in the data.
+ So, instead of thinking of 
+\begin_inset Formula $h$
+\end_inset
+
+ as a width that is the same for any given point, it may either grow wider
+ or narrower depending on the clustering of observations.
+ 
+\end_layout
+
+\begin_layout Standard
+This code will use locfit to calculate the predictions, and it uses the
+ default plot method that is provided with locfit:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<locex,echo=T,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(locfit)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<18c,echo=T,fig=F,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fit1 <- locfit(y~lp(x,nn=0.5)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(fit1,main="Local fitting in locfit package",ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gcv(fit1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<18c>>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The smooth looking line here is really an optical illusion.
+ The loess approach does not calculate predicted values on intervals.
+ Rather, it calculates predictions for each of the points, and then the
+ graphing tool connects those predicted points and makes them look smooth.
+ I couldn't figure how to reveal that with locfit, but I could get it with
+ MASS package.
+\end_layout
+
+\begin_layout Standard
+The following code uses the MASS package's loess method.
+ Note this is done with a more obvious sequence of calculating the predictions
+ and then plotting them with the default plot method.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<locMASS,echo=T,fig=F,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+fit2 <- loess(y~x,span=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+testx <- x[order(x)]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pred3 <- predict(fit2, data.frame(x=testx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, pch=16, main="loess output from MASS",ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(testx, pred3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<locMASS>>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, type="n", main="loess output from MASS without deceptive line",
+ ylim=c(-6,6))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, y, pch=16)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, fit2$fitted, pch=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#detach("package:MASS")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#rm(testx, fit2, pred3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Extension to several input variables
+\end_layout
+
+\begin_layout Standard
+The loess model, the second-generation one, included the ability to add
+ more predictor variables.
+ The transition from one to several variables is very simple in theory.
+ 
+\end_layout
+
+\begin_layout Standard
+Measuring distance.
+ We still weight neighboring points by distance.
+ The only difference is that distance now is more difficult to measure.
+ Recall from the pythagorean theorem (
+\begin_inset Formula $a^{2}+b^{2}=c^{2}$
+\end_inset
+
+) that the distance between two points 
+\begin_inset Formula $x_{1}=(x_{11},x_{12})$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}=(x_{21},x_{22})$
+\end_inset
+
+ is 
+\begin_inset Formula $\sqrt{(x_{11}-x_{21})^{2}+(x_{21}-x_{22})^{2}}$
+\end_inset
+
+.
+ That is a Euclidean method of measuring that works for any number of dimensions
+, so if there are, say 4 variables being considered, then the distance between
+ case 1, 
+\begin_inset Formula $x_{1}=(x_{11},x_{12},x_{13},x_{14})$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}=(x_{21},x_{22},x_{23},x_{24})$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\[
+\sqrt{(x_{11}-x_{21})^{2}+(x_{21}-x_{22})^{2}+(x_{31}-x_{32})^{2}+(x_{41}-x_{42})^{2}}
+\]
+
+\end_inset
+
+.
+ Refer to that measurement (
+\begin_inset Quotes eld
+\end_inset
+
+norm
+\begin_inset Quotes erd
+\end_inset
+
+) as 
+\begin_inset Formula $\Vert x_{1}-x_{2}\Vert$
+\end_inset
+
+.
+ Using that distance measurement, then one simply calculates the weight
+ by replacing 
+\begin_inset Formula $(x_{i}-x')$
+\end_inset
+
+ with 
+\begin_inset Formula $\Vert x_{1}-x_{2}\Vert$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Recall that loess calculations are always done with a specific reference
+ point 
+\begin_inset Formula $x'$
+\end_inset
+
+ for which we need to make a calculation.
+ Suppose the values observed for that specific case are 
+\begin_inset Formula $x'=(x_{1}',x_{2}',x_{3}',x_{4}')$
+\end_inset
+
+.
+ Calculating a predicted value for 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+is, with quadratic model, calculated 
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}(x_{i1}-x_{1}')+\hat{b}_{2}(x_{i2}-x_{2}')+\hat{b}_{3}(x_{i1}-x_{1}')^{2}\\
+ &  & +\hat{b}_{4}(x_{i2}-x_{2}')^{2}+\hat{b}_{5}(x_{i1}-x_{1}')(x_{i2}-x_{2}')
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Smoothing Splines: marriage of Splines and Loess
+\end_layout
+
+\begin_layout Standard
+Loess estimates an equation for every point.
+ Splines seem not to, but rather project their curves across segments of
+ 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ Smoothing Splines is doing both.
+\end_layout
+
+\begin_layout Standard
+Your goal is still to choose a 
+\begin_inset Quotes eld
+\end_inset
+
+best
+\begin_inset Quotes erd
+\end_inset
+
+ prediction for each point, a set of 
+\begin_inset Quotes eld
+\end_inset
+
+best estimates
+\begin_inset Quotes erd
+\end_inset
+
+ for each observation, 
+\begin_inset Formula $\hat{y}_{i}=f(x_{i})$
+\end_inset
+
+.
+ In the Smoothing Spline approach, we build a natural spline model in which
+ every unique point in 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is a knot, then we adjust our predictive model to minimize the penalized
+ residual error plus a penalty for 
+\begin_inset Quotes eld
+\end_inset
+
+curvy
+\begin_inset Quotes erd
+\end_inset
+
+ predictions.
+ Note, since we use natural splines, it is very meaningful to talk about
+ the first and second derivatives at a given point.
+ Here is the objective function 
+\begin_inset Formula 
+\[
+SS(f,\lambda)=\sum_{i=1}^{N}\left(y_{i}-f(x_{i})\right)^{2}+\lambda\int_{x_{min}}^{x_{max}}(f''(x))^{2}dx
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first term is a penalty for a bad fit.
+\end_layout
+
+\begin_layout Standard
+The second term is a 
+\begin_inset Quotes eld
+\end_inset
+
+roughness penalty
+\begin_inset Quotes erd
+\end_inset
+
+ that you pay for having a model with lots of bumps and bends.
+ (Recall, if 
+\begin_inset Formula $f''$
+\end_inset
+
+ is 0, then the relationship is linear).
+ 
+\end_layout
+
+\begin_layout Standard
+The smoothing parameter is 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ The second derivative is used because 
+\begin_inset Formula $f(x_{i})$
+\end_inset
+
+ is cubic.
+\end_layout
+
+\begin_layout Standard
+The smoothing spline approach is often justified with mention of a theorem,
+ which states that: The unique minimizer of SS is a natural cubic spline
+ with knots at the unique values of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+How much smoothing?
+\end_layout
+
+\begin_layout Standard
+Recall that, in the restricted cubic spline model, we wondered how many
+ knots to select?
+\end_layout
+
+\begin_layout Standard
+Here we allow ourselves N knots, but then we penalize curvature.
+ 
+\end_layout
+
+\begin_layout Standard
+If you set 
+\begin_inset Formula $\lambda=\infty$
+\end_inset
+
+, you are applying a harsh penalty to curvature, and the result will be
+ that the best model is one in which 
+\begin_inset Formula $f''=0$
+\end_inset
+
+ everywhere.
+ In other words, an Ordinary Least Squares straight line is the best.
+ 
+\end_layout
+
+\begin_layout Standard
+If you set 
+\begin_inset Formula $\lambda=0$
+\end_inset
+
+, then you are allowing 
+\begin_inset Formula $f''$
+\end_inset
+
+ to be huge, in which case the result will be a 
+\begin_inset Quotes eld
+\end_inset
+
+connect the dots
+\begin_inset Quotes erd
+\end_inset
+
+ interpolation (assuming there's just one observation at each 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Try out the 
+\begin_inset Quotes eld
+\end_inset
+
+smooth.spline
+\begin_inset Quotes erd
+\end_inset
+
+ function from the MASS bundle's 
+\begin_inset Quotes eld
+\end_inset
+
+modreg
+\begin_inset Quotes erd
+\end_inset
+
+ library.
+ The default has all.knots=T, but I wrote it in just so I remember
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<20a, echo=T,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<20b,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ss1 <- smooth.spline(x,y, all.knots=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+print(ss1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, type="n", main="Comparing smooth.spline results")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ss1$x,ss1$y,lty=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ss2 <- smooth.spline(x,y, all.knots=F, nknots=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+print(ss2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(ss2$x,ss2$y,lty=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+legend(.7,-3, c("all.knots=T","knots=4"), lty=c(1,4))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,pch=16,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+AVAS
+\end_layout
+
+\begin_layout Standard
+So far, we have thought of ways to bend the regression line through the
+ data distribution.
+ We have not given ourselves the luxury of transforming the variables.
+ We have seen examples in the past in which logging variables might eliminate
+ clumpiness or make observations appear more normal.
+ However, the process of transforming variables in regression can be quite
+ a bit more elaborate.
+ Consider the article by Tibshirani (Rob Tibshirani (1987), ``Estimating
+ optimal transformations for regression''.
+ Journal of the American Statistical Association 83, 394.
+ ) He outlines a transformation process that makes the scatterplot suitable
+ for a linear regression with homogeneous variance.
+\end_layout
+
+\begin_layout Standard
+The acepack was first brought to my attention by Harrell's Regression Modeling
+ Strategies, which mentions the fact that ordinal predictor variables may
+ be transformed in this way so that their impact can be estimated by a single
+ slope coefficient.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider the application of his model to the sine wave that we have used
+ a running example.
+ The transformed 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ are quite pleasantly linear and the linear model fits very nicely.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<22,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(acepack)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+avasfit <- avas(x, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$tx, avasfit$ty,main="AVAS procedure from Acepack",xlab="transformed
+ values of x",ylab="transformed values of y",type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+points(avasfit$tx, avasfit$ty,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(lm(avasfit$ty~avasfit$tx))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What do we have to do to 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ in order to achieve such a beautiful finding?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<23,echo=T,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$x, avasfit$tx,ylab="transformed x",xlab="original x")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(avasfit$y, avasfit$ty,ylab="transformed y",xlab="original y")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Would you rather bend the line, or bend the data, or both? To tell you the
+ truth, I can't quite decide myself.
+ The avas procedure can be applied to many independent variables, and the
+ user can require the program to leave some untransformed or subject some
+ only to monotonic transformations.
+\end_layout
+
+\begin_layout Standard
+I have not seen any research on applying these ideas to logistic regression
+ or other frequently used tools.
+ On the other hand, there has been very eager research on the application
+ of splines and loess in the generalized linear model, as evidenced in packages
+ like gam or mgcv.
+ 
+\end_layout
+
+\begin_layout Standard
+But if I had to bet $100 on a fit of a linear model, I'd be really tempted
+ to take Tibshirani's suggestion.
+ 
+\end_layout
+
+\end_body
+\end_document

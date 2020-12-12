@@ -1,0 +1,6928 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+%%not for article, but for presentation
+%%mode<presentation>{
+%\newcommand\makebeamertitle{\frame{\maketitle}}}
+
+
+%%only for presentation
+\mode<presentation>{
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+%%for presentations
+\mode<presentation>{
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+logicalmkup
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\columnsep 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(75645)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Nonlinearity in Regression 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+Trimmed Down for 2015!
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2014
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Are Relationships 
+\begin_inset Quotes eld
+\end_inset
+
+Really
+\begin_inset Quotes erd
+\end_inset
+
+ Linear?
+\end_layout
+
+\begin_layout Itemize
+Models (so far): 
+\begin_inset Formula 
+\[
+y_{i}=b_{0}+b_{1}x_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Maybe that's good enough
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Occam's razor (use simplest model first)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Mathematically (from Calculus, see Taylor's theorem) we may add complexity
+ in stages, inserting 
+\begin_inset Formula $x_{i}^{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i}^{3}$
+\end_inset
+
+, to 
+\begin_inset Quotes eld
+\end_inset
+
+bend
+\begin_inset Quotes erd
+\end_inset
+
+ a line.
+\end_layout
+
+\begin_layout BeginFrame
+The 
+\begin_inset Quotes eld
+\end_inset
+
+True
+\begin_inset Quotes erd
+\end_inset
+
+ Model is Approximately Linear
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+The relationship is almost linear
+\end_layout
+
+\begin_layout Itemize
+Predictions won't be much different
+\end_layout
+
+\begin_layout Itemize
+Slope of line in that region won't be much different
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex20, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- runif(400, min=0, max=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 10 -2 * x + 15 * sin(0.04*x) + 15*rnorm(400,0,1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(10 -2 * x, add=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(10 -2*x + 15 * sin(0.04*x), col="red", add=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("true relationship","linear approximation"),
+ lwd=c(2,2), col=c("red","black"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+The 
+\begin_inset Quotes eld
+\end_inset
+
+True
+\begin_inset Quotes erd
+\end_inset
+
+ Model is Approximately Linear
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+After error gets thrown into the model, its hard to see how there's much
+ practical difference between the predictions of the 
+\begin_inset Quotes eld
+\end_inset
+
+approximate
+\begin_inset Quotes erd
+\end_inset
+
+ model and the true model.
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex40, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod2, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(10 -2*x + 15 * sin(0.04*x), col="red", add=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("true relationship","linear OLS Estimate"),
+ lwd=c(2,2), col=c("red","black"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+The Straight Line Model Is Not Useful If...
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Perhaps a picture really is worth 1000 words
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex50, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- runif(200, min=0, max=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- x[order(x)]
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 3 + 13.4 * x - .15 * x^2 + rnorm(200,m=0, s=22)
+\end_layout
+
+\begin_layout Plain Layout
+
+modf <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+fakeeqn <- expression(paste(y[i]== 3 + 13.4*x[i] - 0.15*x[i]^2 + e[i]))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(modf, col="red", lty=2,lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 13.4 * x - .15 * x * x, add=T, lty=1, col="black", lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("OLS Linear Fit","True Nonlinear Curve"),
+ col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Linear Splines
+\end_layout
+
+\begin_layout BeginFrame
+Segments
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+A straight line will approximate any small part of the big curve
+\end_layout
+
+\begin_layout Itemize
+If data is observed only in a narrow range, a straight line might be sufficient.
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex70, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 13.4 * x - .15 * x * x, lty=1, col="black", lwd=1, from=0, to=100,
+ ylab="")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines( c(19,29), c(210.6, 269), col="red",lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines( c(59,74), c( 278.60, 184), col="green",lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines( c(80,95), c( 125, -65), col="blue",lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = c(19, 29, 59, 74, 80, 95), col = "gray70")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex70}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+A Linear Spline Model
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Choose 
+\begin_inset Quotes eld
+\end_inset
+
+knot
+\begin_inset Quotes erd
+\end_inset
+
+ points, 
+\begin_inset Formula $k_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $k_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $k_{3}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+G.E.P.
+ Box, 
+\begin_inset Quotes eld
+\end_inset
+
+Essentially, all models are wrong, but some are useful.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex75, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 13.4 * x - .15 * x * x,lty=1, col="black", lwd=1, from=20, to=50,
+ ylab="")
+\end_layout
+
+\begin_layout Plain Layout
+
+segments(x0=c(20,33, 43.4), x1 = c(33,43.4,50.1), y0= c(212,282, 302), y1=c(
+ 282, 302, 297), col = rgb(1,0,0,.8), lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+segments(x0=c(20,33, 43.4), x1 = c(33,43.4,50.1), y0= c(212,282, 302), y1=c(
+ 282, 302, 297), col = rgb(1,0,0,.5), lwd =10)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(text = c(expression(k[1]), expression(k[2]), expression(k[3])), side
+ = 1, at = c(20, 33, 43.4), line = -2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex75}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Estimating a Spline Model
+\end_layout
+
+\begin_layout Itemize
+Write out the linear predictor, formula will look something like
+\begin_inset Formula 
+\begin{eqnarray}
+b_{0}+b_{1}x_{i}+b_{2}(x_{i}-k_{2})+b_{3}(x_{i}-k_{3})\\
+=b_{0}+b_{1}x_{i}+b_{2}x2_{i}+b_{3}x3_{i}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Essentially, one manufactures 
+\begin_inset Quotes eld
+\end_inset
+
+before & after dummy variables
+\begin_inset Quotes erd
+\end_inset
+
+ and creates 3 columns for variants of x
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The 
+\begin_inset Formula $b_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{3}$
+\end_inset
+
+ are 
+\begin_inset Quotes eld
+\end_inset
+
+slope shifts: the effect of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+jumps
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Splines
+\end_layout
+
+\begin_layout Itemize
+Handy!
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Relative easy to code up
+\end_layout
+
+\begin_layout Itemize
+Will usually reveal 
+\begin_inset Quotes eld
+\end_inset
+
+very bendy
+\begin_inset Quotes erd
+\end_inset
+
+ relationships
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Problems
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+jagged
+\begin_inset Quotes erd
+\end_inset
+
+ edges are theoretically bothersome (preferred 
+\begin_inset Quotes eld
+\end_inset
+
+smooth
+\begin_inset Quotes erd
+\end_inset
+
+ curves)
+\end_layout
+
+\begin_layout Itemize
+Assumes knots are at known points
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Estimating the knots is a challenging problem.
+ 
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+Intrinsically Linear
+\end_layout
+
+\begin_layout BeginFrame
+Can Be Estimated With OLS
+\end_layout
+
+\begin_layout Itemize
+Re-conceptualize 
+\begin_inset Quotes eld
+\end_inset
+
+columns
+\begin_inset Quotes erd
+\end_inset
+
+ of predictors.
+\end_layout
+
+\begin_layout Itemize
+Might replace 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ with 
+\begin_inset Formula $\mathrm{log}(x_{i})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}log(x_{i})+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+throw in
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ squared (or one of many transformed x columns)
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sometimes have used reciprocal or square root, but not so often.
+\end_layout
+
+\begin_layout Section
+Quadratic: 
+\begin_inset Formula $x$
+\end_inset
+
+ Squared
+\end_layout
+
+\begin_layout Subsection
+Definition
+\end_layout
+
+\begin_layout BeginFrame
+The Quadratic Model: add 
+\begin_inset Formula $b_{2}x_{i}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Replace the usual
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+b_{0}+b_{1}x_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+With this
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Graph the Quadratic
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Remember high school math.
+ If
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $b_{2}<0$
+\end_inset
+
+, then this is a 
+\begin_inset Quotes eld
+\end_inset
+
+hill
+\begin_inset Quotes erd
+\end_inset
+
+ shaped function
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $b_{2}>0$
+\end_inset
+
+, then this is a 
+\begin_inset Quotes eld
+\end_inset
+
+U
+\begin_inset Quotes erd
+\end_inset
+
+ shaped function
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+peak
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+bottom
+\begin_inset Quotes erd
+\end_inset
+
+ occurs where 
+\begin_inset Formula 
+\begin{equation}
+x_{i}=\frac{-b_{1}}{2b_{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+From elementary calculus, recall the overall slope of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ as a function of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+\frac{dy}{dx_{i}}=b_{1}+2b_{2}x_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<quad05, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(5 + 0.3 *x + 0.1*x^2, from = -5, to = 10, lty = 1, col = "black")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(6, 8, expression(b[2] > 0), col = "black") 
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(15 + 0.4 *x - 0.1*x^2, from = -5, to = 10, lty = 2, col = "blue", add
+ = T, lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(-2, 12, expression(b[2] < 0), col = "blue", lwd = 2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-quad05}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Reasons to believe that 
+\begin_inset Formula $y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}$
+\end_inset
+
+ is a Useful Model
+\end_layout
+
+\begin_layout Itemize
+This is only one step more complicated than the linear model
+\end_layout
+
+\begin_layout Itemize
+Including 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+ is like interacting 
+\begin_inset Formula $x$
+\end_inset
+
+ with itself
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+(b_{1}+b_{2}x_{i})x_{i}+e_{i}\label{eq:slope0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The effect of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ depends on where 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+is
+\begin_inset Quotes erd
+\end_inset
+
+: 
+\begin_inset Formula $b_{1}+b_{2}x_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If 
+\begin_inset Formula $b_{2}>0,$
+\end_inset
+
+ then the marginal effect of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is always getting bigger as 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ gets bigger
+\end_layout
+
+\begin_layout Subsection
+Examples
+\end_layout
+
+\begin_layout BeginFrame
+Quadratic Example #1
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename importfigs/Roca-2011-MeasuringCorruption.png
+	width 6cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+From Thomas Roca.
+ 2011.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Measuring Corruption: Perception Surveys or Victimization Surveys
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Quatratic fits OK, but I wish I had some function with a sharper peak.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Quadratic In Use #2
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename importfigs/Roca-2010-TrapOfDemocratization.png
+	width 6cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+From Thomas Roca.
+ 2010.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Corruption Perceptions: The Trap of Democratization
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Quatratic fits OK, but I wish I had some function with a sharper peak.
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+Transformations that Don't Turn
+\end_layout
+
+\begin_layout BeginFrame
+Log, Square Root, Reciprocal
+\end_layout
+
+\begin_layout Itemize
+Log on the right
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}log(x_{i})+e_{i}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Square root on the right
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}\sqrt{x_{i}}+e_{i}\label{eq:13-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Reciprocal
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}\frac{1}{x_{i}}+e_{i}\label{eq: reciprocal}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In either case, we just calculate a new variable,
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+xlog = log(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+xsqrt = sqrt(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+xrec = 1/x
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+And fit a regression:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+lm(y ~ xlog)
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+lm(y ~ xsqrt)
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+lm(y ~ xrec)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Why These, Not Quadratic?
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The Quadratic goes up and down
+\end_layout
+
+\begin_layout Itemize
+These are 
+\emph on
+monotonic 
+\emph default
+transformations
+\end_layout
+
+\begin_layout Itemize
+log and sqrt are unbounded, reciprocal approaches a limit
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<curves10,fig=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(log(x), 0.1, 30, ylab = "", lty = 1, col = "black", ylim = c(-3, 7))
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(sqrt(x), 0.1, 30, lty = 2, col = "green", add = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(6 - 10/x, 0.1, 30, lty = 4, col = "orange", add = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend = c("log(x)", "sqrt(x)", "6 -10/x"), lty = c(1,2,4),
+ col = c("black", "green","orange"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-curves10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Logging to make data 
+\begin_inset Quotes eld
+\end_inset
+
+more Normal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Suppose Distribution of y Variable is 
+\begin_inset Quotes eld
+\end_inset
+
+clumpy
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+skewed
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+When data appears to 
+\begin_inset Quotes eld
+\end_inset
+
+clump
+\begin_inset Quotes erd
+\end_inset
+
+ in the low ranges, replacing 
+\begin_inset Formula $y$
+\end_inset
+
+ by 
+\begin_inset Formula $logy$
+\end_inset
+
+ results in a regression that more closely fits the assumptions.
+\end_layout
+
+\begin_layout Itemize
+log often applied to income or health data.
+\end_layout
+
+\begin_layout Itemize
+Variations: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Use 
+\begin_inset Formula $log(\alpha+x)$
+\end_inset
+
+ (Can assume 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ or estimate using tools in the R MASS package.)
+\end_layout
+
+\begin_layout Itemize
+The Box-Cox transformation has log as a special case
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Examples: Infant Mortality 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(car)
+\end_layout
+
+\begin_layout Plain Layout
+
+data(UN)
+\end_layout
+
+\begin_layout Plain Layout
+
+UN <- na.omit(UN)
+\end_layout
+
+\begin_layout Plain Layout
+
+UN <- UN[order(UN$gdp) ,]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<infmort10,fig=T,echo=F,include=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(UN$infant.mortality, breaks = 20, xlab = "Data from John Fox's car package",
+ main = "Infant Mortality")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(log(UN$infant.mortality), breaks = 20, xlab = "natural logarithm", main
+ = "Logged Infant Mortality")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=11cm]{plots/t-infmort10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+IMHO: not normal, certainly more symmetric
+\end_layout
+
+\begin_layout BeginFrame
+Scatter Still Bad, however
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN01,fig=T,echo=F,include=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+UN$loggdp <- log(UN$gdp)
+\end_layout
+
+\begin_layout Plain Layout
+
+UN$infmortlog <- log(UN$infant.mortality)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infant.mortality ~ gdp, data=UN, xlab="Gross Domestic Product (UN)",
+ ylab="Infant Mortality (per 1000 births)", main="Unlogged Data")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infmortlog ~ gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="log
+ of Infant Mortality (per 1000 births)", main="Logged Infant Mortality")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=12cm]{plots/t-UN01}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Look at the GDP variable
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gdp10,fig=T,echo=F,include=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(UN$gdp, breaks = 20, xlab = "Data from John Fox's car package", main
+ = "GDP")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(log(UN$gdp), breaks = 20, xlab = "natural logarithm", main = "GDP logged")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-gdp10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Log both DV and IV, some Inexplicable Magic Happens
+\end_layout
+
+\begin_layout Standard
+United Nations infant mortality data from United Nations (Package 
+\begin_inset Quotes eld
+\end_inset
+
+car
+\begin_inset Quotes erd
+\end_inset
+
+ by John Fox)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN05a,fig=T,echo=F,include=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infant.mortality~gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Inf
+ant Mortality (per 1000 births)", main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN05b,fig=T,echo=F,include=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+UN$gdplog <- log(UN$gdp)
+\end_layout
+
+\begin_layout Plain Layout
+
+UN$infmortlog <- log(UN$infant.mortality)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infmortlog~gdplog, data=UN, xlab="log of Gross Domestic Product (UN)",
+ ylab="log of Infant Mortality (per 1000 births)", main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-UN05a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-UN05b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Recall laws of logarithms
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $log(x^{k})=k\, log(x)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $log(x*z)=log(x)+log(z)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $log(x/z)=log(x)-log(z)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+The log and exp are inverse functions: each 
+\begin_inset Quotes eld
+\end_inset
+
+reverses
+\begin_inset Quotes erd
+\end_inset
+
+ the effect of the other.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $log(exp(x))=x$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $exp(log(x))=x$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Fit with OLS}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Step 1: We need to Log y (Recall the distribution is not compatible with
+ regression unless we do)
+\end_layout
+
+\begin_layout Itemize
+Step 2: In the Scatter, it appears as though 
+\begin_inset Formula $x$
+\end_inset
+
+ has a nonlinear effect
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+ylog_{i}=b_{0}+b_{1}xlog+\varepsilon
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+It appears that the pleasant scatter of 
+\begin_inset Formula $ylog$
+\end_inset
+
+ on 
+\begin_inset Formula $xlog$
+\end_inset
+
+ is just a happy coincidence of all of this.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Fit with OLS}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I suggest
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, include=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$ylog <- log(dat$y)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(ylog ~ log(x), data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Application
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN10,fig=T,include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+logmod <- lm(infmortlog~gdplog, data=UN)
+\end_layout
+
+\begin_layout Plain Layout
+
+gdpseq <- plotSeq(UN$gdp, length.out=40)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(gdp=gdpseq, gdplog=log(gdpseq))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$logpredy <- predict(logmod, newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(logmod, plotx = "gdplog", interval = "confidence", xlab = "log
+ of Gross Domestic Product (UN)", ylab = "log of Infant Mortality (per 1000
+ births)", ylim = c(0, 9))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-UN10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN10a, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(logmod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-UN10a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+There's one Unsolved Problem (Embarrassing)
+\end_layout
+
+\begin_layout Itemize
+The predicted values are on the scale of 
+\begin_inset Quotes eld
+\end_inset
+
+log 
+\begin_inset Formula $y$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+People often want to 
+\begin_inset Quotes eld
+\end_inset
+
+re-transform
+\begin_inset Quotes erd
+\end_inset
+
+ them to the 
+\begin_inset Formula $y$
+\end_inset
+
+ scale.
+\end_layout
+
+\begin_layout Itemize
+Until 2014, I was teaching people 
+\begin_inset Quotes eld
+\end_inset
+
+Its OK to anti-log 
+\begin_inset Formula $\widehat{ylog}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ However...
+\end_layout
+
+\begin_layout Itemize
+In 2014, I learned that's wrong, 
+\end_layout
+
+\begin_layout Itemize
+'Back-transforming' onto the y scale is conceptually difficult, goes beyond
+ scope of this class.
+\end_layout
+
+\begin_layout BeginFrame
+Hence, think of ylog as your actual variable
+\end_layout
+
+\begin_layout Itemize
+Call the DV ylog and don't try to talk about scores on the y scale at all
+\end_layout
+
+\begin_layout Itemize
+If you insist on back-transforming, go read this:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Naihua Duan.
+ (1983).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Smearing Estimate: A Nonparametric Retransformation Method,
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph on
+ Journal of the American Statistical Association
+\emph default
+, 78 (3838): 605-610.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Related commentary on many websites: 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://healthcare-economist.com/2010/11/16/duans-smearing-estimator
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Fitting Models with Squares (or other powers)
+\end_layout
+
+\begin_layout BeginFrame
+Why so much stress about squares?
+\end_layout
+
+\begin_layout Itemize
+When we use 
+\begin_inset Formula $\mathrm{log\mathit{(x)}}$
+\end_inset
+
+, or 
+\begin_inset Formula $sqrt(x)$
+\end_inset
+
+, or 
+\begin_inset Formula $1/x$
+\end_inset
+
+ as a predictor, we just transform and go.
+\end_layout
+
+\begin_layout Itemize
+If we want to add 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+ as well as 
+\begin_inset Formula $x$
+\end_inset
+
+, then we have 2 
+\begin_inset Quotes eld
+\end_inset
+
+collinear columns
+\begin_inset Quotes erd
+\end_inset
+
+ and there are some special concerns 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+and various suggestions (good and bad)
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Ways to Estimate
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Ways to fit quadratic Regressions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Work through my website: http://pj.freefaculty.org/R/WorkingExamples/regression-qu
+adratic-1.R.
+\end_layout
+
+\begin_layout Standard
+Here's some fake data:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fake01>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+STDE = 400; b0 = 3; b1 = .2; b2 = -0.075
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- runif(400, 0, 100)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- x[order(x)]
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xsq <- x*x
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y <- b0 + b1 * dat$x + b2 * dat$xsq + rnorm(400, m=0, s = STDE)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+xcorr <- cor(dat$x, dat$xsq)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fake10,fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-fake10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the olden days of SAS, we'd manually create a new variable 
+\begin_inset Quotes eld
+\end_inset
+
+xsquare
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xsq <- dat$x^2
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x + xsq, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Disadvantage.
+ Estimation routine does not know that x and xsq are 
+\begin_inset Quotes eld
+\end_inset
+
+linked together
+\begin_inset Quotes erd
+\end_inset
+
+, some follow-up calculations won't come out correct (consider the drop1()
+ function in R, for example).
+\end_layout
+
+\begin_layout Enumerate
+We fix that by asking R's formula-handler to create x-squared for us (R
+ will remember the 2 variables are linked).
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2a <- lm(y ~ x + I(x*x), data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I() 
+\begin_inset Quotes eld
+\end_inset
+
+protects
+\begin_inset Quotes erd
+\end_inset
+
+ the contents, makes sure they are treated as a mathematical expression.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Danger, Will Robinson}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout AlertBlock
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+The Major Concerns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Collinearity: x-squared is correlated with x.
+ (Pearson R often .8 or higher).
+ That causes unstable parameter estimates, not much 
+\begin_inset Quotes eld
+\end_inset
+
+power
+\begin_inset Quotes erd
+\end_inset
+
+ to detect effects.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The Pearson R between 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $xsq$
+\end_inset
+
+ is 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(xcorr,3)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+if x is a big number, say 1000, then squaring it will give 1,000,000.
+ Computer 
+\begin_inset Quotes eld
+\end_inset
+
+rounding
+\begin_inset Quotes erd
+\end_inset
+
+ error kicks in when columns are on different scales.
+ With modern matrix algebra for linear models, this is not such a bad problem
+ as it used to be.
+ But if we were doing Maximum Likelihood or Nonlinear Fitting, we would
+ worry.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fancier ways to create 2nd column.}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Fancy 1: Orthogonal polynomial.
+ Generate 2 new columns for us
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ poly(x, 2), data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+poly(x,2) creates 2 columns, but they are not correlated with each other.
+ To see that, run
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+xpoly <- poly(dat$x, 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(xpoly)
+\end_layout
+
+\begin_layout Plain Layout
+
+(pcorr <- cor(xpoly[, 1], xpoly[ ,2]))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The poly() function essentially 
+\begin_inset Quotes eld
+\end_inset
+
+extracts
+\begin_inset Quotes erd
+\end_inset
+
+ the linear part--x--from the term representing x-squared.
+ The two columns of xploy are orthogonal! 
+\end_layout
+
+\begin_layout Standard
+Compare the plots
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xpoly10,fig=T,include=F, echo=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and
+ xsq")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xpoly[ ,1], xpoly[ ,2], xlab = "Orthogonal column 1", ylab = "Orthogonal
+ column 2", main = "Ortho Poly Columns")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(0, 0.10, label = paste("r = ", round(pcorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-xpoly10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When we fit regressions with this variable, the estimates for the linear
+ term (column 1) is stable.
+ It is unaffected by the introduction of column 2.
+ (Because it is ORTHOGONAL, silly)
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Fancy 2: Residual-centering of x (rockchalk::residualCenter()).
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This creates 
+\begin_inset Quotes eld
+\end_inset
+
+orthogonal
+\begin_inset Quotes erd
+\end_inset
+
+ variables (like orthog poly), but they are not scaled similarly
+\end_layout
+
+\begin_layout Enumerate
+Fit 
+\begin_inset Formula $x^{2}=b_{0}+b_{1}x_{i}+\varepsilon_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Get the residuals, they are the part of 
+\begin_inset Formula $x_{i}^{2}$
+\end_inset
+
+ that is separate from 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Run a regression
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $y=b_{0}+b_{1}x_{i}+b_{2}residual.from.previous+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Compare the plots
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mmc <- lm(xsq ~ x, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xrc <- resid(mmc)
+\end_layout
+
+\begin_layout Plain Layout
+
+rccorr <- cor(dat$xrc, dat$x)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xpolyrc10,fig=T,include=F, echo=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and
+ xsq")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xrc ~ x, data = dat,  xlab = "x", ylab = "residual-from-x-squared",
+ main = "Residual Centered Columns")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(40, 1500, label = paste("r = ", round(rccorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-xpolyrc10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note difference on numerical scale, could cause numerical rounding error,
+ but residual centering reduces much of the imbalance
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Fancy 3: Mean-center x (rockchalk::meanCenter())
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Create a centered variable, 
+\begin_inset Formula $xc=x_{i}-\bar{x}$
+\end_inset
+
+, then fit 
+\begin_inset Formula $y=b_{0}+b_{1}xc+b_{2}xc^{2}$
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xctr <- scale(dat$x, scale = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ xctr + I(xctr^2), data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mean centering alters coefficients, but does not give predictor columns
+ that are (strictly speaking) orthogonal.
+\end_layout
+
+\begin_layout Standard
+Compare the plots
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xmc <- scale(dat$x, scale = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$xmcsq <- dat$xmc * dat$xmc
+\end_layout
+
+\begin_layout Plain Layout
+
+mccorr <- cor(dat$xmc, dat$xmcsq)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xmc20,fig=T,include=F, echo=F, height=5, width=10>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and
+ xsq")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xmcsq ~ xmc, data = dat,  xlab = "mean-centered x", ylab = "mean-centered
+ x-square", main = "Mean Centered Columns")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(0, 2500, label = paste("r = ", round(mccorr,3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-xmc20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What are you 
+\backslash
+emph{Suppposed} to do?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+The Best thing, orthogonal polynomial, is also most difficult to understand
+ (math!)
+\end_layout
+
+\begin_layout Enumerate
+The 
+\begin_inset Quotes eld
+\end_inset
+
+easiest
+\begin_inset Quotes erd
+\end_inset
+
+ approach is mean-centering.
+ However, it is useless, deceptive
+\end_layout
+
+\begin_layout Enumerate
+Residual centering is easier to understand, creates orthogonal columns,
+ and so is mostly as good as orthogonal polynomial.
+ It is not 
+\emph on
+as good
+\emph default
+ because it does not give back variables on the same scale.
+\end_layout
+
+\begin_layout Standard
+However
+\end_layout
+
+\begin_layout Standard
+None of these change the predictive relationship we are estimating, so,
+ actually, they are all the same (as we will see)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Where is the difference among these?
+\end_layout
+
+\begin_layout Itemize
+Mean centering alters both terms.
+ It Uses 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+centered 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\end_layout
+
+\begin_layout Itemize
+(centered-
+\begin_inset Formula $X$
+\end_inset
+
+)-squared.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Residual Centering uses 
+\begin_inset Formula $X$
+\end_inset
+
+ (untransformed) and an orthogonal transformation representing the squared-effec
+t.
+\end_layout
+
+\begin_layout Itemize
+Orthogonal Polynomial columns are proportional to the Residual Centered
+ columns, but they are scaled onto identical ranges.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Ortho Poly Equals Residual Centering (mostly)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<weird, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xpoly[ ,2] ~ dat$xrc, xlab = "Residual-centered xsquare term", ylab
+ = "Ortho Poly 2nd term")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-weird}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mean-Centering Controversy
+\end_layout
+
+\begin_layout BeginFrame
+CCWA recommend Centering Data
+\end_layout
+
+\begin_layout Itemize
+Cohen, et al 2002 p.
+ 204 
+\begin_inset Quotes eld
+\end_inset
+
+Centering also eliminates the extreme multicollinearity associated with
+ using powers of predictors in a single equation.
+ We therefore strongly recommend the use and reporting of centered polynomial
+ equations.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This claim is technically false.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Echambadi, R., & Hess, J.
+ D.
+ (2007).
+ Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple
+ Regression Models.
+ 
+\emph on
+Marketing Science
+\emph default
+, 26(3), 438-445.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Actually, as we shall see, none of these models 
+\begin_inset Quotes eld
+\end_inset
+
+solve
+\begin_inset Quotes erd
+\end_inset
+
+ multicollinearity in any real sense.
+ They just alter our perception of it.
+\end_layout
+
+\begin_layout BeginFrame
+Your Intuition Should Have Told You
+\end_layout
+
+\begin_layout Itemize
+Why? It is a simple re-scaling of a predictor! 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $xc_{i}=x_{i}-\bar{x}$
+\end_inset
+
+, the mean of 
+\begin_inset Formula $xc_{i}$
+\end_inset
+
+ is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ How could this
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}xc_{i}+b_{2}xc_{i}^{2}+\varepsilon_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+be meaningfully different from this:
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+They aren't different, the algebra is worked out in the 
+\emph on
+rockchalk
+\emph default
+ vignette.
+\end_layout
+
+\begin_layout Itemize
+But it creates the deception of help! That re-positions the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis to 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+There is a deeper lesson about multicollinearity in all of this.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Estimation: without x-squared}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+Fit a 
+\begin_inset Quotes eld
+\end_inset
+
+mis-specified
+\begin_inset Quotes erd
+\end_inset
+
+ linear equation (ignoring the squared component).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly05a, include=F, echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(y~x, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-poly05a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hooray! Effect of x is statistically significant(ly different from 0)
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly05, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fakeeqn <- expression(paste(y[i]== 3 + 0.2*x[i] - 0.075*x[i]^2 + e[i]))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x, data = dat, xlab="x", ylab="y", main=fakeeqn)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod, col="red", lwd=3, lty=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- dat$x
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 0.20 * x - 0.075 * x*x, add=T, lty=1, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("OLS Linear","True Nonlinear Curve"), col=c(
+ "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-poly05}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Estimation: with x-squared
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly10, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+modpoly <- lm(y ~ x + xsq, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x, data = dat, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+\end_layout
+
+\begin_layout Plain Layout
+
+xrange <- range(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+xpred <- seq(xrange[1], xrange[2], length.out=50)
+\end_layout
+
+\begin_layout Plain Layout
+
+ypred <- predict(modpoly, newdata=data.frame(x=xpred, xsq=xpred*xpred))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(xpred, ypred, col="red", lwd=3, lty=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + .2 * x - .075 * x*x, add=T, lty=1, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("OLS x xsq","True Nonlinear Curve"), col=c(
+ "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-poly10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly10a, include=F, echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(modpoly, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-poly10a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+Bone Crushing Defeat.
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+not significant
+\begin_inset Quotes erd
+\end_inset
+
+ anymore.
+ 
+\end_layout
+
+\begin_layout ColumnsTopAligned
+Cohen et al claim this results from 'nonessential multicollinearity' between
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $x^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout BeginFrame
+Illustration with Mean Centered x
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly20, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+xc <- scale(dat$x, center=T, scale=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+xcsquare <- xc*xc
+\end_layout
+
+\begin_layout Plain Layout
+
+modpoly2 <- lm(y ~ xc + xcsquare, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x, data = dat, xlab = "x", ylab="y", main=fakeeqn)
+\end_layout
+
+\begin_layout Plain Layout
+
+ypredc <- predict(modpoly2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(mean(x)+xc, ypredc, col="red", lwd=3, lty=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 0.20 * x - .075 * x * x, add=T, lty=1, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomleft", legend=c("OLS Centered x x-sq","True Nonlinear Curve"),
+ col=c( "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-poly20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly20a, include=F, echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(modpoly2, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-poly20a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+Oh, Yeah! Effect of 
+\begin_inset Formula $x$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+significant
+\begin_inset Quotes erd
+\end_inset
+
+ again
+\end_layout
+
+\begin_layout BeginFrame
+Visualize Mean-Centering
+\end_layout
+
+\begin_layout Standard
+The regression reports on 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ are 
+\begin_inset Quotes eld
+\end_inset
+
+snapshots
+\begin_inset Quotes erd
+\end_inset
+
+, estimates based on one particular point on the curve.
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Consider the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ relationship:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+3+0.20x_{i}-0.075x_{i}^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Put the 
+\begin_inset Formula $y-axis$
+\end_inset
+
+ where x = 0
+\end_layout
+
+\begin_layout Itemize
+Linear effect is small there, right?
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly30, include=F, fig=T, echo=F, height=5, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x = 0:100, y= seq(-7000, 20, length.out = 101), ylim = c(-7000, 500),
+ type = "n")
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 0.20*x - .75*x*x, from = 0, to = 95, add = T, ylim =c(-7000,20),
+ lty=1, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x=c(0,20), y = c(0,0), col = "red", lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(6, 80, pos=4, label = "tangent line where x = 0; the 
+\backslash
+"linear effect
+\backslash
+" of x is small")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-poly30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The linear effect is the tangent line's slope, 
+\begin_inset Formula $b_{1}+2b_{2}x_{i}$
+\end_inset
+
+.
+ Plug in 
+\begin_inset Formula $x_{i}=0,$
+\end_inset
+
+we see the slope is 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+, a very small number.
+\end_layout
+
+\begin_layout BeginFrame
+Visualize Mean-Centering
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Put the 
+\begin_inset Formula $y-axis$
+\end_inset
+
+ where x = 50
+\end_layout
+
+\begin_layout Itemize
+Note the tangent line's slope is 
+\begin_inset Quotes eld
+\end_inset
+
+very steep
+\begin_inset Quotes erd
+\end_inset
+
+ there.
+ That will lead to a large estimate of 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+If 50 happens to be the observed mean, then mean-centering amounts to moving
+ the y axis to that position.
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<poly40, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x = 0:100, y= seq(-7000, 20, length.out = 101), ylim = c(-7000, 500),
+ type = "n", axes = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos=50)
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(3 + 0.20*x - .75*x*x, from = 0, to = 95, add = T, ylim =c(-7000,20),
+ lty=1, col="black", lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x=c(50,66.6), y = c(-1859,-2973), col = "red", lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(60, -2400, pos=4, label = "Note the tangent line is steeper, 
+\backslash
+n       hence the linear 
+\backslash
+n              effect is greater")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-poly40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Predicted values of the non-centered and centered models
+ are identical}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex99, include=F, fig=T, echo=F, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(predict(modpoly), predict(modpoly2), xlab="Predictions from Non Centered
+ Data",ylab="Predictions from Centered Data")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-ex99}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You Can't Get More Identical Than That!
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+The rockchalk package was developed mainly because our class was in a constant
+ stew of confusion about mean centering (which some faculty recommended),
+ residual-centering (which others recommended), and no-centering (which
+ I recommended).
+ 
+\end_layout
+
+\begin_layout Itemize
+There are worked examples included with the package (look in the install
+ folder) and there is a long discussion of it in the vignette.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Tempted to Mislead the Reader By Shifting the Y axis?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+Remember this picture?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-ex70}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+By replacing 
+\begin_inset Formula $x$
+\end_inset
+
+ with 
+\begin_inset Formula $x-"any\, constant\, you\, name"$
+\end_inset
+
+, we are implicitly re-positioning the 
+\begin_inset Formula $y-axis$
+\end_inset
+
+ to select one of these colored lines!
+\end_layout
+
+\begin_layout Itemize
+Maybe 
+\begin_inset Formula $x-mean(x)$
+\end_inset
+
+ repositions us so that the regression summary seems 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ (more stars!)
+\end_layout
+
+\begin_layout Itemize
+But it is really the exact same regression.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Conclusion: Centering Not Helpful, Not Harmful
+\end_layout
+
+\begin_layout Itemize
+Although centering variables is eagerly recommended by many books, it is
+ not actually having a substantial effect on the quality of the fitted model.
+ The Predicted values are the same.
+\end_layout
+
+\begin_layout Itemize
+Note that 
+\begin_inset Formula $\hat{b}_{2}$
+\end_inset
+
+ , the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ and the 
+\begin_inset Formula $RMSE$
+\end_inset
+
+ are unchanged by centering.
+\end_layout
+
+\begin_layout Itemize
+In the olden days, when the matrix 
+\begin_inset Formula $(X^{T}X)$
+\end_inset
+
+ was inverted to calculate 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+, mean centering may have helped with the problem of floating point approximatio
+n on digital computers.
+ Today, regression estimates are calculated with orthogonal matrix decomposition
+ methods (either QR or SVD), and thus we don't notice much benefit by mean-cente
+ring.
+ (Other fitting methods may not use those more sophisticated algorithms,
+ thus we might need to be more cautious).
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Subsection
+Worked Example
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Corruption Example}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Recall Roca's plot & regression
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Quality of Government
+\begin_inset Quotes erd
+\end_inset
+
+ data set
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\size footnotesize
+Teorell, Jan, Nicholas Charron, Marcus Samanni, Sören Holmberg & Bo Rothstein.
+ 2011.
+ The Quality of Government Dataset, version 6Apr11.
+ University of Gothenburg: The Quality of Government Institute, 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.qog.pol.gu.se
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Scatter TI Corruption Perception Index against the Freedom House political
+ rights scale
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi10, fig=T, echo=F, include=F, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(foreign)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- read.dta("/home/pauljohn/ps/SVN-guides/stat/DataSets/QoG/QoG_c_s_v6Apr11.dt
+a")
+\end_layout
+
+\begin_layout Plain Layout
+
+vars <- c("p_polity2", "fh_ipolity2", "fh_pr", "gir_gii", 
+\end_layout
+
+\begin_layout Plain Layout
+
+"kk_gg", "qs_impar", "ti_cpi", "wbgi_cce", "ht_regtype", 
+\end_layout
+
+\begin_layout Plain Layout
+
+"hf_efiscore", "qs_proff", "bti_mes", "bti_ep", "bti_wr")
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[ , vars]
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)",
+ ylab="TI Corruptions Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-cpi10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Corruption Example}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+The linear and quadratic fits
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi20, include=T, eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m0 <- lm(ti_cpi ~ fh_pr, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2b <- lm(ti_cpi ~ poly(fh_pr, 2, raw = TRUE), data=dat) 
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(fh_pr = plotSeq(dat$fh_pr, length.out=25)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+m2bpred <- predict(m2b, newdata =newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi21, fig=T, echo=F, include=F, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)",
+ ylab="TI Corruptions Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m0, lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2bpred, lty=1, lwd=5, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c("m0: linear", "m2b: fh_sq"), lty=c(1,1),lwd=c(2,5),c
+ol=c("black","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-cpi21}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Equivalent Predictions From all Fits To The Corruption Example}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Insert mean-centered columns in the newdf object
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+tiny}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=T, eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$fh_pr_mc <- drop(scale(dat$fh_pr, scale = FALSE))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$fh_pr_mc <- plotSeq(dat$fh_pr_mc, 25)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+tiny}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi50, include=T, eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2pred <- predict(m2, newdata = newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(ti_cpi ~ poly(fh_pr, 2), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3pred <- predict(m3, newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- lm(ti_cpi ~ fh_pr_mc + I(fh_pr_mc^2), data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4pred <- predict(m4, newdata=newdf)                                   
+      
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cpi51, fig=T, echo=F, include=F, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)",
+ ylab="TI Corruptions Perceptions")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m2pred, lty=1, lwd=12, col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m3pred, lty=3, lwd=15, col="red") 
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$fh_pr, m4pred, lty=5, lwd=4, col="yellow") 
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", title = "quadratic", legend=c("m2:squared","m3:poly(fh,2)","m
+4:mean-centered"), lty = c(1,3,5), lwd = c(12,15,4), col=c("green", "red","yello
+w"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-cpi51}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Please, Try To Have a Theory!
+\end_layout
+
+\begin_layout BeginFrame
+Theory has to guide you on choosing a formula.
+\end_layout
+
+\begin_layout Itemize
+The data will seldom give you a good reason to pick one model over another.
+\end_layout
+
+\begin_layout Itemize
+MUST NOT compare 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ across models that are fitted to different transformed values of 
+\begin_inset Formula $y$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If the left hand side of the expression is the same, then 
+\begin_inset Formula $Adjusted\, R^{2}$
+\end_inset
+
+can serve as a guide for picking the best fitting model.
+\end_layout
+
+\begin_layout Itemize
+In more advanced models, information theoretic measures like AIC and BIC
+ might be used.
+\end_layout
+
+\begin_layout BeginFrame
+Interpretation of results is the most important part.
+\end_layout
+
+\begin_layout Itemize
+Consider the effort you make to interpret an OLS model.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Each unit increase in 
+\begin_inset Formula $x$
+\end_inset
+
+ causes a 
+\begin_inset Formula $\hat{b_{1}}$
+\end_inset
+
+ increase in the expected value of 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+You need to make a similar effort to interpret a nonlinear model, remembering
+ that each one has unique mathematical properties.
+\end_layout
+
+\begin_layout Itemize
+Usually these are things to look for:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Can you understand the slope of the line representing the expected value?
+\end_layout
+
+\begin_layout Enumerate
+Does the function have a maximum value that is substantively important?
+\end_layout
+
+\begin_layout Enumerate
+Are there any 
+\begin_inset Quotes eld
+\end_inset
+
+special
+\begin_inset Quotes erd
+\end_inset
+
+ values of the parameters that you need to watch out for and give special
+ interpretation.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Box-Cox Transformation
+\end_layout
+
+\begin_layout BeginFrame
+B-C: Log transform on steriods
+\end_layout
+
+\begin_layout Itemize
+The transformation 
+\begin_inset Formula $log(y)$
+\end_inset
+
+ might make a variable that is more symmetric
+\end_layout
+
+\begin_layout Itemize
+But is it as close to symmetry as possible?
+\end_layout
+
+\begin_layout BeginFrame
+Conditional Functional Relationship
+\end_layout
+
+\begin_layout Standard
+Box & Cox proposed a flexible transformation: generates a 
+\begin_inset Quotes eld
+\end_inset
+
+family
+\begin_inset Quotes erd
+\end_inset
+
+ of possible models.
+ 
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Itemize
+The transformation depends on a parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, which can take on values in a continuum.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccccc}
+\, & \, & \, & \textrm{\ensuremath{\frac{y^{\lambda}-1}{\lambda}\,\,\,\,\,}} & \textrm{\ensuremath{\,\,\,\,\,\, if\,\,\lambda\neq0}}\\
+y^{(\lambda)} & = & \, & \, & \,\\
+\, & \, & \, & log_{e}(y)\,\,\,\, & \,\,\,\,\,\,\, if\,\,\textrm{\ensuremath{\lambda=0}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Estimate 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ iteratively.
+ Guess 
+\begin_inset Formula $\hat{\lambda}$
+\end_inset
+
+, transform, fit.
+ Improve 
+\begin_inset Formula $\hat{\lambda},$
+\end_inset
+
+ re-fit the model.
+ Continue...
+ 
+\end_layout
+
+\begin_layout Column
+3.5cm
+\end_layout
+
+\begin_layout Standard
+Check particular values of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+transformation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ln(y)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $y-1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2(\sqrt{y}-1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have a separate handout on these models called BoxCoxRegression.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Not Intrinsically Linear models
+\end_layout
+
+\begin_layout BeginFrame
+Take a Simple Example with logs
+\end_layout
+
+\begin_layout Standard
+One version of the double-log model goes like this.
+ 
+\end_layout
+
+\begin_layout Itemize
+theory: 
+\begin_inset Formula $y_{i}=x1_{i}^{b_{1}}exp(b_{0}\varepsilon_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+log both sides produces a model that OLS can estimate: 
+\begin_inset Formula $ylog_{i}=b_{0}+b_{1}x1log_{i}+\varepsilon_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Suppose 
+\begin_inset Quotes eld
+\end_inset
+
+Nature
+\begin_inset Quotes erd
+\end_inset
+
+ uses a complicated formula.
+\end_layout
+
+\begin_layout Itemize
+You hypothesize some wild theoretical formula as your data generating process
+ 
+\begin_inset Formula 
+\[
+y_{i}=14\cdot x1_{i}\cdot e^{5.0+3.7\times log(x2_{i})+\varepsilon_{i}}=14x1_{i}exp(5.0+3.7log(x2_{i})+\varepsilon_{i})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $E(\varepsilon_{i})=0$
+\end_inset
+
+, and 
+\begin_inset Formula $e$
+\end_inset
+
+ represents 
+\begin_inset Quotes eld
+\end_inset
+
+Euler's constant
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $e^{x}=exp(x)$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+That's too specific.
+ Leave some parameters to estimate: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=b_{0}\cdot x1_{i}\cdot e^{b_{1}+b_{2}\times log(x2_{i})+\varepsilon_{i}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Look for an estimator, either 
+\begin_inset Quotes eld
+\end_inset
+
+nonlinear least squares
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+maximum likelihood
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Usually, you can't prove the estimators are unbiased!
+\end_layout
+
+\begin_layout Itemize
+They may be
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consistent
+\end_layout
+
+\begin_layout Itemize
+efficient
+\end_layout
+
+\begin_layout Itemize
+asymptotically normal 
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Most Understandable alternative: Nonlinear least squares
+\end_layout
+
+\begin_layout Itemize
+Nonlinear least squares (NLS) .
+ Basically, you write down a formula, assume the error is additive, and
+ go:
+\begin_inset Formula 
+\begin{equation}
+y_{i}=f(X_{i},b)+e_{i}\label{eq:16}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The estimator 
+\begin_inset Quotes eld
+\end_inset
+
+guesses
+\begin_inset Quotes erd
+\end_inset
+
+ parameters 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ and from there is calculates predictions
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=f(X_{i},\hat{b})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Fit by making the sum of squared errors the smallest:
+\begin_inset Formula 
+\begin{equation}
+SS(\hat{b})=\sum_{i=1}^{N}[y_{i}-f(X_{i},\hat{b})]^{2}\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Use nls from R base on the UN problem
+\end_layout
+
+\begin_layout Itemize
+Here's my theory
+\begin_inset Formula 
+\begin{equation}
+inf.mortality_{i}=b_{0}+b_{1}x_{i}^{b_{2}}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall that 
+\begin_inset Formula $x^{-b_{2}}$
+\end_inset
+
+ equals 
+\begin_inset Formula $1/x^{b_{2}}$
+\end_inset
+
+, so if 
+\begin_inset Formula $\hat{b}_{2}$
+\end_inset
+
+ is negative, then this model is 
+\begin_inset Formula 
+\[
+\widehat{inf.mortality_{i}}=\hat{b}_{0}+\hat{b}_{1}\cdot(\frac{1}{x_{i}^{|\hat{b}2|}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And that's really what I think.
+ So I want a reciprocal model, but it is written down more generally.
+\end_layout
+
+\begin_layout Itemize
+nls: adjust 
+\begin_inset Formula $\hat{b}_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{b}_{1}$
+\end_inset
+
+, and 
+\begin_inset Formula $\hat{b}_{2}$
+\end_inset
+
+ to make the squared prediction error as small as possible.
+\end_layout
+
+\begin_layout Itemize
+Fitted model indicates that 
+\begin_inset Formula $\hat{b}_{2}=-0.12$
+\end_inset
+
+ (approximately -
+\begin_inset Formula $1/8$
+\end_inset
+
+) giving a very gradual curvature.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\widehat{inf.mortality_{i}}=-90.23+336.6\cdot(\frac{1}{x_{i}^{\frac{1}{8}}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{NLS Estimation Commands}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN70a,fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nmod2 <- nls(infant.mortality ~ A + B*(gdp^C), data=UN, start=list(A=10,B=21,C=-1
+/10), control=nls.control(warnOnly=TRUE))
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(nmod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-UN70a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plot the Predicted Values from NLS}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN71,fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(gdp = plotSeq(UN$gdp, 100))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$p2nls <- predict(nmod2, newdata = newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infant.mortality~gdp, data = UN, xlab = "Gross Domestic Product (UN)",
+ ylab = "Infant Mortality (per 1000 births)", main = "", type = "n")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(UN$gdp, UN$infant.mortality, col = gray(.7))
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$gdp, newdf$p2nls)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf$gdplog <- log(newdf$gdp)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=11cm]{plots/t-UN71}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Throw a loess on top}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<UN77,include=F,fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+lomod <- loess(infant.mortality~gdp, data=UN, family="symmetric") 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(lomod) 
+\end_layout
+
+\begin_layout Plain Layout
+
+predlo <- predict(lomod) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(infant.mortality~gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Inf
+ant Mortality (per 1000 births)", main="", type="n") 
+\end_layout
+
+\begin_layout Plain Layout
+
+points(UN$gdp, UN$infant.mortality, col=gray(.7)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$gdp, newdf$p2nls)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(UN$gdp, predlo, col="green",lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend = c("nls", "loess (robust)"), lwd = c(1,2), col
+ = c("black","green"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=11cm]{plots/t-UN77}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Nonlinear-1-Overview-lecture-problems.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

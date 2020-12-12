@@ -1,0 +1,328 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Logistic//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Logistic Distribution}
+
+
+\author{Raminta Stockute, Andrea Veaux, Paul Johnson}
+
+
+\date{June 10, 2013}
+
+\maketitle
+
+\section{Introduction}
+
+The Logistic distribution is a continuous probability density function
+that is symmetric and uni-modal. It is similar in appearance to the
+Normal distribution and in practical applications, the two distributions
+cannot be distinguished from one another.
+
+
+\section{Mathematical Definition}
+
+This distribution is characterized by two main parameters: location
+$\mu$ and scale $\sigma$. The probability density function is: (Raminta:
+I believe these signs are wrong. Do you agree?)
+
+\[
+f(x)=\frac{1}{\sigma}*\frac{e^{-(x-\mu)/\sigma}}{1+e^{-(x-\mu)/\sigma)^{2}}}.
+\]
+
+
+The cumulative distribution of the Logistic is the famous S-shaped
+curve on which Logistic regression is based:
+
+\[
+F(x)=\frac{1}{1+e^{-(x-\mu)/\sigma}}.
+\]
+\\
+
+
+
+\section{Moments}
+
+The Compendium of the distributions (citation?) points out that the
+expected value is equal to the location parameter, $\mu$:
+
+\[
+E(x)=\mu
+\]
+
+
+Because the distribution is symmetric, the median and the mode are
+also equal to $\alpha$.
+
+The variance of this distribution is:
+
+\[
+Var(x)=\frac{1}{3}(\pi\sigma)^{2}.
+\]
+
+
+Compare that value against the Normal distribution, $N(\mu,\sigma^{2})$.
+The variance of the Logistic is different from the variance of the
+normal only by the scaling value of $\pi^{2}/3$
+
+
+\section{Illustrations}
+
+In Figure \ref{cap:LogisticVariety}, some examples of Logistic distributions
+are offered.
+
+In Figures \ref{cap:LogisticVariousScales} and \ref{cap:LogistricVariousLocations},
+the density functions that correspond to various location and scale
+parameters are presented. If we look at Figure \ref{cap:LogisticVariousScales},
+we see that scale controls the width and the height of the distribution.
+As you see in Figure \ref{cap:LogistricVariousLocations}, if we vary
+the location of the density, the density curve shifts to the left
+and right, while the ``spread'' and ``height'' remains the same.
+
+
+
+<<LogisticPDF3, echo=F, eval=F,height=9,width=6.5>>=
+par(mfrow=c(4,2))
+scale<-c(0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25)
+location <- c(1, 1, 1, 1, 1, 1, 1, 1)
+ylim2<-c(.5, .5, .4, .4, .3, .3, .2, .2)
+for(i in 1:8){
+    loc <- location[i]
+    x <- seq(-3,7, by = 0.05)
+    mainlabel <- paste("location=", loc,", scale=", scale[i], sep="")
+    xlogis <- dlogis(x, scale = scale[i],  loc = loc, log = F)
+    plot(x, xlogis, type = "l", main = mainlabel, xlab = "x", ylab = "probability of x", ylim = c(0, ylim2[i]))
+}
+@
+
+
+
+\begin{figure}
+\caption{Logistic Variety\label{cap:LogisticVariety}}
+
+
+\begin{center}
+
+<<fig=T, echo=F>>=
+
+
+<<LogisticPDF3>>
+
+@
+
+\end{center}
+\end{figure}
+
+
+The Logistic density appears to be very similar to the Normal distribution.
+If we superimposed this distribution on the Normal, however, we would
+see that the Logistic has thicker tails. Consider Figure \ref{cap:LogistricNormal},
+in which a Logistic with location 0 and scale 1 is superimposed on
+a graph of the Normal density in which the variance is the same. That
+is to say, the variance of the Logistic is $\pi^{2}/3$ and the variance
+of the Normal is $\pi^{2}/3$ (or, equivalently, the standard deviation
+is $\pi/\sqrt{3}$). 
+\begin{lyxcode}
+\begin{figure}
+\caption{Logistic Distribution: Various Scales (location=0)\label{cap:LogisticVariousScales}}
+
+
+<<LogisticPDF,echo=F, fig=T>>=
+x <- seq(-10,10, by=0.05)
+mylogis1 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+mylogis2 <- dlogis(x, location = 0, scale = 2, log = FALSE) 
+mylogis3 <- dlogis(x, location = 0, scale = 3, log = FALSE) 
+matplot(x, cbind(mylogis1, mylogis2, mylogis3),type="l",ylim=c(0,0.5), xlab="x",ylab="P(x)", main="") 
+legend("topleft", c("scale=1","scale=2","scale=3"),lty=1:3, col=1:3) 
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Logistric Distribution: Various Locations (scale=1)\label{cap:LogistricVariousLocations}}
+
+
+<<LogisticPDF2,echo=F, fig=T>>=
+x <- seq(-10,10, by=0.05)
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+mylogis222 <- dlogis(x, location = 2, scale = 1, log = FALSE) 
+mylogis333 <- dlogis(x, location = 4, scale = 1, log = FALSE) 
+matplot(x, cbind(mylogis111, mylogis222, mylogis333),type="l",ylim=c(0,0.5), xlab="x",ylab="P(x)", main="") 
+legend("topleft", c("location=0","location=2","location=4"), lty=1:3, col=1:3) 
+@
+\begin{lyxcode}
+\end{lyxcode}
+\end{figure}
+
+
+\begin{figure}
+\caption{Logistric and Normal Distributions\label{cap:LogistricNormal}}
+
+
+<<6,echo=F, fig=T,height=7>>=
+x <- seq(-6,6, by=0.05)
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+myNorm <- dnorm(x, mean = 0, sd = pi/sqrt(3)) 
+matplot(x, cbind(mylogis111, myNorm),type="l",ylim=c(0,0.5), xlab="x",ylab="P(x)", main="") 
+legend("topleft", c("Logistic(0,1)","Normal(0,pi^2/3))"), lty=1:2, col=1:2) 
+@
+\begin{lyxcode}
+\end{lyxcode}
+\end{figure}
+
+\end{lyxcode}
+Figure \ref{cap:Cumulative-Distribution} illustrates the variations
+we see in the cumulative distribution function, when varying the scale
+parameter.
+\begin{lyxcode}
+\begin{figure}
+\caption{Cumulative Distribution of the Logistic\label{cap:Cumulative-Distribution}}
+
+
+<<LogisticCDF,echo=F, fig=T>>=
+x <- seq(-10,10, by=0.05)
+mylogis11<- plogis(x, location = 0, scale = 1, log = FALSE)
+mylogis22 <- plogis(x, location = 0, scale = 2, log = FALSE)
+mylogis33 <- plogis(x, location = 0, scale = 3, log = FALSE)
+matplot(x, cbind(mylogis11, mylogis22, mylogis33),type="l",ylim=c(0,1), xlab="x", ylab="P(x)", main="")
+legend("topleft", c("scale=1","scale=2","scale=3"),lty=1:3, col=1:3)
+@
+\begin{lyxcode}
+\end{lyxcode}
+\end{figure}
+
+
+
+\end{lyxcode}
+
+\section{Conclusion}
+
+When would we use a logistic distribution? The Compendium says that
+is is often used instead ``as an approximation to other symmetrical
+distributions due to the mathematical tractability of its CDF.''
+Put in a more simple way, the Logistic gives a nice looking S-shaped
+curve with a relatively simple mathematical formula. The S-shaped
+curve, as seen in Figure \ref{cap:Cumulative-Distribution}, is used
+in the so-called Logistic regression model, which uses input variables
+to make predictions about how likelihood of certain outcomes. The
+S-shaped curve of the Logistic CDF is thought to be a substantively
+useful description of how the probability of an ``event'' or other
+outcome rises as a function of some input variables.
+\begin{lyxcode}
+\end{lyxcode}
+
+\end{document}

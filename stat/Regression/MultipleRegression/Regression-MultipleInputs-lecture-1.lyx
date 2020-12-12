@@ -1,0 +1,9408 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+\usetheme{Antibes}
+
+%%\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+logicalmkup
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch termplot
+\selected 0
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+inverted 0
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=5,width=7.5}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Multiple Predictors in OLS Regression, Lecture 1 
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Multiple Regression
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Dept.
+ of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Dept.
+ of Psychology
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Basic assumptions
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+The Theoretical model
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+An output variable is created as the weighted sum of several 
+\begin_inset Quotes eld
+\end_inset
+
+predictors
+\begin_inset Quotes erd
+\end_inset
+
+ and a random error term
+\end_layout
+
+\begin_layout Itemize
+Formally
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\ldots+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+where
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $i$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+row
+\begin_inset Quotes erd
+\end_inset
+
+ of data.
+\end_layout
+
+\begin_layout Itemize
+The same model applies for each row, so 
+\begin_inset Formula $i\in\{1,\ldots,N\}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+The Critical Assumptions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\beta_{0},$
+\end_inset
+
+ 
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta_{2}$
+\end_inset
+
+ are real-valued constants.
+ I often write 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+ for 
+\begin_inset Formula $j\in1,\ldots,p$
+\end_inset
+
+.
+ This case, 
+\begin_inset Formula $p=3$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is drawn from a distribution for which 
+\begin_inset Formula $E[e_{i}]=0$
+\end_inset
+
+ and has constant variance 
+\begin_inset Formula $Var[e_{i}]=\sigma_{e}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+I don't assume it is 
+\begin_inset Formula $Normal(0,\sigma_{e}^{2})$
+\end_inset
+
+ because that is stronger than required, but we will need that–or some other
+ specific distributional assumption–if we do 
+\begin_inset Quotes eld
+\end_inset
+
+maximum likelihood analysis
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+None of the error terms are correlated with each other, 
+\begin_inset Formula $Cov(e_{i},e_{j})=0$
+\end_inset
+
+ and
+\end_layout
+
+\begin_layout Itemize
+Errors are uncorrelated with the predictors, 
+\begin_inset Formula $Cov(x_{i},e_{i})=0$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Picture this in 3d
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename importfigs/multReg1.eps
+	width 9cm
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Or this
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename importfigs/multReg2.eps
+	width 9cm
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Visualization is always a challenge
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Difficult to visualize more dimensions
+\end_layout
+
+\begin_layout Itemize
+In the rockchalk package, I have functions like plotSlopes, plotCurves,
+ and plotPlane that are intended to help with that, but we never overcome
+ the problem that we can't visualize 4 or more dimensions
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Multiple Regression
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status open
+
+\begin_layout Plain Layout
+containsverbatim
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+OLS with Many Predictors
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Theory? Just add more predictors.
+ 
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+\beta_{3}X3_{i}+\beta_{4}X4_{i}+\beta_{5}X5_{i}+\beta_{6}X6_{i}+\beta_{7}X7_{i}+e_{i}
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula $E[e_{i}]=0,$
+\end_inset
+
+ 
+\begin_inset Formula $E[e_{i}^{2}]=\sigma_{e}^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Goal? Estimates 
+\begin_inset Formula $\widehat{\beta}=[\widehat{\beta_{0}},\widehat{\beta_{1}},\widehat{\beta_{2}},\widehat{\beta_{3}},\ldots,].$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Calculate predicted values:
+\begin_inset Formula 
+\[
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}+\hat{\beta}_{4}X4_{i}+\hat{\beta}_{5}X5_{i}+\hat{\beta}_{6}X6_{i}+\hat{\beta}_{7}X7_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+OLS Minimizes the unweighted Sum of Squared residuals
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\min_{\hat{\beta}}S(\widehat{\beta_{0}},\widehat{\beta_{1}},\widehat{\beta_{2}})=\sum_{i=1}^{N}(y_{i}-\widehat{y_{i}})^{2}\label{eqb}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=\sum_{i=1}^{N}(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}X1_{i}-\widehat{\beta_{2}}X2_{i}-\ldots)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Compare/contrast regression with one predictor
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Least squares criterion still works!
+\end_layout
+
+\begin_layout Itemize
+Minimizing estimates of 
+\begin_inset Formula $\hat{\beta_{j}}$
+\end_inset
+
+ exist (as long as no predictor is completely redundant).
+\end_layout
+
+\begin_layout Itemize
+If all of the predictors are perfectly uncorrelated, then each coefficient
+ depends only on its own predictor.
+\end_layout
+
+\begin_layout Itemize
+Otherwise (and this is the usual situation)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Every coefficient 
+\emph on
+can
+\emph default
+ depend on data for 
+\emph on
+all
+\emph default
+ of the variables.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Gauss Markov Theorem: OLS is Best Linear Unbiased Estimator (BLUE)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+IF
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+you fit the 
+\begin_inset Quotes eld
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+ model, 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\ldots+e_{i}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+and the error term assumptions are satisfied,
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+THEN The OLS Estimates 
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ (
+\begin_inset Formula $j=0,1,2,...,p$
+\end_inset
+
+) are 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+unbiased, 
+\begin_inset Formula $E[\hat{\beta}_{j}]=\beta_{j}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+consistent: as N grows, the expected value of the gap between 
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+ shrinks
+\end_layout
+
+\begin_layout Enumerate
+efficient: lower variance than any other linear estimator
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}_{j}/std.err(\hat{\beta}_{j})$
+\end_inset
+
+ is distributed as a 
+\begin_inset Formula $t$
+\end_inset
+
+ statistic
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+JobPerformance example dataset
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Look in my guides/stat/DataSets folder.
+\end_layout
+
+\begin_layout Itemize
+Variables (converted to lower case)
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+age = employee age;
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+tenure = years on the job;
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+female = gender (0 = male, 1 = female);
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+wbeing = psychological well-being
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+satis = job satisfaction
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+jobperf = job performance;
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+turnover = turnover intentions (0 = no, 1 = yes);
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing single
+\noindent
+iq = iq score;
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{One Predictor: wbeing $
+\backslash
+sim$ satis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job10, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- read.table("/home/pauljohn/SVN/SVN-guides/stat/DataSets/JobPerformance/job
+performance.txt", header=T, sep="
+\backslash
+t")
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(dat) <- tolower(colnames(dat)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm(wbeing ~ satis, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod1 <- lm(wbeing ~ satis, data=dat))
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-job10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{wbeing $
+\backslash
+sim$ satis + jobperf + tenure + age}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job20, include=F,echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- lm(wbeing ~ satis + jobperf + tenure + age, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job21, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<job20>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-job21.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Make a Regression Table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job30, include=F,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(mod1,mod2), modelLabels=c("One Predictor","Multiple Predictors"),
+ tight=F, showAIC=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-job30.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Other Differences
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Var-Covar matrix larger
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ can 
+\begin_inset Quotes eld
+\end_inset
+
+bounce
+\begin_inset Quotes erd
+\end_inset
+
+ when other variables are added (multicollinearity)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{adjusted}^{2}$
+\end_inset
+
+, versus 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Reported 
+\begin_inset Formula $F$
+\end_inset
+
+ test still not very useful, but we will create a useful 
+\begin_inset Formula $F$
+\end_inset
+
+ that compares 2 models.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Let's Stop And Do Some T-Tests
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Step 1.
+ State the model: 
+\begin_inset Formula $wbeing_{i}=\beta_{0}+\beta_{1}satis+\beta_{2}jobperf+\beta_{3}tenure+\beta_{4}age+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Step 2.
+ Choose one variable, state 
+\begin_inset Formula $H_{0}:\beta_{j}=?$
+\end_inset
+
+, alt.
+ hypo 
+\begin_inset Formula $H_{A}:\beta_{j}\neq?$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Step 3.
+ Sketch t distribution for 
+\begin_inset Formula $\nu=480$
+\end_inset
+
+ degrees of freedom.
+ Are we doing two-tailed test?
+\end_layout
+
+\begin_layout Itemize
+Step 4.
+ Calculate
+\begin_inset Formula 
+\[
+\hat{t_{j}}=\frac{\hat{\beta}_{j}-?}{std.err.(\hat{\beta}_{j})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Step 5.
+ If 
+\begin_inset Formula $\hat{t}_{j}$
+\end_inset
+
+ is in the extreme parts of the tails (according to your sketch in step
+ 3), reject 
+\begin_inset Formula $H_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Construct the Confidence Interval for one slope in isolation
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Recall CI for a regression coefficient is 
+\begin_inset Formula $\hat{\beta}_{j}\pm t_{\alpha}\times std.err(\hat{\beta}_{j})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{\alpha}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+target value
+\begin_inset Quotes erd
+\end_inset
+
+ of the t statistic that you would use when conducting a hypothesis test
+ (depends on 
+\begin_inset Formula $\nu$
+\end_inset
+
+, usually 1.65, 1.98, 2.2)
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\hat{t}_{j}$
+\end_inset
+
+ leads us to reject 
+\begin_inset Formula $H_{0}$
+\end_inset
+
+, we know the CI will not overlap with the null hypo value 
+\begin_inset Formula $?$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence Intervals}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+confint(mod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which means that 1) the probability that the true 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+ is in that interval is 0.95, or 2) if we repeated this experiment, the probabili
+ty that an estimate from a sample will fall in that interval is 0.95.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Var-Covar Matrix Shows Interdependence Among All Estimators}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<vcov10, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+round(vcov(mod2), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-vcov10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We use these values to conduct the 
+\begin_inset Quotes eld
+\end_inset
+
+fancy t-test
+\begin_inset Quotes erd
+\end_inset
+
+ (see below).
+\end_layout
+
+\begin_layout Itemize
+The square root of the main diagonal is the standard error column from the
+ regression output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<vcov15, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+round(sqrt(diag(vcov(mod2))), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-vcov15.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+New Issues in Multiple Regression
+\end_layout
+
+\begin_layout Subsection
+Need Matrix Algebra
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Design Matrix Has Many Columns}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In R, run a multiple regression, something large like
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1 <-lm(y ~ X1 + X2 + X3 + X4 + X5 + X6 + X7, data = dat) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Then run model.matrix(m1).
+ That's the 
+\begin_inset Quotes eld
+\end_inset
+
+design matrix
+\begin_inset Quotes erd
+\end_inset
+
+, the numeric representation of all variables.
+\end_layout
+
+\begin_layout Itemize
+Result shows that 
+\begin_inset Quotes eld
+\end_inset
+
+the intercept
+\begin_inset Quotes erd
+\end_inset
+
+ is really a column of 1's, the same for each case, and other predictors
+ 
+\begin_inset Formula 
+\begin{equation}
+X=\left[\begin{array}{cccccccc}
+intercept & X1 & X2 & X3 & X4 & X5 & X6 & X7\\
+1 & 19 & 1 & 0.1 & 1 & 0 & 22 & 155\\
+1 & 22 & 2 & 1.1 & 0 & 1 & 42 & 199\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+1 & 8 & 4 & 0.2 & 1 & 1 & 77 & 77
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Use Matrix Algebra
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Theoretical model
+\begin_inset Formula 
+\begin{equation}
+y=X\beta+e
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $y$
+\end_inset
+
+ is an (
+\begin_inset Formula $N\times1$
+\end_inset
+
+) column, 
+\begin_inset Formula $X$
+\end_inset
+
+ is an (
+\begin_inset Formula $N\times p)$
+\end_inset
+
+ (where 
+\begin_inset Formula $p=7+1)$
+\end_inset
+
+) rectangular matrix, 
+\begin_inset Formula $e$
+\end_inset
+
+ is (
+\begin_inset Formula $N\times1$
+\end_inset
+
+).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+I moved the matrix stuff into Appendix 2.
+\end_layout
+
+\begin_layout Itemize
+Results.
+ OLS leads to a symbolic solution:
+\begin_inset Formula 
+\[
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}\,(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Modern computers use advanced, numerically stable formula based on matrix
+ decompositions.
+ At the current time, the 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ or 
+\begin_inset Formula $(X^{T}X)^{-1}$
+\end_inset
+
+ matrices are 
+\series bold
+never
+\series default
+ actually calculated.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status open
+
+\begin_layout Plain Layout
+containsverbatim
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+What's important in the formula?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The matrix expression
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Formula $(X^{T}X)$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+sum of squares and cross-products
+\begin_inset Quotes erd
+\end_inset
+
+ matrix, similar to variance of x in one-predictor model
+\end_layout
+
+\begin_layout Itemize
+In the predicted value formula 
+\begin_inset Formula $\hat{y}=X\hat{\beta}$
+\end_inset
+
+, replace 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{y}=X(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The matrix 
+\begin_inset Formula $H=X(X^{T}X)^{-1}X^{T}$
+\end_inset
+
+ is size 
+\begin_inset Formula $N\times N$
+\end_inset
+
+.
+ It serves as a weighting matrix that translates the outcome 
+\begin_inset Formula $y$
+\end_inset
+
+ into the predicted values.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $H$
+\end_inset
+
+ is called the 
+\begin_inset Quotes eld
+\end_inset
+
+hat matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+ See why? 
+\begin_inset Formula $\hat{y}=H\,y$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+Visualization
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plotting Multiple Regressions in 2 Dimensions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Predicted value plots require we set values for 
+\emph on
+all predictors
+\emph default
+, even the ones that are not in the illustration.
+ 
+\end_layout
+
+\begin_layout Itemize
+In the R framework, the newdata object in a predict statement must include
+ values for all of the predictors in the model
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Example: Income and Sex in Chilean Survey}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile60a, eval=F, echo=T, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(car)
+\end_layout
+
+\begin_layout Plain Layout
+
+Chile$income <- Chile$income/1000000
+\end_layout
+
+\begin_layout Plain Layout
+
+chmod3 <- lm(statusquo ~ income + sex, data = Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(chmod3, tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile60b, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<chile60a>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile60b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The R commands for that were}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile60a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you don't use \SpecialChar LaTeX
+, consider getting the newer testing version of rockchalk
+ and running 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+outreg(chmod3, tight = FALSE, type = "html")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Look what predictOMatic does}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Adjust each predictor, one at a time, keeping the others fixed at exemplar
+ values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile60.1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(chmod3, predVals = "margins")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Read ?predictOMatic.
+ Many customizations are built in.
+ Adjust the divider algorithm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile60.2>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(chmod3, predVals = "margins", divider = "std.dev")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Try R's Termplot for Inspecting Regressions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+termplot() will cycle through the variables.
+\end_layout
+
+\begin_layout Itemize
+You run 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+termplot(mod1, se = TRUE, partial.resid = TRUE)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to see all of them.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+termplot will interactively show one predictor at a time
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Termplot: Depict the Income Effect}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile70, include=F, echo=T, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+termplot(chmod3, se = TRUE, partial.resid = TRUE, terms = "income", xlab
+ = "Income (1,000,000s pesos)")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-chile70}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile70}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why is the Vertical Axis called "partial"?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There is a Fully worked out derivation in Appendix C
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Partial for income
+\begin_inset Quotes erd
+\end_inset
+
+: What's left to predict
+\begin_inset Quotes erd
+\end_inset
+
+ after removing the effect of other variables? 
+\end_layout
+
+\begin_layout Itemize
+Termplot sets all variables at their numerical average.
+\end_layout
+
+\begin_layout Itemize
+partial.resid = TRUE plots the 
+\begin_inset Quotes eld
+\end_inset
+
+partial residuals
+\begin_inset Quotes erd
+\end_inset
+
+ (removed part explained by other variables)
+\end_layout
+
+\begin_layout Itemize
+se = TRUE prints the 
+\begin_inset Quotes eld
+\end_inset
+
+pointwise standard errors
+\begin_inset Quotes erd
+\end_inset
+
+ (uncertainty after using other variables)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{rockchalk::plotSlopes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Choose one numeric predictor for the X-axis.
+\end_layout
+
+\begin_layout Itemize
+The modx argument allows different lines for example values of another predictor
+ (a 
+\begin_inset Quotes eld
+\end_inset
+
+moderator
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+See 3D in plotPlane and addLines.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plotSlopes for the Chilean regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile75, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(chmod3, plotx = "income")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-chile75}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile75.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The default sets the sex variable at the mode, not the mean
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plotSlopes with separate lines for the Sexes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile80, include=F, fig = T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(chmod3, plotx = "income", modx = "sex")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-chile80}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile80.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{If you want to draws those line-by-line, some work is required}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile61, include=F, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycols <- c("blue", "red")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(statusquo ~ income, data = Chile, xlab = "Income (1,000,000s pesos)",
+ ylab = "Status Quo Support", col = mycols[Chile$sex], cex = 0.7 )
+\end_layout
+
+\begin_layout Plain Layout
+
+incomeSeq <- seq(min(Chile$income, na.rm = TRUE), 
+\end_layout
+
+\begin_layout Plain Layout
+
+                 max(Chile$income, na.rm = TRUE), length.out = 5)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdat <- expand.grid(income = incomeSeq, sex = levels(Chile$sex))
+\end_layout
+
+\begin_layout Plain Layout
+
+newdat$pred <- predict(chmod3, newdata = newdat)
+\end_layout
+
+\begin_layout Plain Layout
+
+by(newdat, newdat$sex, function(datsub) lines(pred ~ income, dat =  datsub,
+ col = mycols[datsub$sex]))
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", levels(newdat$sex), col = mycols, lty = 1, bg = "white")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile61.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Most R users will have to work through this process at one time or another.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Difficulty of teaching that sequence $
+\backslash
+rightarrow$ rockchalk package}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile61a, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<chile61>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots/t-chile61a}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence intervals for predicted values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chile81, include=F, fig=T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(chmod3, plotx = "income", modx = "sex", interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-chile81}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-chile81.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{plotPlane with mod2 (well being)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall: mod2 <- lm(wbeing ~ satis + jobperf + tenure + age, data=dat)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-pp10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pp10, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(mod2, plotx1 = "satis", plotx2 = "jobperf", drawArrows = TRUE,
+ alwd = 0.45, alength = 0.08)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=12cm]{plots/t-pp10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multicollinearity
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multicollinearity: Its a Problem
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Regression works great, as long as the predictors are truly 
+\begin_inset Quotes eld
+\end_inset
+
+separate
+\begin_inset Quotes erd
+\end_inset
+
+ from (
+\begin_inset Quotes eld
+\end_inset
+
+orthogonal to
+\begin_inset Quotes erd
+\end_inset
+
+) each other.
+\end_layout
+
+\begin_layout Itemize
+If predictors co-vary, difficult to separate their impacts.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Var(\hat{\beta}_{j})$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+inflated
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The Usual problem: people want to put in too many similar variables.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+do you hate eating salad because it has 
+\begin_inset Quotes eld
+\end_inset
+
+lettuce
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+spinach
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+leafy greens
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+vegetables
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+no meat
+\begin_inset Quotes erd
+\end_inset
+
+, or...
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Several lectures on this coming up
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Hypothesis Testing
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Overview
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+T test still works one-variable-at-a-time.
+\end_layout
+
+\begin_layout Itemize
+New tests
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The Wald test: compare 2 coefficients (fancy t-test)
+\end_layout
+
+\begin_layout Itemize
+The F test: compare nested models
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+The Fancy t-test
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Wald (
+\emph on
+Fancy t
+\emph default
+) test
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+t test of the hypothesis that 2 coefficients are statistically significantly
+ different (Nicknamed fancy t-test).
+\end_layout
+
+\begin_layout Itemize
+In 
+\begin_inset Formula $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}+\hat{\beta}_{3}x3_{i}$
+\end_inset
+
+, are the effects of 
+\begin_inset Formula $x2$
+\end_inset
+
+ and 
+\begin_inset Formula $x3$
+\end_inset
+
+ are exactly the same?
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Ex: does a dollar spent in community college equal a dollar spent at Harvard
+ University
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The null hypothesis: 
+\begin_inset Formula $H_{0}:\beta_{2}=\beta_{3}$
+\end_inset
+
+, same as 
+\begin_inset Formula $H_{0}:\beta_{2}-\beta_{3}=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Numerator in 
+\begin_inset Formula $\hat{t}$
+\end_inset
+
+ obvious, denominator will require some effort
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{t}=\frac{\hat{\beta}_{2}-\hat{\beta_{3}}}{std.err.(\hat{\beta}_{2}-\hat{\beta_{3}})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Denominator
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+std.err.
+ = square root of estimated variance
+\begin_inset Formula 
+\begin{equation}
+std.err.(\hat{\beta}_{2}-\hat{\beta_{3}})=\sqrt{\widehat{Var(\hat{\beta}_{2}-\hat{\beta_{3}})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Fill in the blanks 
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta}_{2}-\hat{\beta}_{3})=Var(\hat{\beta}_{2})+Var(\hat{\beta}_{3})-2Cov(\hat{\beta}_{2},\hat{\beta}_{3})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall the rule 
+\begin_inset Formula 
+\begin{equation}
+Var(k_{1}W+k_{2}Z)=k_{1}^{2}Var(W)+k_{2}^{2}Var(Z)+2k_{1}k_{2}\cdot Cov(W,Z)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Great Paper: Will make you feel smarter
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+Gelman, Andrew and Hal Stern.
+ November 1, 2006
+\emph on
+.
+
+\emph default
+ The Difference Between “Significant” and “Not Significant” is not Itself
+ Statistically Significant.
+ 
+\emph on
+ The American Statistician
+\emph default
+.
+ v, 60(4): 328-331.
+ doi:10.1198/000313006X152649.
+ 
+\end_layout
+
+\begin_layout Itemize
+Compare 2 coefficients, say
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}_{2}=1.1$
+\end_inset
+
+ with 
+\begin_inset Formula $std.err.(\hat{\beta}_{2})=0.6.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}_{5}=1.2$
+\end_inset
+
+ with 
+\begin_inset Formula $std.err(\hat{\beta}_{5})=0.5$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By the usual reasoning, 
+\begin_inset Formula $\mbox{\ensuremath{\hat{\beta}}}_{2}$
+\end_inset
+
+ is not statistically significant, but 
+\begin_inset Formula $\hat{\beta}_{5}$
+\end_inset
+
+ is.
+ 
+\end_layout
+
+\begin_layout Standard
+Gelman & Stern point out this fallacy:
+\end_layout
+
+\begin_layout Quote
+Therefore, the effect of variable 
+\begin_inset Formula $x5_{i}$
+\end_inset
+
+ is larger than the effect of 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+It is a fallacy because we we did not test that hypothesis! (Implicitly
+ assumed 
+\begin_inset Formula $\beta_{2}$
+\end_inset
+
+ different from 
+\begin_inset Formula $\beta_{5}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Can conduct 
+\begin_inset Quotes eld
+\end_inset
+
+fancy
+\begin_inset Quotes erd
+\end_inset
+
+ t test to see!
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Test H0:
+\begin_inset Formula $\beta_{j}=\beta_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Idea: do two variables have 
+\begin_inset Quotes eld
+\end_inset
+
+the same effect
+\begin_inset Quotes erd
+\end_inset
+
+ on the output?
+\end_layout
+
+\begin_layout Itemize
+Null hypothesis
+\begin_inset Formula 
+\[
+H_{0}:\beta_{j}=\beta_{k}
+\]
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+same as
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+H_{0}:\,\beta_{j}-\beta_{k}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{t}=\frac{\widehat{\beta_{j}-\beta_{k}}}{std.err.(\widehat{\beta_{j}-\beta_{k}})}\,
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+It is easy to see 
+\begin_inset Formula $\widehat{\beta_{j}-\beta_{k}}$
+\end_inset
+
+, is the actually the difference of the two estimates, 
+\begin_inset Formula $\widehat{\beta_{j}}-\widehat{\beta_{k}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+And the answer will be:
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Use this test statistic
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{t}=\frac{\hat{\beta}_{j}-\hat{\beta}_{k}}{\sqrt{\widehat{Var(\hat{\beta}_{j})}+\widehat{Var(\hat{\beta}_{k})}-2Cov(\hat{\beta}_{j},\hat{\beta}_{k})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Estimates for denominator obtained from the var/covar matrix.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Gelman/Stern Effect In our Example
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+Easy to 
+\begin_inset Quotes eld
+\end_inset
+
+eyeball
+\begin_inset Quotes erd
+\end_inset
+
+ estimates and think 
+\begin_inset Quotes eld
+\end_inset
+
+this effect is bigger than that
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+However, difference may not be 
+\begin_inset Quotes eld
+\end_inset
+
+statistically significantly greater than 0
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Example: Is 
+\begin_inset Quotes eld
+\end_inset
+
+age
+\begin_inset Quotes erd
+\end_inset
+
+ effect bigger than 
+\begin_inset Quotes eld
+\end_inset
+
+tenure
+\begin_inset Quotes erd
+\end_inset
+
+ effect?
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job33, include=F,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(mod2), modelLabels=c("Satisfaction"), tight=F, showAIC=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-job33}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Satisfaction Regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Variance-Covariance matrix 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<job50, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+round(vcov(mod2),5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-job50.tex} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+t=\frac{0.02088-0.03391}{\sqrt{(3.099521\times10^{-04}+1.035459\times10^{-04}-2(-8.893854\times10^{-05}))}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\frac{-0.01303}{\sqrt{0.0005913751}}=-0.5358126
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+tenure effect may be statistically significantly greater than 0
+\end_layout
+
+\begin_layout Itemize
+but its effect is not statistically significantly greater than that of age.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+F Test
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+F test
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+Nested Models: 
+\series default
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Quotes eld
+\end_inset
+
+larger model
+\begin_inset Quotes erd
+\end_inset
+
+ entirely contains a 
+\begin_inset Quotes eld
+\end_inset
+
+smaller model
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Smaller model results by setting some coefficients to 0
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Same: You want to 
+\begin_inset Quotes eld
+\end_inset
+
+drop a bunch of variables
+\begin_inset Quotes erd
+\end_inset
+
+: Is the smaller model 
+\begin_inset Quotes eld
+\end_inset
+
+as good
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Why is this better than conducting several t tests?
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Possible to find examples where we can't reject 
+\begin_inset Formula $H_{0}:\beta_{j}=0$
+\end_inset
+
+ for several variables, but 
+\begin_inset Formula $F$
+\end_inset
+
+ test may reject idea tha thtey all are equal to 0.
+\end_layout
+
+\begin_layout Itemize
+Recall problem of 
+\begin_inset Quotes eld
+\end_inset
+
+weak power
+\begin_inset Quotes erd
+\end_inset
+
+ in a t test.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+F test for groups of parameters
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Test a block of coefficients: are all equal to 0?
+\end_layout
+
+\begin_layout Itemize
+Suppose 3 
+\begin_inset Quotes eld
+\end_inset
+
+efficacy
+\begin_inset Quotes erd
+\end_inset
+
+ predictors (x's), 3 
+\begin_inset Quotes eld
+\end_inset
+
+narcissism
+\begin_inset Quotes erd
+\end_inset
+
+ predictors (z's) in the Full Model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+\beta_{4}z1_{i}+\beta_{5}z2_{i}+\beta_{6}z3_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Wonder, is it possible that all 3 narcissism predictors have 
+\begin_inset Formula $0$
+\end_inset
+
+ effect? 
+\end_layout
+
+\begin_layout Itemize
+Would a reduced model be as good?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Principle of 
+\begin_inset Quotes eld
+\end_inset
+
+parsimony
+\begin_inset Quotes erd
+\end_inset
+
+ prefers models with fewer unknowns
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+F Test for Subsets of Regressors
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+Full
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+unrestricted
+\begin_inset Quotes erd
+\end_inset
+
+ model: all coefficients included.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Error sum of squares 
+\begin_inset Formula $ESS_{U}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+Restricted
+\begin_inset Quotes erd
+\end_inset
+
+ model, some coefficients excluded.
+ Meaning we assumed some coefficients equal 0.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Error sum of squares for the restricted model 
+\begin_inset Formula $ESS_{R}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Compare the two models to find out if the restriction makes a difference.
+\end_layout
+
+\begin_layout Description
+Caution: 1) The models must be estimated on the SAME data and 2) they must
+ be nested (one results from deleting terms from other)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+F test
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The F statistic is
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F(q,N-k-1)=\frac{(ESS_{R}-ESS_{UR})/q}{ESS_{UR}/N-k-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $N$
+\end_inset
+
+ be the sample size.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+ be the number of independent variables used in the full model.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $q$
+\end_inset
+
+ be the number of variables that are excluded from the restricted model.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Use F table, q degrees of freedom for the numerator and N-k-1 for the denominato
+r.
+ If the number you get is bigger than that, reject the null.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+F Test in Regression Output is Different
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+In default output, the F reported tests the Null hypothesis: 
+\shape italic
+all slope coefficients are 0.
+\end_layout
+
+\begin_layout Itemize
+With 
+\begin_inset Formula $k$
+\end_inset
+
+ predictors, null hypothesis 
+\begin_inset Formula 
+\[
+H_{0}:\beta_{1}=\beta_{2}=\ldots=\beta_{k}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Some interpret this as a significance test on 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+.
+ Is estimated 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ significantly greater than 
+\begin_inset Formula $0$
+\end_inset
+
+?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Review
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Full, Unrestricted Model (all Variables Included):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+...+\beta_{k-q}X(k-q)_{i}+b{}_{k-q+1}X(k-q+1)_{i}+...+\beta_{k}Xk_{i}+e{}_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Restricted Model removes q coefficients (sets them at 0).
+ 
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+...+\beta_{k-q}X(k-q)_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If the full model 
+\begin_inset Quotes eld
+\end_inset
+
+fits better
+\begin_inset Quotes erd
+\end_inset
+
+, it will have smaller Error Sum of Squares.
+ 
+\end_layout
+
+\begin_layout Itemize
+F examines Null that 
+\begin_inset Formula $\beta_{k-q+1}=\beta_{k-q+2}\ldots=\beta_{k}-0$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Can Get Same from 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Using R-squares
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F(q,N-k-1)=\frac{(R_{UR}^{2}-R_{R}^{2})/q}{(1-R_{UR}^{2})/N-k-1}=\frac{(ESS_{R}-ESS_{UR})/q}{ESS_{UR}/N-k-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sometimes thought of as a way of answering: Is the improvement from 
+\begin_inset Formula $R_{R}^{2}$
+\end_inset
+
+ to 
+\begin_inset Formula $R_{UR}^{2}$
+\end_inset
+
+ great enough to justify the number of coefficients being estimated?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I need to work out more examples here}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I wrote more examples in lecture notes from the R course.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/Rcourse/regression-glm-2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Example with coefficients from a categorical predictor below
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Be aware of the danger of fluctuating N }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Nested models
+\begin_inset Quotes erd
+\end_inset
+
+ assumption requires same data used in 2 regressions.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Listwise Deletion
+\begin_inset Quotes erd
+\end_inset
+
+ may cause N to accidentally differ, R will throw an error.
+\end_layout
+
+\begin_layout Itemize
+I proceed as follows
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Fit the 
+\begin_inset Quotes eld
+\end_inset
+
+big
+\begin_inset Quotes erd
+\end_inset
+
+ model
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1 + x2 + x3 + z1 + z2, data = dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Fit the small model on the data subset from the big one
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1 + x2 + x3, data = model.frame(m1))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Then use the anova function to conduct the test
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+anova(m2, m1, test = F)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Regression and Categorical Predictors
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+R: Model Matrix vs Design Matrix
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+data frame
+\begin_inset Quotes erd
+\end_inset
+
+ has numeric and factor (categorical) variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+Software converts factor variables to numeric columns for use in regression.
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+factor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+numeric contrast
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sex
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sexMale
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Male
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Female
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Female
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Male
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+Call 
+\begin_inset Quotes eld
+\end_inset
+
+sexMale
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+a 
+\begin_inset Quotes eld
+\end_inset
+
+dummy variable
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\end_layout
+
+\begin_layout Itemize
+an 
+\begin_inset Quotes eld
+\end_inset
+
+indicator variable
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\end_layout
+
+\begin_layout Itemize
+a 
+\begin_inset Quotes eld
+\end_inset
+
+contrast variable.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multi-valued Categorical Predictor
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+4 category religion variable
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+relig
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+religChristian
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+religJewish
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+religMuslim
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Intercept
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Christian
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Jewish
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Muslim
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Buddhist
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+3 
+\begin_inset Quotes eld
+\end_inset
+
+dummy variables
+\begin_inset Quotes erd
+\end_inset
+
+ for a 4 category variable 
+\end_layout
+
+\begin_layout Standard
+Along with the intercept
+\end_layout
+
+\begin_layout Standard
+Coefficient estimates for religChristian, religJewish, religMuslem indicate
+ difference of each religion from Buddhist.
+\end_layout
+
+\begin_layout Itemize
+Various ways exist to re-do the columns of 0's and 1's, the default in R
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+Treatment Contrasts
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Ex: Model Frame and Design Matrix}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lets create an example with these variables
+\end_layout
+
+\begin_layout Description
+xnum1 a numeric predictor
+\end_layout
+
+\begin_layout Description
+xcat2 a factor variable {
+\begin_inset Quotes erd
+\end_inset
+
+Female
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Male
+\begin_inset Quotes erd
+\end_inset
+
+}
+\end_layout
+
+\begin_layout Description
+z a factor variable {
+\begin_inset Quotes erd
+\end_inset
+
+A
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+B
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+C
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+D
+\begin_inset Quotes erd
+\end_inset
+
+}
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rdesmatrix,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(123123)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(xnum1 = rnorm(100), xcat2 = factor(sample(c("Female", "Male"),
+ 100, replace = TRUE)),
+\end_layout
+
+\begin_layout Plain Layout
+
+z = factor(sample(c("A","B","C","D"), 100, replace = TRUE)), y = rnorm(100))
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1mm <- model.matrix(y ~ xnum1 + xcat2 + z, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y <- mod1mm %*% c(0.1, 0.45, -0.1, 0.2, 0.35, -0.45) + 0.8 *rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm(y ~ xnum1 + xcat2 + z, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1df <- model.frame(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<summarize10, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summarizeNumerics(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summarizeFactors(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The top of the data frame
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<modframe1, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+head(dat, 15)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Behind the scenes, software creates the numeric 
+\begin_inset Quotes eld
+\end_inset
+
+design matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<modmatr1, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1mm <- model.matrix(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(mod1mm, 15)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The default method creates 
+\begin_inset Quotes eld
+\end_inset
+
+treatment contrasts
+\begin_inset Quotes erd
+\end_inset
+
+ (dummy 
+\begin_inset Quotes eld
+\end_inset
+
+indicator
+\begin_inset Quotes erd
+\end_inset
+
+ variables)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<WR20>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+contrasts(dat$z)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And the estimated coefficients are
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<WR40, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Understand those as estimates of this model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}xnum1_{i}+\beta_{2}xcat2Male_{i}+\beta_{3}zB_{i}+\beta_{4}zC_{i}+\beta_{5}zD_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $A$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+baseline
+\begin_inset Quotes erd
+\end_inset
+
+ group, it is 
+\begin_inset Quotes eld
+\end_inset
+
+in
+\begin_inset Quotes erd
+\end_inset
+
+ the intercept.
+ 
+\end_layout
+
+\begin_layout Itemize
+The coefficient 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+ is the slope as 
+\begin_inset Formula $\hat{y}_{i}$
+\end_inset
+
+ depends on the numeric predictor
+\end_layout
+
+\begin_layout Itemize
+The coefficient 
+\begin_inset Formula $\hat{\beta}_{2}$
+\end_inset
+
+ is the difference predicted for Males (compared against females)
+\end_layout
+
+\begin_layout Itemize
+The coefficients 
+\begin_inset Formula $\hat{\beta}_{3},$
+\end_inset
+
+
+\begin_inset Formula $\hat{\beta}_{4}$
+\end_inset
+
+, and 
+\begin_inset Formula $\hat{\beta}_{5}$
+\end_inset
+
+ are 
+\begin_inset Quotes eld
+\end_inset
+
+intercept shifters
+\begin_inset Quotes erd
+\end_inset
+
+, how B, C, and D are different from A.
+\end_layout
+
+\begin_layout Standard
+The plotSlopes function in rockchalk can make a drawing.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<WR50, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+require(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(mod1, plotx="xnum1", modx="z")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-WR50.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Parallel Lines.
+ Slopes for 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $B$
+\end_inset
+
+, 
+\begin_inset Formula $C$
+\end_inset
+
+, and 
+\begin_inset Formula $D$
+\end_inset
+
+ are same.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Now Come back to the F test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The religion factor leads us to estimate 3 coefficients.
+ 
+\end_layout
+
+\begin_layout Itemize
+We can formally reject the null hypothesis that all 3 religion dummy variables
+ have no effect
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $H_{o}:\beta_{3}=\beta_{4}=\beta_{5}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You can retrieve the error sum of squares manually from the regression,
+ i.e., residuals(mod1)^2, but you don't need to
+\end_layout
+
+\begin_layout Itemize
+R offers 2 more convenient ways.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+fit the R and UR models and then use the anova() function to compare the
+ two
+\end_layout
+
+\begin_layout Enumerate
+use the drop1() function, which automatically conducts the F test for each
+ variable 
+\begin_inset Quotes eld
+\end_inset
+
+group
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The anova() function}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<anova1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- lm(y ~ xnum1 + xcat2, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+anova(mod2, mod1, test = "F")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The drop1 function}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<drop1>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+drop1(mod1, test = "F")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Puzzle: compare this to conclusion of a t-test
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Appendix: Derivation without Matrices
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+OLS with Just Three Predictors
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+First Order Conditions: Calculate partial derivative for each parameter,
+ set them equal to 0 (finding the 
+\begin_inset Quotes eld
+\end_inset
+
+bottom of the bowl
+\begin_inset Quotes erd
+\end_inset
+
+ ).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+\frac{\partial S}{\partial\beta_{0}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i}) & =0\\
+\frac{\partial S}{\partial\beta_{1}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i})x1_{i} & =0\\
+\frac{\partial S}{\partial\beta_{2}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i})x2_{i} & =0
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These imply the three 
+\begin_inset Quotes eld
+\end_inset
+
+normal equations
+\begin_inset Quotes erd
+\end_inset
+
+ (one for each estimated parameter):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\sum y_{i}= & N\widehat{\beta_{0}}+(\sum x1_{i})\widehat{\beta_{1}}+(\sum X2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x1_{i}= & (\sum x1_{i})\widehat{\beta_{0}}+(\sum x1_{i}^{2})\widehat{\beta_{1}}+(\sum x1_{i}x2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x2_{i}= & (\sum x2_{i})\widehat{\beta_{0}}+(\sum x1_{i}x2_{i})\widehat{\beta_{1}}+(\sum x2_{i}^{2})\widehat{\beta_{2}}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Scalar Math
+\begin_inset Quotes erd
+\end_inset
+
+ Gets Tedious
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+def.
+ Scalar : a 
+\begin_inset Quotes eld
+\end_inset
+
+number
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+As long as you do ordinary 'scalar' math, you get one equation per parameter
+\end_layout
+
+\begin_layout Itemize
+Summation signs flying around everywhere
+\end_layout
+
+\begin_layout Itemize
+Estimate a regression with 10 variables, write out 10 equations? (ugh...)
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Appendix: Matrices
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Why Bother with Matrix Algebra?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+All treatments at 
+\begin_inset Quotes eld
+\end_inset
+
+the next level of statistics
+\begin_inset Quotes erd
+\end_inset
+
+ are presented in matrix algebra.
+\end_layout
+
+\begin_layout Itemize
+You can't really read the literature unless you invest some effort to learn
+ this
+\end_layout
+
+\begin_layout Itemize
+Stats in math or economics would require matrices
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Terms
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+a vector: always a column thing, referred to as 
+\begin_inset Formula $N.of\,rows\,\times1\,column$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+a matrix: vectors glued together, side by side, 
+\begin_inset Formula $N.of\,rows\,\times N\,of\,columns$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+transpose: turns a column into a row
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matrix View
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+dep.
+ var
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+indep var
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+slopes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+predicted values
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X=\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\beta}=\left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{y}=\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+residuals
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+predicted values
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{e}=y-\hat{y}=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]-\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{y}=\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]=X\hat{\beta}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matrix View of Multiple Regression
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Assume:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Y=X\beta+e
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+With 2 predictors, that's short for:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cccccc}
+\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\ldots\\
+y_{N}
+\end{array}\right] & = & \left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & \ldots & \ldots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+\beta_{0}\\
+\beta_{1}\\
+\beta_{2}
+\end{array}\right] & + & \left[\begin{array}{c}
+e_{1}\\
+e_{2}\\
+\ldots\\
+e_{n}
+\end{array}\right]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status open
+
+\begin_layout Plain Layout
+allowframebreaks
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $X\beta$
+\end_inset
+
+ is Matrix Multiplication
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+X is rectangular, 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is a column.
+ We multiply to create 
+\begin_inset Formula $X\beta$
+\end_inset
+
+ like so:
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cccccccc}
+1 & 19 & 1 & 0.1 & 1 & 0 & 22 & 3\\
+1 & 22 & 2 & 1.1 & 0 & 1 & 42 & 1\\
+1 & 17\\
+\vdots & \vdots
+\end{array}\right]\left[\begin{array}{c}
+\ensuremath{\beta_{0}}\\
+\ensuremath{\beta_{1}}\\
+\ensuremath{\beta_{2}}\\
+\ensuremath{\beta_{3}}\\
+\ensuremath{\beta_{4}}\\
+\ensuremath{\beta_{5}}\\
+\ensuremath{\beta_{6}}\\
+\ensuremath{\beta_{7}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Matrix by Vector Multiplication: multiply and add add across each row separately.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Row1}:\,1\cdot\beta_{0}+\beta_{1}\cdot19+\beta_{2}\cdot1+\beta_{3}\cdot0.1+\beta_{4}\cdot1+\beta_{5}\cdot0+\beta_{6}\cdot22+\beta_{7}\cdot3
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Do that for each row, and so the result from 
+\begin_inset Formula 
+\begin{equation}
+X\beta
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+will be a column of 
+\begin_inset Formula $N$
+\end_inset
+
+ numbers, one for each row.
+\begin_inset Formula 
+\[
+X\beta=\left[\begin{array}{c}
+some\,number_{1}\\
+some\,number_{2}\\
+some\,number_{3}\\
+some\,number_{4}\\
+\ldots\\
+some\,number_{N}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Brief Matrix Multiplication
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+In my course web guide collection, there are longer introductions to matrix
+ algebra
+\end_layout
+
+\begin_layout Itemize
+A row vector is a transposed column
+\end_layout
+
+\begin_layout Itemize
+Multiply vectors (a row vector times a column vector).
+ Sometimes called an 
+\begin_inset Quotes eld
+\end_inset
+
+inner product
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=af+bg+ch+di+ej
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[1\times5]\cdot[5\times1]$
+\end_inset
+
+ yields a 
+\begin_inset Formula $[1\times1]$
+\end_inset
+
+ result, just a single number (a 
+\begin_inset Quotes eld
+\end_inset
+
+scalar
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+One of the most common uses will calculate 
+\begin_inset Quotes eld
+\end_inset
+
+sum of squares
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+a\\
+b\\
+c\\
+d\\
+e
+\end{array}\right]=a^{2}+b^{2}+c^{2}+d^{2}+e^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note: Vectors must 
+\begin_inset Quotes eld
+\end_inset
+
+conform
+\begin_inset Quotes erd
+\end_inset
+
+ to allow multiplication (same # elements)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Brief Matrix Multiplication
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Multiply a matrix times a vector 
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=\left[\begin{array}{c}
+af+bg+ch+di+ej\\
+rf+sg+th+ui+vj
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Treat matrix as two rows, then conduct multiplication separately for each
+ one.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[2\times5]\cdot[5\times1]$
+\end_inset
+
+ yields a 
+\begin_inset Formula $[2\times1]$
+\end_inset
+
+ result
+\end_layout
+
+\begin_layout Itemize
+Example: 
+\begin_inset Formula $\hat{y}=Xb$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cccccc}
+\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\ldots\\
+\hat{y}_{N}
+\end{array}\right] & = & \left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+1 & \ldots & \ldots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right] & = & \left[\begin{array}{c}
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{1}+\hat{\beta}_{2}x2_{1}\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{2}+\hat{\beta}_{2}x2_{2}\\
+\ldots\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{N}+\hat{\beta}_{2}x2_{N}
+\end{array}\right]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Brief Matrix Multiplication
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Multiply a matrix times a matrix 
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{cc}
+f & k\\
+g & l\\
+h & m\\
+i & n\\
+j & o
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=\left[\begin{array}{cc}
+af+bg+ch+di+ej & ak+bl+cm+dn+eo\\
+rf+sg+th+ui+vj & rk+sl+tm+un+vo
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Break into sequences of vector multiplications, row 1 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ column 1, row2 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ column 1, row 1 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ column 2, row 2 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ column 2.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[2\times5]\cdot[5\times2]$
+\end_inset
+
+ yields a 
+\begin_inset Formula $[2\times2]$
+\end_inset
+
+ result
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status open
+
+\begin_layout Plain Layout
+allowframebreaks
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Transpose
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+I've been avoiding the question of where row vectors come from.
+ 
+\end_layout
+
+\begin_layout Itemize
+A row vector is a column vector 
+\begin_inset Quotes eld
+\end_inset
+
+on its side.
+ It has been 
+\begin_inset Quotes eld
+\end_inset
+
+transposed
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\beta^{T}=(\beta_{0},\beta_{1},\beta_{2},\ldots)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A matrix transpose is 
+\begin_inset Quotes eld
+\end_inset
+
+rotated
+\begin_inset Quotes erd
+\end_inset
+
+ so the left column becomes the first row
+\begin_inset Formula 
+\[
+X=\left[\begin{array}{ccc}
+1 & 3 & 33\\
+1 & 2 & 62\\
+1 & 5 & 65\\
+1 & 1 & 45\\
+1 & 5 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X}\,is\,}5x3
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & 1 & 1\\
+3 & 2 & 5 & 1 & 5\\
+33 & 62 & 65 & 45 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X^{T}}\,\,is\,3x5}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status open
+
+\begin_layout Plain Layout
+allowframebreaks
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+The Sum of Squares is 
+\begin_inset Formula $(y-\hat{y})^{T}(y-\hat{y})$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\hat{y}=X\hat{\beta}$
+\end_inset
+
+ is the predicted value column
+\end_layout
+
+\begin_layout Itemize
+Estimation Procedure: Choose 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ to minimize 
+\begin_inset Formula $(y-\hat{y})^{T}(y-\hat{y})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{equation}
+(y-\hat{y})^{T}(y-\hat{y})=(y_{1}-\hat{y}_{1},y_{2}-\hat{y}_{2},y_{3}-\hat{y}_{3}\ldots,y_{N}-\hat{y}_{N})\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Which is just the matrix way of saying 
+\begin_inset Quotes eld
+\end_inset
+
+sum of squared errors
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+(y-\hat{y})^{T}(y-\hat{y})=\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matrix solution
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Calculus is used to find 
+\begin_inset Quotes eld
+\end_inset
+
+first order
+\begin_inset Quotes erd
+\end_inset
+
+ conditions for the sum-of-squares minimizing estimates of 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+The theoretical solution is often written down like this 
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Poetry for your T-Shirts: 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\beta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ hat equals X-transpose X inverse X-transpose y
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Formula $(X^{T}X)$
+\end_inset
+
+ is the covariance matrix of the input 
+\begin_inset Quotes eld
+\end_inset
+
+design matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It is 
+\begin_inset Formula $p\times p$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matrix Inverse
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $(X^{T}X)^{-1}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+inverse
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $(X^{T}X),$
+\end_inset
+
+ meaning.
+\end_layout
+
+\begin_layout Itemize
+Recall ordinary math: 
+\begin_inset Formula $x^{-1}\cdot x=1$
+\end_inset
+
+.
+ The inverse is 
+\begin_inset Formula $\frac{1}{x}$
+\end_inset
+
+, the 
+\begin_inset Quotes eld
+\end_inset
+
+reciprocal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+To translate that to matrices, we need to define the idea of 
+\begin_inset Formula $1$
+\end_inset
+
+ in a matrix.
+\end_layout
+
+\begin_layout Itemize
+The Identity matrix 
+\begin_inset Formula $I$
+\end_inset
+
+ in matrix algebra is like 
+\begin_inset Formula $1$
+\end_inset
+
+ in scalar math 
+\begin_inset Formula 
+\begin{equation}
+(X^{T}X)^{-1}(X^{T}X)=I,\,\,where\,I=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+True and Estimated Variance of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+true variance/covariance matrix
+\begin_inset Quotes erd
+\end_inset
+
+ of the estimator 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is given by
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta})=\sigma_{e}^{2}(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Recall, that's the theoretical quantity.
+ If your error term did have variance 
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+ then the estimates of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ would fluctuate 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+But we don't know 
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+ , we must estimate it by the Root Mean Squared Error from the regression.
+ 
+\end_layout
+
+\begin_layout Itemize
+So the estimated variance of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ replaces the true variance of the error with the estimate.
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}\,(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Sum of Squares on a Matrix Level
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $X^{T}$
+\end_inset
+
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $X$
+\end_inset
+
+ transpose
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $X$
+\end_inset
+
+ turned on its side
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is a sum of squares matrix.
+ See?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+X^{T}X & = & \left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]\\
+ & = & \left[\begin{array}{ccc}
+N & \sum x1_{i} & \sum x2_{i}\\
+\sum x1_{i} & \sum x1_{i}^{2} & \sum x1_{i}x2_{i}\\
+\sum x2_{i} & \sum x1_{i}x2_{i} & \sum x2_{i}^{2}
+\end{array}\right]
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+First Order Conditions are called the Normal Equations
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The Normal Equations 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+\sum y_{i}= & N\widehat{\beta_{0}}+(\sum x1_{i})\widehat{\beta_{1}}+(\sum X2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x1_{i}= & (\sum x1_{i})\widehat{\beta_{0}}+(\sum x1_{i}^{2})\widehat{\beta_{1}}+(\sum x1_{i}x2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x2_{i}= & (\sum x2_{i})\widehat{\beta_{0}}+(\sum x1_{i}x2_{i})\widehat{\beta_{1}}+(\sum x2_{i}^{2})\widehat{\beta_{2}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+can be written with matrices as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+\sum y_{i}\\
+\sum y_{i}x1_{i}\\
+\sum y_{i}x2_{i}
+\end{array}\right]=\left[\begin{array}{ccc}
+N & \sum x1_{i} & \sum x2_{i}\\
+\sum x1_{i} & \sum x1_{i}^{2} & \sum x1_{i}x2_{i}\\
+\sum x2_{i} & \sum x1_{i}x2_{i} & \sum x2_{i}^{2}
+\end{array}\right]\left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Look what pops out
+\begin_inset Formula 
+\begin{equation}
+X^{T}y=(X^{T}X)\,\hat{\beta}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Almost done
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Once you get to this point, the work is almost done.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X^{T}y=(X^{T}X)\,\hat{\beta}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Need to get 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+all by itself
+\begin_inset Quotes erd
+\end_inset
+
+.
+ So suppose you had a matrix 
+\begin_inset Formula $(X^{T}X)^{-1}$
+\end_inset
+
+ that could work just like 
+\begin_inset Quotes eld
+\end_inset
+
+dividing
+\begin_inset Quotes erd
+\end_inset
+
+ in ordinary math.
+ Then
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $(X^{T}X)^{-1}$
+\end_inset
+
+ is called an 
+\begin_inset Quotes eld
+\end_inset
+
+inverse
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+, and if we multiply the inverse of 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ times 
+\begin_inset Formula $(X^{T}X)^{-1}$
+\end_inset
+
+ then we get the matrix equivalent of 
+\begin_inset Formula $1$
+\end_inset
+
+, which is called 
+\begin_inset Formula $I$
+\end_inset
+
+ (for 
+\begin_inset Quotes eld
+\end_inset
+
+identity matrix
+\begin_inset Quotes erd
+\end_inset
+
+).
+ 
+\begin_inset Formula 
+\begin{equation}
+I=\left(\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]\right)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Multiply 
+\begin_inset Quotes eld
+\end_inset
+
+anything
+\begin_inset Quotes erd
+\end_inset
+
+ times 
+\begin_inset Formula $I$
+\end_inset
+
+ and you get 
+\begin_inset Quotes eld
+\end_inset
+
+anything
+\begin_inset Quotes erd
+\end_inset
+
+ back, unchanged.
+ Like multiplying by 
+\begin_inset Formula $1$
+\end_inset
+
+ in ordinary math.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+QR Decomposition
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Recently, I've learned that stats books teach us some unrealistic calculations.
+ 
+\end_layout
+
+\begin_layout Itemize
+We talk about 
+\begin_inset Formula $(X^{T}X),$
+\end_inset
+
+ but actually forming that, or inverting it, would cause a lot of 
+\begin_inset Quotes eld
+\end_inset
+
+numerical instability
+\begin_inset Quotes erd
+\end_inset
+
+ due to roundoff error.
+ 
+\end_layout
+
+\begin_layout Itemize
+Software does not invert 
+\begin_inset Formula $X^{T}X,$
+\end_inset
+
+ rather it decomposes 
+\begin_inset Formula $X$
+\end_inset
+
+ and then uses clever algorithms (QR decomposition) to preserve numerical
+ accuracy.
+\end_layout
+
+\begin_layout Itemize
+Usually, they'll say re-write the Normal Equations as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X^{T}y-(X^{T}X)\,\hat{\beta}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+or this 
+\begin_inset Formula 
+\begin{equation}
+X^{T}(y-X\hat{\beta})=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+See 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/Math/Matrix-Decompositions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Var/Cov Matrix of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The variance/covariance matrix of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ (if we knew the variance of the error) would be
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta})=\sigma_{e}^{2}(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Estimate the variance of the error term as the mean square error (same as
+ 1 input regression) 
+\begin_inset Formula 
+\begin{equation}
+\widehat{\sigma_{e}^{2}}=MSE=\frac{1}{N-k}(y-\hat{y})^{T}(y-\hat{y})
+\end{equation}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+So the estimated Variance of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And the square root of the diagonal elements of 
+\begin_inset Formula $\widehat{Var(\hat{\beta})}$
+\end_inset
+
+ are the 
+\begin_inset Quotes eld
+\end_inset
+
+standard errors
+\begin_inset Quotes erd
+\end_inset
+
+ of the 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+'s.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Appendix: Digression on 
+\begin_inset Quotes eld
+\end_inset
+
+Partial Residual
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Partial Predicted Value
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Digression: Calculate Term "Partial" Residual, "Partial" Predicted
+ Value?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Consider model 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mod <-lm(y~X1+X2+X3)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+An ordinary 
+\begin_inset Quotes eld
+\end_inset
+
+residual
+\begin_inset Quotes erd
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+observed value
+\begin_inset Quotes erd
+\end_inset
+
+ minus a 
+\begin_inset Quotes eld
+\end_inset
+
+fitted value
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}-\hat{y}_{i}=y_{i}-\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The predicted value for the mean case always equal to the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+\bar{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Digression: "term predictions"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+How much of the prediction's quality is due to each variable? 
+\end_layout
+
+\begin_layout Itemize
+Begin with 
+\begin_inset Formula $\hat{y}_{i,}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then add zero to that, but do it in the sneaky math way: We both add AND
+ subtract 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Rearrange so that 
+\begin_inset Formula $\hat{y}_{i}$
+\end_inset
+
+ is seen as a sum of the 
+\begin_inset Quotes eld
+\end_inset
+
+mean prediction
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+term
+\begin_inset Quotes erd
+\end_inset
+
+ predictions
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{y}_{i}= & \{\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}\}\nonumber \\
+ & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})+\hat{\beta}_{1}(X2_{i}-\overline{X2})+\hat{\beta}_{3}(X3_{i}-\overline{X3})\}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Which is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{y}_{i}= & \bar{y}\nonumber \\
+ & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})+\hat{\beta}_{1}(X2_{i}-\overline{X2})+\hat{\beta}_{3}(X3_{i}-\overline{X3})\}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We've found a way to see each predicted value as a variation about the observed
+ average of 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+In R, predict(mod, type=
+\begin_inset Quotes erd
+\end_inset
+
+terms
+\begin_inset Quotes erd
+\end_inset
+
+) returns the last 
+\begin_inset Quotes eld
+\end_inset
+
+things
+\begin_inset Quotes erd
+\end_inset
+
+ as separate columns:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cccccc}
+ & X1 &  & X2 &  & X3\\
+ & \overbrace{\hat{\beta}_{1}(X1_{i}-\overline{X1})} & , & \overbrace{\hat{\beta}_{2}(X2_{i}-\overline{X2})} & , & \overbrace{\hat{\beta}_{3}(X3_{i}-\overline{X3})}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+These are the 
+\begin_inset Quotes eld
+\end_inset
+
+partial predicted values
+\begin_inset Quotes erd
+\end_inset
+
+ used by termplot
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Digression: And a partial residual is...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+full residual
+\begin_inset Quotes erd
+\end_inset
+
+ is the difference between the observed value and each partial prediction:
+\begin_inset Formula 
+\[
+residual_{i}=y_{i}-\hat{y}_{i}=y_{i}-\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+An R 
+\begin_inset Quotes eld
+\end_inset
+
+partial residual
+\begin_inset Quotes erd
+\end_inset
+
+ for 
+\begin_inset Formula $X1_{j}$
+\end_inset
+
+: remove 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+, replace it with 
+\begin_inset Formula $\overline{X1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+A partial residual: 
+\begin_inset Formula 
+\begin{eqnarray*}
+partial\,residual(X1_{i}) & =y_{i} & -\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}\\
+ &  & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})\}\\
+ & =y_{i}-\{ & \hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Like an ordinary residual, except the variable of interest is replaced by
+ its mean in the calculation of the predicted value.
+\end_layout
+
+\begin_layout Itemize
+Interpretation
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+We have removed the effect of variation in 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+, but accounted for the other variables.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Practice Problems
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Problem 1
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Download the PublicSpending data from: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/DataSets/PublicSpending
+\end_layout
+
+\end_inset
+
+.
+ Fit a model that predicts EX as a linear function of all of the other variables
+ in the data set except STATE.
+ That's the 
+\begin_inset Quotes eld
+\end_inset
+
+full model
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Quote
+A.
+ Make a professionally acceptable regression table to display the results.
+\end_layout
+
+\begin_layout Quote
+B.
+ Write a paragraph that states the null hypothesis and conducts a significance
+ test for any of the parameter estimates.
+\end_layout
+
+\begin_layout Quote
+C.
+ When I run that, the results indicate that the slope coefficients for YOUNG
+ and GROW are not statistically different from 0.
+ But I can't say for sure if YOUNG's effect is different from GROW.
+ Conduct a fancy t-test to find out, write up your answer.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Problem 1 (cont)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+D.
+ Run a regression model that predicts EX as a function of YOUNG.
+ Make a table, discuss the difference of the estimate of the slope estimate
+ for YOUNG compared with the estimate from the full model.
+ 
+\end_layout
+
+\begin_layout Quote
+E.
+ Run R's termplot function to display the relationship for each independent
+ variable separately.
+ (If you don't use R, look for a replacement function in your software.
+ If you can't find one, we have to settle for scatterplots of the individual
+ variables against EX, I guess.)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Problem 2
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Take the 
+\begin_inset Quotes eld
+\end_inset
+
+full
+\begin_inset Quotes erd
+\end_inset
+
+ model from the previous question.
+ Conduct the F test to see if there is no significant effect among the variables
+ GROW, OLD, and YOUNG.
+ The F formula depends on the difference in the Error Sum of Squares in
+ the full and reduced models.
+ 
+\end_layout
+
+\begin_layout Standard
+R has an easy routine to do this test
+\end_layout
+
+\begin_layout Standard
+mod1 <- lm( –fill infull model –)
+\end_layout
+
+\begin_layout Standard
+mod2 <- lm(–omit the 3 variables –)
+\end_layout
+
+\begin_layout Standard
+anova(mod2, mod1, test=
+\begin_inset Quotes erd
+\end_inset
+
+F
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Problem 3
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Get any dataset you like that has 1 more-or-less continuous DV and 3 or
+ more IV.
+ You could take one of our example datasets from 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/DataSets
+\end_layout
+
+\end_inset
+
+ (except for PublicSpending).
+ Suppose the variables are called 
+\begin_inset Formula $y$
+\end_inset
+
+, 
+\begin_inset Formula $x1$
+\end_inset
+
+, 
+\begin_inset Formula $x2$
+\end_inset
+
+, 
+\begin_inset Formula $\mbox{\ensuremath{x3}, \ensuremath{x4}}$
+\end_inset
+
+ and so forth.
+ 
+\end_layout
+
+\begin_layout Standard
+First, estimate a sea of regression models.
+ Suppose you select any one variable, say 
+\begin_inset Formula $x3$
+\end_inset
+
+, and run the regression to estimate 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{3}x3_{i}+e_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Then add the other variables one at a time, so estimate 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{3}x3_{i}+e_{i}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{i}=\beta_{0}+\beta_{3}x3_{i}+\beta_{4}x4_{i}+e_{i}$
+\end_inset
+
+.
+ Then estimate one model with all of the variables included.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I wonder how much the slope estimates 
+\begin_inset Quotes eld
+\end_inset
+
+bounce around
+\begin_inset Quotes erd
+\end_inset
+
+ from one fit to the next.
+ Concentrate on 
+\begin_inset Formula $\hat{\beta}_{3}$
+\end_inset
+
+ in the various models.
+ I guess we better look at the standard error of 
+\begin_inset Formula $\beta_{3}$
+\end_inset
+
+ as well.
+\end_layout
+
+\begin_layout Enumerate
+For the model with all of the variable, run R's termplot function.
+ Don't forget the se and partial options, as demonstrated in my example
+ above.
+ 
+\end_layout
+
+\end_deeper
+\end_body
+\end_document

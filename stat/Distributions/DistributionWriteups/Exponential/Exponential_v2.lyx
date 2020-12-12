@@ -1,0 +1,672 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Exponential Distribution
+\end_layout
+
+\begin_layout Author
+Linsey Moddelmog and Paul Johnson
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction to the Exponential Distribution
+\end_layout
+
+\begin_layout Standard
+The Exponential distribution is often used as a model for durations.
+ It is related to the Poisson distribution in that it can be used to measure
+ the time between successes from the Poisson process.
+ Because the exponential represents time intervals, it is a continuous,
+ not discrete, probability distribution.
+ In many real life examples, the assumption that events will occur at a
+ constant rate of time is untenable.
+ For example, the rate of incoming phone calls differs according to the
+ time of day.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+But if we focus on a time interval during which the rate is roughly constant,
+ such as from 2 to 4 PM during work days, the exponential distribution can
+ be used as a good approximate model for the time until the next phone call
+ arrives.
+ Similar caveats apply to the following examples which yield approximately
+ exponentially distributed variables:
+\end_layout
+
+\begin_layout Standard
+* the time until you have your next car accident; 
+\end_layout
+
+\begin_layout Standard
+* the time until a radioactive particle decays, or the time between beeps
+ of a Geiger counter; 
+\end_layout
+
+\begin_layout Standard
+* the number of dice rolls needed until you roll a six 11 times in a row;
+ 
+\end_layout
+
+\begin_layout Standard
+* the time until a large meteor strike causes a mass extinction event.
+\end_layout
+
+\begin_layout Standard
+Exponential variables can also be used to model situations where certain
+ events occur with a constant probability per unit distance:
+\end_layout
+
+\begin_layout Standard
+* the distance between mutations on a DNA strand; 
+\end_layout
+
+\begin_layout Standard
+* the distance between roadkill on a given street;
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Exponential_distribution
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Mathematical Definition
+\end_layout
+
+\begin_layout Standard
+The exponential density function is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(x)=\lambda e^{(-\lambda x)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $x\geq0$
+\end_inset
+
+.
+ The parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ determines the 
+\begin_inset Quotes eld
+\end_inset
+
+rate
+\begin_inset Quotes erd
+\end_inset
+
+ at which events occur.
+\end_layout
+
+\begin_layout Standard
+The cumulative distribution, the probability that a randomly drawn value
+ will be smaller than 
+\begin_inset Formula $k$
+\end_inset
+
+, is particularly easy to calculate in this example.
+ The cumulative distribution is
+\begin_inset Formula 
+\[
+F(k)=\int_{0}^{k}\lambda e^{-\lambda x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=-e^{-\lambda x}\mid_{0}^{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=1-e^{-\lambda k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Moments
+\end_layout
+
+\begin_layout Standard
+The expected value of 
+\begin_inset Formula $x$
+\end_inset
+
+ for an exponential distribution is
+\begin_inset Formula 
+\[
+E(x)=\frac{1}{\lambda}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variance is
+\begin_inset Formula 
+\[
+Var(x)=\sigma^{2}=\frac{1}{\lambda^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The skewness is
+\begin_inset Formula 
+\[
+Skewness(x)=2
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The kurtosis excess is
+\begin_inset Formula 
+\begin{eqnarray*}
+ & Kurtosis(x)= & 6
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+The graphs in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Exponential-Density-for"
+
+\end_inset
+
+ show how the shape of the distribution changes as the rate of change, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, increase.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Exponential Density for Various Rates
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Exponential-Density-for"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F,height=9,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+upper <- 80
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,upper,by=0.02)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(3,3))
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals1 <- dexp(xvals, rate=0.01)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals1, type="l", main="Rate=0.01",xlab="x",ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals2 <- dexp(xvals, rate=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals2, type="l", main="Rate=0.05",xlab="x",ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals3 <- dexp(xvals, rate=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals3, type="l", main="Rate=0.1",xlab="x",ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+upper <- 20
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,upper,by=0.2)
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals4 <- dexp(xvals, rate=0.2)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals4, type="l", main="Rate=0.2", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals5 <- dexp(xvals, rate=.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals5, type="l", main="Rate=.5", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals6 <- dexp(xvals, rate=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals6, type="l", main="Rate=1", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+upper <- 5
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,upper,by=0.005)
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals7 <- dexp(xvals, rate=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals7, type="l", main="Rate=5", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals8 <- dexp(xvals, rate=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals8, type="l", main="Rate=10", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+yvals9 <- dexp(xvals, rate=20)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (xvals, yvals9, type="l", main="Rate=20", xlab="x", ylab="probability")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

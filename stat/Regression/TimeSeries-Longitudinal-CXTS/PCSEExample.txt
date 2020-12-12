@@ -1,0 +1,79 @@
+# Paul Johnson <pauljohn@ku.edu>
+# April 4, 2004
+# Calculate the "panel corrected standard error" as described in
+# Beck and Katz
+
+> library(foreign)
+> 
+> dat<-read.spss("elderly2.sav")
+> 
+> dat <- as.data.frame(dat)
+> targetyears <- c(90,91,92,93,94,95,96,97,98,99)
+
+> 
+> dat$STATE <- substr(as.character(dat$STATENAM),1,2)
+> 
+> #fix florida
+> dat$STATE[dat$STATE=="Fl"] <- "FL"
+> dat$YEAR <- as.integer(dat$YEAR)
+>  
+> 
+> 
+> dat2 <- subset(dat,dat$YEAR > 2)
+> > 
+> plot(dat2$RENEW2,dat2$OLDCRASH,type="n")
+> text(dat2$RENEW2,dat2$OLDCRASH,(dat$STATENAM))
+> 
+> TESTFOR3 <- as.factor(dat2$TSTFOR2)
+> eld.ols2 <- lm (OLDCRASH~(RENEW2+TESTFOR3)*OTHCRASH+REPORT, data=dat2)
+> summary(eld.ols2)
+
+Call:
+lm(formula = OLDCRASH ~ (RENEW2 + TESTFOR3) * OTHCRASH + REPORT, 
+    data = dat2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.7380 -0.7102 -0.1151  0.5913  3.3491 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -9.65020    2.32461  -4.151 5.69e-05 ***
+RENEW2              1.54025    0.36766   4.189 4.91e-05 ***
+TESTFOR32           4.38974    1.72037   2.552  0.01179 *  
+TESTFOR33           7.57598    2.49649   3.035  0.00287 ** 
+OTHCRASH            1.82116    0.22182   8.210 1.27e-13 ***
+REPORTno            1.58109    0.48657   3.249  0.00145 ** 
+RENEW2:OTHCRASH    -0.14480    0.03588  -4.036 8.89e-05 ***
+TESTFOR32:OTHCRASH -0.48838    0.18194  -2.684  0.00814 ** 
+TESTFOR33:OTHCRASH -0.90070    0.28254  -3.188  0.00177 ** 
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 1.188 on 141 degrees of freedom
+Multiple R-Squared: 0.6672,	Adjusted R-squared: 0.6483 
+F-statistic: 35.33 on 8 and 141 DF,  p-value: < 2.2e-16 
+
+> testmodel <- eld.ols2
+>   resids <- residuals(testmodel)
+>   E <- as.matrix(unstack(resids, form=resids~dat2$STATE))
+>   SIGMA <- (1/nrow(E))*(t(E) %*% E)
+>   OMEGA <- SIGMA %x% diag(x=1, nrow=nrow(E), ncol=nrow(E)) 
+>   X <- model.matrix(testmodel)
+>   XPRIMEXINV <- solve(t(X) %*% X)
+>   PCSECOVB <- XPRIMEXINV %*%  (t(X) %*% OMEGA %*% X ) %*% XPRIMEXINV
+> sqrt(diag(PCSECOVB))
+       (Intercept)             RENEW2          TESTFOR32          TESTFOR33 
+        3.15266513         0.41192769         1.29890538         2.96867280 
+          OTHCRASH           REPORTno    RENEW2:OTHCRASH TESTFOR32:OTHCRASH 
+        0.30163792         0.32299704         0.03958498         0.13177647 
+TESTFOR33:OTHCRASH 
+        0.33967419 
+> coef(testmodel)/sqrt(diag(PCSECOVB))
+       (Intercept)             RENEW2          TESTFOR32          TESTFOR33 
+         -3.060967           3.739118           3.379571           2.551977 
+          OTHCRASH           REPORTno    RENEW2:OTHCRASH TESTFOR32:OTHCRASH 
+          6.037565           4.895076          -3.657904          -3.706121 
+TESTFOR33:OTHCRASH 
+         -2.651649 
+> 

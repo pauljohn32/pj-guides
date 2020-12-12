@@ -1,0 +1,8 @@
+###################################################
+### code chunk number 20: reg11
+###################################################
+dat <- genCorrelatedData(N=400, rho=.1, stde=250, beta=c(2,0.1,-0.1,0.5))
+m1 <- lm(y ~ x1 + x2, data=dat)
+fit1 <- plotPlane(m1, plotx1="x1", plotx2="x2", ticktype="detailed")
+
+

@@ -1,0 +1,5346 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+%%not for article, but for presentation
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 1
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\columnsep 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,nogin=T, height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+%%
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+tiny}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(75645)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Interaction-Categorical Predictors
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Categorical Predictors
+\end_layout
+
+\begin_layout Itemize
+Dichotomous: M or F
+\end_layout
+
+\begin_layout Itemize
+Polychotomy: R, D, C, S, I, ....
+ (not ordered)
+\end_layout
+
+\begin_layout Itemize
+Ordinal Variable: Lo, Med, Hi
+\end_layout
+
+\begin_layout BeginFrame
+Creating Contrasts
+\end_layout
+
+\begin_layout Itemize
+A design emphasis in R is that users should not 
+\begin_inset Quotes eld
+\end_inset
+
+create dummy variables
+\begin_inset Quotes erd
+\end_inset
+
+ manually.
+\end_layout
+
+\begin_layout Itemize
+Estimation routines should recognize 'factor' variables and create suitable
+ contrasts automatically
+\end_layout
+
+\begin_layout Itemize
+A menu of available contrast schemes is available (and specified to environment
+ as options)
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+Dichotomies
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plot a fitted model with Gender in 
+\backslash
+{M,F
+\backslash
+}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend10, fig=T, include=F,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+gender <- gl(2,100, labels=c("F","M"))
+\end_layout
+
+\begin_layout Plain Layout
+
+athletic <- ifelse(runif(200) < 0.3, 1, 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+weight <- 100 - 15 * athletic + 40*as.numeric(gender) + 20 * athletic * (as.numeri
+c(gender)-1) + 10*rnorm(200)
+\end_layout
+
+\begin_layout Plain Layout
+
+athletic <- factor(athletic, labels=c("Yes","No"))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(gender, weight, athletic)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(weight~gender, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(weight ~ gender, data=dat, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m1, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-gend10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Intercept is mean weight for Female
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+genderM
+\begin_inset Quotes erd
+\end_inset
+
+ estimate is difference between Mean of Female and Male
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Maybe You are Not a Fan of the Box and Whisker Plot?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend20, fig=T, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot.default(x=as.numeric(dat$gender)-1,y=dat$weight, main="", xlab="Gender,
+ 0=Female, 1=Male")
+\end_layout
+
+\begin_layout Plain Layout
+
+contrasts(dat$gender)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+The 
+\begin_inset Quotes eld
+\end_inset
+
+Contrasts
+\begin_inset Quotes erd
+\end_inset
+
+ created for the Gender variable are
+\end_layout
+
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-gend20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+Seems dishonest to allow x axis to take on a continuum of values.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But the "abline" is deceptive.
+ Right?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend30, fig=T, include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot.default(x=as.numeric(dat$gender)-1, y=dat$weight, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+termplot(m1, terms="gender", partial=T, se=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+The termplot function tries to show only the meaningful information about
+ the predictor
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-gend30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Another Dichotomy: Are You Athletic?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend50, fig=T, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(weight~gender+athletic, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+mcGraph3(x1=as.numeric(athletic)-1, x2=as.numeric(gender)-1, y=weight, main="",
+ drawArrows=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m2, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-gend50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What if we include an "interaction"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Previous model assumed 
+\begin_inset Formula 
+\[
+weight_{i}=b_{0}+b_{1}genderM_{i}+b_{2}athleticNo_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The effect of genderM is the same for athletic people
+\end_layout
+
+\begin_layout Standard
+The effect of athleticNo is the same for male and female
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Suppose instead that the effect of being athletic is different for M and
+ F
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+weight_{i} & = & b_{0}+b_{1}genderM_{i}+b_{2}athleticNo_{i}+b_{3}genderM_{i}\cdot athleticNo_{i}+e_{i}\\
+ & = & b_{0}+b_{1}genderM_{i}+(b_{2}+b_{3}genderM_{i})\cdot athleticNo_{i}+e_{i}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Estimate a Model that Allows Interaction.}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend60, fig=T, include=F,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(weight~gender*athletic, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+mcGraph3(x1=as.numeric(athletic)-1, x2=as.numeric(gender)-1, y=weight, interaction
+=T, drawArrows=F, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m3, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-gend60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks = 0.8]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted Values are Same as Means of Subgroups}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend80, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newx <- expand.grid(gender = levels(dat$gender), athletic = levels(dat$athletic))
+\end_layout
+
+\begin_layout Plain Layout
+
+(newx$pred <- predict(m3, newdata = newx))
+\end_layout
+
+\begin_layout Plain Layout
+
+grpmeans <-  aggregate(dat$weight, by = list("gender" = dat$gender, "athletic"
+ =  dat$athletic), FUN = mean)
+\end_layout
+
+\begin_layout Plain Layout
+
+grpmeans
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gend80}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Try Out interaction.plot to Display}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+interaction.plot does not calculate regressions.
+ It simply 
+\begin_inset Quotes eld
+\end_inset
+
+connects the dots
+\begin_inset Quotes erd
+\end_inset
+
+ of observed means.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gend61, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+interaction.plot(dat$gender, dat$athletic, dat$weight)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-gend61}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I Admit I'm a Neanderthal}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You should take a class on analysis of variance, where they will explain
+ why I'm wrong, but
+\end_layout
+
+\begin_layout Itemize
+All coding schemes that lead to the same predicted values for the subgroups
+ are equivalent.
+ (Same 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+, etc)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+treatment contrasts
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+effects contrasts
+\begin_inset Quotes erd
+\end_inset
+
+ or whatever change the 
+\begin_inset Quotes eld
+\end_inset
+
+free hypothesis tests
+\begin_inset Quotes erd
+\end_inset
+
+ that are provided with the printout
+\end_layout
+
+\begin_layout Itemize
+Follow up hypothesis tests can be used to compare parameters when needed
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Category * Numeric
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I Like This}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose data collected in M categories
+\end_layout
+
+\begin_layout Itemize
+Can fit M separate regression models
+\end_layout
+
+\begin_layout Itemize
+Can stack data from M sets into one, estimate with categorical interaction
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fit 3 Regressions, one for each "type"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use car package's Prestige dataset
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige05, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(car)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1by <- by(Prestige, Prestige$type, function(x) {lm(prestige ~ education,
+ data=x)})
+\end_layout
+
+\begin_layout Plain Layout
+
+(lapply(m1by, summary))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige05}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted Values from 3 Separate Regressions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige11, echo=F, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot( prestige ~ education, data=Prestige, col=Prestige$type)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m1by[[1]], col=1, lty=1, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m1by[[2]], col=2, lty=2, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m1by[[3]], col=3, lty=3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomright", legend=levels(Prestige$type), lty=1:3, col=1:3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-prestige11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{lme4's lmList function offers a quick/convenient way}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pool=F keeps estimates completely separate
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige15, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lme4)
+\end_layout
+
+\begin_layout Plain Layout
+
+lml1 <- lmList( prestige ~ education | type, data=Prestige, pool=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lml1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige15}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{lme4's lmList with pooled std.
+ errors.}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige16, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lme4)
+\end_layout
+
+\begin_layout Plain Layout
+
+lml2 <- lmList( prestige ~ education | type, data=Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(lml2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige16}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted Values from 3 Separate Regressions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige20, echo=F, include=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot( prestige ~ education, data=Prestige, col=Prestige$type)
+\end_layout
+
+\begin_layout Plain Layout
+
+lml1c <- coef(lml1)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=lml1c[1,1], b=lml1c[1,2], col=1, lty=1, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=lml1c[2,1], b=lml1c[2,2], col=2, lty=2, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a=lml1c[3,1], b=lml1c[3,2], col=3, lty=3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomright", legend=levels(Prestige$type), lty=1:3, col=1:3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-prestige20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why Put 3 Regressions Into One?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Predicted values are the same, but...
+\end_layout
+
+\begin_layout Itemize
+Smaller standard errors because of 
+\begin_inset Quotes eld
+\end_inset
+
+bigger N
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Easier Hypo Tests to compare group differences on intercept and slope
+\end_layout
+
+\begin_layout Itemize
+But: assumes 
+\begin_inset Quotes eld
+\end_inset
+
+homoskedasticity
+\begin_inset Quotes erd
+\end_inset
+
+--same variance of error among 3 data groups
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How to Put 3 regressions into one?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Keep slopes the same, allow different intercepts
+\end_layout
+
+\begin_layout Itemize
+Allow different slopes and intercepts
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Keep Slopes the Same}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige30, echo=F, fig=T, include=F, results=tex, height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot( prestige ~ education, data=Prestige, col=Prestige$type)
+\end_layout
+
+\begin_layout Plain Layout
+
+m5 <- lm(prestige ~ education + type, data=Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+nd1 <- expand.grid(education=range(Prestige$education), type=levels(Prestige$type
+))
+\end_layout
+
+\begin_layout Plain Layout
+
+nd1$pred <- predict(m5, newdata=nd1)
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:3){
+\end_layout
+
+\begin_layout Plain Layout
+
+with(nd1[nd1$type %in% levels(Prestige$type)[i], ], 
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(education, pred, col=i, lty=i, lwd=2))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomright", legend=levels(Prestige$type), lty=1:3, col=1:3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m5, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+Fit: 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(prestige ~ education + type, data=Prestige)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+footnotesize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-prestige30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Interaction Allows Slope and Intercept To Differ}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige40, echo=F, fig=T, include=F, results=tex, height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot( prestige ~ education, data=Prestige, col=Prestige$type)
+\end_layout
+
+\begin_layout Plain Layout
+
+m6 <- lm(prestige ~ education *type, data=Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+nd2 <- expand.grid(education=range(Prestige$education), type = levels(Prestige$ty
+pe))
+\end_layout
+
+\begin_layout Plain Layout
+
+nd2$pred <- predict(m6, newdata=nd2)
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:3){
+\end_layout
+
+\begin_layout Plain Layout
+
+with(nd2[nd2$type %in% levels(nd2$type)[i], ], 
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(education, pred, col=i, lty=i, lwd=2))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomright", legend=levels(Prestige$type), lty=1:3, col=1:3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m6, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+Fit: 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(prestige ~ education * type, data=Prestige)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+footnotesize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-prestige40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Another Contrast Coding of Same Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prestige60, echo=F, fig=T, include=F, results=tex, height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot( prestige ~ education, data=Prestige, col=Prestige$type)
+\end_layout
+
+\begin_layout Plain Layout
+
+m7 <- lm(prestige ~ type / education, data=Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+nd2 <- expand.grid(education=range(Prestige$education), type = levels(Prestige$ty
+pe))
+\end_layout
+
+\begin_layout Plain Layout
+
+nd2$pred <- predict(m7, newdata=nd2)
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:3){
+\end_layout
+
+\begin_layout Plain Layout
+
+with(nd2[nd2$type %in% levels(nd2$type)[i], ], 
+\end_layout
+
+\begin_layout Plain Layout
+
+   lines(education, pred, col=i, lty=i, lwd=2))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("bottomright", legend=levels(Prestige$type), lty=1:3, col=1:3, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m7, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+Fit: 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(prestige ~ type / education, data=Prestige)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+footnotesize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-prestige60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-prestige60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Previous plots produced in the "old fashioned way"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<prestige60>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A regression model must have a "predict" method}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Want to run 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+predict(m6, newdata=someDataFrame)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+someDataFrame must be a valid data frame with 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+all predictors from m6
+\end_layout
+
+\begin_layout Itemize
+variables must have EXACT same names and be of same type (numeric, factor)
+\end_layout
+
+\begin_layout Itemize
+To ascertain names, I often run 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m6mf <- model.frame(m6)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(m6mf)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Note problems if the regression formula has functions in it like 
+\begin_inset Quotes eld
+\end_inset
+
+as.factor
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+as.numeric
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc45, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m7trouble <- lm(log(prestige) ~ as.numeric(education) + as.factor(type), data=Pres
+tige)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames( model.frame(m7trouble) )
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc45.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Newer rockchalk plotSlopes automates that kind of plot}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps10, fig=T, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m6ps <- plotSlopes(m6, plotx="education", modx="type")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-ps10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-ps10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{testSlopes tests "simple slope" lines against 0}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps20, echo=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+testSlopes(m6ps)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-ps20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How is "plotSlopes" helping? See vignette "rockchalk" in 1.5.4+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Automatically manipulate 
+\begin_inset Quotes eld
+\end_inset
+
+example values
+\begin_inset Quotes erd
+\end_inset
+
+ to fill out the newdata object
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+set all 
+\begin_inset Quotes eld
+\end_inset
+
+non plotted
+\begin_inset Quotes erd
+\end_inset
+
+ variables at 
+\begin_inset Quotes eld
+\end_inset
+
+some level
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Get 
+\begin_inset Quotes eld
+\end_inset
+
+example values
+\begin_inset Quotes erd
+\end_inset
+
+ for each one.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{"plotSlopes" WRITES OUT the newdata object it uses}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps50>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m6ps
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mean-Centering & Multicollinearity
+\end_layout
+
+\begin_layout BeginFrame
+MC Problem
+\end_layout
+
+\begin_layout Itemize
+2 variables 
+\begin_inset Quotes eld
+\end_inset
+
+X
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+X*Z
+\begin_inset Quotes erd
+\end_inset
+
+ are likely to be correlated with each other
+\end_layout
+
+\begin_layout Itemize
+Consequence: higher standard errors than you might like, smaller t tests
+\end_layout
+
+\begin_layout Itemize
+This is a fundamental problem, whether Z is numeric or categorical.
+ Imagine 
+\begin_inset Formula $X*Z$
+\end_inset
+
+ if 
+\begin_inset Formula $Z=c(0,0,0,0,1,1,1,1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Mean-Centering Proposed as 
+\begin_inset Quotes eld
+\end_inset
+
+Solution
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+West and Aiken propose to fit the regression after replacing 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $X$
+\end_inset
+
+, the numeric predictor, with
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X-mean(X)$
+\end_inset
+
+, the 
+\begin_inset Quotes eld
+\end_inset
+
+mean centered
+\begin_inset Quotes erd
+\end_inset
+
+ predictor.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Regression printouts with mean centered IVs may seem to have 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ t-tests.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Remember that the CI Hourglass?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc05b,fig=T,include=F, height = 5, width = 7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- genCorrelatedData(100, beta = c(0, 0.1, 0.1, 0), rho = 0.8, means =
+ c(30,20), sds = c(10,10), stde = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m1, plotx="x1", interval="confidence", lwd = 0.4, axes = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+box(bty = "L")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc05a, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("m1" = m1), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-mc05b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+At the y-axis, the standard error of 
+\begin_inset Formula $\hat{b}_{0}$
+\end_inset
+
+ and the standard error of the predicted line exactly coincide.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Repeat: $s.e.(
+\backslash
+hat{b}_0) = s.e.(
+\backslash
+hat{y})$ when $x1 = 0$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Repeat: At the y-axis, the standard error of 
+\begin_inset Formula $\hat{b}_{0}$
+\end_inset
+
+ and the standard error of the predicted line exactly coincide.
+ 
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc05d, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("m1" = m1), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(m1, predVals = list("x1" = c(0, 10, 20, 30, 40)), se.fit =
+ TRUE, interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The se's should match where 
+\begin_inset Formula $x1=0$
+\end_inset
+
+.
+ As 
+\begin_inset Formula $x1$
+\end_inset
+
+ varies from left to right, the se.fit changes.
+\end_layout
+
+\begin_layout Standard
+Tempting to talk about row 4.
+ See why?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Want $s.e.(
+\backslash
+hat{b}_0)$ in OLS to be smaller?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Move the y axis: Subtract 5 from 
+\begin_inset Formula $x1$
+\end_inset
+
+, move y-axis to the right
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc06b,fig=T,include=F, height= 5, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x1a <- dat$x1 - 5
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1a, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m2, plotx="x1a", interval="confidence", lwd = 0.4, axes = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc06a, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("m2" = m2), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-mc06b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Push y axis a little bit more to the right}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Subtract 15 from 
+\begin_inset Formula $x1$
+\end_inset
+
+ (15 chosen 
+\begin_inset Quotes eld
+\end_inset
+
+from top of my head
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc07b,fig=T,include=F,height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x1b <- dat$x1 - 15
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(y ~ x1b, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m3, plotx="x1b", interval="confidence", lwd = 0.4,axes = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v=0)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc07a, results=tex, echo = F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("m3" = m3), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-mc07b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+At the y-axis, the standard error of 
+\begin_inset Formula $\hat{b}_{0}$
+\end_inset
+
+and the standard error of the predicted line exactly coincide.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Push y axis to the mean of $x1$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc08b,fig=T,include=F,height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x1b <- dat$x1 - mean(dat$x1, na.rm = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- lm(y ~ x1b, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m4, plotx="x1b", interval="confidence", lwd = 0.4, axes=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc08a, results=tex, echo = F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("m4" = m4), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-mc08b}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What are you supposed to conclude from that?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A numeric predictor's slope does not change when we subtract 
+\begin_inset Formula $K$
+\end_inset
+
+ from it
+\end_layout
+
+\begin_layout Itemize
+But it does change the estimate of the intercept--and the 
+\begin_inset Formula $s.e.(\hat{b}_{0})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+There's no magic in this, however.
+ From model 1, I can estimate the predicted value 
+\begin_inset Quotes eld
+\end_inset
+
+at the mean
+\begin_inset Quotes erd
+\end_inset
+
+ and I'll have exactly the same substantively important values as I get
+ from model 4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Lets check centering in the Prestige regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc100, include=T, echo=F, results = tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(prestige ~ education * type, data = Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1c <- meanCenter(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("Not Centered" = m1, "Centered" = m1c), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Detour about a Mistake I Made While Recoding}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+My first effort to create a 
+\begin_inset Quotes eld
+\end_inset
+
+mean centered
+\begin_inset Quotes erd
+\end_inset
+
+ regression was actually an interesting mistake.
+ I tried this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center1, include=T, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Prestige$educcenter <- Prestige$education - mean(Prestige$education, na.rm=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(prestige ~ education * type, data = Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(prestige ~ educcenter * type, data = Prestige)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("Not Centered" = m1, "Centered Wrongly" = m2), tight = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I'm going to call m2 
+\begin_inset Quotes eld
+\end_inset
+
+centered wrongly
+\begin_inset Quotes erd
+\end_inset
+
+, but it is not 
+\begin_inset Quotes eld
+\end_inset
+
+wrong
+\begin_inset Quotes erd
+\end_inset
+
+, so much as evidence of the point to be made later.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<center1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Here's what's wrong about that}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The m2 parameters are not what I expected.
+ It took a long time to understand what was wrong.
+ Why?
+\end_layout
+
+\begin_layout Itemize
+Answer: I calculated the mean with the WRONG data! mean(Prestige$education)
+ used the whole sample Prestige.
+ In contrast, m1 was fit with the 
+\begin_inset Quotes eld
+\end_inset
+
+listwise deletion
+\begin_inset Quotes erd
+\end_inset
+
+ dataset, where missings on type and education were omitted.
+ We should mean-center with the data that is actually used in the model.
+\end_layout
+
+\begin_layout Itemize
+I should do this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center2, include=F, echo=T, eval = F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1mf <- model.frame(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1mf[ , "education"] <- m1mf[, "education"] - mean(m1mf[ , "education"],
+ na.rm = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm( prestige ~ education * type, data=m1mf)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-center2.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{rockchalk meanCenter function avoids that mistake}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc10, include=T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1mc <- meanCenter(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1mc)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare the 3 models}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center10, include=F, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,m2,m1mc), tight=F, modelLabels=c("Not Centered","Centered
+ Wrongly", "meanCenter"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center11, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<center10>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+small} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-center11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{There's an interesting flaw here}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The one that is 
+\begin_inset Quotes eld
+\end_inset
+
+wrongly centered
+\begin_inset Quotes erd
+\end_inset
+
+ has more stars!
+\end_layout
+
+\begin_layout Itemize
+Makes you wonder, if you fiddle around subtracting constants from your predictor
+s, could you make more stars appear?
+\end_layout
+
+\begin_layout Itemize
+Don't bother, next slide will explain
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But They Are All Actually The Same Model!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All of these models, even the wrongly centered one, generate the same predicted
+ values
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(m1, predVals = c("education"))
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(m2, predVals = c("educcenter"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(m1mc, predVals = c("educationc"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note, the predictor values are 
+\begin_inset Quotes eld
+\end_inset
+
+shifted
+\begin_inset Quotes erd
+\end_inset
+
+, but predictions identical.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Even for the 
+\begin_inset Quotes eld
+\end_inset
+
+wrongly centered
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ You can subtract anything you want from any predictor, and the predicted
+ value ends up the same!
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Plot the predicted values against each other}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center20, include=F, echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+preds <- data.frame(m1 = predict(m1), m2 = predict(m2), m1mc = predict(m1mc))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(preds)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-center20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But They Are Actually The Same Model!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center30, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+anova(m2, m1, m1mc, test = "F")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-center30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{So Why Do They Seem Different?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+Centering--subtracting a constant from ALL cases in a dataset--moves the
+ y axis.
+\end_layout
+
+\begin_layout Itemize
+If you re-position the y-axis, you get a new 
+\begin_inset Quotes eld
+\end_inset
+
+snapshot
+\begin_inset Quotes erd
+\end_inset
+
+ estimate of the intercept, or group-specific intercept shifts.
+\end_layout
+
+\begin_layout Itemize
+Here we have 3 
+\begin_inset Quotes eld
+\end_inset
+
+types
+\begin_inset Quotes erd
+\end_inset
+
+ but they are all centered by same mean value.
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<center31, fig=T, include = F, height = 5, width = 7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m1mc, plotx="educationc", modx="type", modxVals = c("wc","prof"),
+ interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-center31}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Centering by the 
+\begin_inset Quotes eld
+\end_inset
+
+grand mean
+\begin_inset Quotes erd
+\end_inset
+
+ does not necessarily put the estimate for a particular subgroup at the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+most significant spot
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+rockchalk install has 
+\begin_inset Quotes eld
+\end_inset
+
+examples
+\begin_inset Quotes erd
+\end_inset
+
+ folder has full worked example 
+\begin_inset Quotes eld
+\end_inset
+
+centeredRegression.R
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Interaction-Categorical-1-lecture-problems.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,1330 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression-Nonlinear/Interaction-Continuous//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=165, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(75645)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Interaction-Continuous Predictors}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{2014}
+
+\makebeamertitle
+Note: This demonstrates some features in rockchalk
+
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Definition: Interaction}
+\begin{itemize}
+\item Linear Model: 
+\[
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
+\]
+
+\item Social/Behavioral researchers often assert an additional ``interaction
+effect''
+\end{itemize}
+\[
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}
+\]
+
+
+
+\lyxframeend{}\section{Why $x1_{i}\cdot x2_{i}$?}
+
+
+\lyxframeend{}\lyxframe{Justification 1. The ``Moderated Slope'' Model}
+\begin{itemize}
+\item My best explanation in English: 
+
+\begin{quote}%{}
+The effect of one variable depends on another. 
+\end{quote}%{}
+\item Moderator: name for a variable that ``moderates'' (changes) the
+effect of a variable
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Examples Of Interaction in Literature}
+\begin{itemize}
+\item Corruption temptation caused by electoral uncertainty depends on intra-party
+competition.
+
+
+Nyblade, Benjamin and Steven Reed. 2008. Who Cheats?Who Loots? Political
+Competition and Corruption in Japan, 1947–1993. \emph{American Journal
+of Political Science}, 52(4): 926–941.
+
+\item Effect of Parliamentarianism depeds on level of ethnic fragmentation 
+
+
+Selway, Joel. 2011. The Myth of Consociationalism? Conflict Reduction
+in Divided Societies. \emph{Comparative Political Studies}. 45: 1542-1571.
+
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Visualize the Slope's Dependence: $x1_i$ influence depends}
+
+<<example10, echo=T, fig=T, include=F, height=6, width=8>>=
+library(rockchalk)
+set.seed(123412)
+dat <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2,-0.1,0.1,0.3))
+m1 <- lm(y ~ x1*x2, data=dat)
+fit1 <- plotPlane(m1, plotx1="x1", plotx2="x2", plotPoints=F, drawArrows=F, ticktype="detailed", theta=-20, npp=10, x1floor = 3, x2floor = 3)
+@
+
+\includegraphics[width=9cm]{plots/t-example10}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Suppose: $x2_{i}$ moderates $x1.$ }
+
+Re-group the terms so that this:
+
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x2_{i}\cdot x1_{i}+e_{i}
+\end{equation}
+
+
+becomes this:
+
+\begin{equation}
+y_{i}=b_{o}+(b_{1}+b_{3}x2_{i})\, x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\begin{itemize}
+\item $b_{3}$ is an ``interaction effect''
+\item $b_{1}$, $b_{2}$ often called the ``main effects'' of $x1$ and
+$x2$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Concentrate: Interpret Coefficients!}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+$y_{i}=b_{0}+(b_{1}+b_{3}x2_{i})x1_{i}+b_{2}x2_{i}+e_{i}$
+
+
+Note substantive importance of $b_{1}\gtreqqless-b_{3}x2_{i}$. 
+\begin{itemize}
+\item If $>$, the marginal effect of $x1$ is positive
+\item if $<$, the marginal effect of $x1$ is negative
+\item If =, then $x1_{i}$ has no marginal effect
+\end{itemize}
+
+\column{6cm}
+
+I'll explain how to make this later:
+
+<<demo10,include=F,fig=T>>=
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2", modxVals = "std.dev")
+plot(testSlopes(m1ps))
+@
+
+\includegraphics[width=6cm]{plots/t-demo10}
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{Warning: Always include $x1$ and $x2$ if you fit $x1:x2$ as well}
+\begin{itemize}
+\item If a model includes an interaction $x1\cdot x2$, it should always
+include $x1$ and $x2$ (even if they appear to be ``not statistically
+significant'').
+\item $x1$ and $x2$ are said to be ``marginal'' to $x1\cdot x2$
+\item Wm Venables, ``Exegesis on Linear Models'' \url{http://www.stats.ox.ac.uk/pub/MASS3/Exegeses.pdf}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Reason 2: Approximation of a Function}
+\begin{itemize}
+\item Taylor's Theorem says that any function $f$ at a point $x$, $f(x1,x2)$,
+can be approximated by a clever choice of coefficients. 
+\begin{eqnarray}
+y & = & f(x1_{0},x2_{0})+\beta_{1}(x1-x1_{o})+\beta_{2}(x2-x2{}_{0})\\
+ &  & +\beta_{3}(x1-x1_{0})(x2-x2_{0})+\frac{1}{2}\beta_{4}(x1-x1_{o})^{2}+...
+\end{eqnarray}
+
+\item $(x1_{0},x2_{0})$ is value where we ``approximate from''
+\item If curvature of $f$ is mild, then the Taylor approximation will stay
+close to true values.
+\item We throw away the higher order terms, asserting/hoping they are small. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{An Identification Problem}
+\begin{itemize}
+\item Identification: Ability to estimate parameters with data at hand.
+\item The theoretical model boils down to this:
+\end{itemize}
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}\label{eq:6}
+\end{equation}
+
+\begin{itemize}
+\item Expression (\ref{eq:6}) is equivalent to both of these interpretations:
+
+\begin{itemize}
+\item $x1_{i}$'s slope depends on $x2_{i}$
+\begin{equation}
+y_{i}=b_{o}+(b_{1}+b_{3}x2_{i})\cdot x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\item $x2_{i}$'s slope depends on $x1_{i}$.
+\end{itemize}
+\end{itemize}
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+(b_{2}+b_{3}x1_{i})\cdot x2_{i}+e_{i}
+\end{equation}
+
+\begin{itemize}
+\item Data cannot differentiate those 2 models, hence we say there is an
+``identification problem''.
+\end{itemize}
+
+\lyxframeend{}\section{Simple Slopes}
+
+
+\lyxframeend{}\lyxframe{[allowframebreaks]Same Advice, many disciplines}
+\begin{alertblock}
+{Recent Chorus:} Must compare predicted values from various predictor
+combinations to understand their effects.
+
+Each predictors ``example values'' must be set and understood while
+focusing on some particular values.\end{alertblock}
+\begin{itemize}
+\item Psychology
+
+\begin{itemize}
+\item Aiken, L. S., \& West, S. G. (1991). \emph{Multiple regression: Testing
+and interpreting interactions.} Newbury Park: Sage. 
+\item Preacher, Kristopher J, Curran, Patrick J.,and Bauer, Daniel J. (2006).
+Computational Tools for Probing Interactions in Multiple Linear Regression,
+Multilevel Modeling, and Latent Curve Analysis. \emph{Journal of Educational
+and Behavioral Statistics}. 31,4, 437-448.
+\end{itemize}
+\item Political Science: 
+
+\begin{itemize}
+\item Brambor, Thomas, Clark, William, \& Golder, Matt. 2006. Understanding
+interaction models: Improving empirical analyses. \emph{Political
+Analysis}, 14, 63-82.
+\item King, Gary, Michael Tomz, and Jason Wittenberg. 2000. Making the Most
+of Statistical Analyses: Improving Interpretation and Presentation.
+\emph{American Journal of Political Science} 44: 341–355.
+\end{itemize}
+
+Economics:
+\begin{itemize}
+\item Norton, E.C., Wang, H., and Ai, C. 2004 Computing interaction effects
+and standard errors in logit and probit models. \emph{Stata Journal}
+4(2): 154-167.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Choose Some ``For Instance'' Values of One Variable, Plot the other}
+\begin{itemize}
+\item We want to make a 2D plot of $y_{i}$ on $x1_{i}$
+\item User must supply some ``substantively interesting values'' of $x2_{i}$,
+say 1,2,3, so that this
+\end{itemize}
+\begin{equation}
+y_{i}=b_{0}+(b_{1}+b_{3}x2_{i})\cdot x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\begin{itemize}
+\item Generates a family of lines,
+\end{itemize}
+\begin{eqnarray}
+x2_{i}=1 & : & y_{i}=(b_{0}+b_{2}\cdot(1))+(b_{1}+b_{3}(1))\cdot x1_{i}+e_{i}\\
+x2_{i}=2 & : & y_{i}=(b_{0}+b_{2}\cdot(2))+(b_{1}+b_{3}(2))\cdot x1_{i}+e_{i}\\
+x2_{i}=3 & : & y_{i}=(b_{0}+b_{2}\cdot(3))+(b_{1}+b_{3}(3))\cdot x1_{i}+e_{i}
+\end{eqnarray}
+
+
+
+\lyxframeend{}\lyxframe{The Marginal Effect of x1 is $(b_{1}+b_{3}\times moderator_{i})$}
+\begin{itemize}
+\item The full model might be
+\begin{equation}
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\cdot x2_{i}+e_{i}
+\end{equation}
+
+\item \textrm{You choose $x2_{i}=whatever\, value\, is\, interesting\, for\, the\, moderator:$}
+\end{itemize}
+\begin{equation}
+y_{i}=\underbrace{(b_{0}+b_{2}\cdot(whatever))}+\underbrace{(b_{1}+b_{3}\cdot(whatever))}\cdot x1_{i}+e_{i}
+\end{equation}
+
+\begin{itemize}
+\item After you set a particular $x2_{i}=whatever$, then the line for the
+``simple slope'' has
+
+\begin{itemize}
+\item The ``New Intercept:'' $(b_{0}+b_{2}whatever)$: AKA ``shifted
+intercept''
+\item The ``New Slope:'' $(b_{1}+b_{3}whatever)$: AKA the ``marginal
+effect'' of $x1_{i}$.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{In 3 Dimensions} 
+
+<<persp10, include=F, fig=T, echo=F>>=
+x1 <- seq(0, 10, length=50)
+x2 <- seq(-20, 30, length=50)
+yfn <- function(x1,x2) 2 + 0.5 * x1 + 0.2 * x2 + 0.03 * x1 *x2
+y <- outer(x1, x2, yfn)
+matr <- persp(x=x1, y=x2, z=y, xlab="x1", ylab="x2", zlab="y")
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+Suppose $y_{i}=2+0.5\cdot x1+0.2\cdot x2+0.03\cdot x1\cdot x2$
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-persp10}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{One Line Per Value of $x2_i$ while plotting Simple Slope}
+
+<<persp20, fig=T, include=F,echo=F>>=
+plot(x1, y=plotSeq(range(y), length(x1)), type="n", ylab="y")
+intr <- function(x) 2 + 0.2 *x
+sloper <- function(x) 0.5 + 0.03*x
+abline(a=intr(-20), b=sloper(-20), lty=1, lwd=2)
+abline(a=intr(-10), b=sloper(-10), lty=2, lwd=2)
+abline(a=intr(10), b=sloper(10), lty=3, lwd=2)
+abline(a=intr(20), b=sloper(20), lty=4, lwd=2)
+legend("topleft",c("x2=-20", "x2=-10", "x2=10", "x2=20"), lty=c(1,2,3,4), lwd=2)
+@
+
+\includegraphics[width=10cm]{plots/t-persp20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Translate Between 3-D and the Simple Slopes in 2-D} 
+
+<<persp22, include=F, fig=T, echo=F>>=
+matr <- persp(x=x1, y=x2, z=y, xlab="x1", ylab="x2", zlab="y")
+for(j in c(1,11,31,41)){
+lines(trans3d(x1, x2[j], y[,j], pmat=matr), col="yellow", lwd=3)
+}
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+\includegraphics[width=6cm]{plots/t-persp20}
+\begin{itemize}
+\item These four lines are highlighted in yellow in the graph on the right.
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=9cm]{plots/t-persp22}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ways To Choose "whatever" Values}
+\begin{itemize}
+\item Problem specific interesting cases that suit your project!
+
+\begin{itemize}
+\item Fahrenheight temperatures? Pick \{32, 100, 212\}
+\item Salary (dollars)? Pick \{20,000, 100,000, 500,000, 1,000,000\}
+\end{itemize}
+\item The rockchalk package has routines to choose, based either on 
+
+\begin{itemize}
+\item quantiles (break a range into values that correspond with, for example,
+the lowest 25\%, the median (50\%), and the top 75\%.
+
+\begin{itemize}
+\item I originally developed the plotSlopes function with this in mind
+\end{itemize}
+\item standard deviation-based ranges. 
+
+\begin{itemize}
+\item psychologists suggest it is easier for them to conceptualize special
+values like the mean, the mean - 1 standard deviation, mean + 1 standard
+deviation, and so forth.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{A Special Hypothesis Test}
+\begin{itemize}
+\item The simple line $y_{i}=(2+0.2*x2_{i})+(0.5+0.03*x2_{i})*x1_{i}$
+\item Concentrate on the slope, the ``marginal effect'': For a given value
+of $x2_{i}$ , of course, that is just a sum like
+\begin{eqnarray}
+\mbox{for\,}x2_{i} & :whatever, & \, the\, slope\, is:\,0.5+0.03*whatever
+\end{eqnarray}
+
+\item Some people ask, ``is that particular slope statistically significantly
+different from $0$?''
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{And a Fancy T-Test Pops Out (Not Entirely Unexpected)}
+\begin{itemize}
+\item Suppose $whatever=10.$ They are asking ``is the estimate $(0.5+0.03*10)$
+statistically significantly different from 0?''
+\item And if you put in estimates from a regression, that's a fancy t-test
+\end{itemize}
+\begin{equation}
+H_{0}:b_{1}+b_{3}x2_{0}=0
+\end{equation}
+
+
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1}+\hat{b}_{3}x2_{0})}},\, x2_{0}is\, selected\, value
+\end{equation}
+
+
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1})+x2_{0}^{2}Var(\hat{b}_{3})+2\, x2_{0\,}Cov(\hat{b}_{1},\hat{b}_{3})}}
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{J-N Interval: The \emph{whatever} over and over problem}
+\begin{itemize}
+\item Imagine letting your research director says, over and over again, 
+
+\begin{itemize}
+\item What if $x2_{0}=10$, Is it significant then?
+\item What if $x2_{0}=13$, Is it significant then?
+\end{itemize}
+\item That drives you crazy! Over and over, you calculate
+\end{itemize}
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{1}+\hat{b}_{3}x2}{\sqrt{Var(\hat{b}_{1})+x2_{0}^{2}Var(\hat{b}_{3})+2\, x2_{0\,}Cov(\hat{b}_{1},\hat{b}_{3})}}
+\end{equation}
+
+\begin{itemize}
+\item Wish you could find a formula to say ``$\hat{b}_{1}+\hat{b}_{3}x2$
+is statistically significant if $x2$ is in ``this range''?
+\item It is necessary to solve for $|\hat{t}|>1.98$, to get the values
+of $x2_{0}$ that cause $\hat{t}$ to be statistically different from
+zero. 
+\item That interval is known as the Johnson-Neyman interval. 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{rockchalk plotting approaches for both of these}
+\begin{itemize}
+\item Described in vignette (run vignette(``rockchalk'') with rockchalk
+version 1.5.4 or later).
+\item Step 1: use regression to fit a model with multiplicative terms
+\item Plot Type 1: plotSlopes() will to draw the 2 dimensional plot with
+several lines, one for each value of a moderator
+\item Plot Type 2: The ``J-N interval'' plot. 
+
+\begin{itemize}
+\item The testSlopes() function finds an interval on which the marginal
+effect is not 0.
+\item A plot method for testSlopes objects creates a ``marginal effect''
+plot. I find these confusing, but some people love them!
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Basic Idea Behind: plotSlopes, plotCurves, plotPlane}
+\begin{itemize}
+\item Fit any regression with interactions and as many other variables you
+like
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1 <- lm(y ~ x1*x2 + x3 + x4, data=dat)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item You want to focus on the predictive effect of $x1$ and $x2$. 
+\item draw a plot with $x2$ on the horizontal axis and a line for some
+focal values of $modx$.
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1ps <- plotSlopes(m1, plotx = "x2", modx = "x1")
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item That creates a plot, but also an output object for further analysis. 
+\item Give the output to testSlopes(), like so:
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1psts <- testSlopes(m1ps)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item There is a plot method for that type of object
+
+
+\inputencoding{latin9}\begin{lstlisting}
+plot(m1psts)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item Make a reasonable 3D plot of the pair of variables:
+
+\begin{itemize}
+\item the defaults are mostly good
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1pp <- plotPlane(m1, plotx1="x1", plotx2="x2")
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item there are many options that can customize
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1pp <- plotPlane(m1, plotx1="x1", plotx2="x2", plotPoints=F, drawArrows=F, ticktype="detailed", theta=-20, npp=7)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{itemize}
+\item plotSlopes has to generate a particular kind of output object for
+its eventual input into testSlopes(). If we ignore that problem, then
+we can have a more flexible line plotter. That is calle plotCurves(). 
+\item Unlike plotSlopes(), the plotCurves() and plotPlane() functions can
+handle many types of nonlinear functions. They do work (or should
+work) on formula like
+
+
+\inputencoding{latin9}\begin{lstlisting}
+alpha <- 2
+m2 <- lm(y ~ x1*log(x2 + alpha) + sin(x3) + x4, data=dat)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item In rockchalk 1.6.3, a new function called addLines() was introduced.
+It can take the lines from a ``plotSlopes()'' or ``plotCurves()''
+and superimpose them on the 3d output from plotPlane. That \emph{should
+}make a plot of the sort displayed above ``Translate Between 3-D
+and ...''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Default plotSlopes output}
+
+<<jn10, fig=T, include=F, echo=T>>=
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2")
+@
+
+\input{plots/t-jn10}
+
+\includegraphics[width=10cm]{plots/t-jn10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{plotSlopes variations}
+
+<<jn11a, fig=T, include=F, echo=T>>=
+m1ps <- plotSlopes(m1, plotx="x1", modx="x2", modxVals = "std.dev", n = 2, interval = "conf")
+@
+
+\input{plots/t-jn11a}
+
+\includegraphics[width=10cm]{plots/t-jn11a}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{plotSlopes or plotCurves equivalents are in the literature}
+
+\includegraphics[width=8cm]{0_home_pauljohn_SVN_SVN-guides_stat_Regression-___ion-Continuous_importfigs_Nyblade-2008-Fig2.png}
+
+Admittedly, that's a nonlinear model, but it shows the same basic
+thing. predicted values for 2 moderator values.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ask plotSlopes for Confidence Intervals if you want}
+
+<<jn11b, fig=T, include=F, echo=T>>=
+m1ps2 <- plotSlopes(m1, plotx="x1", modx="x2", interval = "conf", modxVals = round(range(dat$x2, na.rm=TRUE), 2))
+@
+
+\input{plots/t-jn11b}
+
+\includegraphics[width=10cm]{plots/t-jn11b}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{J-N confidence interval: testSlopes}
+
+<<jn20, include=T, echo=T>>=
+m1psts <- testSlopes(m1ps)
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Rather than calculating that interval, some would plot it}\includegraphics[width=10cm]{1_home_pauljohn_SVN_SVN-guides_stat_Regression-___teraction-Continuous_importfigs_Selway_Fig3.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{plot.testSlopes tries to make this type of plot more clear}
+
+<<jn40, fig=T, include=F,echo=T>>=
+plot(m1psts)
+@
+
+\input{plots/t-jn40}
+
+\includegraphics[width=10cm]{plots/t-jn40}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{To me, this is a more understandable representation}
+
+<<jn50, fig=T, include=F,echo=T>>=
+dat2a <- genCorrelatedData(N=400, rho=.1, stde=300, means =c(50,0), beta=c(2, -2.4, 0.1, 0.44))
+m2a <- lm(y ~ x1*x2, data=dat2a)
+@
+
+<<jn50a, fig=T, include=F,echo=T>>=
+m2aps <- plotSlopes(m2a, plotx="x1", modx="x2")
+@
+
+\includegraphics[width=10cm]{plots/t-jn50a}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{I like the 3d representation for a simple problem}
+
+<<jn50b, fig=T, include=F, echo=T, height = 8, width = 8>>=
+m2app <- plotPlane(m2a, plotx1="x1", plotx2="x2", npp = 7, llwd = .5, plwd = 0.7, pcex = 0.75, pcol = gray(.6))
+@
+
+\includegraphics[width=8cm]{plots/t-jn50b}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Superimpose one on the other}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=7cm]{plots/t-jn50a}
+
+
+\column{6cm}
+
+
+<<jn50c, fig=T, include=F, echo=T, height = 8, width = 8>>=
+m2app <- plotPlane(m2a, plotx1="x1", plotx2="x2", npp = 7, llwd = .5, plwd = 0.7, pcex = 0.75, pcol = gray(.6))
+addLines(from = m2aps, to = m2app)
+@
+
+
+\includegraphics[width=7cm]{plots/t-jn50c}
+
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Alternative J-N Plot is Preferred by Many}
+
+<<jn50d, fig=T, include=F, echo=T>>=
+m2apsts <- testSlopes(m2aps)
+plot(m2apsts)
+@
+
+%%\input{plots/t-jn50d}
+
+\includegraphics[width=8cm]{plots/t-jn50d}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{testSlopes can have various patterns of significant regions}
+
+<<jn51, fig=T, include=F,echo=T>>=
+dat2b <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2, 0, 0.3, 0.05), means = c(50,0), sds = c(10, 40))
+m2b <- lm(y ~ x1*x2, data=dat2b)
+m2bps <- plotSlopes(m2b, plotx="x1", modx="x2")
+plot(testSlopes(m2bps))
+@
+
+\includegraphics[width=10cm]{plots/t-jn51}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Weird t / p Value problem and the Mirage of ``Centering''}
+
+
+\lyxframeend{}\lyxframe{Centering: My Theme}
+\begin{itemize}
+\item rockchalk vignette has long-ish explanation of mean-centering
+\item Recall quadratic regression lecture, ``centering does not really
+help'' with multicollinearity between $x$ and $x^{2}$.
+\item If you ``really understand'' regression, you should see that centering
+doesn't help here either
+\item It does not ``fix'' a multicollinearity problem, it was a mistake
+for its proponents to think so
+\item Centering does facilitate superficial interpretation in one situation:
+
+\begin{itemize}
+\item centering of all x's has effect of making the intercept the predicted
+value for the ``mean case''.
+\item Intercept is same as using non-centered model to calculate predicted
+value: $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}\overline{x1}+\hat{b}_{2}\overline{x2}+\hat{b}_{3}\overline{x3}+...$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{3 Variables I Found Lying About}
+
+<<reg11, echo=T, fig=T, include=F>>=
+dat <- genCorrelatedData(N=400, rho=.1, stde=250, beta=c(2,0.1,-0.1,0.5))
+m1 <- lm(y ~ x1 + x2, data=dat)
+fit1 <- plotPlane(m1, plotx1="x1", plotx2="x2", ticktype="detailed")
+@
+
+\input{plots/t-reg11.tex}
+
+That manufactures data with the true coefficients
+\begin{equation}
+y=2+0.1x1-0.1x2+0.3x1\cdot x2_{i}+e_{i},\, e_{i}\sim N(0,300^{2})
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The 3D Plot for that}
+
+\includegraphics[width=9cm]{plots/t-reg11}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The Fitted Linear Model}
+
+<<reg15, echo=F, fig=F, include=F>>=
+summary(m1)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg15}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{That model seems persuasive!}
+
+<<reg15b, echo=F,include=F, results=tex>>=
+outreg(m1)
+@
+\begin{columns}%{}
+
+
+\column{7cm}
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg15b}
+
+
+\column{5cm}
+\begin{itemize}
+\item Plenty of ``stars'' indicating statistical significance!
+\item Easy to interpret parameter estimates
+\end{itemize}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{"Throw In" an Interaction to "See" if it is Needed}
+\begin{itemize}
+\item Researcher wonders, ``should I add $x1\times x2$ as a predictor?''
+\item Code change
+
+\begin{itemize}
+\item Change the model from
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m1 <- lm(y~x1+x2, data=dat)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item To:
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m2 <- lm(y~x1*x2, data=dat)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{itemize}
+\item R will automatically return equivalent of
+
+
+\inputencoding{latin9}\begin{lstlisting}
+m2 <- lm(y ~ x1 + x2 + x1:x2, data=dat)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Oh My God! Your p's Exploded}
+
+<<reg25, echo=T, fig=F, include=F>>=
+m2 <- lm(y ~ x1*x2, data=dat)
+summary(m2)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg25}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Interactive Model: Oh, Hell!}
+
+<<reg20, echo=T, fig=T, include=F>>=
+fit1 <- plotPlane(m2, plotx1="x1", plotx2="x2", ticktype="detailed")
+@
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Problem: ``Nothing is significant anymore!'' 
+\end{itemize}
+
+\includegraphics[width=6cm]{plots/t-reg20}
+
+
+\column{6cm}
+
+
+<<reg25b, include=F, echo=F, results=tex>>=
+outreg(m2, tight=T)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg25b}
+
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{"Mean-Centering" to the Rescue}
+\begin{itemize}
+\item Aiken \& West (later, Cohen, Cohen, West and Aiken) claim the constructed
+variable $x1_{i}\cdot x2_{i}$ is multi-collinear with $x1_{i}$ and
+$x2_{i}$, thus causing the results to become ``poor.''
+\item As we recall, multicollinearity causes standard errors to inflate,
+and $\hat{t}$'s shrink. 
+\item They recommend ``mean-centering'' as a way to ameliorate the ``nonessential
+collinearity''.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{CCWA advice}
+\begin{itemize}
+\item p. 266
+
+\begin{quote}%{}
+{\footnotesize{}``We recommend that continuous predictors be centered
+before being entered into regression analyses containing interactions.
+... Doing so yields two straightforward, meaningful interpretations
+of each first-order regression coefficient of predictors entered into
+the regression equation: (1) effects of the individual predictors
+at the mean of the sample, and (2) average effects of each individual
+predictors across the range of the other variables. Doing so also
+eliminates nonessential multicollinearity between first-order predictors
+and predictors that carry their interaction with other predictors.''}{\footnotesize \par}
+\end{quote}%{}
+\item This advice has been followed VERY widely. 
+\item My counter-argument will be that 
+
+\begin{itemize}
+\item benefits 1 and 2 are not wrong, but not beneficial either, and 
+\item the ``nonessential multicollinearity'' argument is just completely
+wrong.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Run Again, But Center the Data First}
+\begin{itemize}
+\item We ``manually'' center predictors (either use R's scale() function
+or the more literal):
+
+
+<<reg30, echo=T, fig=F, include=F>>=
+dat$x1c <- dat$x1 - mean(dat$x1, na.rm = TRUE)
+dat$x2c <- dat$x2 - mean(dat$x2, na.rm = TRUE)
+m3 <- lm(y ~ x1c * x2c, data=dat)
+@
+
+
+\input{plots/t-reg30}
+
+\item meanCenter() in rockchalk will do this for us:
+
+
+<<reg31, echo=F, fig=F, include=F>>=
+m2centered <- meanCenter(m2)
+summary(m2centered)
+@
+
+
+<<reg31b, echo=T, fig=T, include=F>>=
+fit1 <- plotPlane(m2centered, plotx1="x1c", plotx2="x2c", ticktype="detailed")
+@
+
+
+<<echo=T, include=T, eval=F>>=
+<<reg31>>
+<<reg31b>>
+@
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{meanCenter Output}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg31}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plots Same, but moving Y-axis makes fitted models appear different!}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+The NON CENTERED FIT
+
+\includegraphics[width=7cm]{plots/t-reg20}
+
+\column{6cm}
+
+The CENTERED FIT
+
+\includegraphics[width=7cm]{plots/t-reg31b}
+
+\end{columns}%{}
+\begin{itemize}
+\item Recall beginning of course: rescaling by subtraction shifts intercept,
+does not change slope
+\item Find the ``y axis'' in each plot. Understand why centering seems
+to matter now?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Look at your p's. The Centered Fit Is Super Awesome!}
+
+<<reg35, echo=T, fig=F, include=F, results=tex>>=
+outreg(m2centered)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg35}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Don't Get Carried Away: Its The SAME MODEL!}
+
+<<reg40, echo=F, fig=F, include=F, results=tex>>=
+outreg(list(m2, m2centered), tight=F, modelLabels=c("Not Centered", "Centered"))
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg40}
+
+As CCWA observe, the estimates for the ``highest order'' slope coefficients
+are same in both models.
+
+So is $R^{2}$, $RMSE$, etc.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Predicted Values of The Two Models}
+
+<<reg50, echo=T, fig=T, include=F, height=5, width=5>>=
+pfit2 <- fitted(m2)
+pfit3 <- fitted(m2centered)
+plot(pfit2, pfit3, xlab="Predicted from Uncentered Model", ylab="Predicted from Centered Model")
+@
+
+\includegraphics[width=8cm]{plots/t-reg50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{See why they are the Same Model?}
+\begin{itemize}
+\item Same predicted values from same values of input X values
+\item Same estimates of ``slopes'' at any given combination of X values
+\item Same uncertainty (variance) of slope estimates at any given combination
+of X values
+\item Why the interaction coefficient the same in the 2 models?
+
+\begin{itemize}
+\item Answer: it is the only parameter that is a ``constant'' in the nonlinear
+model (cross partial derivative same at all points)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered Model Estimates}
+
+The Un Centered Model fit is
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}\cdot x2_{i}
+\]
+
+
+The predicted value AT THE MEANS $\overline{x1}$ and $\overline{x2}$
+is
+
+\[
+\hat{y}_{mean}=\hat{b}_{0}+\hat{b}_{1}\overline{x1}+\hat{b}_{2}\overline{x2}+\hat{b}_{3}\overline{x1}\cdot\overline{x2}
+\]
+
+
+<<reg60, echo=T, include=F>>=
+bs <- coef(m2)
+yhatmean <- bs[1] + bs[2] * mean(dat$x1) + bs[3] * mean(dat$x2) + bs[4]*mean(dat$x1)*mean(dat$x2)
+yhatmean
+@
+
+\input{plots/t-reg60}
+
+Which is the estimated intercept of the ``centered regression''. 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered Model Estimates}
+
+Uncentered: $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}\times x2_{i}$
+
+The partial slope--the effect of a change in either IV--can be evaluated
+AT THE MEANS $\overline{x1}$ and $\overline{x2}$. 
+
+The effect of $x1_{i}$(for example) is:
+\begin{equation}
+\frac{\partial y_{i}}{\partial x_{i}}=\hat{b}_{1}+\hat{b}_{3}\overline{x2}
+\end{equation}
+
+
+<<reg70, echo=T, include=F>>=
+partialx1 <- bs[2] + bs[4] * mean(dat$x2)
+partialx1
+@
+
+\input{plots/t-reg70}
+
+Which is the estimated slope of x1 in the ``centered regression''. 
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Can Reproduce "Mean Centered" Parameter Estimates From UnCentered Model Estimates}
+
+Previous showed the partial slope at the mean of x1,x2 is:
+
+\[
+\frac{\partial y_{i}}{\partial x_{i}}=\hat{b}_{1}+\hat{b}_{3}\overline{x2}
+\]
+
+
+Calculate the Variance of that estimated value:
+
+\begin{equation}
+Var[\hat{b}_{1}+\hat{b}_{2}\overline{x2}]=Var[\hat{b}_{1}]+\overline{x2}^{2}Var[\hat{b}_{3}]+2\overline{x2}Cov(\hat{b}_{1},\hat{b}_{3})
+\end{equation}
+
+
+<<reg80, echo=T, include=F>>=
+V <- vcov(m2)
+varsum <- V[2,2]+mean(dat$x2)^2*V[4,4]+2*mean(dat$x2)*V[2,4]
+varsum
+sqrt(varsum)
+@
+
+\input{plots/t-reg80}
+
+Notice that the square root of the estimated \textrm{$Var[\hat{b}_{1}+\hat{b}_{2}\overline{x2}]$
+is EXACTLY the same standard error that is reported in the Centered
+Regression for the coefficient $x1c$. }
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{How To Explain ``Centered Mirage''?}
+
+Two components cause the illusion that the Centered Regression Line
+is somehow better
+\begin{itemize}
+\item Recall the uncertainty around a regression line is hour shaped. If
+we place the y axis into the center of the data, we are going to the
+smallest part of the hourglass, so the standard errors are at their
+smallest possible values.
+\item Centering (accidentally, really) may move from a ``flat spot'' on
+the curving surface to a place that has steeper slope. This will make
+the estimated coefficients ``bigger'' because we are at a steeper
+spot
+
+\begin{itemize}
+\item intercept is $y$ at $x1=$$x2=0$
+\item slope coefficients $\hat{b}_{2}$ and $\hat{b}_{3}$ are linear effects
+of $x1$ and $x2$ at $x1=x2=0$.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Look Again}
+
+\begin{tabular}{|c|c|}
+\hline 
+\includegraphics[width=6cm]{plots/t-reg20} &
+\includegraphics[width=6cm]{plots/t-reg31b}\tabularnewline
+\hline 
+Not Centered Data &
+Centered Data\tabularnewline
+\hline 
+\end{tabular}
+
+
+\lyxframeend{}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Where to Read More about this?}
+
+Echambadi, R., \& Hess, J. D. (2007). Mean-Centering Does Not Alleviate
+Collinearity Problems in Moderated Multiple Regression Models. \emph{Marketing
+Science}, 26(3), 438-445.
+
+\textquotedbl{}Many empirical marketing researchers commonly mean-center
+their moderated regression data hoping that this will improve the
+precision of estimates from ill conditioned, collinear data, but unfortunately,
+this hope is futile. Therefore, researchers using moderated regression
+models should not mean-center in a specious attempt to mitigate collinearity
+between the linear and the interaction terms. Of course, researchers
+may wish to mean-center for interpretive purposes and other reasons.\textquotedbl{}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Where to Read More about this? (cont)}
+
+\textquotedbl{}Specifically, we demonstrate that (1) in contrast to
+Aiken and West’s (1991) suggestion, mean centering does not improve
+the accuracy of numerical computation of statistical parameters, (2)
+it does not change the sampling accuracy of main effects, simple effects,
+and/or interaction effects (point estimates and standard errors are
+identical with or without meancentering), and (3) it does not change
+overall measures of fit such as R2 and adjusted-R2. It does not hurt,
+but it does not help, not one iota.\textquotedbl{} 
+
+See Also:
+
+Kromrey, J. D., \& Foster-Johnson, L. (1998). Mean Centering in Moderated
+Multiple Regression: Much Ado about Nothing. \emph{Educational and
+Psychological Measurement}, 58(1), 42 -67.
+
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

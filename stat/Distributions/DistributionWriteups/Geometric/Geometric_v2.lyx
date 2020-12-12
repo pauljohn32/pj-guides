@@ -1,0 +1,650 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Geometric
+\end_layout
+
+\begin_layout Author
+Linsey Moddelmog and Paul Johnson
+\end_layout
+
+\begin_layout Date
+February 9, 2006
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The geometric distribution is used to represent the probabilities of discrete
+ events.
+ It is very similar to the negative binomial distribution, in that it is
+ measuring the probability of success or failures of an event; and therefore
+ uses interval or discrete data.
+ Additionally, the data represent independent events, or events that are
+ not influenced by other events; think coin flips or rolling of the dice.
+\end_layout
+
+\begin_layout Standard
+There are two ways of thinking about the Geometric distribution and hence
+ two different ways in which it can be operationalized:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+If the probability of success on each trial is 
+\begin_inset Formula $p$
+\end_inset
+
+, then the probability that 
+\begin_inset Formula $n$
+\end_inset
+
+ trials are needed to get one success is
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Geometric\, Version\,1:Prob(x=n)=(1-p)^{n-1}p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+for n=1,2,3, [non-negative integers]...
+ 
+\end_layout
+
+\begin_layout Standard
+Equivalently the probability that there are 
+\begin_inset Formula $m$
+\end_inset
+
+ failures before the first success is
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Geometric_distribution
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Geometric\, Version\,2:Prob(y=m)=(1-p)^{m}p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The difference between the two formulations is that one describes a success
+ on the 
+\begin_inset Formula $n$
+\end_inset
+
+'th event while the other describes 
+\begin_inset Formula $m$
+\end_inset
+
+ successive failures before the 
+\begin_inset Formula $n$
+\end_inset
+
+'th event on which success occurs.
+ The only real difference between the two models is that the lowest possible
+ value of 
+\begin_inset Formula $x$
+\end_inset
+
+ that can be observed is 1, while the lowest value of 
+\begin_inset Formula $y$
+\end_inset
+
+ that can be observed is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The second approach is used in R.
+\end_layout
+
+\begin_layout Section
+Moments
+\end_layout
+
+\begin_layout Standard
+The expected value of a geometrically distributed variable with probability
+ of success 
+\begin_inset Formula $p$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+E(x)=\frac{1}{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variance is
+\begin_inset Formula 
+\[
+Var(x)=\sigma^{2}=\frac{1-p}{p^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The skewness is
+\begin_inset Formula 
+\[
+Skewness(x)=\frac{2-p}{\sqrt{1-p}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The kurtosis excess is
+\begin_inset Formula 
+\[
+Kurtosis(x)=\frac{p^{2}-6p+6}{1-p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Geometric-Distribution"
+
+\end_inset
+
+, the Geometric probability mass function is illustrated for probabilities
+ of success ranging from 0.1 to 0.9.
+ Note that when the probability of success on an individual trial is small,
+ the probability mass is spread more evenly across the interval being considered
+ (which ranges from 0 to 19).
+ On the contrary, when the probability of success is high, then it is not
+ very likely that the process will continue for more than a few steps before
+ it is terminated by a single success.
+ The graphs for the high probability models are a bit deceptive because
+ they make it appear as though the process continuing for more than a few
+ steps drops to 0.0 and never changes.
+ That is an optical illusion.
+ The value is slowly droping with each increase.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Geometric Distribution
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Geometric-Distribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F, height=9,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+makePlot <- function(myrange, pr){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   myTitle <- paste("Prob.=",pr)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   myprobs <- dgeom(myrange, prob=pr)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   plot (myrange, myprobs, type="h", main=myTitle,xlab="Failures before
+ first success",ylab="probability", ylim=c(0,.75))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   points(myrange, myprobs, pch=16, cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(3,3))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+therange <- 0:19
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+pvals <- c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:9) {
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  makePlot(therange, pvals[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

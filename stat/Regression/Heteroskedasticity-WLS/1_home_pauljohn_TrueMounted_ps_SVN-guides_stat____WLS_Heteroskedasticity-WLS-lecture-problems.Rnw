@@ -1,0 +1,87 @@
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=5,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Problems}
+\begin{enumerate}
+\item Somebody says ``your regression results are obviously plagued by
+heteroskedasticity. And they are correct!'' Explain what might be
+wrong, and what the consequences might be.
+\item Run a regression on any data set you like. Suppose you call it ``mod''.
+Run a few garden variety heteroskedasticity checks.
+
+
+\begin{Sinput}
+library(lmtest)
+bptest(mod)
+\end{Sinput}
+
+
+If you have a continuous predictor ``MYX'' and you want to check
+for heteroskedasticity with the Goldfield-Quandt test, it is best
+to specify a fraction to exclude from the ``middle'' of the data.
+If you order the data frame by ``MYX'' before fitting the model
+and running the gqtest, it works a bit more smoothly. If you do not
+do that, you have to tell gqtest to order the data for you.
+
+
+\begin{Sinput}
+library(lmtest)
+gqtest(mod, fraction=0.2, order.by=~MYX)
+\end{Sinput}
+
+
+On the other hand, the help page for gqtest also suggests using it
+to test a dichotomous predictor, but in that case don't exclude a
+fraction in the middle, just specify the division point that splits
+the range of MYX in two. You better sort the dataset by MYX before
+trying this, it will be tricky.
+
+
+\begin{Sinput}
+library(lmtest)
+dat <- dat[dat$MYX,   ] ##Sorts rows by MYX
+gqtest(mod, point=67) ## splits data at row 67.
+\end{Sinput}
+
+\item We have quite a few different ways to check for ``categorical heteroskedasticity''.
+I think I've never compared them side by side, but maybe you can.
+Run a regression that has at least one dichotomous predictor, and
+then run the various tests. I have in mind Bartlett's test, Fligner-Killeen
+test, and Levene's test. I noticed at the last minute we can also
+use the Goldfield Quandt test, in the method demonstrated in ?gqtest
+(or in previous question).
+
+
+Run those tests, check to see if they all lead to the same conclusion
+or not. Try to understand what they are testing so you could explain
+them to one of your students.
+
+\end{enumerate}
+\end{frame}

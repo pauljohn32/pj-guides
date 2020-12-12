@@ -1,0 +1,3487 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The Binomial Distribution
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Date
+June 2013
+\end_layout
+
+\begin_layout Section
+Binomial Distribution
+\end_layout
+
+\begin_layout Subsection
+Bernoulli model for a single coin flip
+\end_layout
+
+\begin_layout Standard
+If someone conducts a coin flip to decide 
+\begin_inset Quotes eld
+\end_inset
+
+Yes
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+No
+\begin_inset Quotes erd
+\end_inset
+
+, she is conducting an exercise that simulates a 
+\begin_inset Quotes eld
+\end_inset
+
+Bernoulli process.
+\begin_inset Quotes erd
+\end_inset
+
+ Obviously, if the chance of a 
+\begin_inset Quotes eld
+\end_inset
+
+Yes
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+True
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Success
+\begin_inset Quotes erd
+\end_inset
+
+ or whatever you call it) is 
+\begin_inset Formula $\pi$
+\end_inset
+
+ and we code the outcomes 1 and 0 (for Yes and No), then the Bernoulli variable
+ is very easy to understand.
+ It has an expected value of 
+\begin_inset Formula 
+\begin{equation}
+E[x_{i}]=\pi\cdot1+(1-\pi)\cdot0=\pi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and variance
+\begin_inset Formula 
+\begin{eqnarray}
+V[x_{i}] & = & \pi(1-\pi)^{2}-(1-\pi)(0-\pi^{2})\nonumber \\
+ & = & \pi(1-\pi)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Binomial Terminology
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $N$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+observations (or 
+\begin_inset Quotes eld
+\end_inset
+
+tests
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+trials
+\begin_inset Quotes erd
+\end_inset
+
+) of a random process that can give only 2 possible answers, such as 
+\begin_inset Quotes eld
+\end_inset
+
+1
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+0
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+yes
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+no
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+success
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+failure.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $k$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+successes Out of 
+\begin_inset Formula $N$
+\end_inset
+
+ observations, suppose there are 
+\begin_inset Formula $k$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+successes
+\begin_inset Quotes erd
+\end_inset
+
+ (and, obviously, 
+\begin_inset Formula $N-k$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+failures).
+ 
+\end_layout
+
+\begin_layout Description
+\begin_inset Formula $\pi$
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+probability
+\begin_inset space ~
+\end_inset
+
+of
+\begin_inset space ~
+\end_inset
+
+success
+\begin_inset space ~
+\end_inset
+
+fixed The chance of each outcomes is fixed across all experiments.
+ Let 
+\begin_inset Formula $\pi$
+\end_inset
+
+ represent the chance of a 
+\begin_inset Quotes eld
+\end_inset
+
+success
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+heads
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+yes
+\begin_inset Quotes erd
+\end_inset
+
+) and 
+\begin_inset Formula $(1-\pi)$
+\end_inset
+
+ is the chance of 
+\begin_inset Quotes eld
+\end_inset
+
+failure
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+tails
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+no
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The paradigmatic example of a binomial distribution would be a series of
+ coin flips.
+ There are 2 possible outcomes, 
+\begin_inset Quotes eld
+\end_inset
+
+heads
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+tails
+\begin_inset Quotes erd
+\end_inset
+
+, and the chance of 
+\begin_inset Quotes eld
+\end_inset
+
+heads
+\begin_inset Quotes erd
+\end_inset
+
+ is fixed.
+\end_layout
+
+\begin_layout Standard
+The binomial distribution represents the number of 
+\begin_inset Quotes eld
+\end_inset
+
+successes
+\begin_inset Quotes erd
+\end_inset
+
+ that will be observed in 
+\begin_inset Formula $N$
+\end_inset
+
+ experiments.
+ The set of possible outcomes is thus
+\begin_inset Formula 
+\begin{equation}
+X=\{0,1,2,3,\ldots,N\}\label{eq:-5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The binomial distribution describes the chances of observing 
+\begin_inset Formula $k$
+\end_inset
+
+ successes out of 
+\begin_inset Formula $N$
+\end_inset
+
+ trials, with the probability of success fixed at 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+Prob(k|N,\pi)
+\end{equation}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Probability Mass Function
+\end_layout
+
+\begin_layout Standard
+The Binomial probability mass function is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(k|N,\pi)=\frac{N!}{(N-k)!k!}\pi^{k}(1-\pi)^{N-k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example*
+Suppose the chance of having a boy baby is 0.63 for all women in a community.
+ If 437 women have babies, what is the probability that there will be 200
+ boys?
+\end_layout
+
+\begin_layout Example*
+Inserting 
+\begin_inset Formula $N$
+\end_inset
+
+ and 
+\begin_inset Formula $\pi$
+\end_inset
+
+ into the previous expression, the chance of 
+\begin_inset Formula $k$
+\end_inset
+
+ successes is seen to be:
+\end_layout
+
+\begin_layout Example*
+\begin_inset Formula 
+\begin{equation}
+Prob(k|437,0.63)=\frac{437!}{(437-k)!k!}(0.63)^{k}(1-\pi)^{437-k}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+For 
+\begin_inset Formula $k=200,$
+\end_inset
+
+ the probability is:
+\begin_inset Formula 
+\begin{equation}
+P(200|437,0.63)=7.626893\times10^{-34}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's a very small number (Recall, 
+\begin_inset Formula $10^{-34}=1/10^{34}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+If we had asked for the probability of 300 boys, we would find:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(300|437,0.63)=0.0001122501
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've done some 
+\begin_inset Quotes eld
+\end_inset
+
+hunting and pecking
+\begin_inset Quotes erd
+\end_inset
+
+ with this distribution to find out which values of 
+\begin_inset Formula $k$
+\end_inset
+
+ are most likely.
+ The outcomes with noticable chances are between 240 and 310, as indicated
+ in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Binomial-with-N=437"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Binomial-with-N=437"
+
+\end_inset
+
+Binomial with N=437 and p=0.63
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 437; p<- 0.63; x1 <- max(0, N*p-4*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*(
+1-p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylab=paste("Prob(k, N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Aside: The 
+\begin_inset Quotes eld
+\end_inset
+
+Binomial Coefficient
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The formula for the probability of 
+\begin_inset Formula $k$
+\end_inset
+
+ successes is often presented using 
+\begin_inset Quotes eld
+\end_inset
+
+N choose k
+\begin_inset Quotes erd
+\end_inset
+
+ notation.
+\begin_inset Formula 
+\begin{equation}
+Prob(k|N,\pi)=\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)\pi^{k}(1-\pi)^{N-k}\label{eq:}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)$
+\end_inset
+
+ is the number of different ways to get 
+\begin_inset Formula $k$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+successes
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Formula $N-k$
+\end_inset
+
+ failures out of 
+\begin_inset Formula $N$
+\end_inset
+
+ tests.
+ It is called 
+\begin_inset Quotes eld
+\end_inset
+
+the binomial coefficient
+\begin_inset Quotes erd
+\end_inset
+
+ because it plays a part in the 
+\begin_inset Quotes eld
+\end_inset
+
+binomial formula
+\begin_inset Quotes erd
+\end_inset
+
+ that is used in algebra.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)=\frac{N!}{(N-k)!k!}\label{eq: NChoosek}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Central Tendency and Dispersion
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $x\sim Binomial(N,\pi).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Expected-Value."
+
+\end_inset
+
+Expected Value.
+\end_layout
+
+\begin_layout Standard
+The expected value is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E(x)=\pi\cdot N\label{eq:-6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It seems obvious to me that this is correct.
+ If we flip a coin 10 times and the chance of a 
+\begin_inset Formula $Head$
+\end_inset
+
+ is 
+\begin_inset Formula $\pi$
+\end_inset
+
+, it seems reasonable to expect 
+\begin_inset Formula $\pi\cdot10$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+There is a simple way to demonstrate that.
+ And there's also the hard way.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's take the easy way first.
+ Think of the outcome, the number of successes, as a sum of 0's and 1's.
+ For instance, the observed sample: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+0,1,1,0,1,1,0,0\ldots,1,0
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+is really just a realization of Bernoulli trials, and the number of successes
+ is just the sum of those trials, as in
+\begin_inset Formula 
+\begin{equation}
+x_{1}+x_{2}+x_{3}+\ldots+x_{N-1}+x_{N}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Those are 
+\begin_inset Quotes eld
+\end_inset
+
+statistically independent
+\begin_inset Quotes erd
+\end_inset
+
+ samples of size 1, and each one has probability of success equal to 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+ So, considering just one 
+\begin_inset Quotes eld
+\end_inset
+
+event
+\begin_inset Quotes erd
+\end_inset
+
+ in isolation, the chance is 
+\begin_inset Formula $\pi$
+\end_inset
+
+ of observing a 
+\begin_inset Formula $1$
+\end_inset
+
+ and 
+\begin_inset Formula $(1-\pi)$
+\end_inset
+
+ chance of observing 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ So the expected value of that one draw is
+\begin_inset Formula 
+\begin{equation}
+E[x_{1}]=\pi\cdot1+(1-\pi)\cdot0=\pi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So of you think of the Binomial as the sum of 
+\begin_inset Formula $N$
+\end_inset
+
+ of those experiments, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+E[x_{1}+x_{2}+\ldots x_{N}] & = & E[x_{1}]+E[x_{2}]+\ldots+E[x_{n}]\nonumber \\
+ & = & \pi+\pi+\ldots+\pi\nonumber \\
+ & = & N\cdot\pi
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now the 
+\begin_inset Quotes eld
+\end_inset
+
+hard way.
+\begin_inset Quotes erd
+\end_inset
+
+ Recall the 
+\begin_inset Formula $E(x)$
+\end_inset
+
+ is defined as the probability weighted sum of outcomes:
+\begin_inset Formula 
+\[
+E(x)=\sum_{i=0}^{N}Prob(X_{i}=x_{i}|N,\pi)x_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting the Binomial probability model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E(x)=\sum_{i=0}^{N}\left(\begin{array}{c}
+N\\
+x_{i}
+\end{array}\right)\pi^{x_{i}}(1-\pi)^{N-x_{i}}x_{i}=\sum_{i=0}^{N}\frac{N!}{x_{i}!(N-x_{i})!}\pi^{x_{i}}(1-\pi)^{N-x_{i}}x_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In case you wonder how that can be simplified to 
+\begin_inset Formula $\pi\cdot N$
+\end_inset
+
+, you can read the proof in the Wikipedia: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://en.wikipedia.org/wiki/Binomial_distribution
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Variance
+\end_layout
+
+\begin_layout Standard
+And the variance is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(x)=\pi(1-\pi)N\label{eq:-7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you take the easy route, consider just one draw, 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, in isolation.
+ Its variance is
+\begin_inset Formula 
+\begin{eqnarray}
+Var[x_{1}] & = & \pi(1-E[x_{1}])^{2}+(1-\pi)(0-E[x_{1}])^{2}\nonumber \\
+ & = & \pi(1-\pi)^{2}-(1-\pi)(-\pi)^{2}\nonumber \\
+ & = & \pi(1-2\pi+\pi^{2})+\pi^{2}-\pi^{3}\nonumber \\
+ & = & \pi-2\pi^{2}+\pi^{3}+\pi^{2}-\pi^{3}\nonumber \\
+ & = & \pi-\pi^{2}=\pi(1-\pi)
+\end{eqnarray}
+
+\end_inset
+
+The Binomial distribution is a sum of 
+\begin_inset Formula $N$
+\end_inset
+
+ of those variables, and they are all statistically independent of each
+ other.
+ Thus, the law for calculating the variance of a sum of terms applies.
+\begin_inset Formula 
+\begin{eqnarray}
+Var[x_{1}+x_{2}+\ldots x_{N}] & = & Var[x_{1}]+Var[x_{2}]+\ldots+Var[x_{N}]\nonumber \\
+ &  & +\{a\, lot\, of\, Covariances\, between\, x_{i}\, and\, x_{j}\}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All the covariances are 
+\begin_inset Formula $0$
+\end_inset
+
+, because all of the draws are statistically independent.
+ Hence the problem is solved.
+\begin_inset Formula 
+\begin{eqnarray*}
+Var[x_{1}+x_{2}+\ldots x_{N}] & = & \pi(1-\pi)+\pi(1-\pi)+\ldots+\pi(1-\pi)\\
+ & = & \pi(1-\pi)N
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Is the Binomial Approximately Normal?
+\end_layout
+
+\begin_layout Standard
+The Binomial distribution is a discrete distribution.
+ The number of successes can only take on integer values.
+ Thus, OBVIOUSLY, it is never going to be exactly Normal, since the normal
+ is defined on a continuum.
+ 
+\end_layout
+
+\begin_layout Standard
+Recall, the Central Limit Theorem states that the mean of any variable tends
+ to be normally distributed, as the size of the sample tends to infinity.
+ In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Expected-Value."
+
+\end_inset
+
+, I asked the reader to consider the Binomial as the sum of N variables,
+ each of which is 0 or 1.
+ Reasoning from the CLT, we should expect the distribution of the Binomial
+ will tend toward Normality.
+ That is indeed the case, as we shall now see with some illustrations.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $N$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+pretty big
+\begin_inset Quotes erd
+\end_inset
+
+ and if 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is in the 
+\begin_inset Quotes eld
+\end_inset
+
+middle range,
+\begin_inset Quotes erd
+\end_inset
+
+ then the distribution of the Binomial appears to be rather similar to a
+ Normal distribution.
+ Consider a very-Normal looking case, a large sample of of 2000 draws for
+ which the success on each is 0.50 in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bin(2000,0.5)"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bin(2000,0.5)"
+
+\end_inset
+
+Binomial with N=2000 and p=0.50
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 2000; p<- 0.50; x1 <- max(0, N*p-4*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*
+(1-p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylim=c(0, 1.3*max(pseq)), ylab=paste("Prob(k,
+ N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the contrary, when the sample is small, the discreteness of the observed
+ values is more stark and the appearance is not all that Normal.
+ The probability of outcomes in Bin(4, 0.50) is illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bin(4,.5)"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bin(4,.5)"
+
+\end_inset
+
+Binomial with N=4 and p=0.50
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 4; p<- 0.50; x1 <- max(0, N*p-3*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*(1-
+p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylim=c(0, 1.3*max(pseq)), ylab=paste("Prob(k,
+ N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the number of draws is small, the appearance is decidedly not Normal
+ when the probability of success is small (or large).
+ Consider the case in which the probability is 0.15 in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bin(4,.15)"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bin(4,.15)"
+
+\end_inset
+
+Binomial with N=4 and p=0.150
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 4; p<- 0.150; x1 <- max(0, N*p-3*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*(1
+-p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylim=c(0, 1.3*max(pseq)), ylab=paste("Prob(k,
+ N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, as the CLT would lead us to expect, the observed Binomial outcomes
+ are quite a bit more Normal in appearance when the sample is large.
+ A model in which there are 2000 observations with probability of success
+ 0.15 has an expected value of 300 and a standard deviation of 15 (calculated
+ as 
+\begin_inset Formula $\sqrt{0.15(1-0.15)/N}$
+\end_inset
+
+).
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bin(2000,.15)"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bin(2000,.15)"
+
+\end_inset
+
+Binomial with N=2000 and p=0.150
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 2000; p<- 0.150; x1 <- max(0, N*p-4*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p
+*(1-p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylab=paste("Prob(k, N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In fact, even when the probability of success on one trial is very small,
+ say just 0.01, the distribution of the observed number of successes is rather
+ symmetric and unimodal, as illustrated in Figure .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bin(2000,.01)"
+
+\end_inset
+
+Binomial with N=2000 and p=0.01
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 2000; p<- 0.01; x1 <- max(0, N*p-4*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*
+(1-p)*N),N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- as.integer(x1): as.integer(x2+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+pseq <- dbinom(x, N, p)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, pseq, type="h", xlab="k", ylab=paste("Prob(k, N=",N,", p=", p,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x, pseq, pch=18,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Derivation of the Binomial Probability Formula
+\end_layout
+
+\begin_layout Standard
+Over the years, I have worked really hard to develop an explanation for
+ the probability mass function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(k|N,\pi)=\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)\pi^{k}(1-\pi)^{N-k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Perhaps you are willing to just accept that result, but I've worked too
+ hard on this to just throw it away.
+ So I'm leaving it here in case you wonder where the formula comes from.
+\end_layout
+
+\begin_layout Subsection
+The 
+\begin_inset Formula $\pi^{k}(1-\pi)^{N-k}$
+\end_inset
+
+ part is pretty obvious.
+\end_layout
+
+\begin_layout Standard
+What is the probability of observing 
+\begin_inset Formula $7$
+\end_inset
+
+ coin flips with 
+\begin_inset Formula $5$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ and 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Tails$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+Prob(H,H,H,H,H,T,T)=\pi\cdot\pi\cdot\pi\cdot\pi\cdot\pi\cdot(1-\pi)\cdot(1-\pi)\label{eq:-4}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\pi^{5}(1-\pi)^{7-5}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+What about the Binomial Coefficient?
+\end_layout
+
+\begin_layout Standard
+The Binomial coefficient 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)$
+\end_inset
+
+ is pronounced 
+\begin_inset Quotes eld
+\end_inset
+
+N choose k
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The number of ways to choose 
+\begin_inset Formula $k$
+\end_inset
+
+ successes out of 
+\begin_inset Formula $N$
+\end_inset
+
+ Bernoulli trials is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)=\frac{N!}{(N-k)!k!}\label{eq: NChoosek-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where does that come from?
+\end_layout
+
+\begin_layout Subsubsection
+Step 1: We only really care about the number of successes, not the ordering.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{c}
+Prob(H,H,H,H,H,T,T)=Prob(T,T,H,H,H,H,H)=Prob(T,H,T,H,H,H,H)\\
+=Prob(any\, ordering\, with\,5\, H\, and\,2\, T)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want the probability of 
+\begin_inset Formula $5$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ out of 
+\begin_inset Formula $7$
+\end_inset
+
+coin flips, we don't care if they happen in the beginning, middle or end.
+ 
+\end_layout
+
+\begin_layout Standard
+That means when I want 
+\begin_inset Quotes eld
+\end_inset
+
+the chances of 
+\begin_inset Formula $5\, Heads$
+\end_inset
+
+ out of 
+\begin_inset Formula $7$
+\end_inset
+
+ flips
+\begin_inset Quotes erd
+\end_inset
+
+, I need to go through and count up all of the different ways to get 
+\begin_inset Formula $5$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+It turns out that calculating that is not hard, but it is much easier to
+ explain in person with chalk and a blackboard than it is to writed it down
+ in a clear, understandable way (and still survive the scrutiny of mathematician
+s).
+ 
+\end_layout
+
+\begin_layout Subsubsection
+A couple of examples.
+\end_layout
+
+\begin_layout Standard
+I think I have a fool-proof illustration of the Binomial probability model
+ using these 
+\begin_inset Formula $N=3$
+\end_inset
+
+.
+ The possible number of 
+\begin_inset Quotes eld
+\end_inset
+
+heads
+\begin_inset Quotes erd
+\end_inset
+
+ in a series of 3 coin flips is 
+\begin_inset Formula $0,$
+\end_inset
+
+ 
+\begin_inset Formula $1$
+\end_inset
+
+, 
+\begin_inset Formula $2$
+\end_inset
+
+, 
+\begin_inset Formula $3$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $N$
+\end_inset
+
+ choose 
+\begin_inset Formula $k$
+\end_inset
+
+ notation gives the number of different ways in which these can be obtained.
+\end_layout
+
+\begin_layout Standard
+There is only 
+\begin_inset Formula $1$
+\end_inset
+
+ way to obtain 
+\begin_inset Formula $0$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Heads
+\begin_inset Quotes erd
+\end_inset
+
+ out of 3 flips.
+ We would have to observe Tails 3 times, 
+\begin_inset Formula $(T,T,T)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+3\\
+0
+\end{array}\right)=\frac{3!}{(3-0)!0!}=\frac{3!}{3!}=1\label{(3 choose 0)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next, consider 
+\begin_inset Formula $1$
+\end_inset
+
+ 
+\begin_inset Formula $Head$
+\end_inset
+
+ and 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Tails$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+3\\
+1
+\end{array}\right)=\frac{3!}{(3-1)!1!}=\frac{3\cdot2\cdot1}{2\cdot1}=3\label{(3 choose 1)}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The 3 possible ways to end up with 
+\begin_inset Formula $1$
+\end_inset
+
+ 
+\begin_inset Formula $Head$
+\end_inset
+
+ and 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Tails$
+\end_inset
+
+ are 
+\begin_inset Formula $(H,T,T)$
+\end_inset
+
+
+\begin_inset Formula $(T,T,H)$
+\end_inset
+
+
+\begin_inset Formula $(H,T,T)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Next, consider 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ and 
+\begin_inset Formula $1$
+\end_inset
+
+ 
+\begin_inset Formula $Tail$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+3\\
+2
+\end{array}\right)=\frac{3!}{(3-2)!2!}=\frac{3\cdot2\cdot1}{2\cdot1}=3\label{(3 choose 2)}
+\end{equation}
+
+\end_inset
+
+The 3 possible ways to end up with 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ and 
+\begin_inset Formula $1$
+\end_inset
+
+ 
+\begin_inset Formula $Tail$
+\end_inset
+
+ are 
+\begin_inset Formula $(H,H,T)$
+\end_inset
+
+
+\begin_inset Formula $(H,T,H)$
+\end_inset
+
+
+\begin_inset Formula $(T,H,H)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, consider that there is only one way to get 
+\begin_inset Formula $3$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+3\\
+3
+\end{array}\right)=\frac{3!}{(3-3)!3!}=\frac{3!}{3!}=1\label{DUPLICATE: (3 choose 3)}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+There are 8 possible outcomes in a 3 coin-flip experiments, then, and the
+ chances of each 3-tuple are summarized in the following table:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+Outcome & Probability\\
+\hline (H,H,H) & \pi^{3}\\
+(H,H,T) & \pi^{2}(1-\pi)\\
+(H,T,H) & \pi^{2}(1-\pi)\\
+(H,T,T) & \pi(1-\pi)^{2}\\
+(T,H,H) & \pi^{2}(1-\pi)\\
+(T,H,T) & \pi(1-\pi)^{2}\\
+(T,T,H) & \pi(1-\pi)^{2}\\
+(T,T,T) & (1-\pi)^{3}
+\end{array}\label{8outcomes3choose2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have 8 sets of 
+\begin_inset Formula $3-tuples$
+\end_inset
+
+, but we don't really need that many.
+ Note that the probability of 
+\begin_inset Formula $(H,H,T)$
+\end_inset
+
+ is the same as the probability of 
+\begin_inset Formula $(H,T,H)$
+\end_inset
+
+ or 
+\begin_inset Formula $(T,H,H)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The Binomial distribution groups those together.
+ We need to collect together the outcomes in which there are 
+\begin_inset Formula $0,$
+\end_inset
+
+ 
+\begin_inset Formula $1$
+\end_inset
+
+, 
+\begin_inset Formula $2$
+\end_inset
+
+ , and 
+\begin_inset Formula $3$
+\end_inset
+
+ outcomes.
+ When we group together the outcomes with a certain number of successes,
+ we end up with 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)$
+\end_inset
+
+ of each type.
+\end_layout
+
+\begin_layout Standard
+The probability of observing 
+\begin_inset Formula $3$
+\end_inset
+
+ 
+\begin_inset Formula $Tails$
+\end_inset
+
+ (
+\begin_inset Formula $3$
+\end_inset
+
+
+\begin_inset Formula $Failures$
+\end_inset
+
+) is 
+\begin_inset Formula 
+\[
+Prob(T,T,T)=
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Prob(0|3,p)=1\cdot(1-\pi)^{3}=\left(\begin{array}{c}
+3\\
+0
+\end{array}\right)\pi^{0}(1-\pi)^{3}\label{eq:3choose0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the chance of 
+\begin_inset Formula $1$
+\end_inset
+
+ 
+\begin_inset Formula $Head$
+\end_inset
+
+ is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(H,T,T)+Prob(T,H,T)+Prob(T,T,H)=
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+=3\cdot\pi^{1}(1-\pi)^{2}=\left(\begin{array}{c}
+3\\
+1
+\end{array}\right)\pi^{1}(1-\pi)^{2}\label{eq:3choose1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The probability of observing 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ out of 
+\begin_inset Formula $3$
+\end_inset
+
+ flips (
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Successes$
+\end_inset
+
+ out of 
+\begin_inset Formula $3$
+\end_inset
+
+ tests) is:
+\begin_inset Formula 
+\[
+Prob(H,H,T)+Prob(H,T,H)+Prob(T,H,H)=
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+Prob(2|3,p) & = & 3\cdot\pi^{2}(1-\pi)=\left(\begin{array}{c}
+3\\
+2
+\end{array}\right)\pi^{2}(1-\pi)\label{eq:3choose2}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The probability of observing 
+\begin_inset Formula $3$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ (
+\begin_inset Formula $3$
+\end_inset
+
+ 
+\begin_inset Formula $Successes$
+\end_inset
+
+) is
+\begin_inset Formula 
+\[
+Prob(H,H,H)=
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Prob(3|3,p)=1\cdot\pi^{3}(1-\pi)^{0}=\left(\begin{array}{c}
+3\\
+3
+\end{array}\right)\pi^{3}(1-\pi)^{0}\label{eq:3choose3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that if we add up those 4 expressions, the result is equal to 1.0.
+ That means we have found a probability distribution on the set of possible
+ combinations of 
+\begin_inset Formula $Heads$
+\end_inset
+
+ and 
+\begin_inset Formula $Tails$
+\end_inset
+
+ with 
+\begin_inset Formula $3$
+\end_inset
+
+ experiments.
+ And that was the whole point of this from the beginning.
+\end_layout
+
+\begin_layout Example*
+How many ways are there to get 
+\begin_inset Formula $5$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ during 
+\begin_inset Formula $10$
+\end_inset
+
+ coin flips? Suppose 
+\begin_inset Formula $N=10$
+\end_inset
+
+ and 
+\begin_inset Formula $k=5$
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+10\\
+5
+\end{array}\right)=\frac{10!}{(10-5)!5!}=\frac{10\cdot9\cdot8\cdot7\cdot6\cdot5!}{5!\cdot5!}=\frac{10\cdot9\cdot8\cdot7\cdot6}{5\cdot4\cdot3\cdot2}=252\label{eq:-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Why don't you go ahead and make me a list of all possible ways to draw 
+\begin_inset Formula $5$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ out of 
+\begin_inset Formula $10$
+\end_inset
+
+ coin flips.
+ Start with:
+\begin_inset Formula 
+\[
+(H,H,H,H,H,T,T,T,T,T)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You owe me 251 more vectors.
+\end_layout
+
+\begin_layout Standard
+Note: In R you can confirm that calculation.
+ See 
+\family typewriter
+?Special
+\family default
+ and then run 
+\family typewriter
+choose(10,5).
+\end_layout
+
+\begin_layout Subsubsection
+Step 2: Generalize the previous reasoning.
+ 
+\end_layout
+
+\begin_layout Standard
+The previous section demonstrates that finding for 
+\begin_inset Formula $N=3$
+\end_inset
+
+, but for higher values of 
+\begin_inset Formula $N$
+\end_inset
+
+ it would not be too practical to write out that same argument.
+ We need a result for all 
+\begin_inset Formula $N$
+\end_inset
+
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Recall that 
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+k
+\end{array}\right)$
+\end_inset
+
+ is the number of ways to get
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+ successes
+\end_layout
+
+\begin_layout Itemize
+out of 
+\begin_inset Formula $N$
+\end_inset
+
+ tests
+\end_layout
+
+\begin_layout Standard
+without concerning ourselves about the order in which the successes and
+ failures occur.
+\end_layout
+
+\begin_layout Standard
+Represent the 
+\begin_inset Formula $N$
+\end_inset
+
+ successes that might result in 
+\begin_inset Formula $N$
+\end_inset
+
+ coin flips as 
+\begin_inset Formula $(H_{1},H_{2},H_{3},\ldots,H_{N})$
+\end_inset
+
+.
+ The flips are numbered by the test on which they are observed.
+\end_layout
+
+\begin_layout Enumerate
+Question: How many ways can we order 
+\begin_inset Formula $N$
+\end_inset
+
+ items? That is the same as asking for the number of ordered sets of 
+\begin_inset Formula $N$
+\end_inset
+
+ items that can be created out of a set of 
+\begin_inset Formula $N$
+\end_inset
+
+ items.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Answer: 
+\begin_inset Formula 
+\begin{equation}
+N\cdot(N-1)\cdot(N-2)\cdot\ldots\cdot2\cdot1=N!\label{eq: N factorial}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+You can pick 
+\begin_inset Formula $N$
+\end_inset
+
+ different items on your first pick, but only 
+\begin_inset Formula $N-1$
+\end_inset
+
+ on your second, 
+\begin_inset Formula $N-2$
+\end_inset
+
+ on your third, and so forth.
+ 
+\end_layout
+
+\begin_layout Standard
+Example: 
+\begin_inset Formula $X=\{H_{1},H_{2},H_{3}\}$
+\end_inset
+
+, so 
+\begin_inset Formula $N=3$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The claim is those can be ordered in 
+\begin_inset Formula $N!=3\cdot2\cdot1=6$
+\end_inset
+
+ ways.
+\end_layout
+
+\begin_layout Standard
+List them out to verify: 
+\begin_inset Formula 
+\begin{equation}
+(H_{1},H_{2},H_{3})\,(H_{1},H_{3},H_{2})\,(H_{2},H_{1},H_{3})\,(H_{2},H_{3},H_{1})\,(H_{3},H_{1},H_{2})\,(H_{3},H_{2},H_{1})\label{eq:abc-triplets}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Repeat that same exercise, but only pick 
+\begin_inset Formula $k$
+\end_inset
+
+ successes out of the 
+\begin_inset Formula $N$
+\end_inset
+
+ possible successes.
+ That is, we draw one from the set of 
+\begin_inset Formula $N$
+\end_inset
+
+ outcomes, and then one from the remining 
+\begin_inset Formula $(N-1)$
+\end_inset
+
+, then one from the remaining 
+\begin_inset Formula $(N-2)$
+\end_inset
+
+ until we have taken out 
+\begin_inset Formula $k$
+\end_inset
+
+ successes.
+ The total number of ways to draw those 
+\begin_inset Formula $k$
+\end_inset
+
+ successes is: 
+\begin_inset Formula 
+\begin{equation}
+N\cdot(N-1)\cdot(N-2)\cdot\ldots\cdot(N-k+1)\label{eq:(N-k)!}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This can be represented as
+\begin_inset Formula 
+\begin{equation}
+\frac{N!}{(N-k)!}\label{eq:-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+See why?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{N!}{(N-k)!}=\frac{N\cdot(N-1)\cdot\ldots\cdot(N-k+1)\cdot(N-k)\cdot(N-k-1)\cdot(N-k-2)\ldots\cdot2\cdot1}{(N-k)\cdot(N-k-1)\cdot(N-k-2)\cdot\ldots\cdot2\cdot1}\label{eq:-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{N\cdot(N-1)\cdot\ldots(N-k+1)\ldots\cancel{(N-k)}\cdot\cancel{(N-k-1)}\cdot\dot{\ldots}\cdot\cancel{2}\cancel{1}}{\cancel{(N-k)}\cdot\cancel{(N-k-1)\}}\cancel{(N-k-2)}\cdot\ldots\cdot\cancel{2}\cdot\cancel{1}}\label{eq:-2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+=N\cdot(N-1)\cdot(N-2)\cdot\ldots\cdot(N-k+1)\label{eq:-3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This gives us the number of ways you can have 
+\begin_inset Formula $k$
+\end_inset
+
+ successes in 
+\begin_inset Formula $N$
+\end_inset
+
+ experiments when you take the order of successes into account.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+We still have too many outcomes because we are still treating an outcome
+ like 
+\begin_inset Formula $(H_{1},T,H_{3},T,H_{5})$
+\end_inset
+
+ as if it were a different thing than 
+\begin_inset Formula $(H_{3},T,H_{1},T,H_{5})$
+\end_inset
+
+.
+ There are 
+\begin_inset Formula $k!$
+\end_inset
+
+ different ways in which the 3 victories might be ordered.
+ To obtain the final result, we divide the number of ordered 
+\begin_inset Formula $N$
+\end_inset
+
+-tuples that have 
+\begin_inset Formula $k$
+\end_inset
+
+ successes by 
+\begin_inset Formula $k!$
+\end_inset
+
+: 
+\begin_inset Formula 
+\[
+\frac{1}{k!}\frac{N!}{(N-k)!}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Another illustration with 3 coin flips.
+ Let's apply that approach to calculate the number of ways in which we can
+ obtain 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Suppose we lay out the 
+\begin_inset Formula $3$
+\end_inset
+
+ possible 
+\begin_inset Formula $Heads$
+\end_inset
+
+ that might be observed:
+\begin_inset Formula 
+\[
+\{H_{1},H_{2},H_{3}\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can draw 2 items from this list in 
+\begin_inset Formula $3\cdot2$
+\end_inset
+
+ methods:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+(H_{1},H_{2}) & (H_{2},H_{1})\\
+(H_{1},H_{3}) & (H_{3},H_{1})\\
+(H_{2},H_{3}) & (H_{3},H_{2})
+\end{array}\label{eq:six-ordered}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When we fail to obtain a 
+\begin_inset Formula $Head$
+\end_inset
+
+, then we must be observing a 
+\begin_inset Formula $Tail$
+\end_inset
+
+, the 
+\begin_inset Formula $3-tuples$
+\end_inset
+
+ would be: 
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+(H_{1},H_{2,}T) & (H_{2},H_{1},T)\\
+(H_{1},T,H_{3}) & (H_{3},T,H_{1})\\
+(T,H_{2},H_{3}) & (T,H_{3},H_{2})
+\end{array}\label{eq:six-ordered with T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Group together the similar sets, and we end up with 
+\begin_inset Formula $3$
+\end_inset
+
+ possible types of outcomes with 
+\begin_inset Formula $2$
+\end_inset
+
+ 
+\begin_inset Formula $Heads$
+\end_inset
+
+ out of 
+\begin_inset Formula $3$
+\end_inset
+
+ flips:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c}
+(H,H,T)\\
+(H,T,H)\\
+(T,H,H)
+\end{array}\label{DUPLICATE: eq:3unordered}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Multinomial
+\end_layout
+
+\begin_layout Standard
+Binomial is based on 2 possible outcomes with probabilities 
+\begin_inset Formula $\pi_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\pi_{2}$
+\end_inset
+
+.
+ And the outcome of a Binomial experiment is not just one number of successes
+ 
+\begin_inset Formula $x$
+\end_inset
+
+, but it is really a pair, 
+\begin_inset Formula $(x_{1},x_{2}$
+\end_inset
+
+), which represent 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ successes and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ failures.
+ We don't usually think of it that way because 
+\begin_inset Formula $\pi_{2}=1-\pi_{1}$
+\end_inset
+
+, so we don't need to keep track of 2 separate 
+\begin_inset Formula $\pi$
+\end_inset
+
+'s.
+ And 
+\begin_inset Formula $x_{2}=N-x_{1}$
+\end_inset
+
+, so we don't think of a Binomial as generating a 2-tuple like 
+\begin_inset Formula $(x,N-x)$
+\end_inset
+
+, 
+\emph on
+but we could
+\emph default
+.
+ And that's important.
+ 
+\end_layout
+
+\begin_layout Subsection
+Extend the Binomial by thinking of 
+\begin_inset Formula $m$
+\end_inset
+
+ possible outcomes.
+\end_layout
+
+\begin_layout Standard
+Next suppose there are 3 possible outcomes, say, 
+\begin_inset Quotes eld
+\end_inset
+
+Win
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Lose
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Draw
+\begin_inset Quotes erd
+\end_inset
+
+, and the probabilities of these are 
+\begin_inset Formula $(\pi_{1},\pi_{2},\pi_{3})$
+\end_inset
+
+.
+ All of those probabilies must sum to 1.0, so it is not really necessary
+ to keep track of 3 different values.
+ So many times, we just write 
+\begin_inset Formula $(\pi_{1},\pi_{2},1-\pi_{1}-\pi_{2})$
+\end_inset
+
+.
+ When we collect a sample of N observations from the 
+\begin_inset Quotes eld
+\end_inset
+
+Win
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Lose
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Draw
+\begin_inset Quotes erd
+\end_inset
+
+ distribution, the outcomes will be spread over 3 values in a vector, like
+ 
+\begin_inset Formula $(x_{1},x_{2},x_{3})$
+\end_inset
+
+ or, equivalently, 
+\begin_inset Formula $(x_{1},x_{2},\, N-x_{1}-x_{2})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Somebody comes along and says there are really 4 possible outcomes, 
+\begin_inset Quotes eld
+\end_inset
+
+Win
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Lose
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Draw
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+Game Canceled
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The chances of each one are 
+\begin_inset Formula $(\pi_{1},\pi_{2},\pi_{3},1-\pi_{1}-\pi_{2}-\pi_{3})$
+\end_inset
+
+ and if we had a sample of 
+\begin_inset Formula $N$
+\end_inset
+
+, they would be a vector like 
+\begin_inset Formula $(x_{1},x_{2},x_{3},N-x_{1}-x_{2}-x_{3})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Keep enumerating possibilities, eventually you should see a pattern emerging.
+ We can have any number, say 
+\begin_inset Formula $m$
+\end_inset
+
+ possible outcomes.
+ And we can list the probabilities for them,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\pi_{1},\pi_{2},\ldots,\pi_{m}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and we can hope to characterize the probability distribution of the vector
+\begin_inset Formula 
+\begin{equation}
+(x_{1},x_{2},\ldots,x_{m})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are 
+\begin_inset Formula $N$
+\end_inset
+
+ experiments altogether, but each one can reveal one of 
+\begin_inset Formula $m$
+\end_inset
+
+ outcomes with probabilities
+\end_layout
+
+\begin_layout Standard
+An 
+\begin_inset Quotes eld
+\end_inset
+
+outcome
+\begin_inset Quotes erd
+\end_inset
+
+ is a vector of counts, a listing of how many outcomes of each type is observed.
+ There are 
+\begin_inset Formula $N$
+\end_inset
+
+ items altogether, and they are divided among the 
+\begin_inset Formula $m$
+\end_inset
+
+ types.
+ 
+\end_layout
+
+\begin_layout Standard
+Like the binomial, the probability is simply a reflection of the number
+ of different ways a given set of counts can be observed.
+ The element that makes the multinomial seem complicated is that there is
+ an interaction across the counts for the different types.
+ If a 
+\begin_inset Quotes eld
+\end_inset
+
+freak
+\begin_inset Quotes erd
+\end_inset
+
+ string of experiments led to only outcomes of type 
+\begin_inset Formula $1$
+\end_inset
+
+, then we would have an outcome vector of
+\begin_inset Formula 
+\[
+(N,0,0,\ldots,0)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we want to suppose that there is 
+\begin_inset Formula $1$
+\end_inset
+
+ item in the last category, then one must be removed from the first one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(N-1,0,0,\ldots,1)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We might draw another case that shows 2 observations in every single category
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(2,2,2,\ldots,2)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main point is this.
+ If the theory says the chances of the outcomes are 
+\begin_inset Formula $\left(\pi_{1},\pi_{2},\ldots,\pi_{m}\right)$
+\end_inset
+
+, then we need a probability model that states the chances of observing
+ any particular combination.
+\end_layout
+
+\begin_layout Subsection
+Explicit example with 3 possibilities.
+\end_layout
+
+\begin_layout Standard
+Suppose we consider a particular outcome vector, like
+\begin_inset Formula 
+\[
+(32,10,8)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As in the binomial case, we build a probability model in small steps.
+ We have the chance of 32 things of type 1, which has to look something
+ like
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+N\\
+32
+\end{array}\right)\pi_{1}^{32}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+32
+\end{array}\right)$
+\end_inset
+
+ ways to arrange N things in which there are 32 things of type 1 in there,
+ and 
+\begin_inset Formula $\pi_{1}^{32}$
+\end_inset
+
+ is the chance of getting one outcome with 32 things of type 1.
+ 
+\end_layout
+
+\begin_layout Standard
+So you have already taken out 32 of the possible N outcomes.
+ 
+\end_layout
+
+\begin_layout Standard
+Now consider the 10 outcomes in the second column.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+N
+\begin_inset Quotes erd
+\end_inset
+
+ that's left-over after removing the 32 outcomes for the first column is
+ 
+\begin_inset Formula $N-32$
+\end_inset
+
+.
+ So the chance of getting 10 is
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+N-32\\
+10
+\end{array}\right)\pi_{2}^{10}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Consider the 8 in the third column.
+ There are 
+\begin_inset Formula $N-32-10$
+\end_inset
+
+ outcomes left, and this column is grabbing 8 of them.
+ So the chances of that are
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+N-32-10\\
+8
+\end{array}\right)\pi_{3}^{8}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now multiply ALL OF THOSE TOGETHER because the overall probability of getting
+\begin_inset Formula 
+\[
+(32,10,8,\ldots,19)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+has to be the product of the chance of getting each one separately.
+ That is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(X_{1}=32,X_{2}=10,X{}_{3}=8)=\left(\begin{array}{c}
+N\\
+32
+\end{array}\right)\left(\begin{array}{c}
+N-32\\
+10
+\end{array}\right)\left(\begin{array}{c}
+N-32-10\\
+8
+\end{array}\right)\pi_{1}^{32}\pi_{2}^{10}\pi_{3}^{8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Generalize to 
+\begin_inset Formula $m$
+\end_inset
+
+ possible outcomes
+\end_layout
+
+\begin_layout Standard
+The Multinomial probability model is obtained by continuing that same procedure
+ for each of 
+\begin_inset Formula $m$
+\end_inset
+
+ possible outcomes.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(x_{1},x_{2},x_{3},\ldots,x_{m})=\left(\begin{array}{c}
+N\\
+x_{1}
+\end{array}\right)\left(\begin{array}{c}
+N-x_{1}\\
+x_{2}
+\end{array}\right)\left(\begin{array}{c}
+N-x_{1}-x_{2}\\
+x_{3}
+\end{array}\right)\cdots\left(\begin{array}{c}
+N-x_{1}\ldots-x_{m-1}\\
+x_{m}
+\end{array}\right)\pi_{1}^{x_{1}}\pi_{2}^{x_{2}}\pi_{3}^{x_{3}}\cdots\pi_{m}^{x_{m}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

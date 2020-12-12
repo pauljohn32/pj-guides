@@ -1,0 +1,1756 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression-Nonlinear/Nonlinear-Overview//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{amstext}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+%%not for article, but for presentation
+%%mode<presentation>{
+%\newcommand\makebeamertitle{\frame{\maketitle}}}
+
+
+%%only for presentation
+\mode<presentation>{
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+%%for presentations
+\mode<presentation>{
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(75645)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+library(rockchalk)
+@
+
+
+\title[Descriptive]{Nonlinearity in Regression }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{Trimmed Down for 2015!}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Are Relationships ``Really'' Linear?}
+\begin{itemize}
+\item Models (so far): 
+\[
+y_{i}=b_{0}+b_{1}x_{i}+e_{i}
+\]
+
+\item Maybe that's good enough
+
+\begin{itemize}
+\item Occam's razor (use simplest model first)
+\end{itemize}
+\item Mathematically (from Calculus, see Taylor's theorem) we may add complexity
+in stages, inserting $x_{i}^{2}$, $x_{i}^{3}$, to ``bend'' a line.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The ``True'' Model is Approximately Linear}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item The relationship is almost linear
+\item Predictions won't be much different
+\item Slope of line in that region won't be much different
+\end{itemize}
+
+\column{7cm}
+
+
+<<ex20, include=F, fig=T, echo=F, height=6, width=6>>=
+x <- runif(400, min=0, max=100)
+y <- 10 -2 * x + 15 * sin(0.04*x) + 15*rnorm(400,0,1)
+plot(x,y, type="n")
+curve(10 -2 * x, add=T)
+curve(10 -2*x + 15 * sin(0.04*x), col="red", add=T)
+legend("bottomleft", legend=c("true relationship","linear approximation"), lwd=c(2,2), col=c("red","black"))
+@
+
+
+\includegraphics[width=6cm]{plots/t-ex20}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{The ``True'' Model is Approximately Linear}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item After error gets thrown into the model, its hard to see how there's
+much practical difference between the predictions of the ``approximate''
+model and the true model.
+\end{itemize}
+
+\column{7cm}
+
+
+<<ex40, include=F, fig=T, echo=F, height=6, width=6>>=
+plot(x,y)
+mod2 <- lm(y~x)
+abline(mod2, col="black", lwd=2)
+curve(10 -2*x + 15 * sin(0.04*x), col="red", add=T)
+legend("bottomleft", legend=c("true relationship","linear OLS Estimate"), lwd=c(2,2), col=c("red","black"))
+@
+
+
+\includegraphics[width=6cm]{plots/t-ex40}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{The Straight Line Model Is Not Useful If...}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Perhaps a picture really is worth 1000 words
+\end{itemize}
+
+\column{7cm}
+
+
+<<ex50, include=F, fig=T, echo=F, height=6, width=6>>=
+x <- runif(200, min=0, max=100)
+x <- x[order(x)]
+y <- 3 + 13.4 * x - .15 * x^2 + rnorm(200,m=0, s=22)
+modf <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 13.4*x[i] - 0.15*x[i]^2 + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modf, col="red", lty=2,lwd=2)
+curve(3 + 13.4 * x - .15 * x * x, add=T, lty=1, col="black", lwd=3)
+legend("bottomleft", legend=c("OLS Linear Fit","True Nonlinear Curve"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-ex50}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\section{Linear Splines}
+
+
+\lyxframeend{}\lyxframe{Segments}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item A straight line will approximate any small part of the big curve
+\item If data is observed only in a narrow range, a straight line might
+be sufficient.
+\end{itemize}
+
+\column{7cm}
+
+
+<<ex70, include=F, fig=T, echo=F, height=6, width=6>>=
+curve(3 + 13.4 * x - .15 * x * x, lty=1, col="black", lwd=1, from=0, to=100, ylab="")
+lines( c(19,29), c(210.6, 269), col="red",lwd=3)
+lines( c(59,74), c( 278.60, 184), col="green",lwd=3)
+lines( c(80,95), c( 125, -65), col="blue",lwd=3)
+abline(v = c(19, 29, 59, 74, 80, 95), col = "gray70")
+@
+
+
+\includegraphics[width=6cm]{plots/t-ex70}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{A Linear Spline Model}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Choose ``knot'' points, $k_{1}$, $k_{2}$, $k_{3}$
+\item G.E.P. Box, ``Essentially, all models are wrong, but some are useful.''
+\end{itemize}
+
+\column{7cm}
+
+
+<<ex75, include=F, fig=T, echo=F, height=6, width=6>>=
+curve(3 + 13.4 * x - .15 * x * x,lty=1, col="black", lwd=1, from=20, to=50, ylab="")
+segments(x0=c(20,33, 43.4), x1 = c(33,43.4,50.1), y0= c(212,282, 302), y1=c( 282, 302, 297), col = rgb(1,0,0,.8), lwd = 2)
+segments(x0=c(20,33, 43.4), x1 = c(33,43.4,50.1), y0= c(212,282, 302), y1=c( 282, 302, 297), col = rgb(1,0,0,.5), lwd =10)
+mtext(text = c(expression(k[1]), expression(k[2]), expression(k[3])), side = 1, at = c(20, 33, 43.4), line = -2)
+@
+
+
+\includegraphics[width=6cm]{plots/t-ex75}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Estimating a Spline Model}
+\begin{itemize}
+\item Write out the linear predictor, formula will look something like
+\begin{eqnarray}
+b_{0}+b_{1}x_{i}+b_{2}(x_{i}-k_{2})+b_{3}(x_{i}-k_{3})\\
+=b_{0}+b_{1}x_{i}+b_{2}x2_{i}+b_{3}x3_{i}
+\end{eqnarray}
+
+\item Essentially, one manufactures ``before \& after dummy variables''
+and creates 3 columns for variants of x
+
+
+\begin{tabular}{|c|c|c|}
+\hline 
+x &
+x2 &
+x3\tabularnewline
+\hline 
+\hline 
+13 &
+0 &
+0\tabularnewline
+\hline 
+14 &
+0 &
+0\tabularnewline
+\hline 
+15 &
+1 &
+0\tabularnewline
+\hline 
+16 &
+2 &
+0\tabularnewline
+\hline 
+17 &
+3 &
+1\tabularnewline
+\hline 
+18 &
+4 &
+2\tabularnewline
+\hline 
+\end{tabular}
+
+\item The $b_{2}$ and $b_{3}$ are ``slope shifts: the effect of $x_{i}$
+``jumps'' 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Splines}
+\begin{itemize}
+\item Handy!
+
+\begin{itemize}
+\item Relative easy to code up
+\item Will usually reveal ``very bendy'' relationships
+\end{itemize}
+\item Problems
+
+\begin{itemize}
+\item The ``jagged'' edges are theoretically bothersome (preferred ``smooth''
+curves)
+\item Assumes knots are at known points
+
+\begin{itemize}
+\item Estimating the knots is a challenging problem. 
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Intrinsically Linear}
+
+
+\lyxframeend{}\lyxframe{Can Be Estimated With OLS}
+\begin{itemize}
+\item Re-conceptualize ``columns'' of predictors.
+\item Might replace $x_{i}$ with $\mathrm{log}(x_{i})$ 
+
+
+\begin{equation}
+y_{i}=b_{0}+b_{1}log(x_{i})+e_{i}
+\end{equation}
+
+
+\item ``throw in'' $x$ squared (or one of many transformed x columns)
+\begin{equation}
+y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}+e_{i}
+\end{equation}
+
+\item Sometimes have used reciprocal or square root, but not so often.
+\end{itemize}
+
+\lyxframeend{}\section{Quadratic: $x$ Squared}
+
+
+\lyxframeend{}\subsection{Definition}
+
+
+\lyxframeend{}\lyxframe{The Quadratic Model: add $b_{2}x_{i}^{2}$}
+\begin{itemize}
+\item Replace the usual
+\end{itemize}
+\begin{equation}
+b_{0}+b_{1}x_{i}
+\end{equation}
+
+\begin{itemize}
+\item With this
+\end{itemize}
+\begin{equation}
+y=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Graph the Quadratic}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Remember high school math. If
+\item $b_{2}<0$, then this is a ``hill'' shaped function
+\item $b_{2}>0$, then this is a ``U'' shaped function
+\item The ``peak'' or ``bottom'' occurs where 
+\begin{equation}
+x_{i}=\frac{-b_{1}}{2b_{2}}
+\end{equation}
+
+\item From elementary calculus, recall the overall slope of $y_{i}$ as
+a function of $x_{i}$ is
+\begin{equation}
+\frac{dy}{dx_{i}}=b_{1}+2b_{2}x_{i}
+\end{equation}
+
+\end{itemize}
+
+\column{6cm}
+
+
+<<quad05, include=F, fig=T, echo=F, height=6, width=6>>=
+curve(5 + 0.3 *x + 0.1*x^2, from = -5, to = 10, lty = 1, col = "black")
+text(6, 8, expression(b[2] > 0), col = "black") 
+curve(15 + 0.4 *x - 0.1*x^2, from = -5, to = 10, lty = 2, col = "blue", add = T, lwd = 2)
+text(-2, 12, expression(b[2] < 0), col = "blue", lwd = 2) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-quad05}
+
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{Reasons to believe that $y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}$
+is a Useful Model}
+\begin{itemize}
+\item This is only one step more complicated than the linear model
+\item Including $x^{2}$ is like interacting $x$ with itself
+
+
+\begin{equation}
+y_{i}=b_{0}+(b_{1}+b_{2}x_{i})x_{i}+e_{i}\label{eq:slope0}
+\end{equation}
+
+\begin{itemize}
+\item The effect of $x_{i}$ depends on where $x_{i}$ ``is'': $b_{1}+b_{2}x_{i}$. 
+\end{itemize}
+\item If $b_{2}>0,$ then the marginal effect of $x_{i}$ is always getting
+bigger as $x_{i}$ gets bigger
+\end{itemize}
+
+\lyxframeend{}\subsection{Examples}
+
+
+\lyxframeend{}\lyxframe{Quadratic Example \#1}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{1_home_pauljohn_SVN_SVN-guides_stat_Regression-___ew_importfigs_Roca-2011-MeasuringCorruption.png}
+
+
+\column{6cm}
+\begin{itemize}
+\item From Thomas Roca. 2011. ``Measuring Corruption: Perception Surveys
+or Victimization Surveys''
+\item Quatratic fits OK, but I wish I had some function with a sharper peak.
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Quadratic In Use \#2}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{2_home_pauljohn_SVN_SVN-guides_stat_Regression-____importfigs_Roca-2010-TrapOfDemocratization.png}
+
+
+\column{6cm}
+\begin{itemize}
+\item From Thomas Roca. 2010. ``Corruption Perceptions: The Trap of Democratization''
+\item Quatratic fits OK, but I wish I had some function with a sharper peak.
+\end{itemize}
+\end{columns}%{}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Transformations that Don't Turn}
+
+
+\lyxframeend{}\lyxframe{Log, Square Root, Reciprocal}
+\begin{itemize}
+\item Log on the right
+\end{itemize}
+\begin{equation}
+y_{i}=b_{0}+b_{1}log(x_{i})+e_{i}\label{eq:13}
+\end{equation}
+
+\begin{itemize}
+\item Square root on the right
+\end{itemize}
+\begin{equation}
+y_{i}=b_{0}+b_{1}\sqrt{x_{i}}+e_{i}\label{eq:13-1}
+\end{equation}
+
+\begin{itemize}
+\item Reciprocal
+\end{itemize}
+\begin{equation}
+y_{i}=b_{0}+b_{1}\frac{1}{x_{i}}+e_{i}\label{eq: reciprocal}
+\end{equation}
+
+\begin{itemize}
+\item In either case, we just calculate a new variable,
+
+
+\begin{tabular}{|c|c|c|}
+\hline 
+xlog = log(x) &
+xsqrt = sqrt(x) &
+xrec = 1/x\tabularnewline
+\hline 
+\end{tabular}
+
+\item And fit a regression:
+
+
+\begin{tabular}{|c|c|c|}
+\hline 
+lm(y \textasciitilde{} xlog)\code{} &
+lm(y \textasciitilde{} xsqrt)\code{} &
+lm(y \textasciitilde{} xrec)\tabularnewline
+\hline 
+\end{tabular}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Why These, Not Quadratic?}
+\begin{columns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The Quadratic goes up and down
+\item These are \emph{monotonic }transformations
+\item log and sqrt are unbounded, reciprocal approaches a limit
+\end{itemize}
+
+\column{8cm}
+
+
+<<curves10,fig=T,include=F>>=
+curve(log(x), 0.1, 30, ylab = "", lty = 1, col = "black", ylim = c(-3, 7))
+curve(sqrt(x), 0.1, 30, lty = 2, col = "green", add = TRUE)
+curve(6 - 10/x, 0.1, 30, lty = 4, col = "orange", add = TRUE)
+legend("topleft", legend = c("log(x)", "sqrt(x)", "6 -10/x"), lty = c(1,2,4), col = c("black", "green","orange"))
+@
+
+
+\includegraphics[width=8cm]{plots/t-curves10}
+
+\end{columns}%{}
+
+\lyxframeend{}\section{Logging to make data ``more Normal''}
+
+
+\lyxframeend{}\lyxframe{Suppose Distribution of y Variable is ``clumpy'', ``skewed''}
+\begin{itemize}
+\item When data appears to ``clump'' in the low ranges, replacing $y$
+by $logy$ results in a regression that more closely fits the assumptions.
+\item log often applied to income or health data.
+\item Variations: 
+
+\begin{itemize}
+\item Use $log(\alpha+x)$ (Can assume $\alpha$ or estimate using tools
+in the R MASS package.)
+\item The Box-Cox transformation has log as a special case
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Examples: Infant Mortality }
+
+<<include=F>>=
+library(car)
+data(UN)
+UN <- na.omit(UN)
+UN <- UN[order(UN$gdp) ,]
+@
+
+<<infmort10,fig=T,echo=F,include=F, height=5, width=10>>=
+par(mfrow=c(1,2))
+hist(UN$infant.mortality, breaks = 20, xlab = "Data from John Fox's car package", main = "Infant Mortality")
+hist(log(UN$infant.mortality), breaks = 20, xlab = "natural logarithm", main = "Logged Infant Mortality")
+@
+
+\includegraphics[width=11cm]{plots/t-infmort10}
+
+IMHO: not normal, certainly more symmetric
+
+
+\lyxframeend{}\lyxframe{Scatter Still Bad, however}
+
+<<UN01,fig=T,echo=F,include=F, height=5, width=10>>=
+UN$loggdp <- log(UN$gdp)
+UN$infmortlog <- log(UN$infant.mortality)
+par(mfrow=c(1,2))
+plot(infant.mortality ~ gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="Unlogged Data")
+plot(infmortlog ~ gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="log of Infant Mortality (per 1000 births)", main="Logged Infant Mortality")
+@
+
+\includegraphics[width=12cm]{plots/t-UN01}
+
+
+\lyxframeend{}\lyxframe{Look at the GDP variable}
+
+<<gdp10,fig=T,echo=F,include=F, height=5, width=10>>=
+par(mfrow=c(1,2))
+hist(UN$gdp, breaks = 20, xlab = "Data from John Fox's car package", main = "GDP")
+hist(log(UN$gdp), breaks = 20, xlab = "natural logarithm", main = "GDP logged")
+@
+
+\includegraphics[width=10cm]{plots/t-gdp10}
+
+
+\lyxframeend{}\lyxframe{Log both DV and IV, some Inexplicable Magic Happens}
+
+United Nations infant mortality data from United Nations (Package
+``car'' by John Fox)
+
+<<UN05a,fig=T,echo=F,include=F, height=6, width=6>>=
+plot(infant.mortality~gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="")
+@
+
+<<UN05b,fig=T,echo=F,include=F, height=6, width=6>>=
+UN$gdplog <- log(UN$gdp)
+UN$infmortlog <- log(UN$infant.mortality)
+plot(infmortlog~gdplog, data=UN, xlab="log of Gross Domestic Product (UN)", ylab="log of Infant Mortality (per 1000 births)", main="")
+@
+
+\begin{tabular}{|c|c|}
+\hline 
+\includegraphics[width=5cm]{plots/t-UN05a} &
+\includegraphics[width=5cm]{plots/t-UN05b}\tabularnewline
+\hline 
+\end{tabular}
+
+
+\lyxframeend{}\lyxframe{Recall laws of logarithms}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item $log(x^{k})=k\, log(x)$
+\item $log(x*z)=log(x)+log(z)$
+\item $log(x/z)=log(x)-log(z)$
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item The log and exp are inverse functions: each ``reverses'' the effect
+of the other.
+\item $log(exp(x))=x$ 
+\item $exp(log(x))=x$
+\end{itemize}
+\end{columns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Can Fit with OLS}
+\begin{itemize}
+\item Step 1: We need to Log y (Recall the distribution is not compatible
+with regression unless we do)
+\item Step 2: In the Scatter, it appears as though $x$ has a nonlinear
+effect
+
+
+\begin{equation}
+ylog_{i}=b_{0}+b_{1}xlog+\varepsilon
+\end{equation}
+
+
+\item It appears that the pleasant scatter of $ylog$ on $xlog$ is just
+a happy coincidence of all of this.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Can Fit with OLS}
+\begin{itemize}
+\item I suggest
+
+
+<<eval=F, include=T>>=
+dat$ylog <- log(dat$y)
+m1 <- lm(ylog ~ log(x), data = dat)
+@
+
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Application}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+<<UN10,fig=T,include=F,echo=F>>=
+logmod <- lm(infmortlog~gdplog, data=UN)
+gdpseq <- plotSeq(UN$gdp, length.out=40)
+newdf <- data.frame(gdp=gdpseq, gdplog=log(gdpseq))
+newdf$logpredy <- predict(logmod, newdata=newdf)
+plotSlopes(logmod, plotx = "gdplog", interval = "confidence", xlab = "log of Gross Domestic Product (UN)", ylab = "log of Infant Mortality (per 1000 births)", ylim = c(0, 9))
+@
+
+
+\includegraphics[width=6cm]{plots/t-UN10}
+
+
+\column{6cm}
+
+
+<<UN10a, echo=F, include=F, results=tex>>=
+outreg(logmod, tight=F)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-UN10a}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{There's one Unsolved Problem (Embarrassing)}
+\begin{itemize}
+\item The predicted values are on the scale of ``log $y$''.
+\item People often want to ``re-transform'' them to the $y$ scale.
+\item Until 2014, I was teaching people ``Its OK to anti-log $\widehat{ylog}$''.
+However...
+\item In 2014, I learned that's wrong, 
+\item 'Back-transforming' onto the y scale is conceptually difficult, goes
+beyond scope of this class.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Hence, think of ylog as your actual variable}
+\begin{itemize}
+\item Call the DV ylog and don't try to talk about scores on the y scale
+at all
+\item If you insist on back-transforming, go read this:
+
+
+Naihua Duan. (1983). ``Smearing Estimate: A Nonparametric Retransformation
+Method,''\emph{ Journal of the American Statistical Association},
+78 (3838): 605-610.
+
+\item Related commentary on many websites: 
+
+
+\url{http://healthcare-economist.com/2010/11/16/duans-smearing-estimator}
+
+\end{itemize}
+
+\lyxframeend{}\section{Fitting Models with Squares (or other powers)}
+
+
+\lyxframeend{}\lyxframe{Why so much stress about squares?}
+\begin{itemize}
+\item When we use $\mathrm{log\mathit{(x)}}$, or $sqrt(x)$, or $1/x$
+as a predictor, we just transform and go.
+\item If we want to add $x^{2}$ as well as $x$, then we have 2 ``collinear
+columns'' and there are some special concerns 
+
+\begin{itemize}
+\item and various suggestions (good and bad)
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\subsection{Ways to Estimate}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Ways to fit quadratic Regressions}
+
+Work through my website: http://pj.freefaculty.org/R/WorkingExamples/regression-quadratic-1.R.
+
+Here's some fake data:
+
+<<fake01>>=
+STDE = 400; b0 = 3; b1 = .2; b2 = -0.075
+x <- runif(400, 0, 100)
+x <- x[order(x)]
+dat <- data.frame(x)
+dat$xsq <- x*x
+dat$y <- b0 + b1 * dat$x + b2 * dat$xsq + rnorm(400, m=0, s = STDE)
+rm(x)
+xcorr <- cor(dat$x, dat$xsq)
+@
+
+<<fake10,fig=T, include=F>>=
+plot(y ~ x, data = dat)
+@
+
+\includegraphics[width=8cm]{plots/t-fake10}
+
+In the olden days of SAS, we'd manually create a new variable ``xsquare''. 
+
+<<include=T,eval=F>>=
+dat$xsq <- dat$x^2
+m1 <- lm(y ~ x + xsq, data = dat)
+@
+\begin{itemize}
+\item Disadvantage. Estimation routine does not know that x and xsq are
+``linked together'', some follow-up calculations won't come out
+correct (consider the drop1() function in R, for example).\end{itemize}
+\begin{enumerate}
+\item We fix that by asking R's formula-handler to create x-squared for
+us (R will remember the 2 variables are linked). 
+
+
+<<include=T,eval=F>>=
+m2a <- lm(y ~ x + I(x*x), data = dat)
+@
+
+
+I() ``protects'' the contents, makes sure they are treated as a
+mathematical expression. 
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Danger, Will Robinson}
+\begin{alertblock}
+{The Major Concerns}
+\begin{enumerate}
+\item Collinearity: x-squared is correlated with x. (Pearson R often .8
+or higher). That causes unstable parameter estimates, not much ``power''
+to detect effects.
+
+
+The Pearson R between $x$ and $xsq$ is \Sexpr{round(xcorr,3)}
+
+\item if x is a big number, say 1000, then squaring it will give 1,000,000.
+Computer ``rounding'' error kicks in when columns are on different
+scales. With modern matrix algebra for linear models, this is not
+such a bad problem as it used to be. But if we were doing Maximum
+Likelihood or Nonlinear Fitting, we would worry.
+\end{enumerate}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Fancier ways to create 2nd column.}
+\begin{enumerate}
+\item Fancy 1: Orthogonal polynomial. Generate 2 new columns for us
+
+
+<<include=T,eval=F>>=
+m1 <- lm(y ~ poly(x, 2), data = dat)
+@
+
+
+poly(x,2) creates 2 columns, but they are not correlated with each
+other. To see that, run
+
+
+<<include=T,eval=T>>=
+xpoly <- poly(dat$x, 2)
+head(xpoly)
+(pcorr <- cor(xpoly[, 1], xpoly[ ,2]))
+@
+
+
+The poly() function essentially ``extracts'' the linear part--x--from
+the term representing x-squared. The two columns of xploy are orthogonal! 
+
+
+Compare the plots
+
+
+<<xpoly10,fig=T,include=F, echo=F, height=5, width=10>>=
+par(mfrow = c(1,2))
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and xsq")
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+plot(xpoly[ ,1], xpoly[ ,2], xlab = "Orthogonal column 1", ylab = "Orthogonal column 2", main = "Ortho Poly Columns")
+text(0, 0.10, label = paste("r = ", round(pcorr,3)))
+@
+
+
+\includegraphics[width=10cm]{plots/t-xpoly10}
+
+
+When we fit regressions with this variable, the estimates for the
+linear term (column 1) is stable. It is unaffected by the introduction
+of column 2. (Because it is ORTHOGONAL, silly)
+
+\item Fancy 2: Residual-centering of x (rockchalk::residualCenter()).
+
+
+This creates ``orthogonal'' variables (like orthog poly), but they
+are not scaled similarly
+\begin{enumerate}
+\item Fit $x^{2}=b_{0}+b_{1}x_{i}+\varepsilon_{i}$
+\item Get the residuals, they are the part of $x_{i}^{2}$ that is separate
+from $x_{i}$
+\item Run a regression
+
+
+$y=b_{0}+b_{1}x_{i}+b_{2}residual.from.previous+e_{i}$
+
+\end{enumerate}
+
+Compare the plots
+
+
+<<include=F>>=
+mmc <- lm(xsq ~ x, data = dat)
+dat$xrc <- resid(mmc)
+rccorr <- cor(dat$xrc, dat$x)
+@
+
+
+<<xpolyrc10,fig=T,include=F, echo=F, height=5, width=10>>=
+par(mfrow = c(1,2))
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and xsq")
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+plot(xrc ~ x, data = dat,  xlab = "x", ylab = "residual-from-x-squared", main = "Residual Centered Columns")
+text(40, 1500, label = paste("r = ", round(rccorr,3)))
+@
+
+
+\includegraphics[width=10cm]{plots/t-xpolyrc10}
+
+
+Note difference on numerical scale, could cause numerical rounding
+error, but residual centering reduces much of the imbalance
+
+\item Fancy 3: Mean-center x (rockchalk::meanCenter())
+
+
+Create a centered variable, $xc=x_{i}-\bar{x}$, then fit $y=b_{0}+b_{1}xc+b_{2}xc^{2}$
+<<include=T,eval=F>>=
+dat$xctr <- scale(dat$x, scale = FALSE) 
+m1 <- lm(y ~ xctr + I(xctr^2), data = dat)
+@
+
+
+Mean centering alters coefficients, but does not give predictor columns
+that are (strictly speaking) orthogonal.
+
+
+Compare the plots
+
+
+<<include=F>>=
+dat$xmc <- scale(dat$x, scale = F)
+dat$xmcsq <- dat$xmc * dat$xmc
+mccorr <- cor(dat$xmc, dat$xmcsq)
+@
+
+
+<<xmc20,fig=T,include=F, echo=F, height=5, width=10>>=
+par(mfrow = c(1,2))
+plot(xsq ~ x, data = dat, xlab = "x", ylab = "x squared", main = "x and xsq")
+text(20, 8500, label = paste("r = ", round(xcorr,3)))
+plot(xmcsq ~ xmc, data = dat,  xlab = "mean-centered x", ylab = "mean-centered x-square", main = "Mean Centered Columns")
+text(0, 2500, label = paste("r = ", round(mccorr,3)))
+@
+
+
+\includegraphics[width=10cm]{plots/t-xmc20}
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{What are you \emph{Suppposed} to do?}
+\begin{enumerate}
+\item The Best thing, orthogonal polynomial, is also most difficult to understand
+(math!)
+\item The ``easiest'' approach is mean-centering. However, it is useless,
+deceptive
+\item Residual centering is easier to understand, creates orthogonal columns,
+and so is mostly as good as orthogonal polynomial. It is not \emph{as
+good} because it does not give back variables on the same scale.
+\end{enumerate}
+However
+
+None of these change the predictive relationship we are estimating,
+so, actually, they are all the same (as we will see)
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Where is the difference among these?}
+\begin{itemize}
+\item Mean centering alters both terms. It Uses 
+
+\begin{itemize}
+\item centered $X$ and 
+\item (centered-$X$)-squared. 
+\end{itemize}
+\item Residual Centering uses $X$ (untransformed) and an orthogonal transformation
+representing the squared-effect.
+\item Orthogonal Polynomial columns are proportional to the Residual Centered
+columns, but they are scaled onto identical ranges. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Ortho Poly Equals Residual Centering (mostly)}
+
+<<weird, fig=T, include=F>>=
+plot(xpoly[ ,2] ~ dat$xrc, xlab = "Residual-centered xsquare term", ylab = "Ortho Poly 2nd term")
+@
+
+\includegraphics[width=8cm]{plots/t-weird}
+
+
+\lyxframeend{}\subsection{Mean-Centering Controversy}
+
+
+\lyxframeend{}\lyxframe{CCWA recommend Centering Data}
+\begin{itemize}
+\item Cohen, et al 2002 p. 204 ``Centering also eliminates the extreme
+multicollinearity associated with using powers of predictors in a
+single equation. We therefore strongly recommend the use and reporting
+of centered polynomial equations.''
+\item This claim is technically false.
+
+
+Echambadi, R., \& Hess, J. D. (2007). Mean-Centering Does Not Alleviate
+Collinearity Problems in Moderated Multiple Regression Models. \emph{Marketing
+Science}, 26(3), 438-445.
+
+\item Actually, as we shall see, none of these models ``solve'' multicollinearity
+in any real sense. They just alter our perception of it.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Your Intuition Should Have Told You}
+\begin{itemize}
+\item Why? It is a simple re-scaling of a predictor! 
+
+\begin{itemize}
+\item $xc_{i}=x_{i}-\bar{x}$, the mean of $xc_{i}$ is $0$. How could
+this
+\end{itemize}
+
+\begin{equation}
+y_{i}=b_{0}+b_{1}xc_{i}+b_{2}xc_{i}^{2}+\varepsilon_{i}
+\end{equation}
+
+
+
+be meaningfully different from this:
+
+\end{itemize}
+\begin{equation}
+y_{i}=b_{0}+b_{1}x_{i}+b_{2}x_{i}^{2}
+\end{equation}
+
+
+They aren't different, the algebra is worked out in the \emph{rockchalk}
+vignette.
+\begin{itemize}
+\item But it creates the deception of help! That re-positions the $y$ axis
+to $\bar{x}$.
+\item There is a deeper lesson about multicollinearity in all of this.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{Estimation: without x-squared}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+Fit a ``mis-specified'' linear equation (ignoring the squared component).
+
+
+<<poly05a, include=F, echo=F,results=tex>>=
+library(rockchalk)
+mod <- lm(y~x, data = dat)
+outreg(mod, tight=F)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-poly05a}
+
+
+Hooray! Effect of x is statistically significant(ly different from
+0)
+
+
+\column{6cm}
+
+
+<<poly05, include=F, fig=T, echo=F, height=6, width=6>>=
+fakeeqn <- expression(paste(y[i]== 3 + 0.2*x[i] - 0.075*x[i]^2 + e[i]))
+plot(y ~ x, data = dat, xlab="x", ylab="y", main=fakeeqn)
+abline(mod, col="red", lwd=3, lty=2)
+x <- dat$x
+curve(3 + 0.20 * x - 0.075 * x*x, add=T, lty=1, col="black", lwd=2)
+legend("bottomleft", legend=c("OLS Linear","True Nonlinear Curve"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-poly05}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Estimation: with x-squared}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+<<poly10, include=F, fig=T, echo=F, height=6, width=6>>=
+modpoly <- lm(y ~ x + xsq, data = dat)
+plot(y ~ x, data = dat, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+xrange <- range(x)
+xpred <- seq(xrange[1], xrange[2], length.out=50)
+ypred <- predict(modpoly, newdata=data.frame(x=xpred, xsq=xpred*xpred))
+lines(xpred, ypred, col="red", lwd=3, lty=2)
+curve(3 + .2 * x - .075 * x*x, add=T, lty=1, col="black", lwd=2)
+legend("bottomleft", legend=c("OLS x xsq","True Nonlinear Curve"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-poly10}
+
+
+\column{6cm}
+
+
+<<poly10a, include=F, echo=F,results=tex>>=
+library(rockchalk)
+outreg(modpoly, tight=F)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-poly10a}
+
+Bone Crushing Defeat. $x$ is ``not significant'' anymore. 
+
+Cohen et al claim this results from 'nonessential multicollinearity'
+between $x$ and $x^{2}$.
+
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Illustration with Mean Centered x}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+<<poly20, include=F, fig=T, echo=F, height=6, width=6>>=
+xc <- scale(dat$x, center=T, scale=F)
+xcsquare <- xc*xc
+modpoly2 <- lm(y ~ xc + xcsquare, data = dat)
+plot(y ~ x, data = dat, xlab = "x", ylab="y", main=fakeeqn)
+ypredc <- predict(modpoly2)
+lines(mean(x)+xc, ypredc, col="red", lwd=3, lty=2)
+curve(3 + 0.20 * x - .075 * x * x, add=T, lty=1, col="black", lwd=2)
+legend("bottomleft", legend=c("OLS Centered x x-sq","True Nonlinear Curve"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,2)) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-poly20}
+
+
+\column{6cm}
+
+
+<<poly20a, include=F, echo=F,results=tex>>=
+library(rockchalk)
+outreg(modpoly2, tight=F)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-poly20a}
+
+Oh, Yeah! Effect of $x$ is ``significant'' again
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Visualize Mean-Centering}
+
+The regression reports on $b_{0}$ and $b_{1}$ are ``snapshots'',
+estimates based on one particular point on the curve.
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Consider the ``true'' relationship:
+\end{itemize}
+
+\begin{equation}
+3+0.20x_{i}-0.075x_{i}^{2}
+\end{equation}
+
+\begin{itemize}
+\item Put the $y-axis$ where x = 0
+\item Linear effect is small there, right?
+\end{itemize}
+
+\column{7cm}
+
+
+<<poly30, include=F, fig=T, echo=F, height=5, width=6>>=
+plot(x = 0:100, y= seq(-7000, 20, length.out = 101), ylim = c(-7000, 500), type = "n")
+curve(3 + 0.20*x - .75*x*x, from = 0, to = 95, add = T, ylim =c(-7000,20), lty=1, col="black", lwd=2)
+lines(x=c(0,20), y = c(0,0), col = "red", lwd = 2)
+text(6, 80, pos=4, label = "tangent line where x = 0; the \"linear effect\" of x is small")
+@
+
+
+\includegraphics[width=6cm]{plots/t-poly30}
+
+\end{topcolumns}%{}
+\begin{itemize}
+\item The linear effect is the tangent line's slope, $b_{1}+2b_{2}x_{i}$.
+Plug in $x_{i}=0,$we see the slope is $b_{1}$, a very small number.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Visualize Mean-Centering}
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Put the $y-axis$ where x = 50
+\item Note the tangent line's slope is ``very steep'' there. That will
+lead to a large estimate of $b_{1}$.
+\item If 50 happens to be the observed mean, then mean-centering amounts
+to moving the y axis to that position.
+\end{itemize}
+
+\column{7cm}
+
+
+<<poly40, include=F, fig=T, echo=F, height=6, width=6>>=
+plot(x = 0:100, y= seq(-7000, 20, length.out = 101), ylim = c(-7000, 500), type = "n", axes = F)
+axis(1)
+axis(2, pos=50)
+curve(3 + 0.20*x - .75*x*x, from = 0, to = 95, add = T, ylim =c(-7000,20), lty=1, col="black", lwd=2)
+lines(x=c(50,66.6), y = c(-1859,-2973), col = "red", lwd = 2)
+text(60, -2400, pos=4, label = "Note the tangent line is steeper, \n       hence the linear \n              effect is greater")
+@
+
+
+\includegraphics[width=6cm]{plots/t-poly40}
+
+\end{columns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The Predicted values of the non-centered and centered models are identical}
+
+<<ex99, include=F, fig=T, echo=F, height=6, width=6>>=
+plot(predict(modpoly), predict(modpoly2), xlab="Predictions from Non Centered Data",ylab="Predictions from Centered Data")
+@
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-ex99}
+
+
+You Can't Get More Identical Than That!
+
+
+\column{6cm}
+\begin{itemize}
+\item The rockchalk package was developed mainly because our class was in
+a constant stew of confusion about mean centering (which some faculty
+recommended), residual-centering (which others recommended), and no-centering
+(which I recommended). 
+\item There are worked examples included with the package (look in the install
+folder) and there is a long discussion of it in the vignette.
+\end{itemize}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Tempted to Mislead the Reader By Shifting the Y axis?}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+Remember this picture?
+
+
+\includegraphics[width=5cm]{plots/t-ex70}
+
+
+\column{6cm}
+\begin{itemize}
+\item By replacing $x$ with $x-"any\, constant\, you\, name"$, we are
+implicitly re-positioning the $y-axis$ to select one of these colored
+lines!
+\item Maybe $x-mean(x)$ repositions us so that the regression summary seems
+``better'' (more stars!)
+\item But it is really the exact same regression.
+\end{itemize}
+\end{columns}%{}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Conclusion: Centering Not Helpful, Not Harmful}
+\begin{itemize}
+\item Although centering variables is eagerly recommended by many books,
+it is not actually having a substantial effect on the quality of the
+fitted model. The Predicted values are the same.
+\item Note that $\hat{b}_{2}$ , the $R^{2}$ and the $RMSE$ are unchanged
+by centering.
+\item In the olden days, when the matrix $(X^{T}X)$ was inverted to calculate
+$\hat{b}$, mean centering may have helped with the problem of floating
+point approximation on digital computers. Today, regression estimates
+are calculated with orthogonal matrix decomposition methods (either
+QR or SVD), and thus we don't notice much benefit by mean-centering.
+(Other fitting methods may not use those more sophisticated algorithms,
+thus we might need to be more cautious).
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\subsection{Worked Example}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Corruption Example}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Recall Roca's plot \& regression
+\item ``Quality of Government'' data set
+
+
+{\footnotesize{}Teorell, Jan, Nicholas Charron, Marcus Samanni, Sören
+Holmberg \& Bo Rothstein. 2011. The Quality of Government Dataset,
+version 6Apr11. University of Gothenburg: The Quality of Government
+Institute, \url{http://www.qog.pol.gu.se}}{\footnotesize \par}
+
+\item Scatter TI Corruption Perception Index against the Freedom House political
+rights scale
+\end{itemize}
+
+\column{6cm}
+
+
+<<cpi10, fig=T, echo=F, include=F, width=6, height=6>>=
+library(foreign)
+dat <- read.dta("/home/pauljohn/ps/SVN-guides/stat/DataSets/QoG/QoG_c_s_v6Apr11.dta")
+vars <- c("p_polity2", "fh_ipolity2", "fh_pr", "gir_gii", 
+"kk_gg", "qs_impar", "ti_cpi", "wbgi_cce", "ht_regtype", 
+"hf_efiscore", "qs_proff", "bti_mes", "bti_ep", "bti_wr")
+dat <- dat[ , vars]
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+@
+
+
+\includegraphics[width=6cm]{plots/t-cpi10}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Corruption Example}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item The linear and quadratic fits
+\end{itemize}
+
+<<cpi20, include=T, eval=T>>=
+m0 <- lm(ti_cpi ~ fh_pr, data=dat)
+m2b <- lm(ti_cpi ~ poly(fh_pr, 2, raw = TRUE), data=dat) 
+newdf <- data.frame(fh_pr = plotSeq(dat$fh_pr, length.out=25)) 
+m2bpred <- predict(m2b, newdata =newdf)
+@
+
+
+\column{6cm}
+
+
+<<cpi21, fig=T, echo=F, include=F, width=6, height=6>>=
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+abline(m0, lwd = 2)
+lines(newdf$fh_pr, m2bpred, lty=1, lwd=5, col="red")
+legend("topright", legend=c("m0: linear", "m2b: fh_sq"), lty=c(1,1),lwd=c(2,5),col=c("black","red"))
+@
+
+
+\includegraphics[width=6cm]{plots/t-cpi21}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Equivalent Predictions From all Fits To The Corruption Example}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Insert mean-centered columns in the newdf object
+\end{itemize}
+
+\def\Sweavesize{\tiny}
+
+
+<<include=T, eval=T>>=
+dat$fh_pr_mc <- drop(scale(dat$fh_pr, scale = FALSE))
+newdf$fh_pr_mc <- plotSeq(dat$fh_pr_mc, 25)
+@
+
+
+\def\Sweavesize{\tiny}
+
+
+<<cpi50, include=T, eval=T>>=
+m2 <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+m2pred <- predict(m2, newdata = newdf)
+m3 <- lm(ti_cpi ~ poly(fh_pr, 2), data=dat)
+m3pred <- predict(m3, newdata=newdf)
+m4 <- lm(ti_cpi ~ fh_pr_mc + I(fh_pr_mc^2), data=dat)
+m4pred <- predict(m4, newdata=newdf)                                         
+@
+
+
+\column{6cm}
+
+
+<<cpi51, fig=T, echo=F, include=F, width=6, height=6>>=
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+lines(newdf$fh_pr, m2pred, lty=1, lwd=12, col="green")
+lines(newdf$fh_pr, m3pred, lty=3, lwd=15, col="red") 
+lines(newdf$fh_pr, m4pred, lty=5, lwd=4, col="yellow") 
+legend("topright", title = "quadratic", legend=c("m2:squared","m3:poly(fh,2)","m4:mean-centered"), lty = c(1,3,5), lwd = c(12,15,4), col=c("green", "red","yellow"))
+@
+
+
+\includegraphics[width=6cm]{plots/t-cpi51}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\section{Please, Try To Have a Theory!}
+
+
+\lyxframeend{}\lyxframe{Theory has to guide you on choosing a formula.}
+\begin{itemize}
+\item The data will seldom give you a good reason to pick one model over
+another.
+\item MUST NOT compare $R^{2}$ across models that are fitted to different
+transformed values of $y$
+\item If the left hand side of the expression is the same, then $Adjusted\, R^{2}$can
+serve as a guide for picking the best fitting model.
+\item In more advanced models, information theoretic measures like AIC and
+BIC might be used.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Interpretation of results is the most important part.}
+\begin{itemize}
+\item Consider the effort you make to interpret an OLS model. ``Each unit
+increase in $x$ causes a $\hat{b_{1}}$ increase in the expected
+value of $y$. 
+\item You need to make a similar effort to interpret a nonlinear model,
+remembering that each one has unique mathematical properties.
+\item Usually these are things to look for:
+
+\begin{enumerate}
+\item Can you understand the slope of the line representing the expected
+value?
+\item Does the function have a maximum value that is substantively important?
+\item Are there any ``special'' values of the parameters that you need
+to watch out for and give special interpretation.
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\section{Box-Cox Transformation}
+
+
+\lyxframeend{}\lyxframe{B-C: Log transform on steriods}
+\begin{itemize}
+\item The transformation $log(y)$ might make a variable that is more symmetric
+\item But is it as close to symmetry as possible?
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Conditional Functional Relationship}
+
+Box \& Cox proposed a flexible transformation: generates a ``family''
+of possible models. 
+\begin{topcolumns}%{}
+
+
+
+
+\column{8cm}
+\begin{itemize}
+\item The transformation depends on a parameter $\lambda$, which can take
+on values in a continuum. 
+\end{itemize}
+
+\[
+\begin{array}{ccccc}
+\, & \, & \, & \textrm{\ensuremath{\frac{y^{\lambda}-1}{\lambda}\,\,\,\,\,}} & \textrm{\ensuremath{\,\,\,\,\,\, if\,\,\lambda\neq0}}\\
+y^{(\lambda)} & = & \, & \, & \,\\
+\, & \, & \, & log_{e}(y)\,\,\,\, & \,\,\,\,\,\,\, if\,\,\textrm{\ensuremath{\lambda=0}}
+\end{array}
+\]
+
+\begin{itemize}
+\item Estimate $\lambda$ iteratively. Guess $\hat{\lambda}$, transform,
+fit. Improve $\hat{\lambda},$ re-fit the model. Continue... 
+\end{itemize}
+
+\column{3.5cm}
+
+
+Check particular values of $\lambda$
+
+
+\begin{tabular}{|c|c|}
+\hline 
+$\lambda$ &
+transformation\tabularnewline
+\hline 
+\hline 
+0 &
+$ln(y)$\tabularnewline
+\hline 
+1 &
+$y-1$\tabularnewline
+\hline 
+$\frac{1}{2}$ &
+$2(\sqrt{y}-1)$\tabularnewline
+\hline 
+\end{tabular}
+
+
+I have a separate handout on these models called BoxCoxRegression.
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\section{Not Intrinsically Linear models}
+
+
+\lyxframeend{}\lyxframe{Take a Simple Example with logs}
+
+One version of the double-log model goes like this. 
+\begin{itemize}
+\item theory: $y_{i}=x1_{i}^{b_{1}}exp(b_{0}\varepsilon_{i})$
+\item log both sides produces a model that OLS can estimate: $ylog_{i}=b_{0}+b_{1}x1log_{i}+\varepsilon_{i}$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Suppose ``Nature'' uses a complicated formula.}
+\begin{itemize}
+\item You hypothesize some wild theoretical formula as your data generating
+process 
+\[
+y_{i}=14\cdot x1_{i}\cdot e^{5.0+3.7\times log(x2_{i})+\varepsilon_{i}}=14x1_{i}exp(5.0+3.7log(x2_{i})+\varepsilon_{i})
+\]
+\\
+$E(\varepsilon_{i})=0$, and $e$ represents ``Euler's constant'',
+$e^{x}=exp(x)$ 
+\item That's too specific. Leave some parameters to estimate: 
+\end{itemize}
+\[
+y_{i}=b_{0}\cdot x1_{i}\cdot e^{b_{1}+b_{2}\times log(x2_{i})+\varepsilon_{i}}
+\]
+
+\begin{itemize}
+\item Look for an estimator, either ``nonlinear least squares'' or ``maximum
+likelihood''. 
+\item Usually, you can't prove the estimators are unbiased!
+\item They may be
+
+\begin{itemize}
+\item consistent
+\item efficient
+\item asymptotically normal 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Most Understandable alternative: Nonlinear least squares}
+\begin{itemize}
+\item Nonlinear least squares (NLS) . Basically, you write down a formula,
+assume the error is additive, and go:
+\begin{equation}
+y_{i}=f(X_{i},b)+e_{i}\label{eq:16}
+\end{equation}
+
+\item The estimator ``guesses'' parameters $\hat{b}$ and from there is
+calculates predictions
+\begin{equation}
+\hat{y}_{i}=f(X_{i},\hat{b})
+\end{equation}
+
+\item Fit by making the sum of squared errors the smallest:
+\begin{equation}
+SS(\hat{b})=\sum_{i=1}^{N}[y_{i}-f(X_{i},\hat{b})]^{2}\label{eq:17}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Use nls from R base on the UN problem}
+\begin{itemize}
+\item Here's my theory
+\begin{equation}
+inf.mortality_{i}=b_{0}+b_{1}x_{i}^{b_{2}}+e_{i}
+\end{equation}
+
+\item Recall that $x^{-b_{2}}$ equals $1/x^{b_{2}}$, so if $\hat{b}_{2}$
+is negative, then this model is 
+\[
+\widehat{inf.mortality_{i}}=\hat{b}_{0}+\hat{b}_{1}\cdot(\frac{1}{x_{i}^{|\hat{b}2|}})
+\]
+
+\item And that's really what I think. So I want a reciprocal model, but
+it is written down more generally.
+\item nls: adjust $\hat{b}_{0}$, $\hat{b}_{1}$, and $\hat{b}_{2}$ to
+make the squared prediction error as small as possible.
+\item Fitted model indicates that $\hat{b}_{2}=-0.12$ (approximately -$1/8$)
+giving a very gradual curvature.
+\end{itemize}
+\[
+\widehat{inf.mortality_{i}}=-90.23+336.6\cdot(\frac{1}{x_{i}^{\frac{1}{8}}})
+\]
+
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{NLS Estimation Commands}
+
+<<UN70a,fig=T,include=F,echo=T>>=
+nmod2 <- nls(infant.mortality ~ A + B*(gdp^C), data=UN, start=list(A=10,B=21,C=-1/10), control=nls.control(warnOnly=TRUE))
+summary(nmod2)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-UN70a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot the Predicted Values from NLS}
+
+<<UN71,fig=T,include=F,echo=T>>=
+newdf <- data.frame(gdp = plotSeq(UN$gdp, 100))
+newdf$p2nls <- predict(nmod2, newdata = newdf)
+plot(infant.mortality~gdp, data = UN, xlab = "Gross Domestic Product (UN)", ylab = "Infant Mortality (per 1000 births)", main = "", type = "n")
+points(UN$gdp, UN$infant.mortality, col = gray(.7))
+lines(newdf$gdp, newdf$p2nls)
+@
+
+<<>>=
+newdf$gdplog <- log(newdf$gdp)
+@
+
+\includegraphics[width=11cm]{plots/t-UN71}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Throw a loess on top}
+
+<<UN77,include=F,fig=T>>=
+lomod <- loess(infant.mortality~gdp, data=UN, family="symmetric") 
+plot(lomod) 
+predlo <- predict(lomod) 
+plot(infant.mortality~gdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="", type="n") 
+points(UN$gdp, UN$infant.mortality, col=gray(.7)) 
+lines(newdf$gdp, newdf$p2nls)
+lines(UN$gdp, predlo, col="green",lwd=2)
+legend("topright", legend = c("nls", "loess (robust)"), lwd = c(1,2), col = c("black","green"))
+@
+
+\includegraphics[width=11cm]{plots/t-UN77}
+
+\end{frame}
+
+\include{3_home_pauljohn_SVN_SVN-guides_stat_Regression-___rview_Nonlinear-1-Overview-lecture-problems}
+\end{document}

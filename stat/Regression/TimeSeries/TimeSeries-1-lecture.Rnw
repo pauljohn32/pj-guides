@@ -1,0 +1,678 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/TrueMounted/ps/SVN-guides/stat/Regression/TimeSeries//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Autocorrelation]{Auto Correlation in Regression }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2012]{2012}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+
+\lyxframeend{}\lyxframe{Overview}
+
+\tableofcontents{}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Time Series Is Its Own Field of Statistics}
+\begin{itemize}
+\item IF you want to study time series data, there is a separate series
+of courses you should take
+
+\begin{itemize}
+\item Econometrics, dynamics, panel-data analysis, longitudinal regression
+analysis
+\item Purpose of this lecture is to motivate main questions for those additional
+courses
+\end{itemize}
+\item Notational changes
+\item Refer to ``rows of data'' by subscript $t$ instead of subscript
+$i$
+
+\begin{itemize}
+\item some lingering effect of errors at $t-1$, $t-2$, and so forth
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Autocorrelation in a Nutshell}
+\begin{itemize}
+\item Suppose rows and columns are time points. OLS regression assumes 
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{e}^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}
+\end{array}\right]\label{eq:Vare_homo-1}
+\end{equation}
+
+\item Note 2 critical simplifications are used
+
+\begin{enumerate}
+\item All non-diagonal elements are $0$
+\item All diagonal elements are equal to each other
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Autocorrelation in a Nutshell (2)}
+\begin{itemize}
+\item Heteroskedasticity throws away simplification \#2: allows differing
+$\sigma_{i}^{2}$ values,
+\end{itemize}
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+
+but heteroskedasticity still leaves $0$'s on all off-diagonal elements
+
+
+\lyxframeend{}\lyxframe{Autocorrelation in a Nutshell (3)}
+\begin{itemize}
+\item Autocorrelated errors: there are correlations ``across time''
+\end{itemize}
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & \sigma_{12} & \sigma_{13} & \ldots & \sigma_{1N}\\
+\sigma_{21} & \sigma_{2}^{2} & \sigma_{23} & \dots & \sigma_{2N}\\
+\sigma_{31} & \sigma_{32} & \ddots & \cdots & \sigma_{3N}\\
+\vdots & \ddots & \ddots & \sigma_{N-1}^{2} & \vdots\\
+\sigma_{N1} & \sigma_{N2} & \ldots &  & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item $\sigma_{21}=Cov(e_{1},e_{2}),$ the covariance of the random error
+across observations on a unit
+\item $Var(e)$ is symmetric, because $\sigma_{21}=\sigma_{12}$
+\item But otherwise, it can be arbitrarily complicated
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Consequences of Ignoring Autocorrelated Errors}
+\begin{enumerate}
+\item OLS estimates of the b's are unbiased and consistent
+\item OLS gives the wrong (biased) estimates of the standard errors of the
+b's. Thus the t-tests are bogus. The t-values are bigger than they
+should be, and you are likely to falsely reject the null hypothesis.
+\item OLS is inefficient. There is an alternative estimation procedure (GLS)
+that gives estimates that are also unbiased and consistent, but also
+have lower variance.
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Spatial Autocorrelation}
+\begin{itemize}
+\item Autocorrelation is not just for ``time series'' anymore. 
+\item Work on spatial autocorrelation has intensified.
+
+\begin{itemize}
+\item Refer to data points in a grid or a map
+\item Hypothesize that disturbances at one cell may ``disperse'' themselves
+across other cells.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Time Series Analysis}
+
+
+\lyxframeend{}\lyxframe{Consider one unit over time. }
+\begin{itemize}
+\item One time series, $x_{t}$ affects $y_{t}$, for $t=1,2,3,...T$
+\item The simplest model, the one with no complications, is fit with OLS
+\end{itemize}
+\begin{equation}
+y_{t}=a+b\cdot x_{t}+e_{t}
+\end{equation}
+
+\begin{itemize}
+\item That's just one of the many possibilities, of course. Consider big
+horrible looking equation like
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Time Series as a Field of Study}
+
+\begin{eqnarray*}
+y_{t} & = & \rho_{1}y_{t-1}+\ldots+\rho_{p}y_{t-p}+a+b_{0}x_{t}+\ldots+b_{m}x_{t-m}+\theta_{0}e_{t}+\theta_{1}e_{t-1}\ldots+\theta_{t-q}e_{t-q}
+\end{eqnarray*}
+
+\begin{itemize}
+\item Lagged dependent variables, $y_{t-1}$, $y_{t-2}$, $\ldots$: ``autoregression
+models''
+\item Lagged exogenous variables, $x_{t-1}$, $x_{t-2}$, $\ldots$: ``distributed
+lag models''
+\item Lagged error terms, $e_{t-1}$, $e_{t-2}$, $\ldots$: ``autocorrelated
+error models'' and ``Autoregressive Conditional Heteroskedasticity''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Cross Sectional Time Series}
+\begin{itemize}
+\item Original Time Series studies focused on 1 data series, in isolation
+(psychologists would say ``idiographic'')
+\item Collect several time series. What do you have? Names for same kind
+of problem:
+
+\begin{itemize}
+\item Pooled Time Series 
+\item Cross Sectional Time Series 
+\item Panel Data Analysis 
+\item Repeated Measures
+\item Longitudinal Analysis
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Autocorrelated Error: The Love Story Called AR(1)}
+
+
+\lyxframeend{}\subsection{Define AR(1)}
+
+
+\lyxframeend{}\lyxframe{Focus on $e_{t}$: Autocorrelation = ``serially correlated errors''}
+\begin{itemize}
+\item Suppose we don't have lagged $y$'s or $x$'s on the right hand side.
+\item Do allow lagged errors.
+\end{itemize}
+\begin{equation}
+y_{t}=b_{0}+b_{1}x_{t}+e_{t}\label{eq:OLS}
+\end{equation}
+
+\begin{itemize}
+\item We consider only the distortion caused by lagged error terms, which
+are often called ``disturbances''. 
+\item This is not the same as saying the X is correlated with its own previous
+values, or that Y is. This only concerns the lingering effects of
+past ``shocks''.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Add an Equation for the Autoregressive Error }
+\begin{itemize}
+\item AR(1), auto regression of order 1:
+\begin{equation}
+e_{t}=\rho e_{t-1}+u_{t}\label{eq:AR1}
+\end{equation}
+
+\item Error at time $t$ includes
+
+\begin{itemize}
+\item a portion $\rho$ of the previous (unmeasured) error, and
+\item a new random error, which ``nice''
+
+\begin{enumerate}
+\item $E[u_{t}]=0$ (unbiased)
+\item $E[u_{t}^{2}]=\sigma_{u}^{2}$ (homoskedastic) and not autocorrelated
+$E[u_{t},u_{s}]=0$
+\end{enumerate}
+\end{itemize}
+\item AR(2) would introduce 2 lagged errors, as in
+\end{itemize}
+\begin{equation}
+e_{t}=\rho_{1}e_{t-1}+\rho_{2}e_{t-2}+u_{t}
+\end{equation}
+
+
+
+\lyxframeend{}\subsection{Testing for Autocorrelation}
+
+
+\lyxframeend{}\lyxframe{The Durbin Watson Test for AR(1)}
+\begin{itemize}
+\item This is only for AR(1). 
+\item AND it is not correct when there are ``lagged y'' values on the
+right hand side.
+\item General rule of thumb: DW should be ``near 2'' in order to reject
+the possibility that serial correlation exists, which means you affirm
+the claim $\rho$=0.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{DW Interpretation}
+\begin{itemize}
+\item The theory is $y_{t}=b_{0}+b_{1}x_{t}+e_{t}$ and $e_{t}=\rho e_{t-1}+u_{t}$
+\item If $\rho=0,$ then this is just the ``regular old OLS model''. So
+the null hypothesis is $\rho=0$.
+\item But the DW statistic equals 2 if the null is true. 
+\item How close to 2 does it have to be? DW comes with 2 diagnostic limits,
+$d_{l}$ and $d_{u}$.
+\end{itemize}
+\begin{center}
+\includegraphics[width=10cm]{0_home_pauljohn_TrueMounted_ps_SVN-guides_stat_Regression_TimeSeries_dw1.pdf}
+\par\end{center}
+
+DW far from 2 (<$d_{l}$ or $>4d_{o}$) means that the null can be
+rejected. 
+
+DW very close to 2 ($d_{U}<DW<4-d_{U}$), null accepted
+
+If $d_{l}$ < DW < $d_{u}$ (or $4-d_{u}<DW<4-d_{l})$, then the test
+is inconclusive.
+
+\vspace{0.3cm}
+
+
+The indeterminacy is due to the possibility that autocorrelation in
+$x_{t}$ may be causing the apparent autocorrelation in $e_{t}$.
+
+
+\lyxframeend{}\section{If Autocorrelation, Then What? GLS!}
+
+
+\lyxframeend{}\lyxframe{FGLS: Feasible GLS}
+
+A Two Step Estimation Procedure
+\begin{enumerate}
+\item Theorize a correlation structure and ``work out'' an estimate of
+the error term's variance/covariance matrix.
+\item Use Generalized Least Squares to calculate estimates that best fit.
+\item Repeat the procedure. The GLS fit -> estimates of the error covariances
+-> new GLS estimates.
+\end{enumerate}
+
+\lyxframeend{}\subsection{GLS (In General)}
+
+
+\lyxframeend{}\lyxframe{Generalized Least Squares}
+\begin{itemize}
+\item Weighted Least Squares weights each error $(y_{t}-\hat{y}_{t})$ by
+$w_{t}$
+\begin{equation}
+S(\hat{b})=\sum_{t=1}^{T}W_{t}(y_{t}-\hat{y}_{t})^{2}=\sum_{t=1}^{T}(y_{t}-\hat{y}_{t})w_{t}^{2}(y_{t}-\hat{y}_{t})
+\end{equation}
+
+\item Think of that like this: Multiply all ``mix and match combinations'':
+\begin{equation}
+\begin{array}{cc}
+\\
+ & \begin{array}{ccccc}
+(y_{1}-\hat{y}_{1})( & y_{2}-\hat{y}_{2})( & y_{3}-\hat{y}_{3}) & \ldots & (y_{T}-\hat{y}_{T})\end{array}\\
+\begin{array}{c}
+(y_{1}-\hat{y}_{1})\\
+(y_{2}-\hat{y}_{2})\\
+(y_{3}-\hat{y}_{3})\\
+\vdots\\
+(y_{T}-\hat{y}_{T})
+\end{array} & \left[\begin{array}{ccccc}
+w_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & w_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+\vdots & 0 & 0 & w_{T-1}^{2} & 0\\
+0 & 0 & 0 & 0 & w_{T}^{2}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\item A sum with only $T$ terms--the $0$'s in the weight matrix
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Generalized Least Squares (cont.)}
+\begin{itemize}
+\item The Weight matrix for autocorrelated errors does not have all of those
+0's
+\item So the carry out the ``multiply and add'' exercise:
+\end{itemize}
+\begin{equation}
+\begin{array}{cc}
+ & \begin{array}{ccccc}
+(y_{1}-\hat{y}_{1})( & y_{2}-\hat{y}_{2})( & y_{3}-\hat{y}_{3}) & \ldots & (y_{T}-\hat{y}_{T})\end{array}\\
+\begin{array}{c}
+(y_{1}-\hat{y}_{1})\\
+(y_{2}-\hat{y}_{2})\\
+(y_{3}-\hat{y}_{3})\\
+\vdots\\
+(y_{T}-\hat{y}_{T})
+\end{array} & \left[\begin{array}{ccccc}
+w_{1}^{2} & w_{12} & w_{13} & \ldots & w_{1T}\\
+w_{21} & w_{2}^{2} & w_{23} & \ldots & w_{2T}\\
+w_{31} & w_{32} & \ddots & \cdots & w_{3T}\\
+\vdots & \vdots & \ddots & w_{T-1}^{2} & \vdots\\
+w_{T1} & w_{T2} & w_{T3} & \ldots & w_{T}^{2}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+
+Leads to a sum with $T\times T$ terms. 
+
+
+\lyxframeend{}\lyxframe{Generalized Least Squares (cont.)}
+\begin{itemize}
+\item Horrible, yes? The GLS Sum of Squares is a gigantic tangle if you
+write it all out
+\end{itemize}
+\begin{eqnarray}
+\mbox{row\,1: }(y_{1}-\hat{y}_{1})w_{1}^{2}(y_{1}-\hat{y}_{1})+(y_{1}-\hat{y}_{1})w_{12}(y_{2}-\hat{y}_{2})+(y_{1}-\hat{y}_{1})w_{13}(y_{3}-\hat{y}_{3})+\\
+\mbox{row\,2: \ensuremath{(y_{2}-\hat{y}_{2})w_{21}(y_{1}-\hat{y}_{1})+(y_{2}-\hat{y}_{2})w_{2}^{2}(y_{2}-\hat{y}_{2})+(y_{2}-\hat{y}_{2})w_{23}(y_{3}-\hat{y}_{3})+}}\nonumber \\
+\ldots\nonumber \\
+\mbox{row\,\ T: \ensuremath{(y_{T}-\hat{y}_{T})w_{T1}(y_{1}-\hat{y}_{1})+(y_{T}-\hat{y}_{T})w_{T2}(y_{2}-\hat{y}_{2})+\ldots+(y_{T}-\hat{y}_{T})w_{T}^{2}(y_{T}-\hat{y}_{T})}}\nonumber 
+\end{eqnarray}
+
+
+\begin{equation}
+=\sum_{t=1}^{T}\sum_{s=1}^{T}(y_{t}-\hat{y}_{t})w_{ts}(y_{s}-\hat{y}_{s})
+\end{equation}
+
+\begin{itemize}
+\item Use matrix algebra, this is a lot easier to write down.
+\begin{equation}
+(y-\hat{y})'\, W\,(y-\hat{y})
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Generalized Least Squares (cont.)}
+\begin{itemize}
+\item A big swirl of computations is involved in deriving the best fitting
+values of the coefficients.
+\item The solution looks like
+\begin{equation}
+\hat{b}=(X'WX)^{-1}X'Wy
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{And Then Iterate (Maybe)}
+\begin{itemize}
+\item An estimate of $\hat{b}$ begets a new estimate of $W$
+\item Then a new estimate of $W$ begets a new estimate of $\hat{b}$.
+\item Repeat until estimates of $\hat{b}$ converge.
+\end{itemize}
+
+\lyxframeend{}\subsection{Specialized Versions of the GLS Algorithm}
+
+
+\lyxframeend{}\lyxframe{Cochrane-Orcutt for AR(1)}
+
+The most famous special purpose GLS estimator is the Cochrane-Orcutt
+procedure for AR(1).
+\begin{description}
+\item [{Step~1:}] Get an estimate of $\rho.$ To do so, 
+\item [{a)}] estimate an OLS regression of $y_{i}$ on $x_{i}$ 
+\item [{b)}] call the residuals $\widehat{e}_{t}$ 
+\item [{c)}] estimate $\rho$ in this model:
+\[
+\widehat{e}_{t}=\rho*\widehat{e}_{t-1}+u_{t}
+\]
+ $u_{t}$ is a ``nice'' error term.
+\end{description}
+
+\lyxframeend{}\lyxframe{Cochrane-Orcutt (Step 2)}
+\begin{description}
+\item [{Step~2:}] Use $\hat{\rho}$ to create new weighted observed variables
+\begin{equation}
+y_{t}^{*}=y_{t}-\hat{\rho}y_{t-1}\mbox{\,\ and \ensuremath{x_{t}^{*}=x_{t}-\hat{\rho}x_{t-1}}}
+\end{equation}
+
+\end{description}
+Regress: $y_{t}^{*}$ on $x_{t}^{*}$. That provides an estimate of
+$\hat{b}_{1}$. 
+
+And it provides a new set of residuals, so we can repeat step 1, then
+step 2, and so forth.
+
+
+\lyxframeend{}\lyxframe{Why Calculate $y_{t}^{*}=y_{t}-\rho y_{t-1}$and $x_{t}^{*}=x_{t}-\hat{\rho}x_{t-1}$?}
+
+That's why Cochrane and Orcutt became famous.
+\begin{itemize}
+\item Restate the assumptions we have already made:
+\end{itemize}
+\[
+y_{t}=b_{0}+b_{1}x_{t}+e_{t}
+\]
+\[
+y_{t-1}=b_{0}+b_{1}x_{t-1}+e_{t-1}
+\]
+
+\begin{itemize}
+\item Multiply through by the unknown constant $\rho$:
+\end{itemize}
+\begin{equation}
+\rho y_{t-1}=\rho b_{0}+\rho b_{1}x_{t-1}+\rho e_{t-1}\label{ar1p}
+\end{equation}
+
+\begin{itemize}
+\item Subtract the third from the first:
+\begin{equation}
+y_{t}-\rho y_{t-1}=b_{0}-\rho b_{0}+b_{1}(x_{t}-\rho x_{t-1})+e_{t-1}-\rho e_{t-1}\label{gendiff}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Why $y_{t}^{*}$and $x_{t}^{*}?$}
+
+Restate:
+
+\[
+y_{t}-\rho y_{t-1}=b_{0}-\rho b_{0}+b_{1}(x_{t}-\rho x_{t-1})+e_{t-1}-\rho e_{t-1}
+\]
+
+
+Holy cow! Look at the error term. It is equal to our nice friend $u_{t}$.
+\[
+u_{t}=e_{t}-\rho e_{t-1}
+\]
+
+
+Step 2 is implemented, then, by calculating new variables y{*} and
+x{*} from the obvious equivalents in (\ref{gendiff}):
+
+\[
+y_{t}^{*}=b_{0}(1-\rho)+b_{1}x_{t}^{*}+...+u_{t}
+\]
+
+
+
+\lyxframeend{}\section{Topics for Further Study}
+
+
+\lyxframeend{}\lyxframe{Focus on $x_{t}$: Distributed Lag Models}
+\begin{itemize}
+\item Sometimes people get excited because they think that ``lagged''
+values of $x_{t}$ matter. 
+\end{itemize}
+\begin{equation}
+y_{t}=a+b_{0}x_{t}+b_{1}x_{t-1}+u_{t}
+\end{equation}
+
+\begin{itemize}
+\item Its possible somebody wants to add a whole slew of lagged $x$'s.
+\end{itemize}
+\begin{equation}
+y_{t}=a+\sum_{j=0}^{m}b_{j}x_{t-j}+u_{t}
+\end{equation}
+
+
+These are often difficult to estimate (primarily because of multicollinearity). 
+\begin{itemize}
+\item Clever choice of theory can simplify and make estimation possible
+(Almon lags, for example).
+\end{itemize}
+
+\lyxframeend{}\lyxframe{ARIMA modeling.}
+\begin{itemize}
+\item AR-I-MA: ``auto regressive - integrated - moving average'' modeling. 
+\item A time series $y_{t}$ is a combination of inputs from its own past
+and various input variables. 
+\item The original intention of ARIMA modeling was to isolate trends and
+predict $y_{t}$ without using independent variables as input. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{ARMA means No i ``Integration Component''. }
+\begin{itemize}
+\item ARMA model, with p lagged $y$'s and q lagged errors ($e_{t}$):
+\end{itemize}
+\begin{equation}
+y_{t}=\rho_{1}y_{t-1}+...+\rho_{p}y_{t-p}+e_{t}+\tau_{1}e_{t-1}+...+\tau_{q}e_{t-q}
+\end{equation}
+
+\begin{itemize}
+\item How many non-zero $\rho_{j}$ coefficients are need? How many $\tau_{j}$
+are needed? That's the magical, mysterious field of ARIMA modeling
+for you. Judgment, graphs, tests.
+\item \emph{Note that ``autoregressive'' in this context has a different
+meaning!} 
+
+\begin{itemize}
+\item The AR part concerns the lagged $y$'s. 
+\item The MA part is the lagged unobserved error. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{More ARIMA notation}
+\begin{itemize}
+\item Lag operator notation, 
+\begin{eqnarray}
+y_{t-1} & = & L(y_{t})\\
+y_{t-2} & = & L^{2}(y_{t})\nonumber \\
+y_{t-3} & = & L^{3}(y_{t})
+\end{eqnarray}
+
+\item If you use that notation, then the big model above can be written:
+\item 
+\begin{equation}
+y_{t}-\rho_{1}L(y_{t})+...+\rho_{p}L^{\rho}(y_{t})=e_{t}+\tau_{1}L(e_{t})+...+\tau_{q}L^{q}(e_{t})
+\end{equation}
+
+\item Which is the same as:
+\begin{eqnarray}
+y_{t}(1-\rho_{1}L_{t}+\rho_{p}L^{\rho}) & = & \epsilon_{t}(1+\tau_{1}L+...+\tau_{q}L^{q})
+\end{eqnarray}
+
+\item Observed input variables $x_{t}$ can be introduced. This is called
+an ARIMAX model:
+\begin{equation}
+y_{t}=\rho_{1}y_{t-1}+...+\rho_{p}y_{t-p}+\beta_{0}x_{t}+\tau_{0}\epsilon_{t}+\tau_{1}\epsilon_{t}+...+\tau_{q}\epsilon_{t-q}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}
+
+
+\end{document}

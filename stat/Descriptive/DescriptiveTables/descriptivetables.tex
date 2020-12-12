@@ -1,0 +1,810 @@
+%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,letterpaper,english]{extarticle}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{babel}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\usepackage{breakurl}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\special{papersize=\the\paperwidth,\the\paperheight}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% Following comment is required. Do not delete it.
+%\usepackage{Sweave}
+
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+
+\usepackage{booktabs}
+\usepackage{dcolumn}
+
+
+%% Paste guidePreambleHeader
+%%BEGIN: This begins the custom header
+\usepackage{array}
+\usepackage{xparse}
+\usepackage{babel}
+\usepackage{datetime}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\definecolor{darkblue}{HTML}{1e2277}
+\definecolor{kublue81186}{RGB}{0,81,186}
+\newdateformat{monddyyyy}{\shortmonthname[\THEMONTH].~\THEDAY,~\THEYEAR}
+
+
+%% BEGIN custom header
+\ExplSyntaxOn
+\NewDocumentCommand \guidesetup { m }
+ {
+  \keys_set:nn { guide } { #1 }
+ }
+
+\int_new:N \g_guide_authors_int
+\prop_new:N \g_guide_authors_prop
+\tl_new:N \l__guide_authors_tl
+
+\keys_define:nn { guide }
+ {
+  author .code:n =
+   {
+    \int_gincr:N \g_guide_authors_int
+    \keys_set:nn { guide / author } { #1 }
+   },
+  author/firstname .code:n = { \guide_add_author:nn { firstname } { #1 } },
+  author/lastname .code:n = { \guide_add_author:nn { lastname } { #1 } },
+  author/affiliation .code:n = { \guide_add_author:nn { affiliation } { #1 } },
+  author/email .code:n = { \guide_add_author:nn { email } { #1 } },
+  leftlogo .tl_set:N = \l_guide_leftlogo_tl,
+  rightlogo .tl_set:N = \l_guide_rightlogo_tl,
+  number .tl_set:N = \l_guide_number_tl,
+  title .tl_set:N = \l_guide_title_tl,
+  subtitle .tl_set:N = \l_guide_subtitle_tl,
+  keywords .tl_set:N = \l_guide_keywords_tl,
+  url .tl_set:N = \l_guide_url_tl,
+  title .initial:n = {TITLE~NEEDED},
+}
+\NewDocumentCommand \guidehdr { +O{} }
+ {
+  \group_begin:
+  \keys_set:nn { guide } { #1 }
+  \guide_hdr:
+  \group_end:
+ }
+\cs_new_protected:Nn \guide_hdr:
+ {
+   \centering
+   \noindent\fcolorbox{kublue81186}{white}{
+  \begin{tabular}
+   {
+    @{}c
+    >{\centering}m{ \dim_eval:n { \textwidth - 2.5in - 6\tabcolsep - 2\arrayrulewidth } }
+    c@{}
+   }
+   &&\tabularnewline[-\dim_eval:n { -\normalbaselineskip + 3ex }]
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=.75in]{\l_guide_leftlogo_tl}
+  \end{tabular}
+  &
+  \centering
+    {\textsc{\large{}\l_guide_title_tl}}
+    \tl_if_empty:NF \l_guide_subtitle_tl
+    {
+      {\\\textsc{\large{}\l_guide_subtitle_tl}}
+    }
+  \\
+  \textcolor{kublue81186}{\rule[0.5ex]{1\linewidth}{0.7pt}}\\
+  \guide_print_authors:
+  &
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=1.25in]{\l_guide_rightlogo_tl}
+  \end{tabular}
+  \tabularnewline
+  \tl_if_empty:NTF \l_guide_number_tl
+   { \leavevmode\vphantom{G}}
+   {\small\bfseries { Guide~No: ~ \tl_use:N \l_guide_number_tl }} & 
+   \tl_if_empty:NF \l_guide_keywords_tl
+   {\centering
+    \textbf{Keywords}: ~ \l_guide_keywords_tl}
+   & 
+   \small\bfseries\monddyyyy\today \tabularnewline
+   \tl_if_empty:NF \l_guide_url_tl
+   {
+   \multicolumn{3}{c}{
+    See ~ \url{\l_guide_url_tl} ~ for ~ updates.}
+     }
+  \tabularnewline
+  \end{tabular}
+  }
+}
+
+\cs_new_protected:Nn \guide_add_author:nn
+ {
+  \prop_gput:Nxn \g_guide_authors_prop
+   { #1 \int_to_arabic:n { \g_guide_authors_int } }
+   { #2 }
+ }
+\cs_generate_variant:Nn \prop_gput:Nnn { Nx }
+\cs_new_protected:Nn \guide_print_authors:
+ {
+  \tl_clear:N \l__guide_authors_tl
+  \int_step_inline:nnnn { 1 } { 1 } { \g_guide_authors_int }
+   {
+    \tl_put_right:Nn \l__guide_authors_tl
+     {
+      \textbf
+       {
+        \prop_item:Nn \g_guide_authors_prop { firstname ##1 }~
+        \prop_item:Nn \g_guide_authors_prop { lastname ##1 },~
+       }
+       \prop_item:Nn \g_guide_authors_prop { affiliation##1 },~
+       \href{mailto:\prop_item:Nn \g_guide_authors_prop { email##1 } }
+       {\url{\prop_item:Nn \g_guide_authors_prop { email##1 }}}
+       \\
+     }
+   }
+   \tl_use:N \l__guide_authors_tl
+ }
+\ExplSyntaxOff
+%%END This ends the custom header
+
+
+%%Now the hyperref colors
+
+\hypersetup{
+ unicode=true,pdfusetitle,bookmarks=true,
+ bookmarksnumbered=false, bookmarksopen=false,
+ breaklinks=true, pdfborder={0 0 0},
+ pdfborderstyle={}, backref=false,
+ colorlinks=true, linkcolor=darkblue,
+ urlcolor=darkblue, citecolor=darkblue}
+
+%% Was previously in "preambleFloatCenter.tex"
+%%BEGIN: graphics and such inside floats are centered by default
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+}{%
+ \end@float
+}
+%%END: graphics and such inside floats are centered by default
+%% END guidePreambleHeader
+
+%%\input{theme/preambleFooter.tex}
+%% BEGIN: Footer
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand \footersetup { +m }
+{
+\keys_set:nn { footer } { #1 }
+}
+\keys_define:nn { footer }
+{	
+    leftside .code:n = {
+\keys_set:nn { footer / leftside } { #1 }
+},
+rightside .code:n = {
+\keys_set:nn { footer / rightside } { #1 }
+},
+    leftside / lone .tl_set:N = \l_footer_leftside_lone_tl,
+    leftside / ltwo .tl_set:N = \l_footer_leftside_ltwo_tl,
+    leftside / lthree .tl_set:N = \l_footer_leftside_lthree_tl,
+    rightside / rone .tl_set:N = \l_footer_rightside_rone_tl,
+    rightside / rtwo .tl_set:N = \l_footer_rightside_rtwo_tl,
+    rightside / rthree .tl_set:N = \l_footer_rightside_rthree_tl,
+    leftside .initial:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .initial:n = {rone = ~, rtwo = ~,  rthree = ~},
+    leftside .default:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .default:n = {rone = ~, rtwo = ~,  rthree = ~},
+}
+\NewDocumentCommand \guideftr { +o }
+{
+  \IfValueT { #1 } 
+  {
+    \keys_set:nn { footer } { #1 }
+  }
+  \guide_ftr:
+}
+\cs_new_protected:Nn \guide_ftr:
+{
+  % Now fancy header/footer settings
+  \lhead{}%
+  \chead{}%
+  \rhead{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \lfoot{}%
+  \cfoot{{Page} ~ \thepage {} ~ { of } ~ {} \pageref{LastPage}}%
+  \rfoot{}%
+
+  \fancypagestyle{firststyle}%
+  {%
+    \lhead{}%
+    \chead{}%
+    \rhead{}%
+    \lfoot{}%
+    \cfoot{}%
+    \rfoot{}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyfoot[L]{\l_footer_leftside_lone_tl {}\\%
+      \l_footer_leftside_ltwo_tl {}\\%
+      \l_footer_leftside_lthree_tl {}}%
+    \fancyfoot[R]{\l_footer_rightside_rone_tl {}\\%
+      \l_footer_rightside_rtwo_tl {}\\%
+      \l_footer_rightside_rthree_tl {}}%
+      \renewcommand{\footrulewidth}{.2pt}%
+  }%
+  \thispagestyle{firststyle}
+}
+\ExplSyntaxOff
+
+\pagestyle{fancy}
+%% End of fancy footer setup
+
+\input{theme/addressFooter.tex}
+%% end preambleFooter
+
+%%\input{theme/guidePreambleSweavel.tex}
+%%% From beamer slide:
+\usepackage{Sweave}
+%% 
+%% This controls display of code chunks
+\usepackage{ae,fancyvrb,relsize,listings}
+
+\providecommand{\Sweavesize}{\normalsize}
+\providecommand{\Rsize}{}
+\renewcommand{\Rsize}{\normalsize}
+\providecommand{\Routsize}{\scriptsize}
+
+\providecommand{\Rcolor}{\color[rgb]{0.1, 0.1, 0.1}}
+\providecommand{\Routcolor}{\color[rgb]{0.2, 0.2, 0.2}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.43, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.91}}
+\providecommand{\Routbackground}{\color[gray]{0.935}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+\lstdefinestyle{Rinput}{
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  basicstyle=\Rsize\Rcolor\ttfamily,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%,
+  commentstyle=\Rcommentcolor\ttfamily,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1{==}{{=\,=}}2{--}{{-\,-}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+  backgroundcolor=\Rbackground,%
+  numbers=left,%
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}%
+
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routput}{fancyvrb=false,
+  literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+  basicstyle=\Routcolor\Routsize\ttfamily,%
+  backgroundcolor=\Routbackground,
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1 {==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},
+  numbers=left,
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}
+
+\renewenvironment{Schunk}{}{}
+\renewenvironment{Sinput}{}{}
+\let\Sinput\relax
+\let\Scode\relax
+\let\Soutput\relax
+\lstnewenvironment{Sinput}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routput}}{}
+%%end paste in from guidePreambleSweavel.tex
+
+
+\lstset{tabsize=2, breaklines=true, style=Rinput, breakatwhitespace=true}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+\usepackage{realboxes}
+\providecommand*{\code}[1]{\texttt{#1}}
+\renewcommand{\code}[1]{%
+\Colorbox{light-gray}{#1}%
+}%
+
+\makeatother
+
+\begin{document}
+%% Fill in values of the arguments here, 
+%% If blanks are needed, must insert value " ~ "
+%% If comma needed inside value, wrap in {}.
+%% Delete secondauthor and thirdauthor if not needed
+\guidesetup{%
+  author={
+    lastname=Johnson, 
+    firstname=Paul, 
+    affiliation=CRMDA,
+    email=pauljohn@ku.edu},
+  url={https://pj.freefaculty.org/guides},
+  keywords={R},
+  title={Descriptive data tables},
+  leftlogo={theme/logoleft.pdf},
+  rightlogo={theme/logo-vert.pdf},
+  number=0,
+}
+\guidehdr
+
+% tmpout directory must exist first
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+
+
+
+%The listings class used here allows within-document style
+%changes. R input boxes are governed by 
+% "Rsize", "Rbackground" and "Rcolor", while R output boxes depend on
+% "Routsize", "Routbackground", and "Routcolor". Colors
+% can be specified in many ways, as shown here
+%\def\Rsize{\huge\ttfamily}
+%\def\Routsize{\huge}
+%\def\Rbackground{\color[gray]{0.90}}
+%\def\Routbackground{\color[gray]{0.40}}
+%\def\Rcolor{\color[gray]{0.60}
+%\def\Routcolor{\color[rgb]{0.9, 0.1, 0.1}]}
+%\def\Rcommentcolor{\color{green}}
+\begin{abstract}
+\noindent This is an abstract. Please include a terse, yet descriptive
+statement here of less than 200 words. It should avoid colloquialisms
+and polysyllabic profundities.
+\end{abstract}
+\tableofcontents{}
+
+\section{Reviewers want descriptive variable tables}
+
+People who read our models usually want to know about the variables
+that are included in the model. In the very simplest case, it might
+require only the mean and standard deviation of each predictor. That
+kind of table is very easy to produce, as we will see.
+
+A more complicated scenario arises when there are different sorts
+of variables to be summarized and the researcher wants to knit them
+together.
+
+\subsection{The Social Welfare Project}
+
+We had a funded project that replicated a previous research project.
+
+In Table \ref{tab:nam2008}, please see an example from an article
+by Nam (2008) that we were required to replicate. From updated data,
+we generated Table \ref{tab:ournamtable}. Our output table is reasonable.
+I checked the R code that was used to generate it and it is very complicated;
+it is not the sort of simple, elegant code I'd want to teach you to
+use today. That example is complicated because it is flexible to deal
+with different yearly data sets and there are several variable types.
+
+\begin{table}[H]
+
+\caption{Summary table on social welfare project\label{tab:nam2008}}
+
+\includegraphics{importfigs/descriptive-Nam2008}
+
+\end{table}
+
+\begin{table}[H]
+\caption{Updated social welfare data (project 663)\label{tab:ournamtable}}
+
+\input{importfigs/NamSummaryTable.tex}
+\end{table}
+
+As I look at these examples, I realize there are a couple of very
+important details.
+
+\begin{enumerate}
+\item For which rows of data should the summary be calculated?
+  
+  As you may know, many stats programs use ``listwise deletion'' of cases
+  with missing values. That means the rows of data that are used may 
+  differ between models. 
+  
+  Probably, we want the summary to reflect the data that is actually
+  used in a model. Possibly/Probably we also might want a summary of
+  the whole data set.
+  
+\item Which summary indicators are required?
+  
+  The social welfare project is tricky because they wanted different
+  summary items for different kinds of predictors
+  
+\item What are we supposed to do about categorical variables?
+\end{enumerate}    
+
+\section{The Workflow Problem}
+
+Clearly, we want the software to write a table on disk in a format
+that can be inserted into a document without trouble. 
+
+There are two scenarios.
+
+\begin{enumerate}
+\item Three step process
+  \begin{itemize} 
+  \item Run an R file that writes a file on disk (write into
+    output folder)
+  \item Copy that file into the writeup folder, \emph{possibly
+      with some hand editing}.
+  \item Create the writeup document that imports that table.
+  \end{itemize}
+\item One step process: reproducible research document  
+  \begin{itemize} 
+    \item The code in the document produces tables and figures that
+     \emph{do NOT need to hand editing}. They are ready as is!
+  \item The documents in the stationery package demonstrate this idea.
+  \item See stationery vignette ``Code Chunks'' because it shows how
+    \emph{as is} material can be used in different kinds of document
+  \end{itemize}
+\end{enumerate}
+
+\subsection{Formatting for tables}
+
+The desired output format depends on the output document format.
+If we are creating a PDF document, best to have:
+
+LaTeX formatting
+
+If we are creating a Web Page, then best to have:
+
+HTML formatting
+
+If we are completely lost, we may have to take the worst possible
+avenue: 
+
+raw ``CSV'' formatting
+
+This last is the worst option because the output is not structured
+and cannot be used in a document without a lot of hand editing.
+  
+This document is a LaTeX/NoWeb document that has the PDF back end, so
+I'm saving table files as LaTeX tabular objects.
+
+Authors have some control over the features and formatting that will
+be inserted into the table. In my documents, I prefer to create the
+floating table and figure objects and then insert the results in
+them. Hence, I do not want my LaTeX table output file to include
+caption or label. That is a matter of taste, sometimes I will write
+the table (or figure) captions into the files.
+
+The LaTeX table writing function I prefer is a traditional one, 
+\code{xtable}. It can create either LaTeX or HTML output. It has worked well
+for many years, I (honestly) don't understand why so many R package
+writers want to re-invent this ability. 
+
+If I'm writing a regression table, I generally use my function,
+\code{outreg} in the \code{rockchalk} package. However, that works for
+only the standard regression models provided with R. Some
+user-contributed regression packages do not create the required
+structures from which \code{outreg} will work. 
+
+\section{Implementation: Numeric Predictors}
+
+Lets test with R \citep{RCore}. There are many
+data summary tools in R. I'm partial to the function ``summarize''
+in the rockchalk package, but I expect you can find many packages
+that get the same work done. 
+
+In short, 3 steps are needed.
+\begin{enumerate}
+\item Tabulate data summaries. The will often be in R data.frames, 
+  matrices, or similar. Sometimes there will be a list of summaries by
+  subgroups.
+\item Inspect the data in the R session, make sure it looks correct. 
+\item Use one of the R functions that can write the file in the needed
+  format.
+\end{enumerate}
+
+
+\subsection{First, check what the rockchalk::summarize function is doing}
+
+Read ?summarize, it explains the output printed on screen is just
+the pretty rendition, but there is actually a list provided as the
+return. Within the list, the first 2 items are a numeric summary and
+a summary of the categorical variables.
+
+\subsection{Mean and Standard Deviations}
+
+We hope guide authors will choose carefully thought out titles for
+sections and that material will be grouped meaningfully into sections. 
+
+
+
+\input{tmpout/t-hsbget}
+
+The output from summarize in R is wide, does not fit into this
+document unless I make the font small.
+\input{tmpout/t-hsbsumry10}
+
+The output object \code{sum.hsb} has 3 parts, the third one is that
+thing you are looking at. It is the formatted, ``textified'' 
+version.  The first 2 parts are the ``numeric'' and 
+``categorical'' predictors, which are not rounded or summarized. 
+
+Take a look. My numeric summary has the variables on the rows,
+not on the columns as shown in the printed output within the R session:
+
+\input{tmpout/t-007}
+
+The easy thing is to summarize the numeric variables. 
+In the output folder, it will write ``hsbsumry20.tex''.
+
+\input{tmpout/t-hsbsumry20}
+
+%%\def\Routsize{\tiny}
+\input{tmpout/t-hsbsumry21}
+
+I'm going to create a ``floating'' table, Table \ref{tab:HSBsumry20}.
+
+\begin{table}[H]
+
+\caption{HSB summary information \label{tab:HSBsumry20}}
+
+\input{output/hsbsumry20.tex}
+
+\end{table}
+
+
+\section{Categorical Variables: more difficult}
+
+\subsection{Likert variables: I have that worked out!}
+
+In the \code{kutils} package, I wrote a function called
+likert that can line up responses to many Likert scale questions
+and then assemble them into a table.  The output here is
+actually showing 2 tables, because there are too many
+columns to fit in 1 table. 
+
+\begin{table}[H]
+
+\caption{Likert variable summary from TFA project}
+
+\includegraphics{importfigs/descriptive-likert}
+
+\end{table}
+
+\subsection{More generally, more difficult}
+
+The output from rockchalk::summarize has a separate piece for
+the categorical variables. It is a list, with one table for each
+variable.
+
+\input{tmpout/t-010}
+
+I notice that the output from this command is not handled well
+by the LaTeX to PDF transition, so I won't run it.
+
+\input{tmpout/t-011}
+
+If we want to summarize the different tables, we have to make
+some document preparation decisions. 
+
+\begin{itemize}
+  \item Which summary information do we require?
+  
+  \item Are we trying to squash all of the tables into 
+    one big summary table?
+\end{itemize}
+
+The way I created those summary tables causes complications
+throughout. I need to think about how to fix.
+
+\subsection{Pretty easy to make separate summaries}
+
+Here, we will be like people who lived in caves and write summary 
+code for each of the first 3 table objects. I am NOT writing those
+summaries in separate files. I am using the LaTeX results ``as is'',
+they are printing directly into the document.
+
+\input{tmpout/t-012}
+
+\input{tmpout/t-013}
+
+\input{tmpout/t-014}
+
+\section{Get out of Jail Free Card? Regression Model Matrix?}
+
+In R, a regression model will, by default, have the abilty to give
+back a model design matrix. The function for this is
+\code{model.matrix}.
+
+Suppose we fit a multiple regression, and then use model.matrix
+to recover the data and the recoded variables that were actually used.
+
+I'm not claiming this is a reasonable regression, but it will run and
+demonstrate the purpose.
+
+\input{tmpout/t-015}
+
+The raw output of the summary.lm method function is like this:
+\input{tmpout/t-016}
+
+In Table \ref{tab:outreg10}, I have a nicer-looking summary.
+
+\begin{table}[H]
+ 
+\caption{Outreg from rockchalk package \label{tab:outreg10}}
+
+\input{tmpout/t-017}
+
+\end{table}
+\input{tmpout/t-018}
+
+Note that all of the columns in the \code{model.matrix} output are
+numeric.  Even the categorical predictors are reduced to 1's and 0's.
+
+\input{tmpout/t-019}
+
+Why not grab the numerical summaries of all of those predictors
+as seen from the \code{model.matrix} point of view?
+
+\input{tmpout/t-020}
+
+Note there are no factors there. Lets see if output in Table \ref{tab:sumry2}
+is close to good.
+
+\input{tmpout/t-021}
+
+If that's close to good, I suggest we write it in a file, and
+then hand edit the variable names, then include it in a document:
+
+\input{tmpout/t-022}
+
+Manually copy that into some other folder where we can cultivate
+and perfect it.  I often use a folder named ``importfigs'' for that
+kind of thing.
+
+The output in Table \ref{tab:sumry3} is almost good enough. Each of the
+``dummy variables'' in the regression has a mean equal the proportion
+of 1's in that predictor column. If we had a multi-category predictor,
+then we'd see more than one row for each variable.  Still, there's a
+problem that it ``leaves out'' one category because it is ``in the
+intercept.'' We can think on that.  
+
+Actually, I thought about that, here's my fix in Table \ref{tab:sumry.noint}.
+If that has all of the right numbers, then we should write it in a file,
+fix the labels, and be done with it.
+
+\input{tmpout/t-023}
+
+\input{tmpout/t-024}
+
+
+\subsection{Create 1 function to do approximately the correct thing}
+
+\input{tmpout/t-fake10}
+
+\input{tmpout/t-makedesc50}
+
+\input{tmpout/t-makedesc60}
+
+\input{tmpout/t-makedesc100}
+
+
+\input{tmpout/t-makedesc160}
+
+Check contents of m4.desc2
+
+\input{tmpout/t-makedesc180}
+
+\input{tmpout/t-makedesc200}
+
+
+Many problems still remain and while fixing them I have to revise the
+rockchalk::summarize function itself. Thus, when that is finished,
+I'll have to come back here and make descriptiveTable compatible
+again. 
+
+So check back soon, as I will fix this up to be Great Again, just like America.
+
+
+
+\bibliographystyle{apalike2}
+\phantomsection\addcontentsline{toc}{section}{\refname}\bibliography{theme/R}
+
+\section*{Replication Information\label{sec:Session-Info}}
+
+Please leave this next code chunk if you are producing a guide document. 
+
+\input{tmpout/t-session}
+
+\end{document}

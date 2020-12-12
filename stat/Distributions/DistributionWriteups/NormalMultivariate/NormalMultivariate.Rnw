@@ -1,0 +1,624 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/NormalMultivariate//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{url}
+\usepackage{amstext}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{The Multivariate Normal Distribution}
+
+
+\author{Paul Johnson}
+
+\maketitle
+
+\section{Introduction}
+
+A one dimensional Normal variable should be very familiar to students
+who have completed one course in statistics. 
+
+The multivariate Normal is a generalization of the Normal which describes
+the probability of observing $n-tuples$. 
+
+The multivariate Normal distribution looks just like you might expect
+from your experience with the univariate Normal: symmetric, single-peaked,
+basically pleasant in every way!
+
+The vectors that are described by the multivariate Normal distribution
+can have many elements as we choose to assign. Let's work with an
+example in which each randomly selected case has two attributes: a
+two dimensional model. A point drawn from a two dimensional Normal
+would be a pair of real-valued numbers (you can call it a vector or
+a point if you like).
+
+Given any vector, such as
+\[
+(0.2432,\,0.1211)
+\]
+or\\
+\[
+(-2.2432,\,0.1211)
+\]
+the multivariate Normal density function gives back an indicator of
+how likely we are to draw that particular pair of values.
+
+The Multi Variate Normal (MVN) distribution has two parameters, but
+each of these two parameters contains more than one piece of information.
+One parameter, $\mu$, describes the ``location'' or ``center point''
+of the distribution, while the other parameter determines the dispersion,
+the width of the spread from side to side in the observed points.
+
+<<0,eval=T,echo=F>>=
+
+
+library(mvtnorm)
+
+
+
+
+
+N <- 100
+
+
+
+meanX <- c( 0, 0 )
+
+varX <- matrix ( c( 1, 0, 0, 1), nrow=2 , byrow = TRUE) 
+
+
+
+x1 <- seq( meanX[1]-3*varX[1,1], meanX[1]+3*varX[1,1], length.out=N)
+
+x2 <- seq(  meanX[2]-3*varX[2,2], meanX[2]+3*varX[2,2] , length.out=N)
+
+
+
+
+
+myProbX <- function(x1, x2){
+
+  dmvnorm( cbind(x1,x2), mean = meanX, sigma= varX)  
+
+}
+
+
+
+
+
+@
+
+Figure \ref{cap:MVN1} illustrates the density function of a Normal
+distribution on two dimensions.
+
+\begin{figure}
+\caption{Multi Variate Normal Distribution\label{cap:MVN1}}
+
+
+\begin{center}
+
+<<1,echo=F,fig=T,height=9,width=8>>=
+
+
+probX <- outer(x1,x2, FUN="myProbX")
+
+persp(x1,x2, probX, theta = 140, phi = 10, zlim=c(0,.25), xlab="y1",ylab="y2", zlab="probability", ticktype="detailed")
+
+@
+
+\end{center}
+\end{figure}
+
+
+
+\section{Mathematical Description}
+
+In the multivariate Normal density, there are two parameters, $\mu$
+and $\Sigma$. The first is an $n\times1$ column vector of ``location
+parameters'' and an $n\times n$ ``dispersion matrix'' $\Sigma$
+.
+
+\begin{eqnarray}
+f(y_{i}|\mu,\Sigma) & =\nonumber \\
+ & = & f((y_{i1},y_{i2},...,y_{in})'\,|\,\mu=(\mu_{1},...,\mu_{n})',\Sigma=\left[\begin{array}{ccc}
+\sigma_{1}^{2} &  & \sigma_{1n}\\
+ & \ddots\\
+\sigma_{n1} &  & \sigma_{n}^{2}
+\end{array}\right])\nonumber \\
+ &  & =\frac{1}{\sqrt{(2\pi)^{n}|\Sigma|}}exp(-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu))
+\end{eqnarray}
+\\
+The symbol $|\Sigma|$ refers to the determinant of the matrix $\Sigma$.
+The determinant is a single real number. The symbol $\Sigma^{-1}$
+is the inverse of $\Sigma,$ a matrix for which $\Sigma\Sigma^{-1}=I.$
+This equation assumes that $\Sigma$ can be inverted, and one sufficient
+condition for the existence of an inverse is that the determinant
+is not $0$. 
+
+The matrix $\Sigma$ must be positive semi-definite in order to assure
+that the most likely point is $\mu=(\mu_{1},\mu_{2},\ldots,\mu_{n})$
+and that, as $y_{i}$ moves away from $\mu$ in any direction, then
+the probability of observing $y_{i}$ declines.
+
+The denominator in the formula for the MVN is a normalizing constant,
+one which assures us that the distribution integrates to 1.0. 
+
+In the last section of this writeup, I have included a little bit
+to help with the matrix algebra and the importance of a ``weighted
+cross product'' like $(y_{i}-\mu)\Sigma^{-1}(y_{i}-\mu)$. 
+
+If there is only one dimension, this gives the same value as the ordinary
+Normal distribution, which one will recall is
+\[
+f(y_{i}|\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}exp\left[\frac{(y_{i}-\mu)^{2}}{2\sigma^{2}}\right]
+\]
+In the one dimensional case, $\Sigma=\sigma^{2}$, meaning $|\Sigma|=\sigma^{2}$
+and $\Sigma=1/\sigma^{2}$.
+
+In the example with two dimensions, the location parameter has two
+components 
+\[
+\mu=(\mu_{1},\mu_{2})
+\]
+\\
+and (again for the two dimensional case) the scale parameter is 
+
+\[
+\Sigma=\left[\begin{array}{cc}
+\sigma_{1}^{2} & \sigma_{12}\\
+\sigma_{12} & \sigma_{2}^{2}
+\end{array}\right]
+\]
+\\
+For the $2\times2$ case, the determinant and inverse are known:
+\begin{eqnarray*}
+|\Sigma|=\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2} & \textrm{and} & \Sigma^{-1}=\left[\begin{array}{cc}
+\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}\\
+\frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{\sigma_{1}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}
+\end{array}\right]
+\end{eqnarray*}
+\\
+so you can actually calculate an explicit value ``by hand'' if you
+have enough patience.
+
+\begin{eqnarray*}
+f(y_{i} & = & (y_{1},y_{2})^{'}|\mu,\Sigma)\\
+ & = & \frac{1}{\sqrt{(2\pi)^{n}\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}}exp(-\frac{1}{2}[y_{i1}-\mu_{1},y_{i2}-\mu_{2}]\left[\begin{array}{cc}
+\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}\\
+\frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{\sigma_{1}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}
+\end{array}\right]\left[\begin{array}{c}
+y_{i1}-\mu_{1}\\
+y_{i2}-\mu_{2}
+\end{array}\right]
+\end{eqnarray*}
+\\
+At this time, I'm unwilling to write out any more of that. But I encourage
+you to do it.
+
+
+\section{The Expected Value and Variance}
+
+Recall that expected value is defined as a ``probability weighted
+sum of possible outcomes''. 
+
+\[
+E(y)=\mu
+\]
+\\
+\[
+Var(y)=\Sigma
+\]
+
+
+Because we are considering a multivariate distribution here, it is
+probably lost in the shuffle that the expected value is calculated
+by integrating over all dimensions.
+
+If we had a discrete distribution, say $p(x_{1},x_{2})$, then the
+expected value would be calculated by looping over all values of $x_{1}$
+and $x_{2}$ and calculating a probability weighted sum
+\[
+E(x_{1})=\sum_{i=1}^{n}\sum_{j=1}^{m}p(x_{1i},x_{2j})x_{1i}
+\]
+\\
+With a probability model defined on continuous variables, the calculation
+of the expected value requires the use of integrals, but except for
+the change from notation ($\Sigma$ to $\int$ ), there is not major
+conceptual change.
+
+\[
+E(y_{1})=\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}f(y_{1},y_{2})y_{1}
+\]
+
+
+Because the covariance between two variables is the same, whether
+we calculate $\sigma_{12}=Covariance(y_{1},y_{2})$ or $\sigma_{21}=Coviariance(y_{2},y_{1}),$
+the matrix $\Sigma$ has to be same on either side of the diagonal. 
+
+As you can see, the matrix is symmetrical, so that the bottom-left
+element is the same as the top-right. The matrix is the same as its
+transpose.
+
+\[
+\Sigma=\left[\begin{array}{cc}
+\sigma_{1}^{2} & \sigma_{12}\\
+\sigma_{12} & \sigma_{2}^{2}
+\end{array}\right]=\Sigma'
+\]
+
+
+
+\section{Illustrations}
+
+
+\subsection{Contour Plots}
+
+The parameters that were used to create Figure 1 were $\mu=(0,0)$
+and $\Sigma=\left[\begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}\right]$. That is the bivariate equivalent of the ``standardized normal distribution.''
+A contour plot offers one way to view this distribution. The equally-probable
+points are connected by lines. The idea will be familiar to economists
+as ``indifference curves'' and to geographers as ``topographical
+maps''. Consider the contours in Figure \ref{cap:Contour1}.
+
+\begin{figure}
+\caption{The View from Above Corresponding to Figure \ref{cap:MVN1}\label{cap:Contour1}}
+
+
+<<fig=T>>=
+#image(x1, x2, probX, col = terrain.colors(100), axes = FALSE)
+
+contour(x1,x2,probX)
+
+@
+\end{figure}
+
+
+
+\subsection{Change the Variance}
+
+If we change one of the diagonal elements in $\Sigma$, the effect
+is to ``spread out'' the observations on that dimension. See Figure
+\ref{Fig:Var1-3}. 
+
+\begin{figure}
+\caption{M\label{Fig:Var1-3}V Normal($\mu=(0,0)$,$\sigma^{2}=\left[\protect\begin{array}{cc}
+1 & 0\protect\\
+0 & 3
+\protect\end{array}\right]$)}
+
+
+<<fig=T,echo=F,height=9,width=8>>=
+
+
+meanX <- c( 0, 0 )
+
+varX <- matrix ( c( 1, 0, 0, 3), nrow=2 , byrow = TRUE) 
+
+ 
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+
+
+
+
+
+probX <- outer(x1,x2, FUN="myProbX")
+
+persp(x1,x2, probX, theta = 120, phi = 15, zlim=c(0,.25), col = "pink", xlab="y1",ylab="y2", zlab="probability",ticktype="detailed")
+
+@
+\end{figure}
+
+
+
+\subsection{The effect of the Covariance parameter}
+
+Until this point, we have been considering distributions in which
+the two variables $y_{1}$and $y_{2}$were statistically independent,
+in the sense that the expected value of $y_{1}$ was not influenced
+by $y_{2}$.
+
+\begin{figure}
+\caption{MV Normal($\mu=(0,0)$,$\sigma^{2}=\left[\protect\begin{array}{cc}
+1 & .8\protect\\
+.8 & 1
+\protect\end{array}\right]$)}
+
+
+<<fig=T,echo=F,height=9,width=8>>=
+
+
+meanX <- c( 0, 0 )
+
+varX <- matrix ( c( 1, .8, .8, 1), nrow=2 , byrow = TRUE) 
+
+
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+
+
+
+
+
+probX <- outer(x1,x2, FUN="myProbX")
+
+persp(x1,x2, probX, theta = 120, phi = 20, zlim=c(0,.25), zlab="probability", xlab="y1",ylab="y2",col = "pink", ticktype="detailed")
+
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{The View from Above}
+
+
+<<fig=T>>=
+#image(x1, x2, probX, col = terrain.colors(100), axes = FALSE)
+
+contour(x1,x2,probX)
+
+@
+\end{figure}
+
+
+
+\section{``Cross-sections''}
+
+A conditional density gives the probability of the outcome $y=(y_{1},y_{2})$
+variable when one of these is taken as given. For example, 
+\[
+f((y_{1},y_{2})|y_{2}=0.75)
+\]
+\\
+reprents the probability of observing $y_{1}$ when it is known that
+$y_{1}=0.75$.
+
+The Multivariate Normal distribution has the interesting property
+that the conditional distributions are basically Normal (Normal up
+to a constant of proportionality). Figure \ref{cap:Cross-section0.75}
+illustrates the MVN when $y_{2}=0.75$. The ``total area'' under
+that curve will not equal 1.0, but if we normalize it by finding the
+area (call that $A$), then 
+\[
+\frac{f(y_{1}|y_{2}=0.75)}{A}
+\]
+\\
+is a valid probability density function. 
+
+\begin{figure}
+\caption{Cross section of Standard MVN for $y_{2}=0.75$\label{cap:Cross-section0.75}}
+
+
+\begin{center}
+
+<<3,echo=F,fig=T,height=9,width=8>>=
+meanX <- c( 0, 0 )
+
+varX <- matrix ( c( 1, 0, 0, 1), nrow=2 , byrow = TRUE) 
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+
+
+
+nx2 <- ifelse(x2 <= 0.75, x2, NA)
+
+nx2 <- ifelse(0.65 < nx2, nx2, NA)
+
+probX <- outer(x1,nx2, FUN="myProbX")
+
+persp(x1,x2, probX, theta = 140, phi = 15, zlim=c(0,.25), zlab="probability", xlab="y1",ylab="y2",ticktype="detailed")
+
+@
+
+\end{center}
+
+\end{figure}
+
+
+
+\section{Appendix: Matrix Algebra.}
+
+If you have never studied matrix algebra, I would urge you to do a
+little study right now. Find any book or one of my handouts. 
+
+Your objective is to understand enough about multiplication of matrices
+and vectors so that you can see the meaning of an expression like
+the following.
+\[
+x'Mx
+\]
+\\
+$x$ is an $n\times1$ column vector and $M$ is an $n\times n$ matrix.
+The result is a single number, and if you write it out term-for-term,
+you find this a ``weighted sum of $x$'s squares and cross-products.''
+\[
+(x_{1},x_{2},\ldots,x_{n})\left[\begin{array}{ccc}
+m_{11} &  & m_{1n}\\
+ & \ddots\\
+m_{n1} &  & m_{nn}
+\end{array}\right]\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+\vdots\\
+x_{n}
+\end{array}\right]
+\]
+\begin{eqnarray*}
+ & = & (x_{1},x_{2},\ldots,x_{n})\left[\begin{array}{c}
+m_{11}x_{1}+m_{12}x_{2}+\ldots+m_{1n}x_{n}\\
+m_{21}x_{1}+m_{22}x_{2}+\ldots+m_{2n}x_{n}\\
+\vdots\\
+m_{n1}x_{1}+m_{n2}x_{2}+\ldots+m_{nn}x_{n}
+\end{array}\right]
+\end{eqnarray*}
+\begin{eqnarray*}
+ & = & m_{11}x_{1}x_{1}+m_{12}x_{2}x_{1}+\ldots+m_{1n}x_{n}x_{1}+\\
+ &  & m_{21}x_{1}x_{2}+m_{22}x_{2}x_{2}+\ldots+m_{2n}x_{n}x_{2}+\\
+ &  & \ldots+\\
+ &  & m_{n1}x_{1}x_{n}+m_{n2}x_{2}x_{n}+\ldots+m_{nn}x_{n}x_{n}
+\end{eqnarray*}
+
+
+\[
+=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}m_{ij}x_{i}x_{j}\right)
+\]
+\\
+If $M$ is diagonal, meaning
+\begin{equation}
+M=\left[\begin{array}{cccc}
+m_{11} & 0 & 0 & 0\\
+0 & m_{22} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & m_{nn}
+\end{array}\right]
+\end{equation}
+\\
+then there are no ``cross products'' and the result of $x'Mx$ is
+simply a sum of weighted $x$-squared terms.
+\begin{equation}
+=\sum_{i=1}^{n}m_{ii}x_{i}^{2}
+\end{equation}
+
+
+A matrix is positive semi-definite if, for all $x$, 
+\begin{equation}
+x'Mx\geq0
+\end{equation}
+\\
+If $M$ is positive semi-definite, so is $M^{-1}$.
+
+In the Normal distribution's density formula, we have:
+
+\begin{equation}
+exp(-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu))\label{eq:Nexp}
+\end{equation}
+\\
+In that formula, the role of $x$ is played by $(y_{i}-\mu)$ and
+the role of $M$ is played by $\Sigma^{-1}$.
+
+The Normal distribution requires that $\Sigma$ is positive semi-definite. 
+
+\begin{equation}
+-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu)>0\label{eq:Nexp}
+\end{equation}
+
+
+Tidbit, The Eigenvectors $(e_{1},e_{2},...,e_{n})$ of $\Sigma$ are
+known as its ``principal components''. The principal components
+give the axes of symmetry of the MVN. If the $i$'th eigenvalue (the
+one associated with the $i'th$eigenvector is $\lambda_{i}$, the
+length of the ellipsoid on the ith axis is proportional to $\sqrt{\lambda_{i}}$
+(B.Walsh and M. Lynch, Appendix 2, The Multivariate Normal, 2002,
+\url{http://nitro.biosci.arizona.edu/zbook/volume_2/chapters/vol2_A2.html}
+\end{document}

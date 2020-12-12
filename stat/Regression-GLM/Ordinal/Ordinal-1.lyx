@@ -1,0 +1,3792 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass rliterate-article
+\begin_preamble
+%%\usepackage{latexsym}
+\usepackage{graphicx}
+
+%%\usepackage{psfig}
+%%\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Ordinal Outcomes Regression
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+This is my best effort to succinctly explain the theory behind the ordinal
+ logistic regression model (with apologies to the probit model).
+ 
+\end_layout
+
+\begin_layout Standard
+The main takeaway point is supposed to be this: 
+\end_layout
+
+\begin_layout Standard
+The same data leads to different estimates from different programs.
+ That happens because the ordinal model can be written down in several different
+ ways.
+ None of them are wrong, but they are different, and as a result the user
+ must be cautious.
+\end_layout
+
+\begin_layout Standard
+Estimates obtained from four different programs are offered in Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Output-MASS"
+
+\end_inset
+
+ through 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Stata-Ordinal"
+
+\end_inset
+
+.
+ If we line these up side by side, we see that estimates from one of the
+ routines for R matches Stata (after chopping off the small differences
+ in the decimals), while SAS appears to provide the 
+\begin_inset Quotes eld
+\end_inset
+
+wrong sign
+\begin_inset Quotes erd
+\end_inset
+
+ for the first row and the second procedure for R seems to provide the 
+\begin_inset Quotes eld
+\end_inset
+
+wrong signs
+\begin_inset Quotes erd
+\end_inset
+
+ for the second and third rows.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R: polr
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R: lrm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SAS
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Stata
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{b}_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-0.28
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-0.28
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.28
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-0.28
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\zeta}_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-4.24
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.24
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-4.24
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-4.24
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\zeta}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-2.32
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.32
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-2.32
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-2.32
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+None of these are actually wrong, they are all correct 
+\emph on
+given the model they specified
+\emph default
+.
+ This the point at which the student may be tempted to give up.
+ Please don't.
+ I've worked very hard to clear this up in the following sections.
+\end_layout
+
+\begin_layout Section
+Extending the Logit Model to deal with Ordinal Dependent Variables
+\end_layout
+
+\begin_layout Standard
+The easiest way to understand regression with ordinal dependent variables
+ is to extend the 
+\begin_inset Quotes eld
+\end_inset
+
+cumulative probability interpretation
+\begin_inset Quotes erd
+\end_inset
+
+ of the two category model.
+ 
+\end_layout
+
+\begin_layout Standard
+In the two category model, 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is 1 with probability 
+\begin_inset Formula 
+\begin{equation}
+F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+And, of course, the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is 0 will be 
+\begin_inset Formula $1-F(b_{0}+b_{1}X_{i}).$
+\end_inset
+
+ The formula 
+\begin_inset Formula $F$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+cumulative distribution function
+\begin_inset Quotes erd
+\end_inset
+
+ (CDF), it represents the probability that a random variable 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ will be as small or smaller than 
+\begin_inset Formula $b_{0}+b_{1}X_{i}$
+\end_inset
+
+.
+ The function 
+\begin_inset Formula $f$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+probability density function
+\begin_inset Quotes erd
+\end_inset
+
+ (PDF), which represents the probability that 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is equal to some particular value.
+ This is illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Dichotomous"
+
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+probability density function
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $f$
+\end_inset
+
+ is defined from left to right and the possible outcomes are divided into
+ two sets by the line drawn at 
+\begin_inset Formula $e_{i}=b_{0}+b_{1}X_{i}$
+\end_inset
+
+.
+ The area under the curve on the left side is the probability of getting
+ a 
+\begin_inset Quotes eld
+\end_inset
+
+yes
+\begin_inset Quotes erd
+\end_inset
+
+ (or 1).
+ The area on the right is the chance of a 
+\begin_inset Quotes eld
+\end_inset
+
+no
+\begin_inset Quotes erd
+\end_inset
+
+ (0).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Dichotomous Outcome Variable
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Dichotomous"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace 1in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/ordinal-1.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ can have 
+\begin_inset Formula $3$
+\end_inset
+
+ values, 
+\begin_inset Formula $0$
+\end_inset
+
+, 
+\begin_inset Formula $1$
+\end_inset
+
+, and 
+\begin_inset Formula $2$
+\end_inset
+
+.
+ (Keep in mind that this model can be written down in several ways.
+ We tackle my favorite first, and then consider the others.) Leave the predictive
+ part of the model (
+\begin_inset Formula $b_{0}+b_{1}X_{i})$
+\end_inset
+
+ the same, but we now introduce two new positive constants (
+\begin_inset Formula $\Pi_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Pi_{1}$
+\end_inset
+
+) that divide the space.
+ Considering Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Ordinal-Logit"
+
+\end_inset
+
+, it should be easy to see why some people call these new parameters 
+\begin_inset Quotes eld
+\end_inset
+
+thresholds
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Ordinal Logit
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Ordinal-Logit"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace 1in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/cumulative2.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To summarize the effect of these new thresholds, we write down 1 equation
+ for each possible outcome.
+ My tendency is to write the thresholds as positive values like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\left\{ \begin{array}{lll}
+2 & if\, b_{0}+b_{1}X_{i}-e_{i}\geq\Pi_{1}\\
+1 & if\,\Pi_{0}\leq b_{0}+b_{1}X_{i}-e_{i}<\Pi_{1}\\
+0 & if\, b_{0}+b_{1}X_{i}-e_{i}<\Pi_{0}
+\end{array}\right.\label{eq:3category1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note we don't really need 3 equations.
+ If we have two, say 
+\begin_inset Formula $Pr(y_{i}=0)$
+\end_inset
+
+ and 
+\begin_inset Formula $Pr(y_{i}=1)$
+\end_inset
+
+, then the chance of ending up in the other category is 
+\begin_inset Formula $1-Pr(y_{i}=0)-Pr(y_{i}=1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In order to translate this into a model involving the cumulative probability
+ distribution, re-arrange so that the random variable 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is by itself.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\left\{ \begin{array}{lll}
+2 & if\, e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}\\
+1 & if\, b_{0}+b_{1}X_{i}-\Pi_{1}<e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{0}\\
+0 & if\, b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}
+\end{array}\right.\label{eq:3category2-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As in the dichotomous case, the probabilities of the various outcomes are
+ calculated by use of cumulative probability.
+ Rearrange 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3category1"
+
+\end_inset
+
+ to convert these into probabilities of the individual outcomes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{lll}
+Pr(y_{i}=2) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}) & =F(b_{0}+b_{1}X_{i}-\Pi_{1})\\
+Pr(y_{i}=1) & =Pr(b_{0}+b_{1}X_{i}-\Pi_{1}\leq e_{i}<b_{0}+b_{1}X_{i}-\Pi_{0})\\
+ & =1-F(b_{0}+b_{1}X_{i}-\Pi_{0})-F(b_{0}+b_{1}X_{i}-\Pi_{1})\\
+Pr(y_{i}=0) & =Pr(b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}) & =1-F(b_{0}+b_{1}X_{i}-\Pi_{0})
+\end{array}\label{eq:3category2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Note that any one category can be thought of as a 
+\begin_inset Quotes eld
+\end_inset
+
+residual
+\begin_inset Quotes erd
+\end_inset
+
+ category after the others have been assigned their shares.
+ The middle category, 
+\begin_inset Formula $y_{i}=1,$
+\end_inset
+
+ is left over if we 
+\begin_inset Quotes eld
+\end_inset
+
+chop off
+\begin_inset Quotes erd
+\end_inset
+
+ the outcomes on the left (
+\begin_inset Formula $y_{i}=2$
+\end_inset
+
+) and the right (
+\begin_inset Formula $y_{i}=0$
+\end_inset
+
+).
+ We are left with the chance of ending up in the middle.
+ In that sense, the probability of landing in the middle is equal to 
+\begin_inset Formula $1.0$
+\end_inset
+
+ minus the chance of a very small amount of random noise (
+\begin_inset Formula $e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}$
+\end_inset
+
+) and minus the chance of having a very large random noise (
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}$
+\end_inset
+
+).
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ Similarly, the chances of being in the top category equal 
+\begin_inset Formula $1$
+\end_inset
+
+ minus the chance of ending up in the lower categories.
+\end_layout
+
+\begin_layout Standard
+Any probability distribution can be used for the random error 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+, the two most common being Logistic and Normal.
+ If the Normal is chosen, it is customary to call this a 
+\begin_inset Quotes eld
+\end_inset
+
+probit
+\begin_inset Quotes erd
+\end_inset
+
+ model and the symbol for the cumulative distribution is usually 
+\begin_inset Formula $\Phi()$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+What if your dependent variable have more categories? Add more thresholds!
+ See the example in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Ordinal-5cat"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Ordinal Model with More Categories
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Ordinal-5cat"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace 1in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/ordinal-3.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Cumulative Probability Interpretation
+\end_layout
+
+\begin_layout Subsection
+The probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is greater than or equal to 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the previous section, I discussed the probability that 
+\begin_inset Formula $y_{i}=j$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Another way to think of the same the model is to consider the probability
+ that the observed outcome is in category 
+\begin_inset Formula $j$
+\end_inset
+
+ or in some 
+\begin_inset Quotes eld
+\end_inset
+
+higher
+\begin_inset Quotes erd
+\end_inset
+
+ category.
+ That is, consider 
+\begin_inset Quotes eld
+\end_inset
+
+cumulative probability,
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $Pr(y_{i}\geq j)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The cumulative model is used mainly because it effectively convers the multicate
+gory outcome model into a sequence of 2 category comparisons.
+ The probability model is somewhat easier to write down because we can use
+ the familiar 
+\begin_inset Quotes eld
+\end_inset
+
+logit
+\begin_inset Quotes erd
+\end_inset
+
+ function.
+ 
+\end_layout
+
+\begin_layout Standard
+Recall that, in the two category case, the logistic model is easily re-arranged
+ so that the probability model
+\begin_inset Formula 
+\begin{equation}
+Pr(y_{i}=1|X_{i})=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+becomes
+\begin_inset Formula 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}=1|X_{i})}{1-Pr(y_{i}=1|X_{i})}\right]=b_{0}+b_{1}X_{i}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+That is to say, the 
+\begin_inset Quotes eld
+\end_inset
+
+log of the odds ratio
+\begin_inset Quotes erd
+\end_inset
+
+ is a linear function of the unknown coefficients and the observed variables.
+ Because the right hand side 
+\begin_inset Quotes eld
+\end_inset
+
+looks like an ordinary regression equation,
+\begin_inset Quotes erd
+\end_inset
+
+ many people are more comfortable interpreting input variables as causing
+ the change in the log of the odds ratio.
+\end_layout
+
+\begin_layout Standard
+Suppose instead we re-write down the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is greater than or equal to 
+\begin_inset Formula $1$
+\end_inset
+
+? (Pay no attention to the fact that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ can only be 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+ for a moment.) Then the dichotomous equation would be the same, except that
+ we now use 
+\begin_inset Quotes eld
+\end_inset
+
+greater than or equal to
+\begin_inset Quotes erd
+\end_inset
+
+ rather than 
+\begin_inset Quotes eld
+\end_inset
+
+equal to
+\begin_inset Quotes erd
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq1|X_{i})}{1-Pr(y_{i}\geq1|X_{i})}\right]=b_{0}+b_{1}X_{i}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a three category model, it is obvious that the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is 0 or greater is 
+\begin_inset Formula $1.0$
+\end_inset
+
+.
+ The chance that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is greater than or equal to 1, or 2, is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{lll}
+Pr(y_{i}\geq1) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{0}) & =F(b_{0}+b_{1}X_{i}-\Pi_{0})\\
+Pr(y_{i}\geq2) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}) & =F(b_{0}+b_{1}X_{i}-\Pi_{1})
+\end{array}\label{eq:3category2-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+That should provide the intuition that we can add more categories and then
+ use a sequence equations to represent a sequence of 
+\begin_inset Quotes eld
+\end_inset
+
+steps,
+\begin_inset Quotes erd
+\end_inset
+
+ or ordered comparisons.
+ Is 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ greater than or equal to 
+\begin_inset Formula $1$
+\end_inset
+
+? Is 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ greater than or equal to 
+\begin_inset Formula $2$
+\end_inset
+
+? 
+\end_layout
+
+\begin_layout Standard
+If there are three outcome categories, we can write down two equations,
+ one for the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is greater than or equal to 
+\begin_inset Formula $1$
+\end_inset
+
+, and an second for the probability that it is greater than or equal to
+ 
+\begin_inset Formula $2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq1)}{1-Pr(y_{i}\geq1)}\right]=b_{0}+b_{1}X_{i}-\Pi_{0}\label{eq:parallel1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq2)}{1-Pr(y_{i}\geq2)}\right]=b_{0}+b_{1}X_{i}-\Pi_{1}\label{eq:parallel2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+More succinctly, for 
+\begin_inset Formula $k$
+\end_inset
+
+ categories, we would write
+\begin_inset Formula 
+\begin{equation}
+for\, j\,\in\{1,\ldots,k\},\, ln\left[\frac{Pr(y_{i}\geq j)}{1-Pr(y_{i}\geq j)}\right]=b_{0}+b_{1}X_{i}-\Pi_{(j-1)}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+By making the outcome of interest into a two category comparison--
+\begin_inset Quotes erd
+\end_inset
+
+bigger than 
+\begin_inset Formula $j$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+not bigger than 
+\begin_inset Formula $j$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, there is a sense in which we have changed this into a series of two-category
+ logistic regressions.
+ 
+\end_layout
+
+\begin_layout Standard
+Of course, this is all consistent with the idea that the chances of observing
+ an outcome of 
+\begin_inset Formula $j$
+\end_inset
+
+ or higher is 
+\begin_inset Formula 
+\begin{equation}
+Pr(y_{i}\geq j)=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i}-\Pi_{(j-1)})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cumulative Probability Implies Parallel Lines.
+\end_layout
+
+\begin_layout Standard
+The basic ordinal logit model is often called the 
+\begin_inset Quotes eld
+\end_inset
+
+parallel lines
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:parallel1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:parallel2"
+
+\end_inset
+
+ are parallel lines--they have the same slope.
+ Hence, a figure displaying lines for the log of the odds ratio would have
+ parallel lines.
+\end_layout
+
+\begin_layout Standard
+This makes the parallel lines assumption painfully obvious.
+ The log odds that the outcome is in a particular category, or higher, depend
+ on characteristics that are considered fixed (from the individual respondent's
+ point of view) like 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+.
+ To explain the differences among respondents, our attention should focus
+ on 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, which is proportional to the log odds ratio.
+\end_layout
+
+\begin_layout Standard
+Another way to think of this is to compare the relative positions of the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+dividing
+\begin_inset Quotes erd
+\end_inset
+
+ lines in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Ordinal-Logit"
+
+\end_inset
+
+.
+ The position of the dividing lines between categories depends only on the
+ differences in 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+linear predictor
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $\eta_{i}=b_{0}+b_{1}X_{i}$
+\end_inset
+
+, is the same in all dividers.
+ The slope of 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ summarizes the effect of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ in the model.
+ The equations that refer to the probability that a respondent will fall
+ into a lower or higher category are parallel lines.
+ A change in the predictor 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ has a proportional impact on 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+, which is then transformed into a statement about probability.
+\end_layout
+
+\begin_layout Standard
+It is not actually necessary to assume that the slope 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ is a constant when moving up the scale.
+ There are implementations of the 
+\begin_inset Quotes eld
+\end_inset
+
+non parallel lines
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ There will be 
+\begin_inset Formula $k-1$
+\end_inset
+
+ separate slope coefficients.
+ The parameters proliferate as more predictors are added in the model.
+ Estimating the extra parameters required by a non-parallel lines model
+ makes this a messy numerical problem, one for which there will be no stable
+ maximum likelihood estimates.
+ 
+\end_layout
+
+\begin_layout Standard
+Most practitioners start with the parallel assumption, they may test it,
+ and pursue the alternative only when they are persuaded it is truly necessary.
+ If the lines are truly not parallel, then at some point one has to start
+ to question the idea that the dependent variable is an ordinal indicator,
+ because nonparallel lines do cross in a way that may change the ordering
+ of the outcomes.
+\end_layout
+
+\begin_layout Section
+Sources of Confusion and Mis-Communication
+\end_layout
+
+\begin_layout Standard
+There are many sources of possible confusion in this setup.
+ I know of at least two dissertation chapters that came out completely wrong
+ because of a mismatch between the software's design and the author's understand
+ing.
+ 
+\end_layout
+
+\begin_layout Standard
+Here are the most frequent sources of confusion.
+\end_layout
+
+\begin_layout Enumerate
+In my Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Ordinal-Logit"
+
+\end_inset
+
+, the ordinal outcomes 
+\begin_inset Quotes eld
+\end_inset
+
+step down
+\begin_inset Quotes erd
+\end_inset
+
+ from left to right.
+ Some models will code coefficients so that outcomes increase from left
+ to right.
+ That has the effect of reversing the sign of parameter estimates for 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Some authors think of the combined effect of 
+\begin_inset Formula $b_{0}+b_{1}X_{i}\pm e_{i}$
+\end_inset
+
+ as the random variable of interest, so the dividing points for that model
+ will include just the 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+ and we think of the error adjusted linear predictor value moving among
+ categories.
+\end_layout
+
+\begin_layout Enumerate
+It is not possible to estimate 
+\begin_inset Formula $\Pi_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $\Pi_{1}$
+\end_inset
+
+, and 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ at the same time.
+ One of those has to be 
+\begin_inset Quotes eld
+\end_inset
+
+fixed
+\begin_inset Quotes erd
+\end_inset
+
+ at 0 in order to allow the others to be estimated.
+ It does not matter which one is fixed, the others will adjust.
+ Some programs fix the separation threshold between the lowest value and
+ the second lowest value at 0 and then provide estimates of 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and the other 
+\begin_inset Formula $\Pi$
+\end_inset
+
+'s.
+ Some programs set the constant 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ at 
+\begin_inset Formula $0$
+\end_inset
+
+ and then estimate all of the threshold parameters.
+\end_layout
+
+\begin_layout Enumerate
+It may be that 
+\begin_inset Formula $\Pi_{0}$
+\end_inset
+
+ or 
+\begin_inset Formula $\Pi_{1}$
+\end_inset
+
+ are thought of as additional 
+\begin_inset Quotes eld
+\end_inset
+
+constants
+\begin_inset Quotes erd
+\end_inset
+
+ and their signs might be positive or negative.
+ Where I have started with a positive threshold parameter 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+ like so:
+\begin_inset Formula 
+\begin{equation}
+b_{0}+b_{1}X_{i}+e_{i}\leq\Pi_{j}
+\end{equation}
+
+\end_inset
+
+some people prefer to think of 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+ as an adjustment in the intercept.
+ 
+\begin_inset Formula 
+\begin{equation}
+e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{j}=(b_{0}-\Pi_{j})+b_{1}X_{i},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+one could as well reverse the scale of the thresholds
+\begin_inset Formula 
+\begin{equation}
+e_{i}\leq b_{0}+b_{1}X_{i}+\Pi_{j}
+\end{equation}
+
+\end_inset
+
+Recognizing the fact that we cannot estimate both 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Pi_{0}$
+\end_inset
+
+, some models will simply combine those two values from the beginning.
+ That is, treat 
+\begin_inset Formula $\eta_{1}=b_{0}-\Pi_{0}$
+\end_inset
+
+ as a combined 
+\begin_inset Quotes eld
+\end_inset
+
+constant
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\zeta_{1}$
+\end_inset
+
+ which usually appears either as a constant in the predictive part of the
+ model (and there is not separate 
+\begin_inset Quotes eld
+\end_inset
+
+threshold
+\begin_inset Quotes erd
+\end_inset
+
+ or separator estimated): 
+\begin_inset Formula 
+\begin{equation}
+\zeta_{1}+b_{1}X_{i}\leq e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or as a new threshold in a model in which there is no 
+\begin_inset Quotes eld
+\end_inset
+
+intercept
+\begin_inset Quotes erd
+\end_inset
+
+ term in the predictive part.
+\begin_inset Formula 
+\begin{equation}
+b_{1}X_{i}+e_{i}<\zeta_{1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+RTFM: Read the Fine Manual
+\end_layout
+
+\begin_layout Standard
+As I warned in a previous section, the ordinal logistic regression model
+ can be written down in many ways.
+ This is sometimes a blessing, sometimes a curse.
+ It certainly forces us to think harder on the question of what we are estimatin
+g.
+\end_layout
+
+\begin_layout Standard
+Over the years, I've had the same conversation with many different students.
+ Here is a dramatic re-interpretation.
+ 
+\end_layout
+
+\begin_layout Quote
+Student: Here's an ordinal logit model output.
+ What do these theta parameters mean?
+\end_layout
+
+\begin_layout Quote
+Professor: How should I know? Why did you choose to estimate them?
+\end_layout
+
+\begin_layout Quote
+Student: I didn't choose them.
+ They just 
+\begin_inset Quotes eld
+\end_inset
+
+came out.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Quote
+Professor: Go read the manual for that program you chose.
+\end_layout
+
+\begin_layout Quote
+Student: I didn't choose this program.
+ I just Googled 
+\begin_inset Quotes eld
+\end_inset
+
+ordinal logit
+\begin_inset Quotes erd
+\end_inset
+
+ and some guy in Australia said I should do this.
+\end_layout
+
+\begin_layout Quote
+Professor: Better read the manual that goes along with that software.
+ 
+\end_layout
+
+\begin_layout Quote
+Student: But this other guy in Brazil says the thetas are probability numbers.
+ What does that mean?
+\end_layout
+
+\begin_layout Quote
+Professor: Hm.
+ Lets get the manual for this software you are using and find out what they
+ are estimating.
+ I'll read it to you.
+\end_layout
+
+\begin_layout Quote
+Student: Thanks, that's what I had been hoping for.
+\end_layout
+
+\begin_layout Standard
+In order for the reader to appreciate the fact that my drama is based on
+ 
+\begin_inset Quotes eld
+\end_inset
+
+true life
+\begin_inset Quotes erd
+\end_inset
+
+ experience, I offer four sets of estimates from commonly used statistical
+ procedures in Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Output-MASS"
+
+\end_inset
+
+ (polr), 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Output-LRM"
+
+\end_inset
+
+ (lrm),
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:SAS-Logistic"
+
+\end_inset
+
+ (SAS), and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Stata-Ordinal"
+
+\end_inset
+
+ (Stata).
+ 
+\end_layout
+
+\begin_layout Standard
+All of these estimates are based on the same data from the National Election
+ Study of 2002.
+ These models explore the effect of the respondent's political ideology
+ on the respondent's opinion about the economy.
+ I did not invest much thought in this choice of variables; there is no
+ deep theory here.
+ The model asserts that people who are conservative may have a different
+ economic evaluations than people who are liberal.
+ Since the president was a Republican at the time, my guess was that people
+ who liked the conservative president were more likely to say the economy
+ has gotten better.
+ Political ideology is measured by the usual self-placement along a scale
+ from 
+\begin_inset Quotes eld
+\end_inset
+
+extremely liberal
+\begin_inset Quotes erd
+\end_inset
+
+ to 
+\begin_inset Quotes eld
+\end_inset
+
+extremely conservative
+\begin_inset Quotes erd
+\end_inset
+
+, while the outcome variable as the respondents declare whether they think
+ that the nation's economy has been 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+, the same, or 
+\begin_inset Quotes eld
+\end_inset
+
+worse
+\begin_inset Quotes erd
+\end_inset
+
+ during the last year.
+ A crosstabulation of the respondents is presented in 
+\begin_inset Quotes eld
+\end_inset
+
+column proportion form
+\begin_inset Quotes erd
+\end_inset
+
+ in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Crosstab"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(foreign)
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002 <- read.xport("/home/pauljohn/ps/ps707/LogisticRegression/PJTEST.sasxport"
+) 
+\end_layout
+
+\begin_layout Plain Layout
+
+bushvote <- nes2002$V023111 
+\end_layout
+
+\begin_layout Plain Layout
+
+bushvote[bushvote>3] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+bushvote[bushvote==0] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+bushvote[bushvote==1] <- 0
+\end_layout
+
+\begin_layout Plain Layout
+
+bushvote[bushvote==3] <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+democ <- ifelse(nes2002$V023036==1,1,0) 
+\end_layout
+
+\begin_layout Plain Layout
+
+repub <- ifelse(nes2002$V023036==2,1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$V023027[ nes2002$V023027 == 9] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$economy <- ordered(nes2002$V023027,labels=c("better","same","worse"))
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$conservatism <- nes2002$V023022
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$democ <- ifelse(nes2002$V023036==1,1,0) 
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$repub <- ifelse(nes2002$V023036==2,1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+#library(foreign)
+\end_layout
+
+\begin_layout Plain Layout
+
+#write.dta(nes2002, file="nes2002.dta")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Economic Expectations and Political Ideology: A Crosstabulation
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Crosstab"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+with(nes2002, prop.table(table(economy,conservatism), margin = 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Conservatism.
+ We hear a lot of talk these days about liberals and conservatives.
+ When it comes to politics, do you usually think of yourself as EXTREMELY
+ LIBERAL, LIBERAL, SLIGHTLY LIBERAL, MODERATE OR MIDDLE OF THE ROAD, SLIGHTLY
+ CONSERVATIVE, CONSERVATIVE, EXTREMELY CONSERVATIVE, or haven't you thought
+ much about this? 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Economy.
+ Now thinking about the economy in the country as a whole, would you say
+ that over the past year the nation's economy has gotten BETTER, STAYED
+ ABOUT THE SAME, or gotten WORSE? 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Output from MASS polr
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Output-MASS"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library (MASS) 
+\end_layout
+
+\begin_layout Plain Layout
+
+polr1 <- polr(economy~conservatism, data=nes2002, Hess=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(polr1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+polr
+\end_layout
+
+\begin_layout Standard
+The R package that is distributed in support of Venables and Ripley's 
+\emph on
+Modern Applied Statistics
+\emph default
+ is called MASS.
+ In that package, there is a routine called 
+\begin_inset Quotes eld
+\end_inset
+
+polr
+\begin_inset Quotes erd
+\end_inset
+
+ which stands for 
+\begin_inset Quotes eld
+\end_inset
+
+proportional odds logistic regression.
+\begin_inset Quotes erd
+\end_inset
+
+ It can be used to fit ordinal logistic regression models.
+ The threshold parameter 
+\begin_inset Formula $\Pi_{j}$
+\end_inset
+
+ in my treatment is called zeta, 
+\begin_inset Formula $\zeta_{j}$
+\end_inset
+
+, in their manual.
+ 
+\end_layout
+
+\begin_layout Standard
+The polr documentation says they are thinking of the range of observed outcomes
+ as a result of dividing the real numbers like so: 
+\begin_inset Formula $(-\infty,\zeta_{1},\zeta_{2},...,\zeta_{K},+\infty)$
+\end_inset
+
+.
+ So the lowest categorical outcome is observed when the latent variable
+ lies between 
+\begin_inset Formula $-\infty$
+\end_inset
+
+ and 
+\begin_inset Formula $\zeta_{1}$
+\end_inset
+
+.
+ The next value is observed when it is between 
+\begin_inset Formula $\zeta_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\zeta_{2}$
+\end_inset
+
+, and so forth.
+ What is the latent variable? The polr help page also provides the formula:
+\begin_inset Formula 
+\begin{equation}
+logit\, P(y_{i}\leq k|X_{i})=\zeta_{k}-X_{i}b\label{eq:VR}
+\end{equation}
+
+\end_inset
+
+In this context, 
+\begin_inset Formula $X_{i}b$
+\end_inset
+
+ is the linear predictor, which is often called 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+.
+ For example, 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+= 
+\begin_inset Formula $b_{1}X1_{i}+b_{2}X2_{i}$
+\end_inset
+
+ (if there are 2 input variables).
+ Note that there is no intercept coefficient 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ in this formulation, it has been fixed at 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ That means we can estimate 
+\begin_inset Formula $k-1$
+\end_inset
+
+ threshold-separating-parameters for a 
+\begin_inset Formula $k$
+\end_inset
+
+ category model.
+\end_layout
+
+\begin_layout Standard
+A drawing of that particular parameterization is presented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:POLR"
+
+\end_inset
+
+.
+ The observed outcome categories are numbered 
+\begin_inset Formula $1,2,\ldots,K$
+\end_inset
+
+, and the 
+\begin_inset Formula $k$
+\end_inset
+
+'th threshold separates the chance that 
+\begin_inset Formula $y_{i}\leq k$
+\end_inset
+
+ from the chance that the outcome is greater than 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The model is designed so that the threshold separators 
+\begin_inset Formula $\zeta_{k}$
+\end_inset
+
+ grow larger as 
+\begin_inset Formula $k$
+\end_inset
+
+ increases, so they have to be placed from left to right in the figure.
+ Compared to my notation, this one has threshold parameters and with reversed
+ signs.
+ 
+\end_layout
+
+\begin_layout Standard
+The authors want to investigate the chances that an outcome is in a designated
+ category 
+\begin_inset Formula $k$
+\end_inset
+
+ 
+\emph on
+or lower.
+ 
+\emph default
+That means the probability model must be
+\begin_inset Formula 
+\begin{equation}
+Pr(y_{i}\leq k|X_{i})=Pr(e_{i}<\zeta_{k}-X_{i}b)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The chance that the outcome will be 
+\begin_inset Formula $k$
+\end_inset
+
+ or smaller is equal to the chance that a random noise 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is smaller than 
+\begin_inset Formula $\zeta_{k}-X_{i}b.$
+\end_inset
+
+ That, of course, is the same as the chance that the linear predictor 
+\begin_inset Formula $X_{i}b$
+\end_inset
+
+ plus the random noise 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ remains below a threshold:
+\begin_inset Formula 
+\begin{equation}
+Prob(y_{i}\leq k|X_{i})=Prob(X_{i}b+e_{i}<\zeta_{k})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A polr Polychotomy
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:POLR"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/polr-1.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The polr model, Venables and Ripley use a minus sign in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VR"
+
+\end_inset
+
+.
+ By writing 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VR"
+
+\end_inset
+
+ with a negative sign, it allows for the re-arranged model to have an intuitive
+ interpretation.
+ Simply put, if the linear predictor 
+\begin_inset Quotes eld
+\end_inset
+
+gets bigger,
+\begin_inset Quotes erd
+\end_inset
+
+ then chance of a higher outcome is increased.
+ 
+\end_layout
+
+\begin_layout Standard
+To illustrate that change, let's compare two cases.
+\end_layout
+
+\begin_layout Enumerate
+Imagine 
+\begin_inset Formula $\eta_{i}=X_{i}b=0$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+If 
+\begin_inset Formula $Xb$
+\end_inset
+
+ were 0, what will be the probability distribution of outcomes? Then the
+ probabilities would be represented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:polr-Xb=0"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Imaine 
+\begin_inset Formula $\eta_{i}=X_{i}b=2.2$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+What if 
+\begin_inset Formula $Xb$
+\end_inset
+
+ is a positive number, say 2.2.
+ Then the dividers in the distribution change in the way shown in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Shift-in-Probabilities"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The probability of a low outcome is reduced, while the probability of the
+ biggest outcome is increased.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+polr probabilities when 
+\begin_inset Formula $X_{i}b=0$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:polr-Xb=0"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/polr-2.0.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Shift in Probabilities
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Shift-in-Probabilities"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/polr-2.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+SAS's Proc Logistic went in the opposite direction.
+ The default coding went in the other direction, so that when there was
+ a large, statistically significant coefficient, it indicated that the chance
+ of a higher outcome was growing smaller.
+ 
+\end_layout
+
+\begin_layout Section
+SAS Backwards Logistic
+\end_layout
+
+\begin_layout Standard
+In SAS PROC LOGISTIC, the parameter estimate for the slopes of input variables
+ are of the opposite sign.
+ Observe in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:SAS-Logistic"
+
+\end_inset
+
+, the parameter estimate is 0.2805.
+ 
+\end_layout
+
+\begin_layout Standard
+Why does the SAS estimate come out with the opposite value? It is as simple
+ as this.
+ Where the polr model was estimating this expression,
+\begin_inset Formula 
+\begin{equation}
+logit\, P(y_{i}\leq k|X_{i})=\zeta_{k}-X_{i}b\label{eq:VR-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+SAS is estimating this
+\begin_inset Formula 
+\begin{equation}
+logit\, Pr(y_{i}\leq k|X_{i})=\zeta_{k}+X_{i}b
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The sign on the coefficient 
+\begin_inset Formula $b$
+\end_inset
+
+ is reversed, so the estimates are reversed.
+ The sign on the threshold/intercept estimates is the same.
+\end_layout
+
+\begin_layout Standard
+SAS is the only program that I've tested in which the slope estimates are
+ reversed.
+ The other programs try to help users avoid the mistake that so many SAS
+ users have made, thinking that the effects in their data are all opposite
+ of their expectations.
+ Most users like to think of the input variables as predictors that increase
+ the chances of more highly ranked outcomes.
+ In a political participation study, we might say 
+\begin_inset Quotes eld
+\end_inset
+
+high
+\begin_inset Quotes erd
+\end_inset
+
+ represents 
+\begin_inset Quotes eld
+\end_inset
+
+did vote
+\begin_inset Quotes erd
+\end_inset
+
+ while 
+\begin_inset Quotes eld
+\end_inset
+
+low
+\begin_inset Quotes erd
+\end_inset
+
+ represents 
+\begin_inset Quotes eld
+\end_inset
+
+did not.
+\begin_inset Quotes erd
+\end_inset
+
+ A positive slope coefficient should indicate that the chance of voting
+ is increased.
+ If we are modeling a person's vote for a Republican candidate, we usually
+ think of 
+\begin_inset Quotes eld
+\end_inset
+
+high
+\begin_inset Quotes erd
+\end_inset
+
+ meaning 
+\begin_inset Quotes eld
+\end_inset
+
+yes,
+\begin_inset Quotes erd
+\end_inset
+
+ the respondent voted for a Republican.
+ 
+\end_layout
+
+\begin_layout Standard
+This is only a matter of interpretation, however.
+ The original SAS model was designed to think of the low outcome as the
+ one to be preferred, as in 
+\begin_inset Quotes eld
+\end_inset
+
+lacking tumors
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+no heart disease.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SAS Logistic is Still Backwards
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:SAS-Logistic"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+proc logistic data=nes2002;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   model economy = conservatism;
+\end_layout
+
+\begin_layout Plain Layout
+
+run;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+            Testing Global Null Hypothesis: BETA=0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    Test                 Chi-Square       DF     Pr > ChiSq
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    Likelihood Ratio        41.1011        1         <.0001
+\end_layout
+
+\begin_layout Plain Layout
+
+    Score                   39.4521        1         <.0001
+\end_layout
+
+\begin_layout Plain Layout
+
+    Wald                    39.2135        1         <.0001
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            Analysis of Maximum Likelihood Estimates
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+                                 Standard       Wald
+\end_layout
+
+\begin_layout Plain Layout
+
+ Parameter           DF Estimate    Error Chi-Square Pr > ChiSq
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ Intercept    better  1  -4.2458   0.2526   282.5931     <.0001
+\end_layout
+
+\begin_layout Plain Layout
+
+ Intercept    same    1  -2.3226   0.2196   111.9058     <.0001
+\end_layout
+
+\begin_layout Plain Layout
+
+ conservatism         1   0.2805   0.0448    39.2135     <.0001
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In more recent versions of the SAS program, PROC LOGISTIC has been generalized
+ to allow users to reverse the signs by the insertion of an option called
+ DESCENDING.
+\end_layout
+
+\begin_layout Section
+Stata has the Slope We Expect, but Reversed Thresholds
+\end_layout
+
+\begin_layout Standard
+In polr and PROC LOGISTIC, the 
+\begin_inset Quotes eld
+\end_inset
+
+intercept
+\begin_inset Quotes erd
+\end_inset
+
+ interpretation for the category separators was used.
+ We think of the separation of the categorical outcomes as being driven
+ by the replacement of 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ with a sequence of separating constants.
+ 
+\end_layout
+
+\begin_layout Standard
+In Stata, those separator constants are given the 
+\begin_inset Quotes eld
+\end_inset
+
+threshold
+\begin_inset Quotes erd
+\end_inset
+
+ interpretation, and thus their effects are reversed.
+ See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Stata-Ordinal"
+
+\end_inset
+
+.
+ The Stata manual explains their version of the model (I've reversed the
+ roles of 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ to be consistent with the rest of this essay).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+The probability of observing outcome 
+\begin_inset Formula $j$
+\end_inset
+
+ corresponds to the probability that the estimated linear function, plus
+ random error, is within the range of the cutpoints estimated for the outcome:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Pr(outcome_{i}=j)=Pr(\kappa_{j-1}<\beta_{1}x1_{i}+\beta_{2}x2_{i}+\cdots+\beta_{k}xk_{i}+u_{i}\leq\kappa_{j})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ is assumed to be logistically distributed in ordered logit
+\begin_inset Quotes erd
+\end_inset
+
+ (STATABASE REFERENCEMANUAL RELEASE 11, College Station, TX: Stata Press,
+ 2009, p.
+ 1268).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Stata Ordinal Logistic Regression
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Stata-Ordinal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ ologit economy conservatism
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Iteration 0:   log likelihood = -865.68333  
+\end_layout
+
+\begin_layout Plain Layout
+
+Iteration 1:   log likelihood = -845.38741  
+\end_layout
+
+\begin_layout Plain Layout
+
+Iteration 2:   log likelihood = -845.13286  
+\end_layout
+
+\begin_layout Plain Layout
+
+Iteration 3:   log likelihood = -845.13276  
+\end_layout
+
+\begin_layout Plain Layout
+
+Iteration 4:   log likelihood = -845.13276  
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Ordered logistic regression                       Number of obs   =    
+   1241
+\end_layout
+
+\begin_layout Plain Layout
+
+                                                  LR chi2(1)      =    
+  41.10
+\end_layout
+
+\begin_layout Plain Layout
+
+                                                  Prob > chi2     =    
+ 0.0000
+\end_layout
+
+\begin_layout Plain Layout
+
+Log likelihood = -845.13276                       Pseudo R2       =     0.0237
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+------------------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+     economy |   Coef.
+ Std.Err.
+  z   P>|z|  [95% Conf.
+ Interval]
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------+----------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+conservatism | -.2805   .0450  -6.23 0.000  -.3687751    -.192286
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------+----------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+       /cut1 | -4.2458  .2532               -4.742078   -3.749548
+\end_layout
+
+\begin_layout Plain Layout
+
+       /cut2 | -2.3226  .2204               -2.754558    -1.89068
+\end_layout
+
+\begin_layout Plain Layout
+
+------------------------------------------------------------------------------
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Goldilocks prefers lrm
+\end_layout
+
+\begin_layout Standard
+I had not realized this until I was done with this exercise.
+ The routine that provides parameter estimates of the divider coefficients
+ and the slopes to match the theory I presented in Section 2 is Professor
+ Frank Harrell's lrm estimator, which is part of a package that supports
+ his fine book, 
+\emph on
+Regression Modeling Strategies
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+The output from lrm is presented in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Output-LRM"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Output Harrell's lrm
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Output-LRM"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rms)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lrm1 <- lrm(economy~conservatism, data=nes2002)
+\end_layout
+
+\begin_layout Plain Layout
+
+lrm1
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Calculating Predicted Probabilties
+\end_layout
+
+\begin_layout Standard
+Recall that, while using the MASS package, the ordinal regression model
+ is called a 
+\begin_inset Quotes eld
+\end_inset
+
+proportional odds
+\begin_inset Quotes erd
+\end_inset
+
+ model and the fitting function is called 
+\begin_inset Quotes eld
+\end_inset
+
+polr
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We previously used this fitting function:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+polr1 <- polr(economy~conservatism, data=nes2002, Hess=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The function predict(polr1) returns a categorical output, the most likely
+ outcome for each row of the data frame.
+ This is a large data set, I won't print out all of the 
+\begin_inset Quotes eld
+\end_inset
+
+Same
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Worse
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Better
+\begin_inset Quotes erd
+\end_inset
+
+ outcomes, but the tables don't hurt (much).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newds <- polr1$model
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr1p1 <- predict(polr1)
+\end_layout
+
+\begin_layout Plain Layout
+
+(t1 <- table(newds$polr1p1))
+\end_layout
+
+\begin_layout Plain Layout
+
+prop.table(table(newds$polr1p1, newds$conservatism), 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see, this model is a bit disappointing.
+ This is not an uncommon problem.
+ It predicts that every single respondent will say 
+\begin_inset Quotes eld
+\end_inset
+
+worse
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In the data, the counts of 
+\begin_inset Quotes eld
+\end_inset
+
+worse
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+same
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ are 921, 258, and 62.
+ The proportion of people predicted to say 
+\begin_inset Quotes eld
+\end_inset
+
+worse
+\begin_inset Quotes erd
+\end_inset
+
+ is 1.0 in every column.
+\end_layout
+
+\begin_layout Standard
+The cross tabulation of the observed and predicted outcomes is often used
+ to create a 
+\begin_inset Quotes eld
+\end_inset
+
+box score
+\begin_inset Quotes erd
+\end_inset
+
+ of the model's predictions.
+ This one predicts 921/1241 correctly, and 320/1240 incorrectly.
+ The model predicts 74.2% correctly, but it is really quite a shallow victory.
+ You could have predicted just as well without doing the regression at all.
+ That's why 
+\begin_inset Quotes eld
+\end_inset
+
+percent correctly predicted
+\begin_inset Quotes erd
+\end_inset
+
+ is not a powerful indicator of a model's quality.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+table(newds$polr1p1, newds$economy)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Adding the option type=
+\begin_inset Quotes erd
+\end_inset
+
+p
+\begin_inset Quotes erd
+\end_inset
+
+ indicates that we want the probabilities for the 3 categories to be returned
+ in columns.
+ Lets just inspect the first 5 rows of the new data set.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr1p2 <- predict(polr1, type="p")
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(newds)
+\end_layout
+
+\begin_layout Plain Layout
+
+newds[1:5, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I attempt to generate a bit of diversity in the predictions by throwing
+ in more variables.
+ Including additional variables, political party indicator variables( 
+\begin_inset Quotes eld
+\end_inset
+
+repub
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+democ
+\begin_inset Quotes erd
+\end_inset
+
+), the 
+\begin_inset Quotes eld
+\end_inset
+
+Bush Thermometer
+\begin_inset Quotes erd
+\end_inset
+
+ scale and education (V023131) coded as a categorical predictor.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library (MASS) 
+\end_layout
+
+\begin_layout Plain Layout
+
+polr2 <- polr(economy~conservatism+repub+democ+V023010 + as.factor(V023131),
+ data=nes2002, Hess=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(polr2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have only meager success in diversifying my predictions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newds <- polr2$model
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr2p1 <- predict(polr2)
+\end_layout
+
+\begin_layout Plain Layout
+
+(t2 <- table(newds$polr2p1))
+\end_layout
+
+\begin_layout Plain Layout
+
+table(newds$polr2p1, newds$economy)
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr2p2 <- predict(polr2, type="p")
+\end_layout
+
+\begin_layout Plain Layout
+
+newds[1:5, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library (MASS) 
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income <- factor(nes2002$V023149, levels=c("1","2","3","4","5","6","7"))
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income <- as.numeric(levels(nes2002$income))[nes2002$income]
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income[nes2002$income == 4] <- 3
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income[nes2002$income == 5] <- 4
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income[nes2002$income == 6] <- 5
+\end_layout
+
+\begin_layout Plain Layout
+
+nes2002$income[nes2002$income == 7] <- 6
+\end_layout
+
+\begin_layout Plain Layout
+
+table(nes2002$income)
+\end_layout
+
+\begin_layout Plain Layout
+
+race.black <- ifelse(nes2002$V023150 %in% c("1"),1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+race.hispanic <- ifelse(nes2002$V023150 %in% c("4"),1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+race.white <- ifelse(nes2002$V023150 %in% c("5"),1,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+table(race.black)
+\end_layout
+
+\begin_layout Plain Layout
+
+table(race.white)
+\end_layout
+
+\begin_layout Plain Layout
+
+polr3 <- polr(economy~conservatism+repub+democ+V023010 + as.factor(V023131)
+ + race.black + race.white + race.hispanic + income , data=nes2002, Hess=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(polr3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newds <- polr3$model
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr3p1 <- predict(polr3)
+\end_layout
+
+\begin_layout Plain Layout
+
+(t3 <- table(newds$polr3p1))
+\end_layout
+
+\begin_layout Plain Layout
+
+table(newds$polr3p1, newds$economy)
+\end_layout
+
+\begin_layout Plain Layout
+
+newds$polr3p2 <- predict(polr3, type="p")
+\end_layout
+
+\begin_layout Plain Layout
+
+newds[1:5, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Well, supposing I did have to make something of this particular model, what
+ is the next step? One option is to calculate the probability of a particular
+ outcome for various combinations of the input variables.
+ This can lead to a nice table.
+ Lets look at the crosstabulation of income (on the 7 point scale) and conservat
+ism (also on a 7 point scale).
+ The distribution of respondents is: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%dependent variable=state of econ, independent variable=ideology
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(t6 <- with(nes2002, table(conservatism, income )))
+\end_layout
+
+\begin_layout Plain Layout
+
+prop.table(t6, 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,2003 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Poisson Distribution
+\end_layout
+
+\begin_layout Author
+Linsey Moddelmog and Paul Johnson
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Poisson distribution is used to represent integer-valued counts, such
+ as the number of events observed during a period of time or the number
+ of things observed in a given amount of space.
+\end_layout
+
+\begin_layout Standard
+The Poisson distribution is single-peaked--it has only one mode.
+ However, its shape can change dramatically.
+ If the mode is 0, the Poisson's probability mass function can look like
+ a 
+\begin_inset Quotes eld
+\end_inset
+
+ski slope.
+\begin_inset Quotes erd
+\end_inset
+
+ On the other hand, if the mode is some large value, then the Poisson distributi
+on has a distribution which is symmetrical (to the eye, it is almost Normal
+ in appearance0.
+ The Poisson is a discrete distribution, and so it only approximates a continuou
+s Normal to a limited extent.
+ 
+\end_layout
+
+\begin_layout Standard
+Typically used in event count data to show, for example the number of protests
+ in London each day for the month of July.
+\end_layout
+
+\begin_layout Section
+Mathematical Description of the Poisson Distribution
+\end_layout
+
+\begin_layout Standard
+The Poisson has a single parameter, which is customarily known as 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ (The Greek letter lambda).
+ 
+\end_layout
+
+\begin_layout Standard
+The Poisson probability mass function says the probability that there are
+ exactly 
+\begin_inset Formula $x$
+\end_inset
+
+ occurrences (
+\begin_inset Formula $x$
+\end_inset
+
+ has to be a non-negative integer) in a time-interval is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(x;\lambda)=\frac{e^{-\lambda}\lambda^{x}}{x!}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $e$
+\end_inset
+
+ is Euler's constant, the base of the natural logarithm (approximately 2.71828...),
+ and 
+\begin_inset Formula $x!$
+\end_inset
+
+ is the factorial of 
+\begin_inset Formula $x$
+\end_inset
+
+ (
+\begin_inset Formula $x!=x\cdot(x-1)\cdot\cdots2\cdot1$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The Poisson distribution has a singular distinction that its expected value
+ is equal to its variance, and both of them are equal to 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ Formally, 
+\begin_inset Formula 
+\[
+E(x)=\lambda
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+Var(x)=\lambda
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is a positive real number, equal to the expected number of occurrences
+ that occur during the given interval.
+ For instance, if the events occur on average every 4 minutes, and you are
+ interested in the number of events occurring in a 10 minute interval, you
+ would use as model a Poisson distribution with 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ = 2.5.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Poisson_distribution
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter lambda can be estimated by dividing the average number of
+ successes observed over a certain amount of time, 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+, by the length of the time interval, 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\begin_inset Formula 
+\[
+\hat{\lambda}=\frac{\bar{x}}{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Other Moments
+\end_layout
+
+\begin_layout Standard
+The skewness is 
+\begin_inset Formula 
+\[
+Skewness(x)=\lambda^{-1/2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Kurtosis is
+\begin_inset Formula 
+\[
+Kurtosis(x)=\lambda
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mathematical background
+\end_layout
+
+\begin_layout Subsection
+Euler's constant
+\end_layout
+
+\begin_layout Standard
+Poisson uses the exponential function with base of the natural log, 
+\begin_inset Formula $e$
+\end_inset
+
+ known as Euler's (pronounced in English as 
+\begin_inset Quotes eld
+\end_inset
+
+Oiler's
+\begin_inset Quotes erd
+\end_inset
+
+) constant.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Exponentials"
+
+\end_inset
+
+ shows the shape of the functions 
+\begin_inset Formula $e^{x}$
+\end_inset
+
+, which is also known as 
+\begin_inset Formula $exp(x)$
+\end_inset
+
+, and 
+\begin_inset Formula $e^{-x}$
+\end_inset
+
+(or 
+\begin_inset Formula $exp(-x)$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Exponential Function
+\begin_inset CommandInset label
+LatexCommand label
+name "Exponentials"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,5, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+eulers <- exp(xvals)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xvals, eulers, type="l", xlab="x",ylab=expression(e^x == exp(x)))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+eulers <- exp(-xvals)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xvals, eulers, type="l", xlab="x",ylab=expression(e^(-x) == exp(-x)))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Poisson as an Infinite Sum
+\end_layout
+
+\begin_layout Standard
+Recall that the cumulative distribution--the sum of probabilities of all
+ possible outcomes--must equal 1.
+\end_layout
+
+\begin_layout Standard
+Begin with a 
+\begin_inset Quotes eld
+\end_inset
+
+guess
+\begin_inset Quotes erd
+\end_inset
+
+ that the probability mass function might be
+\begin_inset Formula 
+\[
+\frac{\lambda^{x}}{x!}
+\]
+
+\end_inset
+
+ The values that this implies are presented in this table:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="11">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\ldots$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\infty$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{x}/x!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{2}/2!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{3}/3!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{4}/4!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{5}/5!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda^{\infty}/\infty!$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The sum of the items in the second row would be
+\begin_inset Formula 
+\begin{equation}
+1+\lambda+\lambda^{2}/2!+\lambda^{3}/3!+\lambda^{4}/4!+\lambda^{5}/5!+\ldots+\lambda^{\infty}/\infty!\label{eq:infsum}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+which is one definition of the value of 
+\begin_inset Formula $exp(\lambda)$
+\end_inset
+
+.
+ The reader can check that differentiating the sum in expression 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:infsum"
+
+\end_inset
+
+ simply gives back exactly the same sum, one piece of evidence that this
+ really is 
+\begin_inset Formula $exp(\lambda)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In order to turn the values shown in the table into probabilities, then,
+ it is only necessary to divide by 
+\begin_inset Formula $exp(\lambda)$
+\end_inset
+
+, because doing so makes the sum of all probabilities equal to one.
+ Hence, if we started with the kernel of the probability mass function,
+ 
+\begin_inset Formula $\lambda^{x}/x!$
+\end_inset
+
+, and divide by 
+\begin_inset Formula $exp(\lambda)$
+\end_inset
+
+, we have a probability mass function
+\begin_inset Formula 
+\[
+\frac{\lambda^{x}}{exp(\lambda)x!}=\frac{exp(-\lambda)\lambda^{x}}{x!}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+The appearance of the probability mass function changes radically as 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is changed.
+ As 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is increased beyond 10, the appearance is rather similar to a Normal density.
+ 
+\end_layout
+
+\begin_layout Standard
+The Poisson is a discrete distribution, and to emphasize that fact, we indicate
+ the probability of each value of 
+\begin_inset Formula $x$
+\end_inset
+
+ by a bar with a small dot on top.
+ This kind of representation is used because it helps the reader to remember
+ that the values being considered are discrete integers (the Poisson is
+ not defined for values such as 1.1).
+ 
+\end_layout
+
+\begin_layout Standard
+In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "smallLambda"
+
+\end_inset
+
+, the probabilities for several small values of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+are presented.
+ Note that as long as 
+\begin_inset Formula $\lambda<1$
+\end_inset
+
+, the expected value is less than 
+\begin_inset Formula $1$
+\end_inset
+
+ and the mode is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "biglambda"
+
+\end_inset
+
+, the tendency of the Poisson to approach a symmetric, single-peaked distributio
+n is illustrated.
+ 
+\end_layout
+
+\begin_layout Standard
+If we choose to play games with the reader, we can make the Poisson look
+ more and more like a Normal distribution.
+ The same data is plotted in Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Stair-Step-Illustration"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Smooth-Lines-Create"
+
+\end_inset
+
+.
+ The only difference is that the probability values are connected by lines.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Stair-Step-Illustration"
+
+\end_inset
+
+, the line is a 
+\begin_inset Quotes eld
+\end_inset
+
+step
+\begin_inset Quotes erd
+\end_inset
+
+ function, which is closer to maintaining the meaning of the discrete distributi
+on, while Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Smooth-Lines-Create"
+
+\end_inset
+
+ uses R's default line to 
+\begin_inset Quotes eld
+\end_inset
+
+smooth
+\begin_inset Quotes erd
+\end_inset
+
+ out the kinks between points.
+ A set of plots created with a smoothed line appears very Normal indeed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Poisson with small 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ values
+\begin_inset CommandInset label
+LatexCommand label
+name "smallLambda"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+createPlot <- function(xin,lamb){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ probability <- dpois(xin,lambda=lamb)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ myTitle <- bquote( lambda == .(lamb))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ plot(xin, probability, ylab = "probability",type="h",main = myTitle)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ points(xin,probability,pch=16,cex=0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(3,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(0, 15, 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lambdas <- c(0.01, 0.1, 0.25, 0.5, 1.0, 2.0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  for (i in 1:6){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+createPlot(x,lambdas[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Poisson with larger
+\begin_inset Formula $\lambda$
+\end_inset
+
+ values
+\begin_inset CommandInset label
+LatexCommand label
+name "biglambda"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+createPlot <- function(xin,lamb){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ probability <- dpois(xin,lambda=lamb)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ myTitle <- bquote( lambda == .(lamb))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ plot(xin, probability, ylab = "probability",type="h",main = myTitle)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ points(xin,probability,pch=16,cex=0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow= c(3,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:6){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  x <- seq(0, uppers[i], 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   createPlot(x,lambdas[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Stair Step Illustration of a Poisson
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Stair-Step-Illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+createPlot <- function(xin,lamb){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ probability <- dpois(xin,lambda=lamb)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ myTitle <- bquote( lambda == .(lamb))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ plot(xin, probability, ylab = "probability",type="s",main = myTitle)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(3,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:6){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    x <- seq(0, uppers[i], 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    createPlot(x,lambdas[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Smooth Lines Create Illusion of Normality
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Smooth-Lines-Create"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+createPlot <- function(xin,lamb){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ probability <- dpois(xin,lambda=lamb)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ myTitle <- bquote( lambda == .(lamb))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ plot(xin, probability, ylab = "probability",type="l",main = myTitle)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow = c(3,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:6){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    x <- seq(0, uppers[i], 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    createPlot(x,lambdas[i])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,240 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Geometric//}}
+\makeatother
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Geometric}
+
+
+\author{Linsey Moddelmog and Paul Johnson}
+
+
+\date{February 9, 2006}
+
+\maketitle
+
+\section{Introduction}
+
+The geometric distribution is used to represent the probabilities
+of discrete events. It is very similar to the negative binomial distribution,
+in that it is measuring the probability of success or failures of
+an event; and therefore uses interval or discrete data. Additionally,
+the data represent independent events, or events that are not influenced
+by other events; think coin flips or rolling of the dice.
+
+There are two ways of thinking about the Geometric distribution and
+hence two different ways in which it can be operationalized:
+
+``If the probability of success on each trial is $p$, then the probability
+that $n$ trials are needed to get one success is''
+\[
+Geometric\, Version\,1:Prob(x=n)=(1-p)^{n-1}p
+\]
+
+
+for n=1,2,3, {[}non-negative integers{]}... 
+
+Equivalently the probability that there are $m$ failures before the
+first success is''%
+\footnote{http://en.wikipedia.org/wiki/Geometric\_distribution%
+}
+
+\[
+Geometric\, Version\,2:Prob(y=m)=(1-p)^{m}p
+\]
+
+
+The difference between the two formulations is that one describes
+a success on the $n$'th event while the other describes $m$ successive
+failures before the $n$'th event on which success occurs. The only
+real difference between the two models is that the lowest possible
+value of $x$ that can be observed is 1, while the lowest value of
+$y$ that can be observed is $0$.
+
+The second approach is used in R.
+
+
+\section{Moments}
+
+The expected value of a geometrically distributed variable with probability
+of success $p$ is
+\[
+E(x)=\frac{1}{p}
+\]
+
+
+The variance is
+\[
+Var(x)=\sigma^{2}=\frac{1-p}{p^{2}}
+\]
+
+
+The skewness is
+\[
+Skewness(x)=\frac{2-p}{\sqrt{1-p}}
+\]
+
+
+The kurtosis excess is
+\[
+Kurtosis(x)=\frac{p^{2}-6p+6}{1-p}
+\]
+
+
+
+\section{Illustrations}
+
+In Figure \ref{cap:Geometric-Distribution}, the Geometric probability
+mass function is illustrated for probabilities of success ranging
+from 0.1 to 0.9. Note that when the probability of success on an individual
+trial is small, the probability mass is spread more evenly across
+the interval being considered (which ranges from 0 to 19). On the
+contrary, when the probability of success is high, then it is not
+very likely that the process will continue for more than a few steps
+before it is terminated by a single success. The graphs for the high
+probability models are a bit deceptive because they make it appear
+as though the process continuing for more than a few steps drops to
+0.0 and never changes. That is an optical illusion. The value is slowly
+droping with each increase.
+
+\begin{figure}
+\caption{Geometric Distribution\label{cap:Geometric-Distribution}}
+
+
+<<fig=T,echo=F, height=9,width=6.5>>=
+
+
+makePlot <- function(myrange, pr){
+
+   myTitle <- paste("Prob.=",pr)
+
+   myprobs <- dgeom(myrange, prob=pr)
+
+   plot (myrange, myprobs, type="h", main=myTitle,xlab="Failures before first success",ylab="probability", ylim=c(0,.75))
+
+   points(myrange, myprobs, pch=16, cex=0.5)
+
+}
+
+
+
+par(mfrow = c(3,3))
+
+therange <- 0:19
+
+pvals <- c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)
+
+
+
+for (i in 1:9) {
+
+  makePlot(therange, pvals[i])
+
+}
+
+@
+
+\end{figure}
+
+\end{document}

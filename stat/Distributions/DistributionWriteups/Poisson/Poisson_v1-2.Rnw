@@ -1,0 +1,512 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Poisson//}}
+\makeatother
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Poisson Distribution}
+
+
+\author{Linsey Moddelmog and Paul Johnson}
+
+
+\date{June 10, 2013}
+
+\maketitle
+
+\section{Introduction}
+
+The Poisson distribution is used to represent integer-valued counts,
+such as the number of events observed during a period of time or the
+number of things observed in a given amount of space.
+
+The Poisson distribution is single-peaked--it has only one mode. However,
+its shape can change dramatically. If the mode is 0, the Poisson's
+probability mass function can look like a ``ski slope.'' On the
+other hand, if the mode is some large value, then the Poisson distribution
+has a distribution which is symmetrical (to the eye, it is almost
+Normal in appearance0. The Poisson is a discrete distribution, and
+so it only approximates a continuous Normal to a limited extent. 
+
+Typically used in event count data to show, for example the number
+of protests in London each day for the month of July.
+
+
+\section{Mathematical Description of the Poisson Distribution}
+
+The Poisson has a single parameter, which is customarily known as
+$\lambda$ (The Greek letter lambda). 
+
+The Poisson probability mass function says the probability that there
+are exactly $x$ occurrences ($x$ has to be a non-negative integer)
+in a time-interval is:
+
+\[
+f(x;\lambda)=\frac{e^{-\lambda}\lambda^{x}}{x!}
+\]
+\\
+where $e$ is Euler's constant, the base of the natural logarithm
+(approximately 2.71828...), and $x!$ is the factorial of $x$ ($x!=x\cdot(x-1)\cdot\cdots2\cdot1$).
+
+The Poisson distribution has a singular distinction that its expected
+value is equal to its variance, and both of them are equal to $\lambda$.
+Formally, 
+\[
+E(x)=\lambda
+\]
+ 
+\[
+Var(x)=\lambda
+\]
+
+
+The parameter $\lambda$ is a positive real number, equal to the expected
+number of occurrences that occur during the given interval. For instance,
+if the events occur on average every 4 minutes, and you are interested
+in the number of events occurring in a 10 minute interval, you would
+use as model a Poisson distribution with $\lambda$ = 2.5. ``
+
+\footnote{http://en.wikipedia.org/wiki/Poisson\_distribution%
+}
+
+The parameter lambda can be estimated by dividing the average number
+of successes observed over a certain amount of time, $\bar{x}$, by
+the length of the time interval, $t$.
+\[
+\hat{\lambda}=\frac{\bar{x}}{t}
+\]
+
+
+
+\subsection{Other Moments}
+
+The skewness is 
+\[
+Skewness(x)=\lambda^{-1/2}
+\]
+
+
+The Kurtosis is
+\[
+Kurtosis(x)=\lambda
+\]
+
+
+
+\section{Mathematical background}
+
+
+\subsection{Euler's constant}
+
+Poisson uses the exponential function with base of the natural log,
+$e$ known as Euler's (pronounced in English as ``Oiler's'') constant.
+Figure \ref{Exponentials} shows the shape of the functions $e^{x}$,
+which is also known as $exp(x)$, and $e^{-x}$(or $exp(-x)$).
+
+\begin{figure}
+\caption{The Exponential Function\label{Exponentials}}
+
+
+<<fig=T, echo=F>>=
+par(mfrow=c(2,1))
+
+xvals <- seq(0,5, by=0.05)
+
+eulers <- exp(xvals)
+
+plot(xvals, eulers, type="l", xlab="x",ylab=expression(e^x == exp(x)))
+
+eulers <- exp(-xvals)
+
+plot(xvals, eulers, type="l", xlab="x",ylab=expression(e^(-x) == exp(-x)))
+
+par(mfcol=c(1,1))
+
+@
+\end{figure}
+
+
+
+\subsection{Poisson as an Infinite Sum}
+
+Recall that the cumulative distribution--the sum of probabilities
+of all possible outcomes--must equal 1.
+
+Begin with a ``guess'' that the probability mass function might
+be
+\[
+\frac{\lambda^{x}}{x!}
+\]
+ The values that this implies are presented in this table:
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline 
+$ $ &
+ &
+ &
+ &
+ &
+ &
+ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+x &
+ &
+0 &
+1 &
+2 &
+3 &
+4 &
+5 &
+$\ldots$ &
+ &
+$\infty$\tabularnewline
+\hline 
+$\lambda^{x}/x!$ &
+ &
+1 &
+$\lambda^{1}$ &
+$\lambda^{2}/2!$ &
+$\lambda^{3}/3!$ &
+$\lambda^{4}/4!$ &
+$\lambda^{5}/5!$ &
+ &
+ &
+$\lambda^{\infty}/\infty!$\tabularnewline
+\hline 
+\end{tabular}
+
+The sum of the items in the second row would be
+\begin{equation}
+1+\lambda+\lambda^{2}/2!+\lambda^{3}/3!+\lambda^{4}/4!+\lambda^{5}/5!+\ldots+\lambda^{\infty}/\infty!\label{eq:infsum}
+\end{equation}
+\\
+which is one definition of the value of $exp(\lambda)$. The reader
+can check that differentiating the sum in expression \ref{eq:infsum}
+simply gives back exactly the same sum, one piece of evidence that
+this really is $exp(\lambda)$.
+
+In order to turn the values shown in the table into probabilities,
+then, it is only necessary to divide by $exp(\lambda)$, because doing
+so makes the sum of all probabilities equal to one. Hence, if we started
+with the kernel of the probability mass function, $\lambda^{x}/x!$,
+and divide by $exp(\lambda)$, we have a probability mass function
+\[
+\frac{\lambda^{x}}{exp(\lambda)x!}=\frac{exp(-\lambda)\lambda^{x}}{x!}
+\]
+
+
+
+\section{Illustrations}
+
+The appearance of the probability mass function changes radically
+as $\lambda$ is changed. As $\lambda$ is increased beyond 10, the
+appearance is rather similar to a Normal density. 
+
+The Poisson is a discrete distribution, and to emphasize that fact,
+we indicate the probability of each value of $x$ by a bar with a
+small dot on top. This kind of representation is used because it helps
+the reader to remember that the values being considered are discrete
+integers (the Poisson is not defined for values such as 1.1). 
+
+In Figure \ref{smallLambda}, the probabilities for several small
+values of $\lambda$are presented. Note that as long as $\lambda<1$,
+the expected value is less than $1$ and the mode is $0$. 
+
+In Figure \ref{biglambda}, the tendency of the Poisson to approach
+a symmetric, single-peaked distribution is illustrated. 
+
+If we choose to play games with the reader, we can make the Poisson
+look more and more like a Normal distribution. The same data is plotted
+in Figures \ref{cap:Stair-Step-Illustration} and \ref{cap:Smooth-Lines-Create}.
+The only difference is that the probability values are connected by
+lines. In Figure \ref{cap:Stair-Step-Illustration}, the line is a
+``step'' function, which is closer to maintaining the meaning of
+the discrete distribution, while Figure \ref{cap:Smooth-Lines-Create}
+uses R's default line to ``smooth'' out the kinks between points.
+A set of plots created with a smoothed line appears very Normal indeed.
+
+\begin{figure}
+\caption{Poisson with small $\lambda$ values\label{smallLambda}}
+
+
+<<fig=T,echo=F>>=
+createPlot <- function(xin,lamb){
+
+ probability <- dpois(xin,lambda=lamb)
+
+ myTitle <- bquote( lambda == .(lamb))
+
+
+
+ plot(xin, probability, ylab = "probability",type="h",main = myTitle)
+
+ points(xin,probability,pch=16,cex=0.7)
+
+}
+
+
+
+par(mfrow = c(3,2))
+
+x <- seq(0, 15, 1)
+
+lambdas <- c(0.01, 0.1, 0.25, 0.5, 1.0, 2.0)
+
+  for (i in 1:6){
+
+createPlot(x,lambdas[i])
+
+}
+
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Poisson with larger$\lambda$ values\label{biglambda}}
+
+
+<<fig=T,echo=F>>=
+createPlot <- function(xin,lamb){
+
+ probability <- dpois(xin,lambda=lamb)
+
+ myTitle <- bquote( lambda == .(lamb))
+
+
+
+ plot(xin, probability, ylab = "probability",type="h",main = myTitle)
+
+ points(xin,probability,pch=16,cex=0.7)
+
+}
+
+
+
+par(mfrow= c(3,2))
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+
+for (i in 1:6){
+
+
+
+  x <- seq(0, uppers[i], 1)
+
+   createPlot(x,lambdas[i])
+
+}
+
+
+
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Stair Step Illustration of a Poisson\label{cap:Stair-Step-Illustration}}
+
+
+<<fig=T,echo=F>>=
+createPlot <- function(xin,lamb){
+
+ probability <- dpois(xin,lambda=lamb)
+
+ myTitle <- bquote( lambda == .(lamb))
+
+
+
+ plot(xin, probability, ylab = "probability",type="s",main = myTitle)
+
+
+
+}
+
+
+
+par(mfrow = c(3,2))
+
+
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+
+for (i in 1:6){
+
+   
+
+    x <- seq(0, uppers[i], 1)
+
+    createPlot(x,lambdas[i])
+
+ 
+
+}
+
+
+
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Smooth Lines Create Illusion of Normality\label{cap:Smooth-Lines-Create} }
+
+
+<<fig=T,echo=F>>=
+createPlot <- function(xin,lamb){
+
+ probability <- dpois(xin,lambda=lamb)
+
+ myTitle <- bquote( lambda == .(lamb))
+
+
+
+ plot(xin, probability, ylab = "probability",type="l",main = myTitle)
+
+
+
+}
+
+
+
+par(mfrow = c(3,2))
+
+
+
+lambdas <- c(2, 5, 10, 20, 100, 200)
+
+uppers <- c(10 ,10, 40, 40, 400, 400)
+
+for (i in 1:6){
+
+   
+
+    x <- seq(0, uppers[i], 1)
+
+    createPlot(x,lambdas[i])
+
+ 
+
+}
+
+
+
+@
+\end{figure}
+
+\end{document}

@@ -1,0 +1,1046 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Logistic Distribution
+\end_layout
+
+\begin_layout Author
+Raminta Stockute, Andrea Veaux, Paul Johnson
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Logistic distribution is a continuous probability density function that
+ is symmetric and uni-modal.
+ It is similar in appearance to the Normal distribution and in practical
+ applications, the two distributions cannot be distinguished from one another.
+\end_layout
+
+\begin_layout Section
+Mathematical Definition
+\end_layout
+
+\begin_layout Standard
+This distribution is characterized by two main parameters: location 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and scale 
+\begin_inset Formula $\sigma$
+\end_inset
+
+.
+ The probability density function is: (Raminta: I believe these signs are
+ wrong.
+ Do you agree?)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(x)=\frac{1}{\sigma}*\frac{e^{-(x-\mu)/\sigma}}{1+e^{-(x-\mu)/\sigma)^{2}}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The cumulative distribution of the Logistic is the famous S-shaped curve
+ on which Logistic regression is based:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F(x)=\frac{1}{1+e^{-(x-\mu)/\sigma}}.
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Moments
+\end_layout
+
+\begin_layout Standard
+The Compendium of the distributions (citation?) points out that the expected
+ value is equal to the location parameter, 
+\begin_inset Formula $\mu$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E(x)=\mu
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because the distribution is symmetric, the median and the mode are also
+ equal to 
+\begin_inset Formula $\alpha$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The variance of this distribution is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(x)=\frac{1}{3}(\pi\sigma)^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Compare that value against the Normal distribution, 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+.
+ The variance of the Logistic is different from the variance of the normal
+ only by the scaling value of 
+\begin_inset Formula $\pi^{2}/3$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogisticVariety"
+
+\end_inset
+
+, some examples of Logistic distributions are offered.
+\end_layout
+
+\begin_layout Standard
+In Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogisticVariousScales"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogistricVariousLocations"
+
+\end_inset
+
+, the density functions that correspond to various location and scale parameters
+ are presented.
+ If we look at Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogisticVariousScales"
+
+\end_inset
+
+, we see that scale controls the width and the height of the distribution.
+ As you see in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogistricVariousLocations"
+
+\end_inset
+
+, if we vary the location of the density, the density curve shifts to the
+ left and right, while the 
+\begin_inset Quotes eld
+\end_inset
+
+spread
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+height
+\begin_inset Quotes erd
+\end_inset
+
+ remains the same.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<LogisticPDF3, echo=F, eval=F,height=9,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(4,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+scale<-c(0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+location <- c(1, 1, 1, 1, 1, 1, 1, 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+ylim2<-c(.5, .5, .4, .4, .3, .3, .2, .2)
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:8){
+\end_layout
+
+\begin_layout Plain Layout
+
+    loc <- location[i]
+\end_layout
+
+\begin_layout Plain Layout
+
+    x <- seq(-3,7, by = 0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+    mainlabel <- paste("location=", loc,", scale=", scale[i], sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+    xlogis <- dlogis(x, scale = scale[i],  loc = loc, log = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, xlogis, type = "l", main = mainlabel, xlab = "x", ylab = "probabilit
+y of x", ylim = c(0, ylim2[i]))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Logistic Variety
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:LogisticVariety"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<LogisticPDF3>>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Logistic density appears to be very similar to the Normal distribution.
+ If we superimposed this distribution on the Normal, however, we would see
+ that the Logistic has thicker tails.
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:LogistricNormal"
+
+\end_inset
+
+, in which a Logistic with location 0 and scale 1 is superimposed on a graph
+ of the Normal density in which the variance is the same.
+ That is to say, the variance of the Logistic is 
+\begin_inset Formula $\pi^{2}/3$
+\end_inset
+
+ and the variance of the Normal is 
+\begin_inset Formula $\pi^{2}/3$
+\end_inset
+
+ (or, equivalently, the standard deviation is 
+\begin_inset Formula $\pi/\sqrt{3}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Logistic Distribution: Various Scales (location=0)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:LogisticVariousScales"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LogisticPDF,echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-10,10, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis1 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis2 <- dlogis(x, location = 0, scale = 2, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis3 <- dlogis(x, location = 0, scale = 3, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylogis1, mylogis2, mylogis3),type="l",ylim=c(0,0.5), xlab="x",y
+lab="P(x)", main="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("scale=1","scale=2","scale=3"),lty=1:3, col=1:3) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Logistric Distribution: Various Locations (scale=1)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:LogistricVariousLocations"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LogisticPDF2,echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-10,10, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis222 <- dlogis(x, location = 2, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis333 <- dlogis(x, location = 4, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylogis111, mylogis222, mylogis333),type="l",ylim=c(0,0.5),
+ xlab="x",ylab="P(x)", main="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("location=0","location=2","location=4"), lty=1:3, col=1:3)
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Logistric and Normal Distributions
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:LogistricNormal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<6,echo=F, fig=T,height=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-6,6, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+myNorm <- dnorm(x, mean = 0, sd = pi/sqrt(3)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylogis111, myNorm),type="l",ylim=c(0,0.5), xlab="x",ylab="P(x)"
+, main="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("Logistic(0,1)","Normal(0,pi^2/3))"), lty=1:2, col=1:2)
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Cumulative-Distribution"
+
+\end_inset
+
+ illustrates the variations we see in the cumulative distribution function,
+ when varying the scale parameter.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Cumulative Distribution of the Logistic
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Cumulative-Distribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LogisticCDF,echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-10,10, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis11<- plogis(x, location = 0, scale = 1, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis22 <- plogis(x, location = 0, scale = 2, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis33 <- plogis(x, location = 0, scale = 3, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylogis11, mylogis22, mylogis33),type="l",ylim=c(0,1),
+ xlab="x", ylab="P(x)", main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("scale=1","scale=2","scale=3"),lty=1:3, col=1:3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+When would we use a logistic distribution? The Compendium says that is is
+ often used instead 
+\begin_inset Quotes eld
+\end_inset
+
+as an approximation to other symmetrical distributions due to the mathematical
+ tractability of its CDF.
+\begin_inset Quotes erd
+\end_inset
+
+ Put in a more simple way, the Logistic gives a nice looking S-shaped curve
+ with a relatively simple mathematical formula.
+ The S-shaped curve, as seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Cumulative-Distribution"
+
+\end_inset
+
+, is used in the so-called Logistic regression model, which uses input variables
+ to make predictions about how likelihood of certain outcomes.
+ The S-shaped curve of the Logistic CDF is thought to be a substantively
+ useful description of how the probability of an 
+\begin_inset Quotes eld
+\end_inset
+
+event
+\begin_inset Quotes erd
+\end_inset
+
+ or other outcome rises as a function of some input variables.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\end_body
+\end_document

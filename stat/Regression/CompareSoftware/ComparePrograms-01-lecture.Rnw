@@ -1,0 +1,193 @@
+%% LyX 2.0.0 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists("ls.enc")) options(encoding=ls.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=F,ae=F,height=3,width=4}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 4.1, 1.5, 2.1) 
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+@
+
+
+\title[Descriptive]{Regression Software }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{2011}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}
+
+\frametitle{Let's compare some Programs}
+\begin{itemize}
+\item Regression Examples
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{R Code: Get Data, Create a Plot, Run a Regression Model}
+
+<<oregon0,echo=T>>=
+dat <- read.table("/home/pauljohn/ps/SVN-repo/stat/DataSets/OregonTemps/ortann.csv", header=T, sep=",")
+
+#library(foreign)
+#write.dta(dat,file="ortann.dta")
+@
+<<oregon10,fig=T,include=F,echo=T>>=
+plot(tann ~ elevation, data=dat, xlab="Elevation above sea level", ylab="Annual Average Temperature",main="")
+mod <- lm (tann ~ elevation, data=dat)
+@
+\input{plots/t-oregon10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot Temperature and Altitude}
+\includegraphics{plots/t-oregon10}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+\def\Sweavesize{\footnotesize} 
+<<include=F,echo=F>>=
+options(width=55)
+@
+<<oregon15,include=F,echo=T>>=
+summary(mod)
+@
+\input{plots/t-oregon15.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw the Fitted Line}
+<<oregon20,fig=T,include=F,echo=T>>=
+plot(tann ~ elevation, data=dat, xlab="Elevation above sea level", ylab="Annual Average Temperature",main="")
+abline(mod)
+@
+\includegraphics{plots/t-oregon20}
+\end{frame}
+
+<<echo=F, include=F>>=
+source("/home/pauljohn/ps/SVN-repo/stat/Regression/outreg-worked.R")
+@
+
+\begin{frame}
+\frametitle{Make a Nice Looking Table}
+
+<<results=tex, echo=F>>=
+outreg(mod, tight=F,showAIC=F)
+@
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{How About SAS?}
+
+\includegraphics[width=11cm]{oregon-sas-1.png}
+
+
+\lyxframeend{}\lyxframe{SAS (p2)}
+
+\includegraphics[width=11cm]{oregon-sas-2.png}
+
+
+\lyxframeend{}
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{How About Stata?}
+
+\includegraphics[width=11cm]{oregon-stata.png}
+			
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

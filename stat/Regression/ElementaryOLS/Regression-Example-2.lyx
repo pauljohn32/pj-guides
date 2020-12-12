@@ -1,0 +1,2671 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%Sweavel options
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots3", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots3/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.94}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(4.1, 4.1, 1, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+##pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+##par(mar=pjmar, ps=11)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=11)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Elementary Regression Example
+\end_layout
+
+\begin_layout Itemize
+Downloads a file
+\end_layout
+
+\begin_layout Itemize
+Explores the data
+\end_layout
+
+\begin_layout Itemize
+Fits a linear regression model, creates output tables
+\end_layout
+
+\begin_layout Itemize
+Creates some diagnostic plots
+\end_layout
+
+\begin_layout Itemize
+Demonstrates my Constitutional right to name parameters anything I want
+ (
+\begin_inset Formula $c_{j}$
+\end_inset
+
+, not 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Section
+Job Ratings and Arm Strength
+\end_layout
+
+\begin_layout BeginFrame
+Get Data For Regression
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Either use the existing "StrengthJobData.rds" file, or make one
+\end_layout
+
+\begin_layout Plain Layout
+
+if (file.exists("StrencthJobData.rds")) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  dat <- readRDS("StrengthJobData.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+} else { 
+\end_layout
+
+\begin_layout Plain Layout
+
+  dat <- read.table(url("http://pj.freefaculty.org/guides/stat/DataSets/StrengthJob
+Data/StrengthJobdata.txt"), header = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+  saveRDS(dat, file = "StrengthJobData.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+README says...
+\end_layout
+
+\begin_layout Quotation
+Data were collected from electricians, construction and maintenance workers,
+ auto mechanics, and linemen.
+ Two measures of strength were gathered from each participant, reflecting
+ grip and arm strength via the Jackson Evaluation System (a piece of strength-te
+sting equipment).
+ Each participant was asked to exert as much force as they could for a period
+ of 2 seconds, equipment recording the maximum force exerted in pounds.
+ Supervisors for each worker were asked to rate the employee's performance
+ in his/her physical tasks on a 60-pt scale.
+ Also, a simulated wrench, used to measure exerted force, was used to obtain
+ an objective measure of practical job performance.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What Do We Have?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str10, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+str(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Grab Some Summary Stats I Want}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+summary(dat) would be a nice start, but the output hard to manage.
+ So Build own summary:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str20, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat <- apply(dat, 2, quantile, na.rm = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat <- rbind(sumdat, mean= apply(dat, 2, mean, na.rm = TRUE))
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat <- rbind(sumdat, sd= apply(dat, 2, sd, na.rm = TRUE))
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat <- rbind(sumdat, var= apply(dat, 2, var, na.rm = TRUE))
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is, essentially, what rockchalk::summarize does for us.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{rockchalk::summarize}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+sumdat2 is a structured object.
+ We could use sumdat2$numerics instead of sumdat in what follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str20b, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat2 <- summarize(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+sumdat2$numerics
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{4 Histograms with Normal PDF superimposed}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str30, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ par(mfcol=c(2,2)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(dat$GRIP, prob = TRUE, xlab = "Grip strength", main = "Histogram: Grip
+ Strength")
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(dnorm(x, m = sumdat["mean","GRIP"], s = sumdat["sd", "GRIP"]), from
+ =  range(dat$GRIP)[1], to = range(dat$GRIP)[2], add = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(dat$ARM, prob = TRUE, xlab = "Arm strength", main = "Histogram: Arm
+ Strength") 
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(dnorm(x, m = sumdat["mean","ARM"], s = sumdat["sd", "ARM"]), from
+ =  range(dat$ARM)[1], to = range(dat$ARM)[2], add = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(dat$RATINGS, prob = TRUE, xlab = "Supervisor Rating", main = "Histogram:
+ Rating") 
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(dnorm(x, m = sumdat["mean","RATINGS"], s = sumdat["sd", "RATINGS"]),
+ from = range(dat$RATINGS)[1], to = range(dat$RATINGS)[2], add = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(dat$SIMS, prob = TRUE, xlab="Sims Wrench Test", main="Histogram: Strength
+ Simulation") 
+\end_layout
+
+\begin_layout Plain Layout
+
+curve(dnorm(x, m = sumdat["mean","SIMS"], s = sumdat["sd", "SIMS"]), from
+ =  range(dat$SIMS)[1], to = range(dat$SIMS)[2], add = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots3/t-str30.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str30.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Could go further with that distribution analysis}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There's a warning in the help page for R's hist function.
+\end_layout
+
+\begin_layout Itemize
+Previous plot not rigorous proof of Normality or non-Normality, just a visual
+ depiction
+\end_layout
+
+\begin_layout Itemize
+qqplot is suggested method of rigorously comparing a sample to a given probabili
+ty model.
+ 
+\end_layout
+
+\begin_layout Itemize
+A Chi-square or likelihood-based test would be even more rigorous
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Scatterplot matrix OK for Small Datasets}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str40, include=F, fig=T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(dat) ## That's same as pairs(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots3/t-str40.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str40.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regress Ratings on Grip}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm (RATINGS ~ GRIP, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=T, showAIC=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Estimated Intercept
+\end_layout
+
+\begin_layout Itemize
+Estimated Slope
+\end_layout
+
+\begin_layout Itemize
+Standard Error of Intercept Estimate (estimated standard deviation of intercept
+ estimator)
+\end_layout
+
+\begin_layout Itemize
+Standard Error of Slope Estimate (estimated standard deviation of slope
+ estimator)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Hypothesis Test for Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Theory: 
+\begin_inset Formula $RATINGS_{i}=c_{0}+c_{1}GRIP_{i}+u_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $c_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ are real-valued constants, 
+\begin_inset Formula $E[u_{i}]=0$
+\end_inset
+
+, 
+\begin_inset Formula $Var[u_{i}]=E[u_{i}^{2}]=\sigma_{u}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The Null Hypothesis: 
+\begin_inset Formula $H_{0}:c_{1}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ is approximately Normal, So create T test:
+\begin_inset Formula 
+\[
+\hat{t}=\frac{\hat{c}_{1}-0}{std.err.(\hat{c}_{1})}=\frac{0.66}{0.029}=2.245
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The critical value of t is:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> qt( c(0.025, 0.975), df=90)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] -1.986675  1.986675
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Conclusion: 
+\begin_inset Quotes eld
+\end_inset
+
+The estimate 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ is statistically significantly different from 0.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence Intervals for Intercept and Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+confint(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Supposing the model's theory is correct, we believe 
+\end_layout
+
+\begin_layout Itemize
+the we believe with probability is 0.95 the true slope 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ is in (0.0079, 0.125).
+\end_layout
+
+\begin_layout Itemize
+the estimated slope 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ would be between 0.0079 and 0.125 in 95% of repeated samples from same process
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Obtain Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+predict returns one predicted value for each input row
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str60a, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1.predict <- predict(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+head(mod1.predict, 10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str60a.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Or ask for particular values by using a newdata argument
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str60b, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ndf2 <- data.frame(GRIP = plotSeq(dat$GRIP, 5))
+\end_layout
+
+\begin_layout Plain Layout
+
+ndf2$pred2 <- predict(mod1, ndf2)
+\end_layout
+
+\begin_layout Plain Layout
+
+ndf2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str60b.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Predicted value line overlaid on a scatterplot}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps100, fig = T, echo = T, include = F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(mod1, plotx = "GRIP", xlab = "Grip Measurement", ylab = "Supervisor
+ Rating", interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-ps100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-ps100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{I worry that's too easy for you}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You don't learn so much about the great Wild World of R if I predigest everythin
+g for you
+\end_layout
+
+\begin_layout Itemize
+But I'll get nicer looking homeworks if I give you an easy way to make nice
+ looking plots
+\end_layout
+
+\begin_layout Itemize
+But I worry you'll never feel like a grown up in the R community if you
+ only know how to speak baby talk
+\end_layout
+
+\begin_layout Itemize
+So I've written out an explanation of how some of this gets done.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The usual Way in R is like this:}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str70, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(RATINGS ~ GRIP, data = dat, xlab = "Grip Strength", ylab = "Supervisor
+ Rating")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-str70.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str70.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That exploits the multi-purpose power of abline to extract predicted values
+ and plot them.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Superimpose Confidence Interval For Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str80, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(RATINGS ~ GRIP, data=dat, xlab="Grip Strength", ylab="Supervisor Rating")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(GRIP=plotSeq(dat$GRIP, 20))
+\end_layout
+
+\begin_layout Plain Layout
+
+pconf <- predict(mod1, interval="confidence", newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, pconf[, "lwr"], lty=4, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, pconf[, "upr"], lty=4, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c("predicted","lower CI","upper CI"), lty=c(1,4,4),
+ col=c("black", "red","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots3/t-str80.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Code For Previous}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str80.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Superimpose Confidence and Prediction Intervals}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<str90, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(RATINGS ~ GRIP, data=dat, xlab="Grip Strength", ylab="Supervisor Rating",
+ ylim = c(1,1.2)*range(dat$RATINGS))
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(GRIP=plotSeq(dat$GRIP, 20))
+\end_layout
+
+\begin_layout Plain Layout
+
+pconf <- predict(mod1, interval="confidence", newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, pconf[ ,"lwr"], lty=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, pconf[ ,"upr"], lty=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+ppred <- predict(mod1, interval="prediction", newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, ppred[ ,"lwr"], lty=4, col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(newdf$GRIP, ppred[ ,"upr"], lty=4, col="green")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c("predicted","conf.
+ int.","pred.
+ int."), lty=c(1,2,4), col=c("black", "red","green"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=9cm]{plots3/t-str90.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Code For Previous}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-str90.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{You learn a lot about R by studying abline()}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+abline(v = 5) draws a vertical line where x = 5.
+\end_layout
+
+\begin_layout Itemize
+abline(h = 3.5) draws a horizontal line where y = 3.
+ 5.
+\end_layout
+
+\begin_layout Itemize
+abline allows all of the customizations that lines allows, like col, lty,
+ lwd
+\end_layout
+
+\begin_layout Itemize
+The plot must exist first, however, before you run those functions
+\end_layout
+
+\begin_layout Itemize
+Try
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<abl100,include=F, echo=T, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(1:10, 1:10)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 5)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h = 3.5, col = "red", lty = 3, lwd = 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-abl100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{2 ablines}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-abl100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{More about abline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+abline will also plot a line with a given intercept and slope, using arguments
+ a and b.
+ Try
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, include=T, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(0:10, 0:10, type = "n")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a = 2.7, b = 0.55)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That will be a bit disappointing because axes don't cross at 0, so I hammered
+ on this a while to make a 
+\begin_inset Quotes eld
+\end_inset
+
+mathbook style
+\begin_inset Quotes erd
+\end_inset
+
+ plot
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<abl150,include=F,fig=T,height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(-1:10, -1:10, type = "n", xlim = c(-1, 10), ylim = c(-1,10), axes =
+ FALSE, bty = "n", xlab = "one x variable", ylab = "one y variable")
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(1, pos = 0, at = seq(1, 10, by = 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+axis(2, pos = 0, at = seq(1, 10, by = 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a = 2.7, b = 0.55)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h = 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm,height=7cm]{plots3/t-abl150}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Which you could draw by the seemingly tedious sequence
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-abl150}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Run 
+\begin_inset Quotes eld
+\end_inset
+
+?abline
+\begin_inset Quotes erd
+\end_inset
+
+ to read about it
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Step through this, line-by line}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This command creates a 
+\begin_inset Quotes eld
+\end_inset
+
+blank plot
+\begin_inset Quotes erd
+\end_inset
+
+ and fiddles with abline()
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ab20, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(seq(-1, 10, length.out = 21), -10:10, axes = FALSE,  type = "n")
+\end_layout
+
+\begin_layout Plain Layout
+
+## Make some phony graph paper
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = 0, col= gray(.70)) ##get the idea?
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v = seq(1, 10), col = gray(.80), lwd = 0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h = seq(-10, 10), col = gray(.80), lwd = 0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(a= 2, b = 0.5, col = "red", lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(coef = c(2, 0.5), col = "black", lwd = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(coef = c(7, -0.3), col = "green", lwd = 4, lty = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(coef = c(-3, 1.1), col = "pink", lwd =2, lty = 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(coef = c(-14, 0.8), col = "purple", lwd = 4, lty = 5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-ab20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-ab20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Run 
+\begin_inset Quotes eld
+\end_inset
+
+abline
+\begin_inset Quotes erd
+\end_inset
+
+ without any parentheses and you'll see their code
+\end_layout
+
+\begin_layout Standard
+And you realize the difficult part for the abline function is to examine
+ the type of arguments you give it, because it has a lot of 
+\begin_inset Quotes eld
+\end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+then
+\begin_inset Quotes erd
+\end_inset
+
+ conditions to obey.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But, honestly, I'd use plotSlopes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-ps100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-ps100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

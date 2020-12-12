@@ -1,0 +1,33 @@
+\begin{Schunk}
+\begin{Sinput}
+ lppgdp <- log(UN$ppgdp)
+ lim <- log(UN$infantMortality)
+ UN <- na.omit(UN)
+ nmod2 <- nls(infantMortality  ~  A + B/(ppgdp^C), data=UN, start=list(A=10,B=21,C=1/10), control=nls.control(warnOnly=TRUE))
+ plot(infantMortality ~ ppgdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="", type="n")
+ points(UN$ppgdp, UN$infantMortality, col=gray(.7))
+ summary(nmod2)
+\end{Sinput}
+\begin{Soutput}
+Formula: infantMortality ~ A + B/(ppgdp^C)
+
+Parameters:
+   Estimate Std. Error t value Pr(>|t|)    
+A -16.80122    9.93264  -1.692 0.092378 .  
+B 625.98478  182.58341   3.428 0.000744 ***
+C   0.32082    0.06365   5.040 1.08e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 16.99 on 190 degrees of freedom
+
+Number of iterations to convergence: 9 
+Achieved convergence tolerance: 4.968e-06
+\end{Soutput}
+\begin{Sinput}
+ rppgdp <- range(UN$ppgdp)
+ ppgdp2 <- seq(rppgdp[1],rppgdp[2],length=100)
+ p2 <- predict(nmod2, newdata=data.frame(ppgdp=ppgdp2))
+ lines(ppgdp2, p2)
+\end{Sinput}
+\end{Schunk}

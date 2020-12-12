@@ -1,0 +1,260 @@
+\documentclass[11pt,english]{article}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+
+ \makeatletter
+ \makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+
+\begin{document}
+<<setup,echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt="> ", continue="+  ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times", pointsize=6)
+@
+
+
+
+\title[Descriptive]{Monte Carlo Experiments}
+
+
+\author{Paul E. Johnson}
+
+\date[2011]{2011}
+
+
+<<begin1,echo=T>>=
+s <- 10 ; q <- 0.345; stde <- 20
+set.seed(2341234)
+mydatasets <- vector("list", 100)
+for ( i in 1:100){
+  x <- 18 + 43*runif(1000)
+  y <- s + q * x + rnorm(1000, mean=0, sd=stde)
+  mydf <- data.frame(x,y)
+  mydatasets[[i]] <- mydf
+}
+myregressions <- lapply(mydatasets, function(mydf) lm(y~x, data=mydf))
+@
+
+<<begin2,echo=T>>=
+the33rdreg <- myregressions[[33]]
+attributes(the33rdreg) # just checking
+summary(the33rdreg) # the standard thing you always do with reg
+sum33 <- summary(the33rdreg) #can catch that output into an object
+attributes(sum33) # just checking, could extract coefficients
+coef(the33rdreg) # this will grab the coefficient estimates only
+coef(the33rdreg)[2] # takes only estimate of slope, q
+coef33 <- coef(the33rdreg) # puts coefficients into object
+coef(sum33) # Surprise! its different than coef on lm itself!
+coef(sum33)[2,1] # should be same as coef(the33rdreg)[2]
+sum33$sigma # extracts the estimated residual standard error
+sum33$r.square # extracts the R-square
+@
+
+<<begin3,echo=T,fig=T>>=
+sestimates <- vector(length=100)
+for (i in 1:100){
+  sestimates[i] <- coef(myregressions[[i]])[1]
+}
+hist(sestimates, prob=T, xlab="estimates of the intercept", s, main="Sampling Distribution of Estimated Intercepts", xlim=1.5*range(sestimates))
+lines(density(sestimates), col="red",lty=2)
+@
+
+<<better10,echo=T>>=
+a <- 2; b <- 5; stde <- 3; N <- 100; Nexp <- 30
+set.seed(4343432)
+getPhonyData <- function(N, a, b, stde){
+  inState <- .Random.seed
+  x <- rnorm(N, mean=50, sd=100)
+  y <- a + b*x + rnorm(N, mean=0, sd=stde)
+  outState <- .Random.seed
+  list(dat=data.frame("input"=x,"output"=y), "inState"=inState, "outState"=outState)
+}
+@
+
+
+<<better20,echo=T>>=
+analyzePhonyData <- function(dat){
+ mymod <- lm(output ~ input, data=dat)
+}
+@
+
+
+<<better30,echo=T>>=
+conductSim <- function(i){
+ d1 <- getPhonyData(N, a, b, stde)
+ res <- analyzePhonyData(d1$dat)
+ list("res"=res, "d"=d1)
+}
+@
+
+
+<<better60,echo=T>>=
+ mysims <- lapply(1:100, conductSim )
+
+@
+
+<<better65,echo=T>>=
+ .Random.seed <- mysims[[1]]$d$inState
+  mysims2 <- vector("list", 100)
+  for( i in 1:100 ) {
+    mysims2[[i]] <- conductSim(i)
+ }
+ all.equal(mysims, mysims2)
+
+@
+
+
+<<better70,echo=T>>=
+ regs <- do.call("rbind", mysims)
+ dim(regs)
+ names(regs[[1,2]])
+ names(regs[[1,1]])
+ is.array(regs)
+ is.array(regs)
+ is.list(regs[,1])
+@
+
+<<better71,echo=T>>=
+summary(regs[[33,1]])
+@
+
+
+<<better72,echo=T>>=
+lsimres <- lapply((regs[,1]), summary)
+@
+
+<<better73,echo=T>>=
+ssimres <- sapply((regs[,1]), summary)
+is.matrix(ssimres)
+dim(ssimres)
+rownames(ssimres)
+@
+
+<<better75, fig=T, echo=T>>=
+  rsquares <- ssimres[8, ]
+  ursquares <- unlist(rsquares)
+  hist(ursquares, xlab="100 estimated R-squares", prob=T, ylab="proportion", main="")
+  lines(density(ursquares), col="red", lty=2)
+@
+
+
+<<dist10, echo=T>>=
+set.seed(12345)
+x1 <- runif(10)
+x2 <- rpois(10, lambda=7)
+x3 <- runif(10)
+@ 
+
+
+<<dist20, echo=T>>=
+set.seed(12345)
+y1 <- runif(10)
+y2 <- rnorm(10)
+y3 <- runif(10)
+@ 
+
+<<dist31, echo=T>>=
+head(cbind(x1, y1))
+@
+
+<<dist32, echo=T>>=
+head(cbind(x2, y2))
+@ 
+
+<<dist33, echo=T>>=
+head(cbind(x3, y3))
+@ 
+
+
+
+% <<better40,echo=T, eval=F>>=
+% library(SoDA)
+% mysims <- list()
+% mysims[[1]] <- simulationResult(conductSim(1))
+% mysims[[1]]@lastState
+% mysims[[2]] <- simulationResult(conductSim(2))
+% all.equal(mysims[[1]]@result, mysims[[2]]@result)
+
+% areg <- (mysims[[1]])@result[[2]]
+% summary(areg)
+% coef(areg)
+% @
+
+
+
+
+% <<better70,echo=T>>=
+% coef((regs[, 2])[[33]])
+% summary((regs[, 2])[[33]])
+% @
+
+
+% <<echo=T>>=
+%  is.list(regs[,2])
+%  mycoefs <- lapply(regs[ ,2], coef)
+%  mycoefs[[33]]
+% @
+
+
+% <<echo=T>>=
+% mycoefs <- sapply(regs[ ,2], coef)
+% mycoefs
+% @
+
+
+% <<echo=T, fig=T>>=
+% hist(mycoefs[1, ], main="The Intercepts", xlab=expression(hat(b)[0]))
+% @
+
+
+\end{document}

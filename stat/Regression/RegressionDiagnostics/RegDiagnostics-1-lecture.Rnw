@@ -1,0 +1,986 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/RegressionDiagnostics//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+ \newenvironment{lyxcode}
+   {\par\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \setlength{\listparindent}{0pt}% needed for AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \def\{{\char`\{}
+    \def\}{\char`\}}
+    \def\textasciitilde{\char`\~}
+    \item[]}
+   {\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+##causes failure, don't understand why
+##unlink("plots", recursive=T)
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=65, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Diag]{Regression Diagnostics}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date{2015}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Problem}
+\begin{itemize}
+\item Recall the lecture about diagnostic plots?
+\item Remember some plots used terms ``leverage'' and ``Cook's Distance''?
+\item I said we'd come to a day when I had to try to explain that?
+
+\begin{itemize}
+\item The day of reckoning has come.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Quick Summary Before Too Many Details}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Recall the Public Spending Example Data Set}
+
+<<hideme, echo=F, include=F>>=
+library(car)
+library(rockchalk)
+@
+
+<<regress05, echo=T, include=F>>=
+dat <- read.table("/home/pauljohn/ps/SVN-guides/stat/DataSets/PublicSpending/publicspending.txt", header = TRUE)
+@
+
+To get the publicspending dataset, download publicspending.txt in
+a Web browser, or run
+
+<<echo=T, eval=F, include=T>>=
+dat <- read.table("http://pj.freefaculty.org/guides/stat/DataSets/PublicSpending/publicspending.txt", header = TRUE)
+@
+
+<<regress06, echo=T>>==
+summarize(dat)
+@
+
+This time, I decided to create MET squared before running the model,
+but you will recall there are at least 4 different ways to run this
+regression.
+
+<<regress10, echo=T, include=F>>=
+dat$METSQ <- dat$MET*dat$MET
+EXfull2 <- lm(EX ~ ECAB + MET + METSQ + GROW + YOUNG + OLD + WEST, data=dat)
+summary(EXfull2)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-regress10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recall the Public Spending Example Data Set}
+
+<<regress11, fig=T, include=F, height=6, width=9>>=
+par(mfcol=c(2,2))
+plot(EXfull2)
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=11cm]{plots/t-regress11}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{influence.measures() provides one line per case in data}
+
+<<regress20, echo=T, include=F>>=
+EXfull2infl <- influence.measures(EXfull2)
+print(EXfull2infl)
+@
+
+\def\Sweavesize{\tiny}
+\input{plots/t-regress20}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{What is All that Stuff About?}
+\begin{itemize}
+\item dfbetas. Change in $\hat{\beta}$ when row i is removed.
+\item dffits. Change in prediction for i from N-\{i\}
+\item cook.d. Cook's d summary of a case's damage
+\item hat value. Commonly called ``leverage.
+\item Can ask for these one-by-one when you want them, see ?influence.measures
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{influence.measures Creates a Summary Object}
+\begin{itemize}
+\item influence.measures is row-by-row, perhaps necessary in some situations,
+but excessive most of the time.
+\item More simply, ask which rows are potentially troublesome with the summary
+function:
+\end{itemize}
+<<regress30, echo=T, include=F>>=
+
+
+summary(EXfull2infl)
+@
+
+%%\def\Sweavesize{\footnotesize}
+\input{plots/t-regress30}
+
+\end{frame}
+
+
+\lyxframeend{}\section{The Hat Matrix}
+
+
+\lyxframeend{}\lyxframe{Bear With Me for A Moment, Please}
+\begin{itemize}
+\item The ``solution'' for the OLS estimator in matrix format is
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\item And so the predicted value is calculated as
+\begin{eqnarray*}
+\hat{y} & = & X\hat{\beta}\\
+ &  & X(X^{T}X)^{-1}X^{T}y
+\end{eqnarray*}
+
+\item Definiton: The Hat Matrix is that big glob of $X$'s. 
+\begin{equation}
+H=X(X^{T}X)^{-1}X^{T}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Just One More Moment ...}
+
+The hat matrix is just a matrix
+
+\[
+H=\left[\begin{array}{ccccc}
+h_{11} & h_{12} & \ldots & h_{1(N-1)} & h_{1N}\\
+h_{21} & h_{22} & \vdots & h_{2(N-1)} & h_{2N}\\
+\\
+ &  &  &  & h_{(N-1)N}\\
+h_{N1} & h_{N2} & \ldots & h_{N(N-1)} & h_{NN}
+\end{array}\right]
+\]
+
+
+LEVERAGE: The $h_{ii}$ values (the ``main diagonal'' values of
+this matrix)
+
+
+\lyxframeend{}\lyxframe{But it is a Very Informative Matrix!}
+\begin{itemize}
+\item It is a matrix that translates observed $y$ into predicted $\hat{y}$. 
+\item Write out the prediction for the $i'th$ row 
+\begin{equation}
+\hat{y}_{i}=h_{i1}y_{1}+h_{i2}y_{2}+\ldots+h_{iN}y_{N}
+\end{equation}
+
+\item That's looking at H ``from side to side,'' to see if one case is
+influencing the predicted value from another.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Be clear, Could Write Out Each Case}
+
+\[
+\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y_{2}}\\
+\hat{y_{3}}\\
+\vdots\\
+\\
+\hat{y}_{N-1}\\
+\hat{y_{N}}
+\end{array}\right]=\left[\begin{array}{ccccc}
+h_{11}y_{1} & +h_{12}y_{2} &  &  & +h_{1N}y_{N}\\
+h_{21}y_{1} & + &  &  & +h_{2N}y_{N}\\
+h_{31}y_{1} & + & \ddots &  & \vdots\\
+\vdots\\
+\\
+ &  &  & h_{(N-1)(N-1)}y_{N-1} & +h_{(N-1)N}y_{N}\\
+h_{N1}y_{1} & + & \cdots & +h_{N(N-1)}y_{N-1} & +h_{NN}y_{N}
+\end{array}\right]
+\]
+
+
+
+\lyxframeend{}\section{Spot Extreme Cases}
+
+
+\lyxframeend{}\lyxframe{Diagonal Elements of $H$}
+\begin{itemize}
+\item Consider at the diagonal of the hat matrix: 
+\begin{equation}
+\left[\begin{array}{ccccc}
+h_{11}\\
+ & h_{22}\\
+ &  & \ddots\\
+ &  &  & h_{N-1,N-1}\\
+ &  &  &  & h_{NN}
+\end{array}\right]\label{eq:hatdiag}
+\end{equation}
+
+\item $h_{ii}$ are customarily called ``leverage'' indicators
+\item $h_{ii}$ DEPEND ONLY ON THE X's. In a sense, $h_{ii}$ measures how
+far a case is from ``the center'' or all cases.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{leverage}
+\begin{itemize}
+\item The sum of the leverage estimates is $p$, the number of parameters
+estimated (including the intercept).
+\item the most ``pleasant'' result would be that all of the elements are
+the same, so pleasant hat values would be $p/N$
+\item small $h_{ii}$ means that the positioning of an observation in the
+X space is not in position to exert an extraordinary influence.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Follow Cohen, et al on this}
+\begin{itemize}
+\item The hat value is a summary of how far ``out of the usual'' a case
+is on the IVs
+\item In a model with only one predictor, CCWA claim (p. 394)
+\begin{equation}
+h_{ii}=\frac{1}{N}+\frac{(x_{i}-\bar{x})^{2}}{\sum x_{i}^{2}}
+\end{equation}
+
+\item If a case is ``at the mean,'' the $h_{ii}$ is as small as it can
+get
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Hat Values in the State Spending Data}
+
+<<regress40, echo=T, include=F>>=
+dat$hat <- hatvalues(EXfull2)
+sum(dat$hat)
+data.frame(dat$STATE, dat$hat)
+@
+
+\def\Sweavesize{\footnotesize}
+\input{plots/t-regress40}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Vertical Perspective}
+
+
+\lyxframeend{}\lyxframe{Fun Regression Fact}
+\begin{itemize}
+\item All of the ``unmeasured error terms'' $e_{i}$ have the same variance,
+$\sigma_{e}^{2}$
+\item For each case, we make a prediction $\hat{y}_{i}$ and calculate a
+residual, $\widehat{e_{i}}$
+\item Here's the fun fact: The variance of a residual estimate $Var(\hat{e}_{i})$
+is not a constant, it varies from one value of $x$ to another.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Many Magical Properties of H}
+\begin{itemize}
+\item The column of residuals \textrm{is $\hat{e}=(I-H)y$}
+
+\begin{itemize}
+\item Proof
+
+
+$\hat{e}=y-X\hat{\beta}$$=y-Hy$$=(I-H)y$
+
+\end{itemize}
+\item The elements on the diagonal of $H$ are the important ones in many
+cases, because you can take, say, the 10'th observation, and you calculate
+the variance of the residual for that observation:
+\[
+Var(\hat{e}_{10})=\hat{\sigma}_{e}^{2}(1-h_{10,10})
+\]
+
+\item And the estimated standard deviation of the residual is 
+\begin{equation}
+Std.Err.(\hat{e}_{10})=\hat{\sigma}_{e}\sqrt{1-h_{10,10}}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Standartized Residuals (Internal Studentized Residuals)}
+\begin{itemize}
+\item Recall the $Std.Err.(\hat{e}_{i})$ is $\hat{\sigma}_{e}\sqrt{1-h_{ii}}$
+\item A standardized residual is the observed residual divided by its standard
+error
+\end{itemize}
+\begin{equation}
+standardized\, residual\,\, r_{i}=\frac{\hat{e}_{i}}{\hat{\sigma}_{e}\sqrt{1-h_{ii}}}\label{eq:ri}
+\end{equation}
+
+\begin{itemize}
+\item Sometimes called an internally studentized residual because case $i$
+is left in the data for the calculation of $\hat{\sigma}_{e}$ (same
+number we call RMSE sometimes)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Studentized residual (External) are t distributed}
+\begin{itemize}
+\item Problem: $i$ is included in the calculation of $\hat{\sigma}_{e}.$ 
+\item Fix: Recalculate the RMSE after omitting observation i, call that
+$\widehat{\sigma_{e(-i)}^{2}}$. (external, in sense i is omitted)
+\end{itemize}
+\textbf{
+\begin{equation}
+studentized\, residual:\, r_{i}=\frac{\hat{e}_{i}}{\sqrt{\widehat{\sigma_{e(-i)}^{2}}(1-h_{ii})}}=\frac{\hat{e}_{i}}{\widehat{\sigma_{e(-i)}}\sqrt{1-h_{ii}}}\label{eq:Rstudent}
+\end{equation}
+}
+\begin{itemize}
+\item Sometimes called $R_{i}$-Student
+\item That follows the Student's t distribution. That helps us set a scale.
+\item Have to be careful about how to set the $\alpha$ level (multiple
+comparisons problem)
+\item Bonferroni correction (or something like that) would have us shrink
+the required $\alpha$ level because we are making many comparisons,
+not just one,
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Hat in $\widehat{\sigma_{e(-i)}^{2}}$}
+\begin{itemize}
+\item Quick Note: Not actually necessary to run new regressions to get each
+$\widehat{\sigma_{e(-i)}^{2}}$. There is a formula to calculate that
+from the hat matrix itself
+\begin{equation}
+\widehat{\sigma_{e(-i)}^{2}}=\frac{(N-p)\hat{\sigma}_{e}^{2}-\frac{e_{i}^{2}}{(1-h_{ii})}}{N-p-1}\label{eq:externalMSE}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{student Residuals in the State Spending Data}
+
+<<regress60, echo=T, include=F>>=
+dat$rstudent <- rstudent(EXfull2)
+data.frame(dat$STATE, dat$rstudent)
+@
+
+\def\Sweavesize{\footnotesize}
+\input{plots/t-regress60}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{DFFIT, DFFITs}
+\begin{itemize}
+\item Calculate the change in predicted value of the j'th observation due
+to the deletion of observation $j$ from the dataset. Call that the
+DFFIT:
+\begin{equation}
+DFFIT_{j}=\hat{y_{j}}-\hat{y}_{(-j)}\label{eq:DFFIT}
+\end{equation}
+
+\item Standardize that (``studentize''? that):
+\begin{equation}
+DFFITS_{j}=\frac{\hat{y_{j}}-\hat{y}_{(-j)}}{\hat{\sigma}_{e(-j)}\sqrt{h_{jj}}}\label{eq:DFFITS}
+\end{equation}
+
+\item If $DFFITS_{j}$ is large, the $j$'th observation is influential
+on the model's predicted value for the $j$'th observation. In other
+words, the model does not fit observation $j$.
+\end{itemize}
+Everybody is looking around for a good rule of thumb. Perhaps $DFFITS>2\sqrt{p/N}$
+means ``trouble''! 
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{DFFIT in the State Spending Data}
+
+<<regress50, echo=T, include=F>>=
+dat$dffits <- dffits(EXfull2)
+data.frame(dat$STATE, dat$dffits)
+@
+
+\def\Sweavesize{\footnotesize}
+\input{plots/t-regress50}
+
+\end{frame}
+
+
+\lyxframeend{}\section{DFBETA}
+
+
+\lyxframeend{}\lyxframe{``drop-one-at-a-time'' analysis of slopes }
+\begin{itemize}
+\item Find out if an observation influences the estimate of a slope parameter. 
+\item Let
+
+\begin{itemize}
+\item $\hat{\beta}$ a vector of regression slopes estimate using all of
+the data points
+\item $\hat{\beta}_{(-j)}$ slopes estimate after removing observation $j$
+.
+\end{itemize}
+\item The \textbf{DFBETA} value, a measure of influence of observation $j$
+on the parameter estimate, is
+\begin{equation}
+d_{j}=\hat{\beta}-\hat{\beta}_{(-j)}\label{eq:DFBETA}
+\end{equation}
+
+\end{itemize}
+If an element in this vector is huge, it means you should be cautious
+about observation $j$. 
+
+
+\lyxframeend{}\lyxframe{DFBETAS is Standardized DFBETA}
+
+The notation is getting tedious here
+
+DFBETAS is considered one-variable-at-a-time, one data row at a time. 
+
+Let $d[i]_{j}$ be the change in the estimate of $\hat{\beta}_{i}$
+when row $j$ is omitted. 
+
+Standardize that:
+\begin{equation}
+d[i]_{j}*=\frac{d[i]_{j}}{\sqrt{Var(\hat{\beta}_{i(-j)})}}\label{eq:dfbetaij}
+\end{equation}
+
+
+The denominator is the standard error of the estimated coefficient
+when j is omitted. 
+
+A rule of thumb that is often brought to bear: If the DFBETAS value
+for a particular coefficient is greater than $2/\sqrt{N}$ then the
+influence is large.
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{dfbetas in the State Spending Data}
+
+<<regress70, echo=T, fig=T, include=F, height=6, width=9>>=
+dfbetasPlots(EXfull2)
+@
+
+\def\Sweavesize{\footnotesize}
+\includegraphics[width=12cm]{plots/t-regress70}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Comes Back To The Hat}
+\begin{itemize}
+\item Of course, you are wondering why I introduced DFBETA relates to the
+hat matrix. 
+\item Well, the matrix calculation is: 
+\begin{equation}
+d[i]_{j}=\frac{\hat{e}(X'X)^{-1}X_{j}}{1-h_{ii}}\label{eq:dfbetaij2}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\section{Cook's distance}
+
+
+\lyxframeend{}\lyxframe{Cook: Integrating the DFBETA }
+\begin{itemize}
+\item The DFBETA analysis is unsatisfying because we can calculate a whole
+vector of DFBETAS, one for each parameter, but we only analyze them
+one-by-one. Can't we combine all of those parameters?
+\item The Cook distance derives from this question: \end{itemize}
+\begin{quote}%{}
+Is the vector of estimates obtained with observation j omitted, $\hat{\beta}_{(-j)}$,
+meaningfully different from the vector obtained when all observations
+are used?\end{quote}%{}
+\begin{itemize}
+\item I.e., evaluate the overall distance between the point $\hat{\beta}=(\hat{\beta}_{1},\hat{\beta}_{2},...,\hat{\beta}_{p})$
+and the point $\hat{\beta}_{(-j)}=(\hat{\beta}_{1(-j)},\hat{\beta}_{2(-j)},...,\hat{\beta}_{p(-j)})$
+. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{My Kingdom for Reasonable Weights}
+
+If we were interested only in raw, unstandardized distance, we could
+use the usual ``straight line between two points'' measure of distance. 
+\begin{itemize}
+\item Pythagorean Theorem 
+\begin{equation}
+\sqrt{(\hat{\beta}_{1}-\hat{\beta}_{1(-j)})^{2}+(\hat{\beta}_{2}-\hat{\beta}_{2(-j)})^{2}+\ldots(\hat{\beta}_{p}-\hat{\beta}_{p(-j)})^{2}}
+\end{equation}
+
+\item Cook proposed we weight the distance calculations in order to bring
+them into a meaningful scale.
+\item The weights use the estimated $\widehat{Var(\hat{\beta})}$ to scale
+the results
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{car Package's "influencePlot" Interesting!}
+
+<<carinfl10, include=F, fig=T, echo=T>>=
+influencePlot(EXfull2)
+@
+
+\includegraphics[width=10cm]{plots/t-carinfl10}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Matrix Explanation of Cook's Proposal}
+\begin{itemize}
+\item Cook's weights: the cross product matrix divided by the number of
+parameters that are estimated and the MSE.
+\[
+\frac{X'X}{p\cdot\hat{\sigma}_{e}^{2}}
+\]
+
+\item Cook's distance $D_{j}$ summarizes the size of the difference in
+parameter estimates when j is omitted.
+\[
+D_{j}=\frac{(\hat{\beta}_{(-j)}-\hat{\beta})'X'X(\hat{\beta}_{(-j)}-\hat{\beta})}{p\cdot\hat{\sigma}_{e}^{2}}
+\]
+ \\
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Cook D Explanation (cont)}
+\begin{itemize}
+\item Think of the change in predicted value as $X(\hat{\beta}_{(-j)}-\hat{\beta})$.
+\item $D_{j}$ is thus a squared change in predicted value divided by a
+normalizing factor. 
+\item To see that, regroup as
+\[
+D_{j}=\frac{[X(\hat{\beta}_{(-j)}-\hat{\beta})]'[X(\hat{\beta}_{(-j)}-\hat{\beta})]}{p\cdot\hat{\sigma}_{e}^{2}}
+\]
+\\
+The denominator includes $p$ because there are $p$ parameters that
+can change and $\hat{\sigma}_{e}^{2}$ is, of course, your friend,
+the MSE, the estimate of the variance of the error term.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{How does the hat matrix figure into that?}
+
+You know what's coming. Cook's distance can be calculated as:
+\begin{equation}
+D_{j}=\frac{r_{j}^{2}}{p}\frac{h_{jj}}{(1-h_{jj})}\label{eq:Cookhat}
+\end{equation}
+
+
+$r_{j}^{2}$ is the squared standardized residual. 
+
+
+\lyxframeend{}\section{So What? (Are You Supposed to Do?)}
+
+
+\lyxframeend{}\lyxframe{Omit or Re-Estimate}
+\begin{itemize}
+\item Fix the data!
+\item Omit the suspicious case
+\item Use a ``robust'' estimator with a ``high breakdown'' point (median
+versus mean). 
+
+\begin{itemize}
+\item in R, look at ?rlm
+\end{itemize}
+\item Revise the whole model as a ``mixture'' of different random processes.
+
+\begin{itemize}
+\item in R, look at package flexmix
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{A Simulation Example}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{$y_i = 2 + 0.2*x1 + 0.2*x2 + e_i$}
+
+<<ex3d10, echo=F, include=F, results=tex>>=
+library(rockchalk)
+set.seed(22323)
+stde <- 3
+x1 <- rnorm(15, m=50, s=10)
+x2 <- rnorm(15, m=50, s=10)
+y <- 2 + 0.2 *x1 + 0.2*x2 + stde * rnorm(15,m=0,s=1)
+modbase <- lm(y~x1 + x2)
+outreg(modbase)
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+\input{plots/t-ex3d10}
+
+
+15 cases observed
+
+
+\column{8cm}
+
+
+<<ex3d11, fig=T, include=F, echo=F>>=
+modout <- mcGraph3(x1, x2, y)
+@
+
+
+\includegraphics[width=9cm]{plots/t-ex3d11}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{rstudent: scan for large values (t distributed)}
+
+<<ex3d12, include=F, echo=T>>=
+rstudent(modbase)
+@
+
+\input{plots/t-ex3d12}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{dfbetas}
+
+<<ex3d13, include=F, fig=T, echo=T,height=6,width=9>>=
+dfbetasPlots(modbase)
+@
+
+\includegraphics[width=10cm]{plots/t-ex3d13}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{leverage}
+
+<<ex3d14, include=F, fig=T>>=
+##plot.lm(modbase, which=5)
+plot(modbase, which=5)
+@
+
+\includegraphics[width=6cm]{plots/t-ex3d14}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Add high $h_{ii}$ case, observation 16 (x1=50, x2=0, y=30)}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<ex3d20,include=F,  echo=F, fig=T, results=tex>>=
+x1[16] <- 50
+x2[16] <- 0
+y[16] <- 30
+outreg(mod3A <- lm(y~x1+x2))
+modout <- mcGraph3(x1, x2, y)
+@
+
+\input{plots/t-ex3d20}
+
+\column{8cm}
+
+\includegraphics[width=8cm]{plots/t-ex3d20.pdf}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{rstudent: scan for large values (t distributed)}
+
+<<ex3d23, include=F, echo=T>>=
+rstudent(mod3A)
+@
+
+\input{plots/t-ex3d23}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{dfbetas}
+
+<<ex3d24, include=F, fig=T, echo=T,height=6,width=9>>=
+dfbetasPlots(mod3A)
+@
+
+\includegraphics[width=10cm]{plots/t-ex3d24}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{leverage}
+
+<<ex3d25, include=F, fig=T>>=
+#plot.lm(mod3A, which=5)
+plot(mod3A, which=5)
+@
+
+\includegraphics[width=6cm]{plots/t-ex3d25}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Set the 16th case at (mean(x1), 0), but set y=-10}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<ex3d30,include=F,  echo=F, fig=T, results=tex>>=
+y[16] <- -10
+outreg(mod3B <- lm(y~x1+x2))
+modout <- mcGraph3(x1, x2, y)
+@
+
+\input{plots/t-ex3d30}
+
+\column{8cm}
+
+\includegraphics[width=8cm]{plots/t-ex3d30.pdf}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{rstudent: scan for large values (t distributed)}
+
+<<ex3d31, include=F, echo=T>>=
+rstudent(mod3B)
+@
+
+\input{plots/t-ex3d31}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{dfbetas}
+
+<<ex3d32, include=F, fig=T, echo=T,height=6,width=9>>=
+dfbetasPlots(mod3B)
+@
+
+\includegraphics[width=10cm]{plots/t-ex3d32}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{leverage}
+
+<<ex3d33, include=F, fig=T>>=
+##plot.lm(mod3B, which=5)
+plot(mod3B, which=5)
+@
+
+\includegraphics[width=6cm]{plots/t-ex3d33}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Add a case at (mean(x1), 0), but set y[16]=-30}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<ex3d40,include=F,  echo=F, fig=T, results=tex>>=
+y[16] <- -30
+outreg(mod3C <- lm(y~x1+x2))
+modout <- mcGraph3(x1, x2, y)
+@
+
+\input{plots/t-ex3d40}
+
+\column{8cm}
+
+\includegraphics[width=8cm]{plots/t-ex3d40.pdf}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{rstudent: scan for large values (t distributed)}
+
+<<ex3d41, include=F, echo=T>>=
+rstudent(mod3C)
+@
+
+\input{plots/t-ex3d41}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{dfbetas}
+
+<<ex3d42, include=F, fig=T, echo=T,height=6,width=9>>=
+dfbetasPlots(mod3C)
+@
+
+\includegraphics[width=10cm]{plots/t-ex3d42}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{leverage}
+
+<<ex3d43, include=F, fig=T>>=
+#plot.lm(mod3C, which=5)
+plot(mod3C, which=5)
+@
+
+\includegraphics[width=6cm]{plots/t-ex3d43}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+\include{1_home_pauljohn_SVN_SVN-guides_stat_Regression____agnostics_RegDiagnostics-1-lecture-problems}
+
+
+\lyxframeend{}
+\end{document}

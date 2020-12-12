@@ -1,0 +1,1645 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression-Nonlinear/Nonparametric-Loess-Splines//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{amsmath}
+\usepackage{esint}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=5,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Splines and Loess and So Forth }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date{.}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Get a Rubber Ruler}
+\begin{itemize}
+\item Previous approach was ``guess a formula'' and ``try to estimate
+its coefficients''.
+\item Change gears now, and say ``I don't know what the formula might be,
+I will use a flexible ruler to get the best predicted value I can
+get.''
+\item There are MANY details in this enterprise, TOO MANY different rubber
+rulers to use. Sorry.
+\end{itemize}
+
+\lyxframeend{}\section{Difficult Test Case}
+
+
+\lyxframeend{}\lyxframe{From the locfit package for R}
+
+Suppose the data looks like this (awful!)
+
+<<2a,echo=F,fig=T, include=F>>=
+#setting seed so this thing looks the same every time!
+set.seed(2314)
+x <- 10 * runif(100)
+y <- 5*sin(x)+rnorm(100)
+dat <- data.frame(x,y)
+dat <- dat[order(dat$x), ]
+x <- dat$x
+y <- dat$y
+plot (x, y, main="Curvish data from Locfit example", pch=16)
+@
+
+\includegraphics[width=7cm]{plots/t-2a}
+
+
+\lyxframeend{}\lyxframe{Straight Line Not right}
+
+<<2b,echo=F,fig=T, include=F>>=
+plot (x, y, main="Curvish data from Locfit example", pch=16)
+abline(lm(y~x))
+@
+
+\includegraphics[width=7cm]{plots/t-2b}
+
+
+\lyxframeend{}\lyxframe{Would a Quadratic Term Help?}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item People Say ``Throw in a Squared Term''
+\item People often include $x^{2}$ to ``check for nonlinearity'' 
+\end{itemize}
+
+\begin{eqnarray*}
+\hat{y}_{i} & = & 3.8\,\,\,-\,\,\,1.1x_{i}+0.09\cdot x_{i}^{2}\\
+ &  & (0.96)*\,(0.44)*\,\,(0.042)*
+\end{eqnarray*}
+
+\begin{itemize}
+\item 0.09 is ``statistically significant'' and positive. So?
+\end{itemize}
+
+\column{6cm}
+
+
+<<4,echo=T,include=F,fig=T>>=
+mymod1 <- lm(y ~ x+I(x^2), data = dat)
+summary(mymod1)
+ndat  <- data.frame(x = seq(0,10, length.out = 100))
+predict1 <- predict(mymod1, newdata = ndat)
+plot(x, y, main = "Adding x squared", pch = 16)
+lines(ndat$x, predict1) 
+@
+
+
+\includegraphics[width=6cm]{plots/t-4}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Does a "Significant" b2 Mean Anything Here?}
+\begin{itemize}
+\item What does the star mean to you?
+
+
+<<5,echo=F, include=F>>=
+summary(mymod1)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-5}
+
+\item Unfortunately, to most people, the star is evidence that ``the quadratic
+model is right''. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Higher Order Terms, Get Closer to the Right Model}
+
+Build a more detailed polynomial: include more terms, $x_{i}^{3}$
+and $x_{i}^{4}$
+\begin{itemize}
+\item Recall Taylor's Theorem
+\item Fact: A polynomial has one fewer ``hump'' than it has terms. Since
+our graph has 3 ``humps'', the fitted model would need to include
+(at least) $x_{i}^{4}$ 
+\[
+\hat{y_{i}}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x_{i}^{3}+\hat{b}_{4}x_{i}^{4}+e_{i}
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Predicted Values of 4th Degree Polynomial: OK!}
+
+<<6,echo=T,include=F,fig=T>>=
+mymod2 <- lm(y~x+I(x^2)+I(x^3)+I(x^4), data=dat)
+summary(mymod2)
+newx <- seq(0,10, length.out=100)
+predict2 <- predict(mymod2, newdata=data.frame(x=newx))
+plot(x, y, main = expression(paste("Adding ", x^2, ",", x^3, ", and ", x^4)), pch=16)
+lines(newx,predict2)
+@
+
+\includegraphics[width=6cm]{plots/t-6}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{This almost never works in practice.}
+\begin{itemize}
+\item Observed data is not as symmetrical, may require even more terms.
+\item Noisy data obscures the true shape, parameter variances large, standard
+errors large.
+\item Unless your $x_{i}$ data is measured across a very wide range, coefficients
+for $x^{3}$ and $x^{4}$ won't be estimated with much precision.
+(Even if we ``mean-center'' or use orthogonal polynomials).
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Generalized Additive Models (GAM)}
+
+\begin{frame}[containsverbatim]
+\frametitle{GAM is our LONG TERM GOAL}
+\begin{itemize}
+\item Start out with the usual: $y_{i}=b_{o}+b_{1}x1_{i}+b_{i}x2_{i}+b_{3}x3_{i}+e_{i}$
+\item Suppose there's some ``wiggle'' in the effect of $x3_{i}$, but
+we don't know what it is 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{GAM = Semi-parametric Regression}
+\begin{itemize}
+\item Wouldn't it be great to fit a generalized model, where we use some
+smoother for $x3_{i}$'s effect? 
+\end{itemize}
+\begin{Sinput}
+gam(y ~ x1 + x2 + s(x3), data=dat)
+\end{Sinput}
+\begin{itemize}
+\item s(x3) is ``some good smoother function'', may depend on parameters
+\item Generalized Additive Model (GAM): We can estimate some parametric
+terms, x1 and x2, and then let the rubber ruler fit the others.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Kinds of rubber rulers}
+\begin{itemize}
+\item Natural Cubic Splines (recommended by Harrell, Regression Modeling
+Strategies)
+
+\begin{itemize}
+\item Segments of X and limited curvature changes. 
+\end{itemize}
+\item Loess (Locally Weighted Regression): Most intuitive, I think
+
+\begin{itemize}
+\item Separately predict each case! Reduce weight on more distant observations
+\end{itemize}
+\item Smoothing Splines.
+
+\begin{itemize}
+\item Allow the predictive line to ``wiggle'' at any point, but with a
+penalty
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{GAM: Generalized Additive Model}
+
+Leading R packages that can combine the usual regression with various
+kinds of ``smoothed'' predictor functions.
+\begin{itemize}
+\item ``gam''
+
+
+Hastie, T. and Tibshirani, R. (1990) \emph{Generalized Additive Models}.
+London: Chapman and Hall. A very famous book by the authors who founded
+this area of study.
+
+\item ``mgvc'' 
+
+
+Wood S.N. (2006) \emph{Generalized Additive Models: An Introduction
+with R}. Chapman and Hall/CRC Press. This is my favorite regression
+book of all time and I strongly urge any regression modeler to get
+a copy! It has a superior introduction to regression, the generalized
+linear model, and random effects (mixed) models.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Other R packages}
+\begin{itemize}
+\item rms: \emph{Regression Modeling Strategies} (Frank Harrell). Another
+favorite regression book. This is where I learned about natural cubic
+splines 
+\item polspline: Polynomial Spline routines (recommended by Harrell)
+\item locfit: loess as evolved out of Bell Labs (C. Loader)
+\item np: Nonparametric Econometrics (Tristen Hayfield and Jeffrey Racine). 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Natural (and other) Splines}
+
+
+\lyxframeend{}\lyxframe{Nonlinear Spline Overview}
+\begin{itemize}
+\item A ``piecewise linear spline'' connects straight lines.
+\item A ``cubic spline'' connects cubic functions.
+\item A ``natural spline'' is a cubic spline with some restrictions on
+the end points.
+\end{itemize}
+
+\lyxframeend{}\subsection{Straight Line Splines}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Linear Splines}
+\begin{itemize}
+\item Appears simple, parsimonious
+\item Divide the x-axis into sections
+\item Estimate regression lines for each one
+\item But don't allow ``breaks'' between segments. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Getting Different Slopes on Different Sections of $x_i$}
+\begin{itemize}
+\item Many authors use a ``plus function'' notation
+\begin{eqnarray}
+(x_{i}-\tau_{1})_{+} & = & 0\, if\, x_{i}<\tau_{1}\\
+ &  & x_{i}-\tau_{1}\, otherwise
+\end{eqnarray}
+
+\item Literally, 
+
+\begin{itemize}
+\item up to a knot (or ``break point'') $\tau_{1}$, $x_{i}$ has no effect. 
+\item Above $\tau_{i}$, the effect is ($x_{i}-\tau_{1})_{+}$
+\end{itemize}
+\item Fitted model with one knot: $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x+\hat{b}_{2}(x_{i}-\tau_{1})_{+}$
+\end{itemize}
+\end{frame}
+
+<<7a,echo=T,include=F,fig=T>>=
+knot <- c(1.8, 4.2, 8.0)
+thedf <- data.frame(x=x, y=y)
+thedf <- thedf[order(thedf$x),]
+
+#handy function to create "plus variables"
+createplusvar <- function(input,k) { it <- ifelse(input > k, input-k, 0)}
+thedf$xp1 <- createplusvar(thedf$x, knot[1])
+thedf$xp2 <- createplusvar(thedf$x, knot[2])
+thedf$xp3 <- createplusvar(thedf$x, knot[3])
+mymod0 <- lm (y ~ x + xp1 + xp2 + xp3, data = thedf)
+newx <- seq(round(min(x),1), round(max(x)+0.5,1),by=0.1)
+newdf <- data.frame(x = newx, xp1 = createplusvar(newx, knot[1]),  xp2 = createplusvar(newx,knot[2]), xp3 = createplusvar(newx,knot[3]))
+newdf$pred <- predict(mymod0, newdata = newdf)
+mytitle <- paste ("Manual Regression spline knots", knot[1], knot[2], knot[3])
+plot(thedf$x, thedf$y, main = mytitle, type = "n")
+points(thedf$x, thedf$y, pch = 16, cex = 0.5)
+lines(newdf$x, newdf$pred)
+rm(thedf, mymod0, newdf)
+@
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Plot of Manual Spline Results}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item For the curvy locfit data considered, I guessed 3 breakpoints.
+\item I manually estimate the model.
+\item I did not guess the breakpoints for the splines quite right (but close).
+\end{itemize}
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{plots/t-7a}
+
+\end{topcolumns}%{}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Routines to Guess Knots and Splines simultaneously}
+\begin{itemize}
+\item R package ``segmented''
+\item Nice interface!
+
+\begin{itemize}
+\item Fit a regression
+\item Give that lm object to segmented() with a request
+\end{itemize}
+\item Somewhat fragile (my experience). Good initial guesses for the break
+points (the option psi) needed. 
+\item segmented() provides a test for the significance of the assumption
+that the line segments connect at the break points.
+\end{itemize}
+<<7b,echo=T,include=F, echo=T, fig=T>>=
+library(segmented)
+mymod0 <- lm(y ~ x)
+segmod <- segmented(mymod0, seg.Z = ~x, psi=list(x = c(1.8,4.2,8.0)), it.max = 200)
+summary(segmod)
+mynewdf <- data.frame(x=x, fitted = segmod$fitted.values)
+mynewdf <- mynewdf[order(mynewdf$x),]
+plot(x, y, main = "Lines, cutpoints estimated by segmented", pch = 16)
+lines(mynewdf$x, mynewdf$fitted)
+detach("package:segmented")
+@
+
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{segmented results}
+
+\includegraphics[width=7cm]{plots/t-7b}
+
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Multivariate Adaptive Regression Splines}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item R package ``mda'' (Trevor Hastie), routine: MARS: Multivariate Adaptive
+Regression Splines (see Venables \& Ripley, MASS, 4ed, p. 235)
+\item number of knots estimated from the data
+\item Has options to ``curve'' the segments as well!
+\end{itemize}
+
+<<7c,echo=T,include=F,fig=T>>=
+library(mda)
+mymars <- mars(x, y, degree=1) 
+summary(mymars)
+mymars$cuts
+mymars$gcv 
+mydf <- data.frame(x, y, fitted = mymars$fitted)
+mydf <- mydf[order(mydf$x),]
+plot(x, y, main = "Linear splines: mars output", pch = 16)
+lines(mydf$x,mydf$fitted)
+rm(mymars)
+@
+
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{plots/t-7c}
+
+\end{topcolumns}%{}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{MARS Plot Code With Fewer Breakpoints}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+Try a restricted number of breakpoints.
+
+
+<<7d,echo=T,include=F,fig=T>>=
+library(mda)
+mymars2 <- mars(x,y, degree=1, nk=6) 
+summary(mymars2)
+mymars2$gcv 
+mymars2$cuts
+mydf <- data.frame(x,y,fitted=mymars2$fitted)
+mydf <- mydf[order(mydf$x),]
+plot(x,y,main="Linear splines: mars output nk=6", pch=16)
+lines(mydf$x,mydf$fitted)
+rm(mymars2, mydf)
+detach("package:mda")
+@
+
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{plots/t-7d}
+
+\end{topcolumns}%{}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Do We Like Linear Splines (on a Theoretical Level)?}
+\begin{itemize}
+\item Kinks. Do our theories really have ``kinks''? 
+\item Does effect of x remain constant until an instant where it changes
+from $b_{2}$ to $b_{3}$?
+\item Should model have them?
+\item Big philosophical question. 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\subsection{A Smoother Spline}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Splines without Kinks}
+\begin{itemize}
+\item There are more types of spline models than you can shake a stick at. 
+\item We focus on the natural cubic spline.
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Cubic Spline Basics}
+\begin{itemize}
+\item input variable $x_{i}$ 
+\item $x_{i}$ is subdivided into $k$ segments with end points $(\tau_{0}$,$\tau_{1}$,$\ldots,$$\tau_{k+1})$.
+\end{itemize}
+Segments with 4 knots in the interior of the line.
+
+<<8,include=F,fig=T, echo=F, height=2>>= 
+plot(seq(-1,10,length.out=100), type="n", axes=F,ylab="", xlab="",xlim=c(-1,11), ylim=c(-1,1))
+
+axis(1, at = c(0,4,5,7,9,10), labels = expression(tau[0], tau[1], tau[2], tau[3], tau[4], tau[5]))
+@
+
+\includegraphics[width=11cm]{plots/t-8}
+
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Cubic Spline Basics}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item On each interval, we can imagine a cubic model, 
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}+\hat{b}_{3}x_{i}^{3}
+\]
+
+\end{itemize}
+
+<<9b,include=F,fig=T,echo=F>>=
+knots<- c(1.7,4.63,7.9)
+int0 <- ifelse (x<knots[1], 1, 0)
+xp0 <- ifelse (x<knots[1], x, 0)
+int1 <- ifelse(x>knots[1]&x<knots[2], 1, 0)
+xp1 <- ifelse(x>knots[1]&x<knots[2], x, 0)
+int2 <- ifelse(x>knots[2]&x<knots[3], 1, 0)
+xp2 <- ifelse(x>knots[2]&x<knots[3], x, 0)
+int3<- ifelse( x>knots[3],1,0)
+xp3 <- ifelse(x>knots[3], x, 0)
+
+mycubic <- lm(y~-1+ int0+ xp0+ I(xp0^2)+ I(xp0^3) + int1+ xp1+ I(xp1^2) + I(xp1^3)+ int2 + xp2 + I(xp2^2)+ I(xp2^3)+ int3+ xp3+I(xp3^2)+I(xp3^3))
+b<-coef(mycubic)
+newx <- seq(round(min(x)),ceiling(max(x)),length=200)
+y1 <- b[1]+b[2]*newx +b[3]*newx^2+b[4]*newx^3
+y1 <- ifelse(newx <= knots[1], y1, NA)
+y2 <- b[5]+b[6]*newx +b[7]*newx^2+b[8]*newx^3
+y2 <- ifelse(newx > knots[1] & newx <= knots[2], y2, NA)
+y3 <- b[9]+b[10]*newx +b[11]*newx^2+b[12]*newx^3
+y3 <- ifelse(newx > knots[2] & newx <= knots[3], y3, NA)
+y4 <- b[13]+b[14]*newx +b[15]*newx^2+b[16]*newx^3
+y4 <- ifelse(newx > knots[3], y4, NA)
+plot(x,y,main="Unrestricted cubic splines",type="n",xlab="x",ylab="y")
+lines(newx,y1)
+lines(newx,y2)
+lines(newx,y3)
+lines(newx,y4)
+points(x,y,cex=0.4)
+rm (newx,y1, y2, y3, y4,int0,int1,int2,int3)
+@
+
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{plots/t-9b}
+
+\end{topcolumns}%{}
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{First Fix: Smooth Cubic Splines}
+\begin{itemize}
+\item Each segment's spline must blend smoothly into the next. So assume:
+
+\begin{enumerate}
+\item No gaps at the knots.
+\item Smooth Connections between parts. No pointy kinks at the knots. 
+\end{enumerate}
+\item Those 2 assumptions have VERY MUCH power on simplifying the problem.
+In particular, they mean that the slope and second derivatives at
+the knot points have to match exactly.
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Adapt the "plus function" notation for the Cubic Spine}
+\begin{itemize}
+\item squared plus function
+\end{itemize}
+\begin{eqnarray}
+(x_{i}-\tau)_{+}^{2} & = & 0\, if\, x_{i}<\tau\\
+ &  & (x_{i}-\tau)^{2}\, otherwise
+\end{eqnarray}
+ 
+\begin{itemize}
+\item Cubic plus function:
+
+
+\begin{eqnarray}
+(x_{i}-\tau)_{+}^{3} & = & 0\, if\, x_{i}<\tau\\
+ &  & (x_{i}-\tau)^{3}\, otherwise
+\end{eqnarray}
+ 
+
+\end{itemize}
+I believe these are called ``truncated power basis'' splines. These
+are the ``teaching version'' of cubic splines
+
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Simplifying the Cubic Splines}
+
+The model would be too overwhelming if we try to estimate a separate
+cubic equation within every segment.
+
+\begin{eqnarray*}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\\
+ &  & \hat{b}_{4}+\hat{b}_{5}(x_{i}-\tau_{1})_{+}+\hat{b}_{6}(x_{i}-\tau_{1})_{+}^{2}+\hat{b}_{7}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\\
+ &  & \hat{b}_{8}+\hat{b}_{9}(x_{i}-\tau_{2})_{+}+\hat{b}_{10}(x_{i}-\tau_{2})_{+}^{2}+\hat{b}_{11}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)
+\end{eqnarray*}
+But we can throw away many of those coefficients 
+\begin{itemize}
+\item no gaps: $b_{4}=$ $b_{8}=0$. 
+\item no kinks at knots: $b_{5}=$ $b_{6}=0$.
+\item no kinks at knots: $b_{6}=$$b_{10}=0$. 
+\end{itemize}
+\end{frame}\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{And so Restricted Cubic Spline Model Boils Down To}
+\begin{itemize}
+\item Renumbering the coefficients in a sane way, we are left with 
+\end{itemize}
+\begin{eqnarray}
+\hat{y}_{i} & = & \hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x^{2}+\hat{b}_{3}x_{i}^{3}+\nonumber \\
+ &  & +\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}\,\,(after\, first\, knot)\label{eq:Urcs}\\
+ &  & +\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}\,(after\, second\, knot)\nonumber \\
+ &  & and\, so\, forth
+\end{eqnarray}
+
+\begin{itemize}
+\item After the first interior knot, add $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$. 
+\item After the second knot, we have BOTH $\hat{b}_{4}(x_{i}-\tau_{1})_{+}^{3}$+
+$\hat{b}_{5}(x_{i}-\tau_{2})_{+}^{3}$. 
+\item Emphasize: a change in the coefficient for one segment may have a
+``ripple effect'' across all of the others. If one segment's coefficient
+gets tuned ``high,'' then the others have to adjust to compensate. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Natural Splines: One more restriction}
+\begin{itemize}
+\item The ``outside'' segments are ``unteathered'' on the edges. 
+\item To stabilize the fit there, a \textbf{restricted (or natural) cubic
+spline} allows only a linear relationship on those segments. (see
+Harrell's \emph{Regression Modeling Strategies}, p. 20).
+\item The ``theoretical'' view, then, is just a linear equation supplemented
+by a bunch of cubic ``plus'' functions.
+\end{itemize}
+\[
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}(x_{i}-\tau_{1})_{+}^{3}+\hat{b}_{3}(x_{i}-\tau_{2})_{+}^{3}+\ldots
+\]
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{More Sophisticated Computer Tricks Behind the Scenes}
+\begin{itemize}
+\item We could manually create the power variables $(x_{i}-\tau_{j})_{+}^{3}$
+and fit with OLS. 
+\item However, that is not the ``numerically most stable'' approach.
+
+
+``The truncated power basis is attractive because the plus-function
+terms are intuitive and maybe entered as covariates in standard regression
+packages. However, the number of plus-functions requiring evaluation
+increase with the number of breakpoints, and these terms often become
+collinear, just as terms in a standard polynomial regression do.''
+(Lynn A Sleeper and David P. Harrington, ``Regression Splines in
+a Cox Model with Application to Covariate Effects in Liver Disease'',\emph{
+Journal of the American Statistical Association}, 85(412) December
+1990, p.943 (941-949 )). 
+
+\item The ``b-spline'' encoding is more numerically stable approach. Harrell
+states that the difference is not usually substantial. On the other
+hand, Wood emphasizes the b-spline quite a bit.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Examples? Let's use Frank Harrell's rms Package}
+
+<<10,echo=T,results=hide, include=F>>=
+library(rms)
+@
+\begin{itemize}
+\item Harrell's rcs() function creates the ``truncated power basis natural
+spline''.
+\end{itemize}
+\begin{Sinput}
+rcs(x, parms=5)
+\end{Sinput}
+\begin{itemize}
+\item By default, rcs will position knots so that the data is divided into
+equally sized subgroups (quintiles, etc.). 
+\item R package: splines. Function ``ns'' creates the ``numerically more
+stable'' b-spline representation for a natural cubic splines
+\end{itemize}
+\begin{Sinput}
+ns(x, df=4)
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Fit a Regression with a Restricted Natural Cubic Spline}
+\begin{itemize}
+\item We can use either $rcs(x,nk=knots)$ or $ns(x,df=k-1)$ as regression
+model inputs:
+\end{itemize}
+\begin{Sinput}
+m5 <- lm(y ~ rcs(x,5), data=dat)
+\end{Sinput}
+
+<<12, echo=T, include=F, fig=T>>=
+mymod5 <- lm(y ~ rcs(x, parms=5), data=dat)
+predict5 <- mymod5$fitted.values
+plot(dat$x, dat$y,main="Using lm(y~rcs(x,parms=5))", type="n")
+points(dat$x, dat$y, pch=16)
+lines(dat$x, predict5)
+@
+
+\includegraphics[width=9cm]{plots/t-12}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Model Summary Output Difficult to Understand, Though}
+
+<<14,echo=F, include=F>>=
+summary(mymod5)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-14}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Predictions from b-spline "ns" and Truncated "rcs" Very Similar}
+
+\begin{Sinput}
+m5 <- lm(y ~ ns(x,df=4), data=dat)
+\end{Sinput}
+
+<<14compare,echo=F, include=F, fig=T>>=
+library(splines)
+modbs <- lm(y ~ ns(x, df=4), data=dat) 
+plot(predict5, modbs$fitted, main="scatter of predictions from ns and rcs", xlab="predicted with rcs(x, parms=5)", ylab="predicted with ns(x, df=4)") 
+@
+
+\includegraphics[width=7cm]{plots/t-14compare}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Choosing the number of knots}
+\begin{itemize}
+\item Harrell writes that the conventional wisdom, following studies by
+Stone, is that the positioning of the knots is not very influential.
+If the knots section off the data into evenly sized groups, then the
+fit is ``pretty good.'' 
+\item But the number of knots is important. 
+
+\begin{itemize}
+\item Usually need at least 4 knots
+\item Usually more than 7 knots not helpful.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Clearly, 3 knots is not Enough}
+
+<<15-4,include=F,fig=T,echo=T>>=
+mymod3 <- lm(y ~ rcs(x,parms=3), data=dat)
+predict3 <- mymod3$fitted.values
+plot(x,y,main="3 Knots! Using lm(y~rcs(x,parms=3))", pch=16)
+lines(dat$x, predict3)
+summary(mymod3)
+@
+
+\includegraphics[width=10cm]{plots/t-15-4}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{6 Knots Not So Bad}
+
+<<15-6,include=F,fig=T,echo=T>>=
+mymod6 <- lm(y ~ rcs(x,parms=6), data=dat)
+predict6 <- mymod6$fitted.values
+plot(x,y,main="6 Knots! Using lm(y~rcs(x,parms=6))", pch=16)
+lines(dat$x, predict6)
+summary(mymod6)
+@
+
+\includegraphics[width=10cm]{plots/t-15-6}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Several different values for knots}
+
+<<15-all,include=F,fig=T,echo=T>>=
+mymod7 <- lm(y ~ rcs(x,7), data=dat)
+predict7 <- mymod7$fitted.values
+mymod8 <- lm(y ~ rcs(x,8), data=dat)
+predict8 <- mymod8$fitted.values
+mymod9 <- lm(y ~ rcs(x,9), data=dat)
+predict9 <- mymod9$fitted.values
+plot(x,y,main="5- 9 Knots!", pch=16)
+lines(dat$x, predict5, col=1, lty=1)
+lines(dat$x, predict6, col=2, lty=2)
+lines(dat$x, predict7, col=3, lty=3)
+lines(dat$x, predict8, col=4, lty=4)
+lines(dat$x, predict9, col=5, lty=5)
+legend("top",legend=paste("knots",5:9),col=1:5,lty=1:5)
+@
+
+\includegraphics[width=10cm]{plots/t-15-all}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Danger of Over-Fitting}
+\begin{itemize}
+\item Over-fitting: customizing the model to quirks of one random sample. 
+\item Theoretically, want a manageable model: get rid of many knots as possible.
+\item Should penalize use of knots, somehow
+\item Cross Validation is a concept that can be used as a guide in deciding
+on the appropriate number of knots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Cross Validation: Choosing the number of knots}
+\begin{itemize}
+\item Basic Idea: Choose your modeling approach, including number of knots.
+\item Estimate model for a subset
+\item Check if fitted model works well for other cases that were not used
+in fitting
+\item For evaluating ``out of sample'' predictions, we use a ``misfit
+indicator''{*} 
+
+\begin{itemize}
+\item Such as ``mean square error'' or Akaike's Information Criterion,
+Deviance, etc (for more advanced applications).
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{"Leave One Out" Cross Validation}
+\begin{itemize}
+\item Remove the $i'th$ observation, Re-calculate the predictive curve
+on $N-\{i\}$. 
+\item Calculate a ``leave-one-out prediction'' $\check{y}_{i}$. Meaning:
+use the model estimated on $N-\{i\}$ to predict for the $i'th$ observation.
+\item How bad was that prediction? Easy: $(y_{i}-\check{y}_{i})^{2}$
+\item Repeat procedure for all observations. Calculate the average of squared
+errors. 
+\[
+CV=\frac{1}{N}\sum_{i=1}^{N}(y_{i}-\check{y}_{i})^{2}
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{When the Dust Clears}
+\begin{itemize}
+\item Calculate CV for models with 4 knots, then 5 knots, and so forth
+\item Choose number of knots that minimizes the CV measure
+\item Many Variants, \textquotedbl{}Generalized Cross Validation\textquotedbl{}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Loess }
+
+
+\lyxframeend{}\lyxframe{Sometimes Called ``Nonparametric'' Regression}
+\begin{itemize}
+\item LOESS: Locally Weighted Error Sum of Squares regression.
+
+
+Cleveland, W. S. and Devlin, S. J. (1988). Locally weighted regression:
+An approach to regression analysis by local fitting. \emph{Journal
+of the American Statistical Association} 83, 596–610. 
+
+\item Fit a separate predictive model for each observation!
+\item Model is ``nonparametric'' in the sense that we do not emphasize
+estimation of ``\textbf{\textit{the}} \textbf{\textit{slope}}''
+for a particular ``coefficient''.
+\item Now we estimate ``the slope'' for 100s of separate points. Loess
+is not ``nonparametric'' in my view. It is mega-parametric! 
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{LOESS}
+\begin{enumerate}
+\item Make a separate regression model for each value of the input variable. 
+\item Construct each regression so it puts most ``weight'' on observed
+scores that are close.
+\item Output is a column of predictions, one for each observation.
+\end{enumerate}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Weights for Points Close to $x'$}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Fit one regression for each value of $x_{i}$. Concentrate on one
+now $x'$.
+\item Points outside the span of $h$ have 0 Weight.
+\item Closer points inside the span have more weight
+\item Typical: 
+\end{itemize}
+
+\begin{equation}
+Weight\,(x_{i})=\begin{cases}
+(1-|\frac{x_{i}-x'}{h}|^{3})^{3} & \,\, if\,\,|\frac{x_{i}-x'}{h}|<1\\
+0 & otherwise
+\end{cases}
+\end{equation}
+
+
+
+\column{6cm}
+
+
+<<18,echo=T,include=F,fig=T>>=
+x3 <- seq(0,10,length=200)
+xprime <- 4
+bandwidth <- 3.1
+weight <- (1- (abs((x3-xprime)/bandwidth))^3)^3
+weight <- ifelse(abs(xprime-x3)>bandwidth,0,weight)
+plot(x3,weight,type="l",main="Default loess weighting for x=4, bandwidth=3.1")
+@
+
+
+\includegraphics[width=6cm]{plots/t-18}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{How Weights Affect Predictions}
+\begin{itemize}
+\item In ``ordinary least squares,'' there are no weights. Minimize this:
+\[
+\sum_{i=1}^{n}(y_{i}-\hat{y}_{i})^{2}
+\]
+
+\item Loess uses weighted local regression to de-emphasize the far-away
+values.
+\[
+\sum_{i=1}^{n}W(x_{i})[y_{i}-\hat{y_{i}}]^{2}
+\]
+
+\item The predictor can be 
+
+\begin{itemize}
+\item linear model, $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}$, 
+\item quadratic model, $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{i}+\hat{b}_{2}x_{i}^{2}$. 
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Using locfit's local polynomial estimator}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item locfit is a generalized framework for loess with linear and generalized
+regression models.
+\item Author: C. Loader early developer of code for loess at AT\&T
+\item The plotter makes the points look like a smooth line.
+\end{itemize}
+
+\column{7cm}
+
+
+<<locex, echo=T, include=F>>=
+library(locfit)
+@
+
+
+<<18c,echo=T, fig=T, include=F>>=
+fit1 <- locfit(y~lp(x,nn=0.5)) 
+plot(fit1,main="Local fitting, 0.5 nearest neighbors included",ylim=c(-6,6))
+points(x,y)
+@
+
+
+\includegraphics[width=7cm]{plots/t-18c}
+
+\end{topcolumns}%{}
+\end{frame}
+
+<<18d,echo=T, fig=T, include=F>>=
+fit1 <- locfit(y~lp(x,nn=0.5)) 
+pred1 <- predict(fit1, newdata=data.frame(x), se.fit=TRUE, band="local")
+plot(fit1,main="Local fitting, 0.5 nearest neighbors included",ylim=c(-6,6), band="local")
+points(x,y)
+@
+
+<<locMASS,echo=T,fig=T, include=F>>=
+fit2 <- loess(y~x,span=0.5)
+pred2 <- fit2$fitted
+plot(x,y, main="loess with span=0.5",ylim=c(-6,6))
+lines(x, pred2)
+@
+
+<<loesscompare,echo=T,fig=T, include=F>>=
+plot(pred2, pred1$fit, main="Compare locfit and loess with span=0.5", xlab="loess predictions", ylab="locfit predictions", ylim=c(-6,6))
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{Add 95\% Local Confidence Interval}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item The 95\% band can be calculated in a variety of ways
+\item This uses the local estimate of the variance to customize the 95\%
+confidence interval
+\end{itemize}
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{plots/t-18d}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Compare Against loess Function output}
+
+\begin{tabular}{|c|c|}
+\hline 
+\includegraphics[width=5cm]{plots/t-locMASS} &
+\includegraphics[width=5cm]{plots/t-loesscompare}\tabularnewline
+\hline 
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Extension to several input variables}
+\begin{itemize}
+\item Second Generation loess tools include the ability to add more predictor
+variables. 
+\item The transition from one to several variables is very simple in theory.
+The weights simply depend on distance, which can be measured in various
+ways.
+\item ``Curse of dimensionality'' makes fitting these ``nonparametric''
+curves very costly if there are more than 3 predictors.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Smoothing Splines}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Smoothing Splines}
+\begin{itemize}
+\item Smoothing Splines: marriage of Splines and Loess
+\item Every $x_{i}$ becomes a knot.
+\item Build a natural spline model that ``wiggles'' between every pair
+of points.
+\item We penalize wiggliness. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Here is the objective function}
+\begin{itemize}
+\item Goal is to minimize a Sum of Squared Errors Plus a penalty for ``wiggliness''
+(a roughness penalty). 
+\end{itemize}
+\[
+SS(f,\lambda)=\sum_{i=1}^{N}\left(y_{i}-f(x_{i})\right)^{2}+\lambda\int_{x_{min}}^{x_{max}}(f''(x))^{2}dx
+\]
+
+\begin{itemize}
+\item A theorem in Wood demonstrates that $f(x_{i})$ will be cubic.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{$\lambda$ is a Smoothing Parameter}
+\begin{itemize}
+\item If $\lambda$ is too small, $f$ offers no simplification, it fits
+the data exactly.
+\item If $\lambda=\infty$, a harsh penalty leads to a straight line model
+(no curves)
+\item May manually set $\lambda$ 
+
+\begin{itemize}
+\item or use some algorithm to estimate models for various $\lambda$ and
+compare results by Cross Validation.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{One Way To Summarize "degrees of freedom" used}
+\begin{itemize}
+\item Suppose you have the ``smoother matrix'' that maps from observed
+$y_{i}$ to the predicted $y_{i}$. For each $i$: 
+\begin{equation}
+\hat{y}_{i}=h_{i1}y_{1}+h_{i2}y_{2}+h_{i3}y_{3}+\ldots+h_{iN}y_{N}
+\end{equation}
+
+
+\begin{itemize}
+\item If $h_{ii}=1$, and $h_{ij}=0$ , then this just ``reproduces''
+$y_{i}$.
+\item But, if $h_{ii}=0$, it means that case $i$ is just ``receiving''
+its prediction from the other cases. We use no ``unique information''
+in predicting $i$. 
+\end{itemize}
+\item Thus, the sum of the ``smoother coefficients'' (the diagonal elements
+if you view $[h_{ii}]$ as an $N\times\mbox{\ensuremath{N}}$ matrix)
+\begin{equation}
+\sum h_{ii}
+\end{equation}
+
+
+
+serves as an indicator of the ``customization'' needed to make a
+set of predictions.
+
+\end{itemize}
+That sum is ``effective degrees of freedom.''
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Sorry. Necessary to Read Manual on Parameters and Settings}
+\begin{itemize}
+\item Models can be fit by various methods
+
+\begin{itemize}
+\item Possible to set value of ``effective degrees of freedom''.
+
+\begin{itemize}
+\item In that case, the smoothing parameter $\lambda$ is adjusted so the
+final model uses the desired df.
+\end{itemize}
+\item User may instead specify a smoothing parameter, $\lambda$ (or the
+like), and then the ``effective degrees of freedom'' used will come
+out as a logical consequence.
+\item Software may use Cross Validation to choose a value of $\lambda$,
+possibly beginning calculations at the user's best initial guess for
+$\lambda$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Many Routines Available}
+\begin{itemize}
+\item smooth.spline in R core (thanks to Brian Ripley and Martin Maechler). 
+\item package ``pspline'' has smooth.Pspline (defaults to natural cubic
+smoothing spline)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I Find the pspline Manual Most Understandable}
+
+method=1 forces the use of the designated spar, which defaults to
+0 (no smoothing) 
+
+<<pspline10,echo=T,include=F,fig=T>>=
+library(pspline)
+#dat <- data.frame(x,y)
+#dat <- dat[order(x), ]
+#x <- dat$x
+#y <- dat$y
+@
+
+<<pspline10b, echo=T, include=F>>=
+psp10 <- smooth.Pspline(x, y)
+psp10
+@
+
+\input{plots/t-pspline10b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=1, spar=0}
+
+<<pspline10c, echo=T, include=F, fig=T>>=
+plot(x, y, type="n", main="pspline Method 1 Follows Orders, spar=0")
+points(x, y, col=gray(.70))
+lines(psp10$x, psp10$ysmth)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline10c}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method 1, with More Smooothing (spar=0.8)}
+
+<<pspline15a,echo=T, include=F, fig=F>>=
+psp15 <- smooth.Pspline(x, y, spar=0.8, method=1)
+psp15
+@
+
+\input{plots/t-pspline15a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method 1, spar=0.8}
+
+<<pspline15b,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline with spar=0.8")
+points(x, y, col=gray(.70))
+lines(psp15$x, psp15$ysmth)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline15b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=1, spar=10}
+
+<<pspline17a,echo=T, include=F, fig=F>>=
+psp17 <- smooth.Pspline(x, y, spar=10, method=1)
+psp17
+@
+
+\input{plots/t-pspline17a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=1, spar=10}
+
+<<pspline17b,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline with spar=10")
+points(x, y, col=gray(.70))
+lines(psp17$x, psp17$ysmth)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline17b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=2, df=5 (calculates spar)}
+
+<<pspline25a,echo=T, include=F, fig=F>>=
+psp25 <- smooth.Pspline(x, y, df=5, method=2)
+psp25
+@
+
+\input{plots/t-pspline25a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=2, df=5}
+
+<<pspline25b,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline, df=5")
+points(x, y, col=gray(.70))
+lines(psp25$x, psp25$ysmth, pch=3, cex=1.5)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline25b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=2, df=10 (calculates spar)}
+
+<<pspline26a,echo=T, include=F, fig=F>>=
+psp26 <- smooth.Pspline(x, y, df=10, method=2)
+psp26
+@
+
+\input{plots/t-pspline26a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=2, df=10}
+
+<<pspline26b,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline method=2, df=10")
+points(x, y, col=gray(.70))
+lines(psp26$x, psp26$ysmth, pch=3, cex=1.5)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline26b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method=4; let CV decide df and spar}
+
+<<pspline35a,echo=T, include=F, fig=F>>=
+psp35 <- smooth.Pspline(x, y, method=4)
+psp35
+@
+
+\input{plots/t-pspline35a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Pspline method 4, let CV decide spar (df)}
+
+<<pspline35b,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline with CV selection of smooth parameter")
+points(x, y, col=gray(.70))
+lines(psp35$x, psp35$ysmth)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline35b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Look at the Psplines side by side}
+
+<<pspline50,echo=T,include=F,fig=T>>=
+plot(x, y, type="n", main="pspline with CV selection of smooth parameter")
+points(x, y, col=gray(.70))
+lines(psp10$x, psp10$ysmth, lty=4, lwd=0.6)
+lines(psp15$x, psp15$ysmth, lty=3)
+lines(psp26$x, psp26$ysmth, lty=2)
+lines(psp35$x, psp35$ysmth, lty=1)
+legend("top", legend=c("spar=0","spar=0.8","df=10","CV"),lty=4:1)
+@
+
+\includegraphics[width=10cm]{plots/t-pspline50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Wish I could demonstrate the smooth.spline function}
+
+But I keep running into weird little mismatches between what I expect
+and what it does, so I'm leaving this reminder here.
+
+\def\Sweavesize{\scriptsize}
+\begin{Sinput}
+
+Description:
+
+     Fits a cubic smoothing spline to the supplied data.
+
+Usage:
+
+smooth.spline(x, y = NULL, w = NULL, df, spar = NULL,
+cv = FALSE, all.knots = FALSE, nknots = NULL,
+keep.data = TRUE, df.offset = 0, penalty = 1,
+control.spar = list())
+
+df: the desired equivalent number of degrees of freedom (trace of the smoother matrix).
+   
+spar: smoothing parameter, typically (but not necessarily) in (0,1]. The coefficient lambda of the integral of the squared second derivative in the fit (penalized log likelihood) criterion is a monotone function of 'spar', see the details below.
+
+\end{Sinput}
+\begin{itemize}
+\item 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{AVAS}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Bend the Line or Re-Number the Data. Same Thing?}
+
+Tibshirani, Rob (1987), ``Estimating Optimal Transformations for Regression''.
+Journal of the American Statistical Association 83, 394.
+
+Outlines a transformation process that stretches and squishes the
+data into a scatterplot suitable for a linear regression with homogeneous
+variance.
+
+R package: acepack .
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Bend the Line or Re-Number the Data. Same Thing?}
+
+The transformed $x$ and $y$ are quite pleasantly linear and the
+linear model fits very nicely.
+
+<<22,echo=T,include=F,fig=T>>=
+library(acepack)
+avasfit <- avas(x, y)
+plot(avasfit$tx, avasfit$ty,main="avas Function With the Sine Wave Data",xlab="transformed values of x",ylab="transformed values of y",type="n")
+points(avasfit$tx, avasfit$ty,cex=0.5)
+abline(lm(avasfit$ty~avasfit$tx))
+@
+
+\includegraphics[width=7cm]{plots/t-22}w
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Why Does That Work?}
+
+What do we have to do to $x$ and $y$ in order to achieve such a
+beautiful finding?
+
+<<23,echo=T,include=F,fig=T,height=6, width=9>>=
+par(mfcol=c(1,2))
+plot(avasfit$x, avasfit$tx,ylab="transformed x",xlab="original x")
+plot(avasfit$y, avasfit$ty,ylab="transformed y",xlab="original y")
+@
+
+\includegraphics[width=10cm]{plots/t-23}
+
+Would you rather bend the line, or bend the data, or both? 
+
+The avas procedure can be applied to many independent variables, and
+the user can require the program to leave some untransformed or subject
+some only to monotonic transformations.
+
+\end{frame}
+
+
+\lyxframeend{}\section{More Examples}
+
+
+\lyxframeend{}\subsection{Corruption and Political Freedom}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Quadratic vs Loess}
+
+<<cpi10, fig=T, echo=F, include=F, width=8, height=6>>=
+library(foreign)
+library(rockchalk)
+dat <- read.dta("/home/pauljohn/ps/SVN-guides/stat/DataSets/QoG/QoG_c_s_v6Apr11.dta")
+vars <- c("p_polity2", "fh_ipolity2", "fh_pr", "gir_gii", 
+"kk_gg", "qs_impar", "ti_cpi", "wbgi_cce", "ht_regtype", 
+"hf_efiscore", "qs_proff", "bti_mes", "bti_ep", "bti_wr")
+dat <- dat[ , vars]
+fit1 <- locfit(ti_cpi ~ lp(fh_pr, nn=0.5), data=dat) 
+pred1 <- predict(fit1, newdata=data.frame(fh_pr=dat$fh_pr), se.fit=TRUE, band="local")
+plot(fit1, main="Locfit(nn=0.5) with Confidence Intervals", type="l", lwd=3, band="local", xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+points(ti_cpi ~ fh_pr, data=dat)
+m2b <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+fh_pr_seq <- sort(unique(dat$fh_pr))
+newdf <- data.frame( fh_pr=fh_pr_seq, fh_pr_sq = fh_pr_seq^2) 
+m2bpred <- as.data.frame(predict(m2b, newdata=newdf, interval="confidence"))
+lines(newdf$fh_pr, m2bpred$fit, lty=1, lwd=2, col="red")
+lines(newdf$fh_pr, m2bpred$lwr, lty=2, lwd=2, col="red")
+lines(newdf$fh_pr, m2bpred$upr, lty=2, lwd=2, col="red")
+@
+
+\includegraphics[width=8cm]{plots/t-cpi10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Corruption and political freedom: Quadratic vs Loess}
+
+<<cpi20, fig=T, echo=F, include=F, width=8, height=6>>=
+fit1 <- locfit(ti_cpi ~ lp(fh_pr, nn=0.75), data=dat) 
+pred1 <- predict(fit1, newdata=data.frame(fh_pr=dat$fh_pr), se.fit=TRUE, band="local")
+plot(fit1, main="Locfit(nn=0.75) with Confidence Intervals", type="l", lwd=3, band="local", xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+points(ti_cpi ~ fh_pr, data=dat)
+m2b <- lm(ti_cpi ~ fh_pr + I(fh_pr^2), data=dat)
+m2bpred <- as.data.frame(predict(m2b, newdata=newdf, interval="confidence"))
+lines(newdf$fh_pr, m2bpred$fit, lty=1, lwd=2, col="red")
+lines(newdf$fh_pr, m2bpred$lwr, lty=2, lwd=2, col="red")
+lines(newdf$fh_pr, m2bpred$upr, lty=2, lwd=2, col="red")
+@
+
+\includegraphics[width=8cm]{plots/t-cpi20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Corruption and political freedom: rcs}
+
+<<cpi40, fig=T, echo=F, include=F, width=8, height=6>>=
+dat <- dat[order(dat$fh_pr),  ]
+m3a <- lm(ti_cpi ~ rcs(fh_pr, 4), data=dat)
+m3apred <- predict(m3a, newdata=dat)
+summary(m3a)
+plot(ti_cpi ~ fh_pr, data=dat, xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+#m3apred <- as.data.frame(predict(m3a, newdata=newdf, interval="confidence"))
+lines(dat$fh_pr, m3apred, lty=1, lwd=2, col="black")
+#lines(newdf$fh_pr, m3apred$fit, lty=1, lwd=2, col="red")
+#lines(newdf$fh_pr, m3apred$lwr, lty=2, lwd=2, col="red")
+#lines(newdf$fh_pr, m3apred$upr, lty=2, lwd=2, col="red")
+@
+
+\includegraphics[width=8cm]{plots/t-cpi40}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-cpi40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Corruption and political freedom: Feeling Silly now}
+
+Freedom House political rights is a categorical variable (ordinal
+factor at best)
+
+<<cpi60, fig=T, echo=F, include=F, width=8, height=6>>=
+dat$fh_prf <- factor(dat$fh_pr)
+m4a <- lm(ti_cpi ~ fh_prf, data=dat)
+#newdf <- data.frame(fh_prf=levels(dat$fh_prf))
+#m4apred <- predict(m3a, newdata=newdf)
+summary(m4a)
+termplot(m4a, partial=T, se=T, xlab="Political rights (Freedom House)", ylab="TI Corruptions Perceptions")
+@
+
+\includegraphics[width=8cm]{plots/t-cpi60}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-cpi60.tex}
+
+\end{frame}
+
+\include{1_home_pauljohn_SVN_SVN-guides_stat_Regression-___ss-Splines_Nonparametric-1-lecture-problems}
+\end{document}

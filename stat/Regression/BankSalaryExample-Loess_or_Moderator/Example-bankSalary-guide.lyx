@@ -1,0 +1,863 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 12
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Standard
+
+Regression Example: Bank salaries
+\layout Standard
+
+Paul Johnson
+\layout Standard
+
+Sept\i \.{ }
+21\i \c{ }
+2004
+\layout Section
+
+Introduction
+\layout Standard
+
+Bivariate Regression\i \"{ }
+The Famous SPSS 
+\begin_inset Quotes eld
+\end_inset 
+
+bank dataset
+\begin_inset Quotes erd
+\end_inset 
+
+ is bank.sav.
+ I've been seeing this dataset for more than 20 years.
+ I think I've got it this time!
+\layout Standard
+
+There is an accompanying R program 
+\begin_inset Quotes eld
+\end_inset 
+
+bankReg.R
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ It requires some user interaction at 2 points, so you can't just run it
+ all through at once.
+ Instead, you have to step through.
+ If you do, it will create all the figures presented here, plus some more.
+\layout Section
+
+Consider Education and Beginning Salary
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/BankEdSalBeg.eps
+	width 5in
+
+\end_inset 
+
+
+\layout Standard
+
+We could plot current salary, but there's no benefit.
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/BankEdSalCur.eps
+	width 5in
+
+\end_inset 
+
+
+\layout Section
+
+Ordinary Least Squares
+\layout Standard
+
+Here's the table that pops out of R's xtable() routine.
+ The only change I made by hand was to add in the 
+\begin_inset Formula $R^{2}$
+\end_inset 
+
+, the root mean squared error, 
+\begin_inset Formula $RMSE,$
+\end_inset 
+
+ and the sample size 
+\begin_inset Formula $N$
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset ERT
+status Open
+
+\layout Standard
+% latex table generated in R 1.9.1 by xtable 1.2-3 package 
+\layout Standard
+% Tue Sep 21 21:16:17 2004 
+\layout Standard
+
+\backslash 
+begin{table}[ht] 
+\layout Standard
+
+\backslash 
+begin{center} 
+\layout Standard
+
+\backslash 
+begin{tabular}{rrrrr} 
+\layout Standard
+
+\backslash 
+hline  & Estimate & Std. Error & t value & Pr($>$$|$t$|$) 
+\backslash 
+
+\backslash 
+ 
+\backslash 
+hline (Intercept) & $-$2516.3869 & 536.3679 & $-$4.69 & 0.0000 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+EDLEVEL & 691.0113 & 38.8788 & 17.77 & 0.0000 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+& & $R^2$ = 0.40 & RMSE =2439 & N = 474 
+\backslash 
+
+\backslash 
+
+\layout Standard
+
+\backslash 
+hline 
+\backslash 
+
+\backslash 
+
+\layout Standard
+
+\backslash 
+end{tabular} 
+\layout Standard
+
+\backslash 
+end{center} 
+\layout Standard
+
+\backslash 
+end{table}
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/BankEdPredSalBeg.eps
+
+\end_inset 
+
+
+\layout Standard
+
+The plot() function, applied to a linear regression model, activates the
+ custom plotting facility built into lm.
+ That will print out four figures, one at a time, and you can either step
+ through those one at a time with commands like this (for a regression 
+\emph on 
+myReg1
+\emph default 
+).
+ 
+\layout LyX-Code
+
+> par(ask=TRUE)
+\layout LyX-Code
+
+> plot(myReg1)
+\layout LyX-Code
+
+> par(ask=N)
+\layout Standard
+
+It is important to turn off the 
+\begin_inset Quotes eld
+\end_inset 
+
+ask
+\begin_inset Quotes erd
+\end_inset 
+
+ option when you don't want it anymore, because it gets really boring to
+ keep hitting the enter button when you want a graph.
+ I did not bother to print out those graphs, but if you run bankReg.R, you
+ will find them called 
+\begin_inset Quotes eld
+\end_inset 
+
+importfigs/myReg1Diag01.eps
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes erd
+\end_inset 
+
+importfigs/myReg1Diag02.eps
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes erd
+\end_inset 
+
+importfigs/myReg1Diag03.eps
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes erd
+\end_inset 
+
+importfigs/myReg1Diag04.eps
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Instead of printing out all 4 separately, I've positioned them into a single
+ graph.
+\layout LyX-Code
+
+par(mfcol=c(2,2)) 
+\layout LyX-Code
+
+plot(myReg1) 
+\layout LyX-Code
+
+dev.copy2eps(file="myReg12by2.eps", horizontal=F)
+\layout LyX-Code
+
+par(mfcol=c(1,1))
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/myReg12by2.eps
+
+\end_inset 
+
+
+\layout Standard
+
+Several problems are obvious.
+ The residuals don't appear to scatter evenly above and below the line as
+ you look from side to side.
+ There are some extremely influential cases, and I've seen better Q-Q plots,
+ come to think of it.
+\layout Standard
+
+It is a useful exercise to take a model object and then use its attributes
+ to reconstruct graphs of this sort.
+ The top left is done as:
+\layout LyX-Code
+
+plot(myReg1$fitted.values, myReg1$residuals, 
+\layout LyX-Code
+
+  main="Bank Salary: Residuals and fitted values", 
+\layout LyX-Code
+
+  xlab="fitted (predicted) values", 
+\layout LyX-Code
+
+  ylab="OLS residuals") 
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/BankSalBegResid.eps
+
+\end_inset 
+
+
+\layout Section
+
+Smoothed Curves: Loess, Lowess
+\layout Standard
+
+In R, there is a 
+\begin_inset Quotes eld
+\end_inset 
+
+loess
+\begin_inset Quotes erd
+\end_inset 
+
+ program in the R-base, and there is 
+\begin_inset Quotes eld
+\end_inset 
+
+lowess
+\begin_inset Quotes erd
+\end_inset 
+
+ as well.
+ The help page for lowess says it is older and implies that one ought to
+ use loess.
+ I tried both.
+\layout Subsection
+
+Loess works OK (If you know the secret)
+\layout Standard
+
+The loess output from my first effort did not look right to me.
+ But this version looks fine:
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bankloess1.eps
+
+\end_inset 
+
+
+\layout Standard
+
+In contrast to lowess object, a loess will not answer to the simple
+\layout Standard
+
+lines(myLowess1)
+\layout Standard
+
+and that was fooling me for a while.
+ But here is the secret recipe:
+\layout LyX-Code
+
+myReg.lo <- loess(SALBEG~EDLEVEL, data=bank, span=0.67,
+\layout LyX-Code
+
+  control=loess.control(surface="direct"), family="symmetric")
+\layout LyX-Code
+
+\layout LyX-Code
+
+EDRange <-  seq(min(EDLEVEL),max(EDLEVEL),1)
+\layout LyX-Code
+
+\layout LyX-Code
+
+lo.pred <- predict(myReg.lo,EDRange, se=TRUE)
+\layout LyX-Code
+
+\layout LyX-Code
+
+plot(EDLEVEL,SALBEG,main="Loess: Education and Beginning
+\layout LyX-Code
+
+  Salary in a Bank",xlab="Education (years)",
+\layout LyX-Code
+
+  ylab="Entry level salary")
+\layout LyX-Code
+
+\layout LyX-Code
+
+lines(EDRange, lo.pred$fit)
+\layout Standard
+
+Further, if note I added the flag se=T for the predict method.
+ That means it will calculate and output the standard error of the predicted
+ value, and those can be added to the plot:
+\layout LyX-Code
+
+lines(EDRange,lo.pred$fit +1.96*lo.pred$se, lty=4)
+\layout LyX-Code
+
+lines(EDRange,lo.pred$fit -1.96*lo.pred$se, lty=4)
+\layout Standard
+
+I believe these are the standard error of the fitted value, rather than
+ the standard error about predictions for individual cases.
+ In any case, we obtain:
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bankloess2.eps
+
+\end_inset 
+
+
+\layout Subsection
+
+Lowess is a little easier
+\layout Standard
+
+Let's compare with 
+\begin_inset Quotes eld
+\end_inset 
+
+lowess
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The main parameter is a setting which controls the proportion of all points
+ that are entered into the 
+\begin_inset Quotes eld
+\end_inset 
+
+local window
+\begin_inset Quotes erd
+\end_inset 
+
+ around a point.
+ By default, lowess uses a very broad window.
+ Plotting is slightly easier, since lines() can be directly applied to a
+ lowess object, as in:
+\layout LyX-Code
+
+myReg1.low <- lowess(EDLEVEL, SALBEG,f=.2)
+\layout LyX-Code
+
+\layout LyX-Code
+
+salBegPlot1("Lowess(MASS): Education and Salary, f=.2") 
+\layout LyX-Code
+
+\layout LyX-Code
+
+lines(myReg1.low) 
+\layout LyX-Code
+
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/lowess1.eps
+	width 4in
+	keepAspectRatio
+
+\end_inset 
+
+
+\layout Standard
+
+If you like to see more abrupt curves, tune that parameter down:
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/lowess2.eps
+	width 4in
+	keepAspectRatio
+
+\end_inset 
+
+
+\layout Standard
+
+Or:
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/lowess3.eps
+	width 4in
+	keepAspectRatio
+
+\end_inset 
+
+
+\layout Section
+
+Put a Knot in there
+\layout Standard
+
+To my eye, it appears we need to consider the possibility that the relationship
+ between education is not a single 
+\begin_inset Quotes eld
+\end_inset 
+
+straight line.
+\begin_inset Quotes erd
+\end_inset 
+
+ It appears rather more likely that up to some level of education, say 14,
+ the people who work at the bank don't gain all that much from additional
+ schooling.
+ With additional years, however, the increase is steep.
+\layout Standard
+
+Consider a regression model with a 
+\begin_inset Quotes eld
+\end_inset 
+
+slope shift
+\begin_inset Quotes erd
+\end_inset 
+
+ and an 
+\begin_inset Quotes eld
+\end_inset 
+
+intercept shift
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The R command:
+\layout LyX-Code
+
+myReg2 <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank)
+\layout Standard
+
+does the work easily.
+ It estimates a regression with a threshold value set at 14.
+ We estimate slope and intercept shift at 14, 
+\begin_inset Formula \[
+\hat{salary}=b_{0}+b_{1}education+b_{2}threshold+b_{3}education*threshold\]
+
+\end_inset 
+
+
+\layout Standard
+
+R will 
+\begin_inset Quotes eld
+\end_inset 
+
+automatically
+\begin_inset Quotes erd
+\end_inset 
+
+ estimate all of these parameters with the command:
+\layout LyX-Code
+
+myReg4 <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank3) 
+\layout LyX-Code
+
+\layout LyX-Code
+
+summary(myReg4) 
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+indicator
+\begin_inset Quotes erd
+\end_inset 
+
+ I(EDLEVEL > 14) is a True/False variable, which lm treats as a factor.
+ R creates a 
+\begin_inset Quotes eld
+\end_inset 
+
+dummy variable
+\begin_inset Quotes erd
+\end_inset 
+
+, a 0-1 variable, to enter in the model.
+ The R jargon for this is that the coding creates a 
+\begin_inset Quotes eld
+\end_inset 
+
+contrast.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset ERT
+status Open
+
+\layout Standard
+% latex table generated in R 1.9.1 by xtable 1.2-3 package 
+\layout Standard
+% Tue Sep 21 21:12:02 2004 
+\layout Standard
+
+\backslash 
+begin{table}[ht] 
+\layout Standard
+
+\backslash 
+begin{center} 
+\layout Standard
+
+\backslash 
+begin{tabular}{rrrrr} 
+\layout Standard
+
+\backslash 
+hline  & Estimate & Std. Error & t value & Pr($>$$|$t$|$) 
+\backslash 
+
+\backslash 
+ 
+\backslash 
+hline 
+\layout Standard
+(Intercept) & 4862.6493 & 834.1845 & 5.83 & 0.0000 
+\backslash 
+
+\backslash 
+ EDLEVEL & 39.4700 & 73.6675 & 0.54 & 0.5924 
+\backslash 
+
+\backslash 
+ I(EDLEVEL > 14)TRUE & $-$27024.2122 & 1690.2222 & $-$15.99 & 0.0000 
+\backslash 
+
+\backslash 
+ EDLEVEL:I(EDLEVEL > 14)TRUE & 1871.1925 & 117.3404 & 15.95 & 0.0000 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+& & $R^2$ = 0.61 & RMSE = 1965 & N = 474 
+\backslash 
+
+\backslash 
+
+\layout Standard
+
+\backslash 
+hline 
+\layout Standard
+
+\backslash 
+end{tabular} 
+\layout Standard
+
+\backslash 
+end{center} 
+\layout Standard
+
+\backslash 
+end{table}
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bankShift14.eps
+
+\end_inset 
+
+
+\layout Section
+
+Outliers
+\layout Standard
+
+Rather than worry too much on the fitting of a model with some egregious
+ outliers, let's pursue the wiser course.
+ In the diagnostic plots above, it is apparent that cases 2, 56, and 122
+ are inordinately influential.
+ As a result, we should get rid of them, see what happens.
+\layout Standard
+
+The linear model appears to be much more desirable!
+\layout Standard
+
+
+\begin_inset ERT
+status Open
+
+\layout Standard
+% latex table generated in R 1.9.1 by xtable 1.2-3 package 
+\layout Standard
+% Tue Sep 21 21:26:58 2004 
+\layout Standard
+
+\backslash 
+begin{table}[ht] 
+\layout Standard
+
+\backslash 
+begin{center} 
+\layout Standard
+
+\backslash 
+begin{tabular}{rrrrr} 
+\layout Standard
+
+\backslash 
+hline  & Estimate & Std. Error & t value & Pr($>$$|$t$|$) 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+
+\backslash 
+hline (Intercept) & 4862.6493 & 645.1940 & 7.54 & 0.0000 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+EDLEVEL & 39.4700 & 56.9776 & 0.69 & 0.4888 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+I(EDLEVEL > 14)TRUE & $-$25371.0827 & 1316.0651 & $-$19.28 & 0.0000 
+\backslash 
+
+\backslash 
+
+\layout Standard
+EDLEVEL:I(EDLEVEL > 14)TRUE & 1755.0430 & 91.2908 & 19.22 & 0.0000 
+\backslash 
+
+\backslash 
+ 
+\layout Standard
+& $R^2$ = 0.69 & adj-$R^2$=0.69 & RMSE = 1520 & N = 471 
+\backslash 
+
+\backslash 
+
+\layout Standard
+
+\backslash 
+hline 
+\layout Standard
+
+\backslash 
+end{tabular} 
+\layout Standard
+
+\backslash 
+end{center} 
+\layout Standard
+
+\backslash 
+end{table} 
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bank3SplineOutlier.eps
+
+\end_inset 
+
+
+\layout Standard
+
+The only problem here is that the graph is a little bogus because, between
+ 14 and 15, the line looks like it has a 3rd slope, and they don't.
+ 
+\layout Standard
+
+I didn't yet find a perfectly good way to make a line that has a kink.
+ Here are 2 lines to give you the idea of what's going on.
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bank3SplineOutlier2.eps
+	width 6in
+
+\end_inset 
+
+
+\layout Standard
+
+It might be cute to plot the 95% confidence interval on the fitted values.
+ Again, this is the confidence we have in the point prediction, not confidence
+ about predictions on individual cases.
+ It means something like: 
+\begin_inset Quotes eld
+\end_inset 
+
+With probability 0.95, the estimate of the fitted value would be inside this
+ range.
+\begin_inset Quotes erd
+\end_inset 
+
+ It does not mean: 
+\begin_inset Quotes eld
+\end_inset 
+
+With probability 0.95, a randomly drawn individual will fit inside this range.
+\begin_inset Quotes erd
+\end_inset 
+
+ In order to get that estimate, a different calculation is required.
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bank3SplineOutlierSE.eps
+
+\end_inset 
+
+
+\layout Standard
+
+I almost forgot to do a diagnostic plot on this final fitted model.
+ Its not too bad, really.
+\layout Standard
+
+
+\begin_inset Graphics
+	filename importfigs/bank3SplineDiagPlot.eps
+
+\end_inset 
+
+
+\the_end

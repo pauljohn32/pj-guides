@@ -1,0 +1,1008 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Paul Johnson
+\end_layout
+
+\begin_layout Standard
+
+\size larger
+Multiple Regression Notes 2008-09-25
+\end_layout
+
+\begin_layout Section
+Picture this in 3d
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename importfigs/multReg1.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename importfigs/multReg2.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Points for sake of continuity
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+least squares
+\begin_inset Quotes erd
+\end_inset
+
+ philosophy can 
+\begin_inset Quotes eld
+\end_inset
+
+go anywhere,
+\begin_inset Quotes erd
+\end_inset
+
+ with more or less success.
+\end_layout
+
+\begin_layout Standard
+Suppose we have the theory that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ depends on two independent variables, X1 and X2, as well as an unobserved
+ error.
+ So we would have: 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $y_{i}=b_{0}+b_{1}*X1_{i}+b_{2}*X2_{i}+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So we take the old standard approach.
+ Find a 
+\begin_inset Quotes eld
+\end_inset
+
+vector
+\begin_inset Quotes erd
+\end_inset
+
+ of parameter estimates 
+\begin_inset Formula $\widehat{b}=(\widehat{b_{0}},\widehat{b_{1}},\widehat{b_{2}}).$
+\end_inset
+
+ Use those to calculate a 
+\begin_inset Quotes eld
+\end_inset
+
+predicted value
+\begin_inset Quotes erd
+\end_inset
+
+ for each i:
+\begin_inset Formula 
+\begin{equation}
+\widehat{y_{i}}=\widehat{b_{0}}+\widehat{b_{1}}*X1_{i}+\widehat{b_{2}}*X2_{i}\label{eqa}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The sum of squares, roughly speaking, a measure of the 
+\begin_inset Quotes eld
+\end_inset
+
+total amount of unexplained variation
+\begin_inset Quotes erd
+\end_inset
+
+ in the variable 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, is the thing we want to minimize by choosing the best parameter estimates
+ we can.
+ So the objective is: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\min_{\widehat{b}}S(\widehat{b_{0}},\widehat{b_{1}},\widehat{b_{2}})=\sum_{i=1}^{N}(y_{i}-\widehat{y_{i}})^{2}\label{eqb}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=\sum_{i=1}^{N}(y_{i}-\widehat{b_{0}}-\widehat{b_{1}}X1_{i}-\widehat{b_{2}}X2_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Usually, a blur of mathematics starts here, where we write down the steps
+ required to minimize the Sum of Squared Errors by adjusting the parameters.
+ We use the standard approach of calculus: find the partial derivatives
+ of S for 
+\begin_inset Formula $\widehat{b_{0}},\widehat{b_{1}},\; and\;\widehat{b_{2}}$
+\end_inset
+
+ and set them equal to 0 (finding the 
+\begin_inset Quotes eld
+\end_inset
+
+bottom of the bowl
+\begin_inset Quotes erd
+\end_inset
+
+ ).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{array}{ccc}
+\frac{\partial S}{\partial b_{0}}= & -2\sum(y_{i}-\widehat{b_{0}}-\widehat{b_{1}}X1_{i}-\widehat{b_{2}}X2_{i}) & =0\\
+\frac{\partial S}{\partial b_{1}}= & -2\sum(y_{i}-\widehat{b_{0}}-\widehat{b_{1}}X1_{i}-\widehat{b_{2}}X2_{i})X1_{i} & =0\\
+\frac{\partial S}{\partial b_{2}}= & -2\sum(y_{i}-\widehat{b_{0}}-\widehat{b_{1}}X1_{i}-\widehat{b_{2}}X2_{i})X2_{i} & =0
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These imply the three so-called 
+\begin_inset Quotes eld
+\end_inset
+
+normal equations
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\begin{array}{cc}
+\sum y_{i}= & N\widehat{b_{0}}+(\sum X1_{i})\widehat{b_{1}}+(\sum X2_{i})\widehat{b_{2}}\\
+\sum y_{i}X1_{i}= & (\sum X1_{i})\widehat{b_{0}}+(\sum X1_{i}^{2})\widehat{b_{1}}+(\sum X1_{i}X2_{i})\widehat{b_{2}}\\
+\sum y_{i}X2_{i}= & (\sum X2_{i})\widehat{b_{0}}+(\sum X1_{i}X2_{i})\widehat{b_{1}}+(\sum X2_{i}^{2})\widehat{b_{2}}
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Quick Matrix comments
+\end_layout
+
+\begin_layout Standard
+The experts don't usually write down all the individual variables and coefficien
+ts.
+ They seek simplicity and power in matrix algebra, where a combination of
+ vectors and matrices can be used to show the relationship above.
+ For example, let Y refer to a column of y values,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\ldots\\
+y_{N}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the symbol X refers to a 
+\begin_inset Quotes eld
+\end_inset
+
+matrix
+\begin_inset Quotes erd
+\end_inset
+
+ of the independent variables.
+ Note, the constant 1 is the first variable for all observations.
+\begin_inset Formula 
+\[
+X=\left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & \ldots & \ldots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The error term of each observation is written in a vector similar to Y,
+ and the vector of parameters is called b.
+ Using this symbology, the ordinary model is written simply as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Y=Xb+e
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In detail, this implies:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cccccc}
+\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\ldots\\
+y_{N}
+\end{array}\right] & = & \left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & \ldots & \ldots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+b_{0}\\
+b_{1}\\
+b_{2}
+\end{array}\right] & + & \left[\begin{array}{c}
+e_{1}\\
+e_{2}\\
+\ldots\\
+e_{n}
+\end{array}\right]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One should study enough matrix algebra to understand of the term 
+\begin_inset Quotes eld
+\end_inset
+
+transpose
+\begin_inset Quotes erd
+\end_inset
+
+, which means that a matrix is 
+\begin_inset Quotes eld
+\end_inset
+
+rotated
+\begin_inset Quotes erd
+\end_inset
+
+ on its axis, as in:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X'=\begin{array}{cccc}
+1 & 1 & 1 & 1\\
+X1_{1} & X1_{2} & \ldots & X1_{N}\\
+X2_{1} & X2_{2} & \ldots & X2_{N}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And 
+\begin_inset Quotes eld
+\end_inset
+
+inverse
+\begin_inset Quotes erd
+\end_inset
+
+ means the value of a matrix which, if multiplied by the matrix itself,
+ yields a new vector with 1's on the main diagonal.
+ This is analagous to the simple mathematical inverse, 1/x, since x*1/x=1.
+ In matrices, we use the superscript -1 to represent the inverse, so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X*X^{-1}=\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The best estimates of the parameters are given by this (deceptively simple?)
+ formula:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\widehat{b}=(X'X)^{-1}X'Y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conceptual departures
+\end_layout
+
+\begin_layout Standard
+Where are the differences between a regression with one independent variable
+ and a model with several? Here is a quick list of issues:
+\end_layout
+
+\begin_layout Enumerate
+You can't make such a handy picture when there is more than 2 independent
+ variables.
+ So you are forced to some desperate measures...
+\end_layout
+
+\begin_layout Enumerate
+Some new problems come into play: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If there are 
+\begin_inset Quotes eld
+\end_inset
+
+redundant columns
+\begin_inset Quotes erd
+\end_inset
+
+ in the X matrix, then it is impossible to calculate estimates.
+ 
+\end_layout
+
+\begin_layout Itemize
+If there are nearly redundant columns, then one can estimate the parameters,
+ but only with a great deal of imprecision.
+ 
+\end_layout
+
+\begin_layout Standard
+This problem is known as 
+\series bold
+multi-collinearity
+\series default
+, or just collinearity.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Variable selection becomes a big problem.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+In the ideal world, theory guides you
+\end_layout
+
+\begin_layout Itemize
+In the real world, your theory is sometimes crappy and offers you no guide.
+\end_layout
+
+\begin_layout Itemize
+Statistical theories are designed on a 
+\begin_inset Quotes eld
+\end_inset
+
+fit once, then stop
+\begin_inset Quotes erd
+\end_inset
+
+ principle.
+ 
+\end_layout
+
+\begin_layout Itemize
+You should not drop variables that are 
+\begin_inset Quotes eld
+\end_inset
+
+insignificant
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You should not necessarily put in all the variables you have.
+\end_layout
+
+\begin_layout Itemize
+See Edward Leamer.
+ 1983.
+ Lets Take the Con Out of Econometrics.
+ 
+\emph on
+American Economic Review
+\emph default
+, 31-43.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Hypothesis Testing
+\end_layout
+
+\begin_layout Standard
+Many of the key concepts from bivariate regression carry over to the multivariat
+e context.
+\end_layout
+
+\begin_layout Standard
+The standard error of the estimate of a coefficient is an estimate of the
+ standard deviation of the sampling distribution of that coefficient.
+ I can't seem to settle on a consistent set of notation, so just to warn
+ you, my notes are scattered with various notationsfor it, like:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sqrt{Var(\widehat{b})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+s_{\widehat{b}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Simple test of H0: 
+\begin_inset Formula $b_{j}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Consider the j'th coefficient in a regression model.
+ Imagine an estimator 
+\begin_inset Formula $\widehat{b_{j}}$
+\end_inset
+
+.
+ Given an estimate of the standard error of 
+\begin_inset Formula $\widehat{b_{j}}$
+\end_inset
+
+ the regular old t-test applies, meaning if you calculate this number, you
+ can compare it against a t-table:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+t=\frac{\widehat{b_{j}}}{s_{\widehat{b_{j}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Simple test of H0: 
+\begin_inset Formula $b_{j}=\beta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instead of testing against 0, we now test against some number 
+\begin_inset Formula $\beta$
+\end_inset
+
+, and the t statistic is
+\begin_inset Formula 
+\[
+t=\frac{\widehat{b_{j}}-\beta}{s_{\widehat{b_{j}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Test a comparison of coefficients, such as H0:
+\begin_inset Formula $b_{j}=b_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Proceed mechanically.
+ Note this is the same as the null hopothesis H0:
+\begin_inset Formula $b_{j}-b_{k}=0$
+\end_inset
+
+.
+ You need to fill in the numbers here.
+ You need an estimate for the left hand side and an estimate of the standard
+ error.
+ If you had those, you could just do a t test:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+t=\frac{\widehat{b_{j}-b_{k}}}{s_{\widehat{b_{j}-b_{k}}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is easy to see the estimate of 
+\begin_inset Formula $b_{j}-b_{k}$
+\end_inset
+
+, 
+\begin_inset Formula $\widehat{b_{j}-b_{k}}$
+\end_inset
+
+, is the actually the difference of the two estimates, 
+\begin_inset Formula $\widehat{b_{j}}-\widehat{b_{k}}$
+\end_inset
+
+.
+ Since the regular regression output gives us those two estimates, it is
+ easy to calculate their difference with a calculator.
+\end_layout
+
+\begin_layout Standard
+It is harder to see what the standard error of that estimated difference
+ might be.
+ I suppose I fall back on the fact that the standard error is the square
+ root of the variance.
+ And we can calculate the variance of 
+\begin_inset Formula $\widehat{b_{j}}-\widehat{b_{k}}$
+\end_inset
+
+ , which I refer to as 
+\begin_inset Formula $V(\widehat{b_{j}}-\widehat{b_{k}})$
+\end_inset
+
+.
+ If we had it, we could calculate the t-test we want:
+\begin_inset Formula 
+\[
+t=\frac{\widehat{b_{j}}-\widehat{b_{k}}}{\sqrt{V(b_{j}-b_{k})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where do you get the denominator? 
+\end_layout
+
+\begin_layout Standard
+Remember the general formula for the variance of a sum?
+\begin_inset Formula 
+\[
+V(k_{1}X+k_{2}Y)=k_{1}^{2}V(X)+k_{2}^{2}V(Y)+2abCov(X,Y)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use that, with 
+\begin_inset Formula $b_{j}$
+\end_inset
+
+ in place of X , 
+\begin_inset Formula $b_{k}$
+\end_inset
+
+ in place of Y, 
+\begin_inset Formula $k_{1}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $k_{2}=1$
+\end_inset
+
+.
+ So you have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V(\widehat{b}_{j}-\widehat{b}_{k})=V(b_{j})+V(b_{k})-2Cov(b_{j},b_{k})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any regression program has an option to output the variance-covariance matrix
+ of the estimated coefficients.
+ It will be a square matrix, and you use the 
+\begin_inset Quotes eld
+\end_inset
+
+on diagonal
+\begin_inset Quotes erd
+\end_inset
+
+ elements for 
+\begin_inset Formula $V(b_{j})$
+\end_inset
+
+ and 
+\begin_inset Formula $V(b_{k})$
+\end_inset
+
+ and the off diagnonal element in row j, column k for 
+\begin_inset Formula $Cov(b_{j},b_{k})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Joint tests about several variables: H0: 
+\begin_inset Formula $b_{1}=b_{2}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note, this is not the same as the t-test.
+ We say the two coefficients are BOTH equal to zero.
+\end_layout
+
+\begin_layout Standard
+The F test that is reported with most regression programs is a variant of
+ this test.
+ It tests the hypothesis that ALL coefficients for the X's are equal to
+ 0.
+ Rejecting that null hypothesis does not tell you much, really.
+\end_layout
+
+\begin_layout Standard
+There is a more powerful usage of this approach, however.
+ It is possible to test 
+\begin_inset Quotes eld
+\end_inset
+
+subsets
+\begin_inset Quotes erd
+\end_inset
+
+ of regression coefficients.
+ To do it, think in this way.
+\end_layout
+
+\begin_layout Enumerate
+Create a 
+\begin_inset Quotes eld
+\end_inset
+
+full
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+unrestricted
+\begin_inset Quotes erd
+\end_inset
+
+ model, one with all coefficients included.
+ Calculate the error sum of squares from that model, call it 
+\begin_inset Formula $ESS_{U}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Create a 
+\begin_inset Quotes eld
+\end_inset
+
+restricted
+\begin_inset Quotes erd
+\end_inset
+
+ model, one with some test coefficients set equal to 0.
+ That amounts to leaving some variables out of a regression model.
+ Call the error sum of squares for that one 
+\begin_inset Formula $ESS_{R}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Compare the two models to find out if the restriction makes a difference.
+\end_layout
+
+\begin_layout Standard
+So think of the full model in this way:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{i}=b_{0}+b_{1}X1_{i}+b_{2}X2_{i}+...+b_{k-q}Xk-q_{i}+b_{k-q+1}Xk-q+1_{i}+...+b_{k}Xk_{i}+eu_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The last q variables are the ones we want to restrict.
+ That means, if we cut them out, the restricted model is just the first
+ part:
+\begin_inset Formula 
+\[
+y_{i}=b_{0}+b_{1}X1_{i}+b_{2}X2_{i}+...+b_{k-q}Xk-q_{i}+er_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The comparison is done with an F test.
+ Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be the sample size.
+ Let 
+\begin_inset Formula $k$
+\end_inset
+
+ be the number of independent variables used in the full model.
+ Let 
+\begin_inset Formula $q$
+\end_inset
+
+ be the number of variables that are excluded from the restricted model.
+ The F statistic is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F=\frac{(ESS_{R}-ESS_{UR})/q}{ESS_{UR}/N-k-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When you check the F table, you need to look in the column with q degrees
+ of freedom for the numerator and N-k-1 for the denominator.
+ If the number you get is bigger than that, reject the null.
+\end_layout
+
+\end_body
+\end_document

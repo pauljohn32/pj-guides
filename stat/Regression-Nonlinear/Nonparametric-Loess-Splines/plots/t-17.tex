@@ -1,0 +1,53 @@
+\begin{Schunk}
+\begin{Sinput}
+ library(mgcv)
+ mygams <- list()
+ for (i in 3:10) {
+      mygams[[i - 2]] <- gam(y ~ s(x, k = i, bs = "cr"))
+  }
+ gcvresults <- vector()
+ for (i in 1:7) {
+      gcvresults[i] <- mygams[[i]]$gcv.ubre
+  }
+ gcvresults
+\end{Sinput}
+\begin{Soutput}
+[1] 9.1828206 9.1774012 0.9316883 0.7044464 0.7664113 0.7247366 0.7093403
+\end{Soutput}
+\begin{Sinput}
+ (which.min(gcvresults))
+\end{Sinput}
+\begin{Soutput}
+[1] 4
+\end{Soutput}
+\begin{Sinput}
+ bestone <- mygams[[which.min(gcvresults)]]
+ summary(bestone)
+\end{Sinput}
+\begin{Soutput}
+Family: gaussian 
+Link function: identity 
+
+Formula:
+y ~ s(x, k = i, bs = "cr")
+
+Parametric coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.22900    0.08138    15.1   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Approximate significance of smooth terms:
+       edf Ref.df     F p-value    
+s(x) 4.988      5 276.6  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+R-sq.(adj) =  0.933   Deviance explained = 93.6%
+GCV score = 0.70445  Scale est. = 0.66226   n = 100
+\end{Soutput}
+\begin{Sinput}
+ plot(bestone, main = "CV Minimizing Model")
+ points(x, y, pch = 16, cex = 0.5)
+\end{Sinput}
+\end{Schunk}

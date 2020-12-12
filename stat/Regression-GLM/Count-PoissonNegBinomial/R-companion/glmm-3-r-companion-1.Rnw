@@ -1,0 +1,410 @@
+\documentclass[12pt,english]{scrartcl}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage[authoryear]{natbib}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+% \setlength{\belowcaptionskip}{\@tempdima}%
+}{%
+ \end@float
+}
+
+
+
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true}
+
+\usepackage{Sweavel}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+<<echo=F>>=
+cplots <- "../cplots"
+if(!file.exists(cplots)) dir.create(cplots, showWarnings=FALSE)
+@
+
+%TODO: how to set prefix.string in here as variable, not string
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=../cplots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+##options(device = pdf)
+options(width=80, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par(no.readonly = TRUE) 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=FALSE, family="Times", pointsize=10)
+library(rockchalk)
+@
+
+
+<<pois01, fig=T, include=F, width=11, height=6>>=
+xval <- 0:10
+par(mfrow=c(2,2))
+y <- dpois(xval, lambda=0.5)
+names(y) <- xval
+barplot(y, main="lambda=0.5", col = "white")
+y <- dpois(xval, lambda = 1.0)
+names(y) <- xval
+barplot(y, main="lambda=1.0", col = "white")
+y <- dpois(xval, lambda=1.5)
+names(y) <- xval
+barplot(y, main="lambda=1.5", col = "white")
+y <- dpois(xval, lambda=2.0)
+names(y) <- xval
+barplot(y, main="lambda=2.0", col = "white")
+par(mfrow=c(1,1))
+@
+
+\includegraphics[width=10cm]{../cplots/t-pois01.pdf}
+
+<<pois02, fig=T, include=F, width=11, height=6>>=
+y <- rpois(500, lambda=5)
+par(mfrow=c(2,2))
+hist(y, prob=T, main="lambda=5")
+y <- rpois(500, lambda=10)
+hist(y, prob=T, main="lambda=10")
+y <- rpois(500, lambda=50)
+hist(y, prob=T, main="lambda=50")
+y <- rpois(500, lambda=200)
+hist(y, prob=T, main="lambda=200")
+par(mfrow=c(1,1))
+@
+
+\includegraphics[width=10cm]{../cplots/t-pois02.pdf}
+
+<<exp10, fig=T, include=F, width=9, height=6>>=
+x <- seq(-2, 12, by = 0.1)
+y <- exp(x) 
+plot(y ~ x, xlab = expression(paste(X*beta)), ylab = expression(exp(X*beta)), type = "l")
+@
+
+\includegraphics[width=8cm]{../cplots/t-exp10}
+
+
+<<exp10,fig = T>>=
+curve(exp(x), from = -5, to = 10, type = "l")
+@ 
+
+
+<<pois19_dgp>>=
+set.seed(132)
+b0 <- .1; b1 <- 0.75; b2 <- -0.15
+N <- 100
+x1 <- rnorm(N, m=20, s=5)
+x2 <- rnorm(N, m=10, s=3)
+eta <- b0 + b1 * x1 + b2 * x2
+input <- exp(eta)
+y <- rpois(N, lambda = input)
+dat <- data.frame(x1,x2,y)
+@ 
+
+<<pois20, fig=T, include=F>>=
+
+plot(x1, y, main="Did this surprise you?")
+@
+
+<<pois21, fig=T, incldue=F>>=
+hist(y, prob = TRUE, main = "Histogram")
+@ 
+
+
+<<pois30, include=F, echo=T>>=
+glm1 <- glm(y ~ x1 + x2, data=dat, family=poisson(link=log))
+summary(glm1)
+@
+
+<<pois31, include=F>>=
+lm1 <- lm(y ~ x1 + x2, data=dat)
+summary(lm1)
+@
+
+
+<<pois35, fig=T, include=F>>=
+plot(x1, y, main="Ugly Poisson Data")
+library(rockchalk)
+newdat <- expand.grid(x1=plotSeq(dat$x1, length.out=50), x2=mean(dat$x2))
+newdat$p1 <- predict(glm1, newdata=newdat, type="response")
+lines(newdat$x1, newdat$p1, lwd=3, col="red")
+newdat$lmp1 <- predict(lm1, newdata=newdat)
+lines(newdat$x1, newdat$lmp1, lwd=3, col="green")
+legend("topleft", legend=c("Exp. Poisson", "OLS"), lwd=c(3,3), col=c("red","green"))
+
+@ 
+
+<<pois35_1,fig=T, include=F,echo=TRUE>>=
+library(rockchalk)
+## harvest lm information, ignore drawing
+lm1ps <- plotSlopes(lm1, plotx = "x1")
+plotCurves(glm1, plotx = "x1", plotLegend = FALSE) 
+lines(fit ~ x1, data = lm1ps$newdata, col = "green")
+legend("topright", legend = c("GLM log link", "OLS"), col = c("black", "green"), lty = c(1,1))
+@
+
+<<pois36, fig=T, include=F, echo=F,include=F>>=
+newdat <- expand.grid(x1=mean(dat$x1), x2=plotSeq(dat$x2, length.out=50))
+newdat$p1 <- predict(glm1, newdata=newdat, type="response")
+
+plot(y ~ x2, dat= dat)
+lines(newdat$x2, newdat$p1, lwd=3, col="red")
+
+lm1 <- lm(y ~ x1 + x2, data=dat)
+newdat$lmp1 <- predict(lm1, newdata=newdat)
+lines(newdat$x2, newdat$lmp1, lwd=3, col="green")
+legend("topright", legend=c("Exp. Poisson", "OLS"), lwd=c(3,3), col=c("red","green"))
+@
+
+
+<<pois50, include=T>>=
+library(rockchalk)
+library(faraway) 
+gavote$undercount <- gavote$ballots - gavote$votes
+options.orig <- options()
+options(width=65)
+summarize(gavote)
+options(options.orig)
+@
+
+<<pois50hist, fig=T>>=
+hist(gavote$undercount, breaks = 30, xlab= "Undercount", prob = TRUE)
+@ 
+
+
+<<pois51>>=
+myPois1<- glm(undercount ~ rural + perAA + equip, family = poisson, data = gavote)
+summary(myPois1) 
+predictOMatic(myPois1)
+@ 
+
+
+<<pois52, include=T, fig=T>>=
+library(rockchalk) 
+plotCurves(myPois1, plotx = "perAA")
+@ 
+
+<<pois53, include=T, fig=T>>=
+library(rockchalk) 
+plotCurves(myPois1, plotx = "perAA", modx = "equip")
+@ 
+
+
+
+
+<<pois55, include = T>>=
+library(faraway)
+library(MASS)
+gavote$undercount <- gavote$ballots - gavote$votes
+myNB1<- glm.nb(undercount ~ rural + perAA + equip, data = gavote)
+summary(myNB1)
+predictOMatic(myNB1)
+@ 
+
+
+<<gavotesave>>=
+## ddir <- "../data"
+## if(!file.exists(ddir)) dir.create(ddir)
+## library(foreign)
+## write.dta(gavote, file = file.path(ddir, "gavote.dta"))
+## write.csv(gavote, file = file.path(ddir, "gavote.csv"), row.names = FALSE)
+## saveRDS(gavote, file = file.path(ddir, "gavote.rds"))
+@ 
+
+<<pois56, include=T, fig=T>>=
+library(rockchalk) 
+plotCurves(myNB1, plotx = "perAA")
+@ 
+
+
+
+<<pois57plot, include=T, fig=T>>=
+library(rockchalk) 
+plotCurves(myNB1, plotx = "perAA", modx = "equip")
+@ 
+
+<<pois57, include=T, results=tex>>=
+outreg(list("Poisson" = myPois1, "Neg. Binom" = myNB1), tight=FALSE)
+@ 
+
+<<pois59>>=
+anova(myPois1, myNB1, test = "LR")
+library(lmtest)
+lrtest(myPois1, myNB1)
+@ 
+
+<<zip10>>=
+library(pscl)
+myNB1<- glm.nb(undercount ~ rural + perAA + equip, data = gavote)
+
+##These fail
+##myZip1 <- zeroinfl(undercount ~ rural + perAA + equip | ., data = gavote, dist = "negbin", EM = TRUE)
+## Succeeds
+myZip1 <- zeroinfl(undercount ~ rural + perAA + equip | 1, data = gavote, dist = "negbin", EM = TRUE)
+
+library(foreign)
+stdir <- "../Stata/"
+if(!file.exists(stdir)) dir.create(stdir)
+write.dta(gavote, file = paste0(stdir, "gavote.dta7"))
+@  
+
+
+
+
+
+
+
+<<gamma10, fig=T, include=F, width=9, height=6>>=
+par(mfrow=c(2,2))
+x <- seq(0.00001, 6, length=1500)
+y1 <- dgamma(x, shape = 1/3, scale = 3)
+plot(x, y1, main = "shape = 1/3", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y2 <- dgamma(x, shape = 2/3, scale = 3/2)
+plot(x, y2, main = "shape = 2/3", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y3 <- dgamma(x, shape = 1/1, scale = 1)
+plot(x, y3, main="shape = 1", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y4 <- dgamma(x, shape = 3/2, scale = 2/3)
+plot(x, y4, main="shape = 1.5", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+par(mfrow=c(1,1))
+@
+
+<<gamma20, fig=T, include=F, width=9, height=6>>=
+par(mfrow=c(2,2))
+x <- seq(0.001, 6, by = 0.01)
+y1 <- dgamma(x, shape = 2, scale = 1/2)
+plot(x, y1, main="shape=2", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y2 <- dgamma(x, shape = 2.5, scale = 1/2.5)
+plot(x, y2, main="shape = 2.5", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y3 <- dgamma(x, shape = 5, scale = 1/5)
+plot(x, y3, main="shape=5", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+y4 <- dgamma(x, shape = 10, scale = 1/10)
+plot(x, y4, main="shape = 10", type = "l", ylim = c(0,2), 
+     xlab = expression(delta[i]),
+     ylab = expression(density(delta[i])))
+par(mfrow=c(1,1))
+@
+
+
+
+<<gamma30, fig=T, include=F, width=9, height=6>>=
+par(mfrow=c(2,2))
+N <- 2000
+x <- seq(0.0000001, 2, length.out = 4000)
+y1 <- rgamma(N, shape = 1/3, scale = 3)
+h1 <- hist(log(y1), main = "shape = 1/3", breaks = 50,  prob = TRUE,
+      #     xlim = rockchalk::magRange(log(y1), c(1.25,1.25)),
+           xlab = expression(log(delta[i])))
+
+y2 <- rgamma(N, shape = 2/3, scale = 3/2)
+hist(log(y2), main = "shape = 2/3", breaks = 50, prob = TRUE,
+     # xlim = rockchalk::magRange(log(y1), c(1.25,1.25)),
+           xlab = expression(log(delta[i])))
+
+
+y3 <- rgamma(N, shape = 1/1, scale = 1)
+hist(log(y3), main="shape = 1", breaks = 50, prob = TRUE,
+      xlab = expression(log(delta[i])))
+     
+y4 <- rgamma(x, shape = 3/2, scale = 2/3)
+hist(log(y4), main="shape = 1.5", breaks = 50, prob = TRUE,
+xlab = expression(log(delta[i])))
+par(mfrow=c(1,1))
+@
+
+
+<<gamma40, fig=T, include=F, width=9, height=6>>=
+par(mfrow=c(2,2))
+N <- 2000
+x <- seq(0.0000001, 2, length.out = 4000)
+y1 <- rgamma(N, shape = 2, scale = 1/2)
+h1 <- hist(log(y1), main = "shape = 2", breaks = 50, prob = TRUE,
+      #     xlim = rockchalk::magRange(log(y1), c(1.25,1.25)),
+           xlim = c(-4, 2), 
+           xlab = expression(log(delta[i])))
+
+y2 <- rgamma(N, shape = 2.5, scale = 1/2.5)
+hist(log(y2), main = "shape = 2.5", breaks = 50, prob = TRUE,
+     # xlim = rockchalk::magRange(log(y1), c(1.25,1.25)),
+     xlim = c(-4, 2), 
+     xlab = expression(log(delta[i])))
+
+y3 <- rgamma(N, shape = 5, scale = 1/5)
+hist(log(y3), main="shape = 5", breaks = 50, prob = TRUE,
+     xlim = c(-4, 2), 
+     xlab = expression(log(delta[i])))
+     
+y4 <- rgamma(x, shape = 10, scale = 1/10)
+hist(log(y4), main="shape = 10", breaks = 50, prob = TRUE,
+     xlim = c(-4, 2), 
+     xlab = expression(log(delta[i])))
+par(mfrow=c(1,1))
+@
+
+
+<<warns>>=
+warnings()
+@
+
+<<session>>=
+sessionInfo()
+@ 
+
+
+
+
+
+
+\end{document}

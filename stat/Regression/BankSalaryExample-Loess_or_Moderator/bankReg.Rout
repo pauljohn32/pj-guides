@@ -1,0 +1,351 @@
+> library(foreign)
+> bank <- read.spss("bank.sav", max.value.labels=10)
+> attach(bank)
+> plot(EDLEVEL,SALBEG,main="Education and Beginning Salary")
+> ?plot
+plot                package:graphics                R Documentation
+
+Generic X-Y Plotting
+
+Description:
+
+     Generic function for plotting of R objects.  For more details
+     about the graphical parameter arguments, see 'par'.
+
+Usage:
+
+     plot(x, y, ...)
+
+Arguments:
+
+       x: the coordinates of points in the plot. Alternatively, a
+          single plotting structure, function or _any R object with a
+          'plot' method_ can be provided.
+
+       y: the y coordinates of points in the plot, _optional_ if 'x' is
+          an appropriate structure.
+
+     ...: graphical parameters can be given as arguments to 'plot'. 
+          Many methods will also accept the following arguments:
+
+     type what type of plot should be drawn.  Possible types are
+
+             *  '"p"' for *p*oints,
+
+             *  '"l"' for *l*ines,
+
+             *  '"b"' for *b*oth,
+
+             *  '"c"' for the lines part alone of '"b"',
+
+             *  '"o"' for both "*o*verplotted",
+
+             *  '"h"' for "*h*istogram" like (or "high-density")
+                vertical lines,
+
+             *  '"s"' for stair *s*teps,
+
+             *  '"S"' for other *s*teps, see _Details_ below,
+
+             *  '"n"' for no plotting.
+
+          All other 'type's give a warning or an error; using, e.g.,
+          'type = "punkte"' being equivalent to 'type = "p"' for S
+          compatibility.
+
+     main an overall title for the plot: see 'title'.
+
+     sub a sub title for the plot: see 'title'.
+
+     xlab a title for the x axis: see 'title'.
+
+     ylab a title for the y axis: see 'title'. 
+
+Details:
+
+     For simple scatter plots, 'plot.default' will be used. However,
+     there are 'plot' methods for many R objects, including
+     'function's, 'data.frame's, 'density' objects, etc.  Use
+     'methods(plot)' and the documentation for these.
+
+     The two step types differ in their x-y preference: Going from
+     (x1,y1) to (x2,y2) with x1 < x2, 'type = "s"' moves first
+     horizontal, then vertical, whereas 'type = "S"' moves the other
+     way around.
+
+See Also:
+
+     'plot.default', 'plot.formula' and other methods; 'points',
+     'lines', 'par'.
+
+Examples:
+
+     data(cars)
+     plot(cars)
+     lines(lowess(cars))
+
+     plot(sin, -pi, 2*pi)
+
+     ## Discrete Distribution Plot:
+     plot(table(rpois(100,5)), type = "h", col = "red", lwd=10,
+          main="rpois(100,lambda=5)")
+
+     ## Simple quantiles/ECDF, see ecdf() {library(stats)} for a better one:
+     plot(x <- sort(rnorm(47)), type = "s", main = "plot(x, type = \"s\")")
+     points(x, cex = .5, col = "dark red")
+
+
+> plot(EDLEVEL,SALBEG,main="Education and Beginning Salary in a Bank",xlab="Education (years)",ylab="Entry level salary")
+> dev.copy2eps(file="BankEdSalBeg.eps",height=5, width=6,horizontal=F,onefile=F)
+X11 
+  2 
+> plot(EDLEVEL,SALNOW,main="Education and Current Salary in a Bank",xlab="Education (years)",ylab="Current salary")
+> dev.copy2eps(file="BankEdSalCur.eps",horizontal=F,onefile=F)
+X11 
+  2 
+> myReg1 <- lm (SALBEG ~ EDLEVEL, data=bank)
+> summary(myReg1)
+
+Call:
+lm(formula = SALBEG ~ EDLEVEL, data = bank)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4248.8 -1422.0  -557.8   868.4 21379.2 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -2516.39     536.37  -4.692 3.56e-06 ***
+EDLEVEL       691.01      38.88  17.773  < 2e-16 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 2439 on 472 degrees of freedom
+Multiple R-Squared: 0.4009,	Adjusted R-squared: 0.3997 
+F-statistic: 315.9 on 1 and 472 DF,  p-value: < 2.2e-16 
+
+> plot(EDLEVEL,SALBEG,main="Education and Beginning Salary in a Bank",xlab="Education (years)",ylab="Entry level salary")
+> abline(myReg1)
+> dev.copy2eps(file="BankEdPredSalBeg.eps",horizontal=F,onefile=F)
+X11 
+  2 
+> attributes(myReg1)
+$names
+ [1] "coefficients"  "residuals"     "effects"       "rank"         
+ [5] "fitted.values" "assign"        "qr"            "df.residual"  
+ [9] "xlevels"       "call"          "terms"         "model"        
+
+$class
+[1] "lm"
+
+> library(xtable)
+> myReg1.table <- xtable(myReg1)
+> print(myReg1.table)
+% latex table generated in R 1.9.1 by xtable 1.2-3 package
+% Wed Sep 22 16:54:52 2004
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrrr}
+\hline
+ & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\
+\hline
+(Intercept) & $-$2516.3869 & 536.3679 & $-$4.69 & 0.0000 \\
+EDLEVEL & 691.0113 & 38.8788 & 17.77 & 0.0000 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+> plot(myReg1$fitted.values,myReg1$residuals,main="Bank Salary: Residuals and fitted values",xlab="fitted (predicted) values", ylab="OLS residuals")
+> dev.copy2eps(file="BankSalBegResid.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> par(ask=T)
+> plot(myReg1)
+Hit <Return> to see next plot: 
+Hit <Return> to see next plot: 
+Hit <Return> to see next plot: 
+Hit <Return> to see next plot: 
+Warning message: 
+X11 used font size 8 when 9 was requested 
+> par(ask=F)
+> postscript(file="myReg1Diag%02d.eps",height=5, width=5,horizontal=F,onefile=F)
+> plot(myReg1)
+> dev.off()
+X11 
+  2 
+> par(mfcol=c(2,2))
+> plot(myReg1)
+Warning message: 
+X11 used font size 8 when 7 was requested 
+> dev.copy2eps(file="myReg12by2.eps", horizontal=F)
+X11 
+  2 
+> par(mfcol=c(1,1))
+> myReg.lo <- loess(SALBEG~EDLEVEL, data=bank)
+Warning messages: 
+1: pseudoinverse used at 14 
+2: neighborhood radius 2 
+3: reciprocal condition number  2.0789e-18 
+> myReg.lo <- loess(SALBEG~EDLEVEL, data=bank, span=0.67, control=loess.control(surface="direct"), family="symmetric")
+There were 20 warnings (use warnings() to see them)
+> EDRange <-  seq(min(EDLEVEL),max(EDLEVEL),1)
+> lo.pred <- predict(myReg.lo,EDRange, se=TRUE)
+Warning messages: 
+1: pseudoinverse used at 14 
+2: neighborhood radius 2 
+3: reciprocal condition number  2.2986e-17 
+4: There are other near singularities as well. 4 
+> plot(EDLEVEL,SALBEG,main="Loess: Education and Beginning Salary in a Bank",xlab="Education (years)",ylab="Entry level salary")
+> lines(EDRange, lo.pred$fit)
+> dev.copy2eps(file="bankloess1.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> salBegPlot1 <- function(title="") {
++           plot(EDLEVEL,SALBEG,main=title,ylab="Entry level salary")
++         }
+> myReg1.low <- lowess(EDLEVEL, SALBEG)
+> salBegPlot1("Lowess: Education and Salary, f=2/3(default)")
+> lines(myReg1.low)
+> dev.copy2eps(file="lowess1.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> myReg1.low <- lowess(EDLEVEL, SALBEG,f=.2)
+> salBegPlot1("Lowess(MASS): Education and Salary, f=.2")
+> lines(myReg1.low)
+> dev.copy2eps(file="lowess2.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> myReg1.low <- lowess(EDLEVEL, SALBEG,f=.05)
+> salBegPlot1("Lowess(MASS): Education and Salary, f=.05")
+> lines(myReg1.low)
+> dev.copy2eps(file="lowess3.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> myReg2 <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank)
+> summary(myReg2)
+
+Call:
+lm(formula = SALBEG ~ EDLEVEL * I(EDLEVEL > 14), data = bank)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6341.0  -918.4  -198.4   663.7 17851.0 
+
+Coefficients:
+                             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                   4862.65     834.18   5.829 1.04e-08 ***
+EDLEVEL                         39.47      73.67   0.536    0.592    
+I(EDLEVEL > 14)TRUE         -27024.21    1690.22 -15.989  < 2e-16 ***
+EDLEVEL:I(EDLEVEL > 14)TRUE   1871.19     117.34  15.947  < 2e-16 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 1965 on 470 degrees of freedom
+Multiple R-Squared: 0.613,	Adjusted R-squared: 0.6105 
+F-statistic: 248.1 on 3 and 470 DF,  p-value: < 2.2e-16 
+
+> myReg2Fits <- predict(myReg2,data.frame(EDLEVEL=EDRange),se.fit=T)
+> salBegPlot1("Linear model with 1 knot at 14: note bozosity b/t 14 & 15")
+> attributes(myReg2Fits)
+$names
+[1] "fit"            "se.fit"         "df"             "residual.scale"
+
+> lines(EDRange,myReg2Fits$fit)
+> dev.copy2eps(file="bankShift14.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> library(xtable)
+> myReg2.table <- xtable(myReg2)
+> print(myReg2.table)
+% latex table generated in R 1.9.1 by xtable 1.2-3 package
+% Wed Sep 22 16:55:37 2004
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrrr}
+\hline
+ & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\
+\hline
+(Intercept) & 4862.6493 & 834.1845 & 5.83 & 0.0000 \\
+EDLEVEL & 39.4700 & 73.6675 & 0.54 & 0.5924 \\
+I(EDLEVEL > 14)TRUE & $-$27024.2122 & 1690.2222 & $-$15.99 & 0.0000 \\
+EDLEVEL:I(EDLEVEL > 14)TRUE & 1871.1925 & 117.3404 & 15.95 & 0.0000 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+> bank2 <- as.data.frame(bank)
+> bank3 <- bank2[-c(2,56,122),]
+> myReg4 <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank3)
+> summary(myReg4)
+
+Call:
+lm(formula = SALBEG ~ EDLEVEL * I(EDLEVEL > 14), data = bank3)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5787.3  -836.3  -109.3   663.7 10792.2 
+
+Coefficients:
+                             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                   4862.65     645.19   7.537 2.52e-13 ***
+EDLEVEL                         39.47      56.98   0.693    0.489    
+I(EDLEVEL > 14)TRUE         -25371.08    1316.07 -19.278  < 2e-16 ***
+EDLEVEL:I(EDLEVEL > 14)TRUE   1755.04      91.29  19.225  < 2e-16 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 1520 on 467 degrees of freedom
+Multiple R-Squared: 0.6962,	Adjusted R-squared: 0.6942 
+F-statistic: 356.7 on 3 and 467 DF,  p-value: < 2.2e-16 
+
+> library(xtable)
+> myReg4.table <- xtable(myReg4)
+> print(myReg4.table)
+% latex table generated in R 1.9.1 by xtable 1.2-3 package
+% Wed Sep 22 16:55:41 2004
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrrrr}
+\hline
+ & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\
+\hline
+(Intercept) & 4862.6493 & 645.1940 & 7.54 & 0.0000 \\
+EDLEVEL & 39.4700 & 56.9776 & 0.69 & 0.4888 \\
+I(EDLEVEL > 14)TRUE & $-$25371.0827 & 1316.0651 & $-$19.28 & 0.0000 \\
+EDLEVEL:I(EDLEVEL > 14)TRUE & 1755.0430 & 91.2908 & 19.22 & 0.0000 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+> myReg4Fits <- predict(myReg4,data.frame(EDLEVEL=EDRange),se.fit=T)
+> plot(bank3$EDLEVEL,bank3$SALBEG,main="Education and Beginning Salary: cases \
++    2, 56, and 122 removed",xlab="Education (years)", ylab="Entry Level Salary")
+> lines(EDRange,myReg4Fits$fit)
+> dev.copy2eps(file="bank3SplineOutlier.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> lines(EDRange, myReg4Fits$fit + 2*myReg4Fits$se.fit, col=4, lty=3)
+> lines(EDRange, myReg4Fits$fit - 2*myReg4Fits$se.fit, col=4, lty=3)
+> dev.copy2eps(file="bank3SplineOutlierSE.eps",height=5, width=5, horizontal=F,onefile=F)
+X11 
+  2 
+> myReg4a <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank3,subset=EDLEVEL<= 14)
+> myReg4b <- lm(SALBEG~EDLEVEL*I(EDLEVEL > 14), data=bank3,subset=EDLEVEL > 14)
+> plot(bank3$EDLEVEL,bank3$SALBEG,main="Education and Beginning Salary: cases \
++    2, 56, and 122 removed",xlab="Education (years)", ylab="Entry Level Salary")
+> abline(myReg4a)
+> abline(myReg4b)
+> text(locator(2),c("I <= 14","I > 14"))
+> dev.copy2eps(file="bank3SplineOutlier2.eps",horizontal=F,onefile=F)
+X11 
+  2 
+> par(mfcol=c(2,2))
+> plot(myReg4)
+> dev.copy2eps(file="bank3SplineDiagPlot.eps",height=9,width=6, horizontal=F,onefile=F)
+X11 
+  2 
+> q()
+Save workspace image? [y/n/c]: n
+
+
+Process R finished at Wed Sep 22 16:56:33 2004

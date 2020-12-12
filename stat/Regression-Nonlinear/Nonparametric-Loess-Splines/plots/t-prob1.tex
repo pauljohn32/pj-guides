@@ -1,0 +1,54 @@
+\begin{Schunk}
+\begin{Sinput}
+ dat <- read.table("cystfibr.txt", header = T)
+ plot(weight ~ height, data = dat)
+ plot(weight ~ height, data = dat)
+ mod1 <- lm(weight ~ height, data = dat)
+ summary(mod1)
+ abline(mod1)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+ lfit <- loess(weight ~ height, data = dat, span = 0.5, degree = 2, family = "gaussian")
+ dat <- dat[order(dat$height), ]
+ lopred <- predict(lfit, newdata = dat)
+ plot(weight ~ height, data = dat)
+ lines(dat$height, lopred)
+ abline(mod1, lwd = 0.7, lty = 2)
+ legend("topleft", legend = c("loess", "OLS"), lwd = c(1, 0.7), lty = 1:2)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+ with(dat, scatter.smooth(height, weight))
+ abline(mod1, lwd = 0.7, lty = 2)
+ legend("topleft", legend = c("loess", "OLS"), lwd = c(1, 0.7), lty = 1:2)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+ mod4 <- lm(weight ~ ns(height, df = 4), data = dat)
+ summary(mod4)
+ dat <- dat[order(dat$height), ]
+ mod4pred <- predict(mod4, newdata = dat)
+ plot(weight ~ height, data = dat)
+ lines(dat$height, mod4pred, col = green, lty = 4, lwd = 2)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+ dat$heightsq <- dat$height * dat$height
+ mod2 <- lm(weight ~ height + heightsq, data = dat)
+ summary(mod2)
+ heightseq <- seq(min(dat$height), max(dat$height), length.out = 100)
+ weightpred <- predict(mod2, newdata = data.frame(height = heightseq, heightsq = heightseq * heightseq))
+ plot(weight ~ height, data = dat)
+ lines(heightseq, weightpred, lty = 4, col = "red", lwd = 2)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+ dat$heightc <- dat$height - mean(dat$height, na.rm = T)
+\end{Sinput}
+\end{Schunk}

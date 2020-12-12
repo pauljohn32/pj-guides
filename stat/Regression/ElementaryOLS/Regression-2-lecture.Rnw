@@ -1,0 +1,1537 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{calc}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+% (ERT) argument for the TOC
+\AtBeginDocument{%
+  \let\origtableofcontents=\tableofcontents
+  \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+  \def\gobbletableofcontents#1{\origtableofcontents}
+}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{Sweavel}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\usetheme{Antibes}
+\usecolortheme{dolphin}
+
+%%\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots2")
+dir.create("plots2", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots2/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+\title[Descriptive]{Elementary Regression 2 }
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Psychology,
+University of Kansas}
+\date[2020]{Sept 28, 2020}
+
+\makebeamertitle
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\section{$\hat{\beta}$ Uncertainty}
+
+\subsection{Visualize Uncertainty}
+
+\begin{frame}[containsverbatim]
+\frametitle{How Does Uncertainty Manifest Itself?}
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item The Truth is $\beta_{0}=3$, $\beta_{1}=0.25$
+\item Suppose sample estimate $\hat{\beta}_{0}=3.2$ and $\hat{\beta}_{1}=0.4.$ 
+\item We are a little bit off the mark, but we are not doing too badly to
+formulate a ``prediction'' thusly
+\[
+\hat{y}_{i}=3.2+0.4\cdot x_{i}
+\]
+\item If we did not know true $\beta_{0}$ and $\beta_{1}$, could we guess
+``how far wrong'' our estimates are?
+\end{itemize}
+
+\column{7cm}
+
+<<line50,echo=F,include=F,fig=T>>=
+library(rockchalk)
+x <- c(0,8)
+fest <- function(x){3.2 + 0.4*x}
+y <- fest(x)
+plot(y ~ x, type="l", xlab=expression(paste(x[i])), ylab=expression(paste(y[i])), ylim=c(0,10), xlim=c(-1,8), axes=F, lty=2, lwd=2)
+axis(1, pos=0)
+axis(2, pos=0) 
+ftrue <- function(x){3 + 0.25*x}
+lines(c(0,8), ftrue(c(0,8)), lty=1, lwd=2)
+text(6, 1.15*fest(6), "estimated line")
+text(2.5,0.85*ftrue(2.5), "true line")
+@
+
+\includegraphics[width=6cm]{plots2/t-line50}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Repeat that Exercise Hundreds of Times}
+
+<<sim5,fig=F,echo=T,include=F>>=
+Nsampsize <- 100
+set.seed(12345)
+b0 <- 3; b1 <- 0.25; stde <- 10;
+x <- rnorm(Nsampsize, m=0, sd=10);
+simr <- function(i){
+y <- b0 + b1 * x + stde*rnorm(Nsampsize)
+myr <- lm(y ~ x)
+}
+nsims <- 1000
+mregs <- lapply(1:nsims, simr)
+@
+
+<<sim6, fig=T, echo=T, include=F>>=
+plot(x=seq(-2,10, length=20), y=seq(-1, 10, length=20), type="n", xlab="x", ylab="y")
+for(i in 1:100){
+abline(mregs[[i]], lty=i, col=i)
+}
+@
+
+<<sim10,fig=T,echo=T,include=F>>=
+res <- lapply(mregs, summary)
+b1hat <- vector(nsims, mode="numeric")
+for (i in 1:nsims){ b1hat[i] <- coefficients(res[[i]])[2,1]}
+
+hist(b1hat, breaks=20, probability=T, main="", xlab="Estimates of b1")
+lines(density(b1hat), lty=4)
+rb1hat <- range(b1hat)
+xseq <- seq(from=rb1hat[1],to=rb1hat[2],length.out=200)
+nseq <- dnorm(xseq, m=b1, s=0.1)
+lines(xseq, nseq, lty=1)
+
+legend("topright",legend=c("Simulated kde","Theoretical"), lty=c(4,1))
+legend("topleft", legend=c(paste("mean=",round(mean(b1hat),3)),paste("std.dev.=",round(sd(b1hat),3)) ))
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item Draw samples, estimate a line for each
+\item Vital observations
+
+\begin{itemize}
+\item Estimates do seem to ``hover'' around the correct values
+\item More predictive fluctuation on edges than in the middle
+\item If $\hat{\beta}_{0}$ is ``off'' by a larger amount, the $\hat{\beta}_{1}$
+will generally be off as well (that's $Cov(\hat{\beta}_{0},\hat{\beta}_{1})$.
+\end{itemize}
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=6cm]{plots2/t-sim6}
+\end{columns}
+
+\end{frame}
+\begin{frame}{How Did I Manufacture the Data?}
+
+\begin{itemize}
+\item Sample size N=100
+\item Draw one sample of input variables, $x_{i}\sim Normal(50,10^{2})$
+\item The ``true'' parameter values: $\beta_{0}=3$, $\beta_{1}=0.25$
+, $\sigma_{e}=10$
+\item Repeatedly draw sets of errors, estimate regressions (leaving $x_{i}$
+vector the same)
+\item This is what it means when textbooks say ``x is fixed'' across repeated
+samples
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Simulation Confirms The Theory}
+
+\begin{itemize}
+\item The expected values of the estimators are:
+\begin{eqnarray*}
+E[\hat{\beta}_{0}] & = & 3\\
+E[\hat{\beta}_{1}] & = & 0.25\\
+E[RMSE] & = & 10
+\end{eqnarray*}
+\item According to results derived below:
+
+\begin{itemize}
+\item Variance of $\hat{\beta}_{1}$: $Var[\hat{\beta}_{1}]=\sigma_{e}^{2}/E[\sum(x-\bar{x})^{2}]=1/100=0.01$
+\item Standard deviation of $\hat{\beta}_{1}$: $std.dev(\hat{\beta}_{1})=0.1$
+\item $\hat{\beta}_{1}$ is Normally distributed if
+
+\begin{itemize}
+\item Sample is large (Recall the Central Limit Theorem)
+\item Or we assume $e_{i}$ is Normal. Then $\hat{\beta}$ will be Normal.
+\end{itemize}
+\item $\hat{t}=(\hat{\beta}_{1}-\beta_{1})/s.e.(\hat{\beta}_{1})$ is distributed
+according to a t distribution with N-2 degrees of freedom.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Sampling Distribution $\hat{\beta}$}
+\begin{frame}{Variance Results}
+
+\begin{itemize}
+\item $Var[\hat{\beta}]$: Theoretical ``True Variance'' of estimate across
+repeated samples
+\end{itemize}
+\begin{equation}
+Var(\hat{\beta}_{1})=\sigma_{e}^{2}\left(\frac{1}{\sum(x_{i}-\bar{x})^{2}}\right)\label{varb10-3}
+\end{equation}
+
+\begin{itemize}
+\item $\widehat{Var[\hat{\beta}]}$: Estimate of $Var[\hat{\beta}]$ From
+one sample. Replace $\sigma_{e}^{2}$ with $\hat{\sigma}_{e}^{2}$
+(MSE).
+\end{itemize}
+\begin{equation}
+\widehat{Var(\hat{\beta}_{1})}=\hat{\sigma}_{e}^{2}\left(\frac{1}{\sum(x_{i}-\bar{x})^{2}}\right)\label{varb10-3-1}
+\end{equation}
+
+\begin{itemize}
+\item $std.err.(\hat{\beta}$)=$\sqrt{\widehat{Var[\hat{\beta}]}}$: Standard
+error of $\hat{\beta}_{1}$. We don't call it a ``standard deviation''
+because it is based on an estimate of the variance, rather than the
+true variance.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{See Appendix for Derivation}
+
+\begin{itemize}
+\item The derivation begins by applying the Var operator to both sides of
+the formula for the slope estimate
+\[
+\hat{\beta}_{1}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sum(x_{i}-\bar{x})^{2}}
+\]
+\end{itemize}
+\[
+Var(\hat{\beta}_{1})=Var\left(\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sum(x_{i}-\bar{x})^{2}}\right)
+\]
+
+\begin{itemize}
+\item Appendix shows derivation.
+\item Demonstrates role played by assumptions $E[e_{i}]=0$ and $Var[e_{i}]=\sigma_{e}^{2}$. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Similar formulas for variances of other parameter estimates}
+
+\begin{itemize}
+\item Variance of Intercept:
+\end{itemize}
+\begin{center}
+\[
+\widehat{Var(\hat{\beta}_{0})}=\hat{\sigma}_{e}^{2}\frac{\sum x_{i}^{2}}{N\sum(x_{i}-\bar{x})^{2}}
+\]
+\par\end{center}
+\begin{itemize}
+\item Covariance of estimates of Intercept and Slope:
+\end{itemize}
+\[
+\widehat{Cov(\hat{\beta}_{0},\hat{\beta}_{1})}=\frac{-\bar{x}\hat{\sigma}_{e}^{2}}{\sum(x_{i}-\bar{x})^{2}}
+\]
+
+\end{frame}
+
+\begin{frame}{They Fit into a Variance/Covariance matrix}
+
+\[
+Var/Covar(\hat{\beta}):\,\,\,\left[\begin{array}{cc}
+\widehat{Var(\hat{\beta}_{0}}) & \widehat{Cov(\hat{\beta}_{0},\hat{\beta}_{1})}\\
+\widehat{Cov(\hat{\beta}_{0},\hat{\beta}_{1})} & \widehat{Var(\hat{\beta}_{1}})
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item The square roots of the diagonal appear in the standard regression
+output 
+\item They are the 2nd column, the standard errors of parameter estimates.
+\item $\widehat{Cov(\hat{\beta}_{0},\hat{\beta}_{1})}$ is not presented
+in the standard regression output, must be obtained separately
+\item Note: I am lazy and don't put a giant hat over the matrix on the left. 
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{The Sampling Distribution of $\hat{\beta}_1$ is Normal}
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item Simulation draws similar to theoretical Normal distribution
+\item Recall, the true value of $\beta_{1}=0.25$
+\item Variation we expect (theoretical) is observed in simulation
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-sim10}
+
+1000 Simulated Samples, N=100, x sample fixed
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Sampling Distribution of $(\hat{\beta}_1-{\beta}_1)/s.e.(\hat{\beta}_1)$ follows a t Distribution}
+\begin{itemize}
+\item When we studied estimating the average from a sample, we found the
+ratio $\bar{x}/s.e.(\bar{x})$ is distributed as a t statistic.
+\item The same idea applies here: because
+
+\begin{itemize}
+\item $\hat{\beta}_{1}$ follows a Normal distribution, and 
+\item $s.e.(\hat{\beta}_{1})$ follows a Chi-Square
+\item therefore, $(\hat{\beta}_{1}-\beta_{1})/s.e.(\hat{\beta}_{1})$ follows
+a t distribution
+\end{itemize}
+\item Often, people simply refer to that ratio as a ``t statistic'', but
+I'm calling it $\hat{t}$ because it varies from sample to sample,
+just like $\hat{\beta}$ and $s.e.(\hat{\beta})$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recall a t Distribution with 100 df}
+
+<<t10,echo=F,include=F,fig=T>>=
+x <- seq(-4,4, length.out=100)
+probx <- dt(x, df=100)
+plot(x, probx, type="l", xlab="t", ylab="probability density")
+tcritl <- qt(0.025, df=100)
+tcrith <- qt(0.025, df=100, lower.tail=FALSE)
+lines( c(tcritl, tcritl), c(0, dt(tcritl, df=100)), lty=4)
+lines( c(tcrith, tcrith), c(0, dt(tcrith, df=100)), lty=4)
+mtext(bquote("critical value" == .(tcritl)), side=1, at=tcritl, line=2)
+mtext(bquote("critical value" == .(tcrith)), side=1, at=tcrith, line=2)
+@
+\begin{columns}[t]
+
+
+\column{6cm}
+
+\includegraphics[width=6cm]{plots2/t-t10}
+
+\column{5cm}
+\begin{itemize}
+\item The estimate from a sample, $\hat{t}=\hat{\beta}_{1}-\beta_{1}/s.e.(\hat{\beta}_{1})$
+will take on a range of values around 0
+\item Only infrequently, with probability (2x0.025), will $\hat{t}$ be
+in the ``tails'', the critical regions.
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Sampling Distribution of $(\hat{\beta}_1-{\beta}_1)/s.e.(\hat{\beta}_1)$}
+
+<<sim30,fig=T,echo=T,include=F>>=
+tb1hat <- vector(nsims, mode="numeric")
+for (i in 1:nsims){ tb1hat[i] <- (coefficients(res[[i]])[2,1]-b1)/coefficients(res[[i]])[2,2]}
+hist(tb1hat, breaks=20, probability=T, main="", xlab=expression( hat(t) == (hat(b)[1]-b[1])/s.e.(hat(b)[1])))
+lines(density(tb1hat), lty=4)
+rtb1hat <- range(tb1hat)
+xseq <- seq(from=rtb1hat[1],to=rtb1hat[2],length.out=200)
+lines(xseq, dt(xseq, df=98))
+legend("topleft", legend=c("Theoretical", "Simulated kde"), lty=c(1,4))
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item Note similarity of sample estimates $(\hat{\beta}_{1}-\beta_{1})/s.e.(\hat{\beta}_{1})$
+with the theoretical t distribution
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-sim30}
+
+1000 Simulated Samples, N=100, x sample fixed
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Sampling Distribution of RMSE}
+
+<<sim50,fig=T,echo=T,include=F>>=
+rmse <- vector(nsims, mode="numeric")
+for (i in 1:nsims){ rmse[i] <- res[[i]]$sigma}
+hist(rmse, breaks=20, probability=T, main="", xlab="RMSE (est. std. dev. of error term)")
+lines(density(rmse), lty=4)
+legend("topright",legend=c(paste("mean=",round(mean(rmse),3)),paste("std.dev.=",round(sd(rmse),3)) ))
+@
+
+distribution of estimated root mean square error is centered on the
+true value of the standard deviation of the error term.
+
+\includegraphics[width=7cm]{plots2/t-sim50}
+
+1000 Simulated Samples, N=100, x sample fixed
+
+\end{frame}
+
+\section{t-test Hypotheses about $\beta_{j}$}
+
+\begin{frame}[containsverbatim]
+\frametitle{Check the Standard Regression Output}
+
+<<inced60, include=F, echo=T>>=
+require(car)
+incedmod1 <- lm(income~education, data=Prestige)
+summary(incedmod1)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-inced60}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ask R for the Covar Matrix}
+
+<<inced61, include=F, echo=T>>=
+incedvcov <- vcov(incedmod1)
+incedvcov
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-inced61}
+\begin{itemize}
+\item Note the square root of the diagonals is same as ``standard error''
+in regression table
+\end{itemize}
+<<inced61B, include=F, echo=T>>=
+sqrt(diag(incedvcov))
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-inced61B}
+
+\end{frame}
+\begin{frame}{The Standard Error of $\hat{\beta}_{1}$ Leads to a T-test}
+
+\begin{itemize}
+\item The regression output has columns
+\end{itemize}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Estimate of b & std. error of b & t=$\hat{\beta}/s.e.(\hat{\beta})$ & prob $t$ more extreme than $\hat{t}$\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item t column is meaningful only if NULL is $\beta_{j}=0$ ($j$ means
+either 0 or 1 in $\beta_{0}$ and $\beta_{1}$)
+\item $\beta_{j}$ does not always have to be 0!. More generally
+\begin{equation}
+\hat{t}=\frac{\hat{\beta}_{j}-\beta_{j}}{std.err.(\hat{\beta}_{j})}
+\end{equation}
+
+Compare that against a $t$ distribution.
+\item Rule of Thumb: if $|\hat{t}|\leq2$ , the difference between the estimate
+$\hat{\beta}_{j}$ and $\beta_{j}$ is not ``statistically significant''
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{The Simulated Sampling Distribution of t}
+
+<<sim31,fig=T,echo=T,include=F>>=
+tb1 <- vector(nsims, mode="numeric")
+for (i in 1:nsims){ tb1[i] <- coefficients(res[[i]])[2,3]}
+hist(tb1, breaks=20, probability=T, main="", xlab="1000 t ratios", xlim=c(-2,7))
+nnotsig <- length(which(tb1< 1.983))  ##qt(0.025, df=100)))
+lines(density(tb1), lty=4)
+rtb1 <- range(tb1)
+xseq <- seq(from=rtb1[1],to=rtb1[2],length.out=200)
+legend("topright", legend=c("Simulated t stats", paste("mean=",round(mean(tb1),3)),paste("std.dev.=",round(sd(tb1),3)) ))
+text(-1.4, 0.13, pos=4, labels=c(paste("    ",nnotsig,"\nsample estimates\n not significant \n at 0.05")))
+rtb1 <- range(tb1)
+xseq <- seq(from=-2,to=rtb1[2],length.out=200)
+lines(xseq, dt(xseq, df=98))
+text(-1.2, 0.3, "t dist")
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item The t-stats reported by regression models assume null, $H_{0}:\beta_{1}=0$
+\item Many estimated $\hat{\beta}_{1}/s.e.(\hat{\beta}_{1})$ are greater
+than 1.983, as they should be!
+\item Many are not. This is an example of Type II error ($\beta$ error),
+failing to reject an incorrect null hypothesis.
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-sim31}
+
+Solid line: t would follow this if $\beta_{1}=0,$ df=98
+
+Dotted line: Simulated estimates of $\hat{\beta}_{1}/s.e.(\hat{\beta})$
+when $\beta_{1}=0.25$
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Two-Tailed Versus One Tailed}
+
+<<t11,echo=F,include=F,fig=T, height=6,width=6>>=
+x <- seq(-4,4, length.out=100)
+probx <- dt(x, df=100)
+plot(x, probx, type="l", xlab="t", ylab="probability density", main="")
+tcritl <- qt(0.025, df=100)
+tcrith <- qt(0.025, df=100, lower.tail=FALSE)
+lines( c(tcritl, tcritl), c(0, dt(tcritl, df=100)), lty=4)
+lines( c(tcrith, tcrith), c(0, dt(tcrith, df=100)), lty=4)
+mtext(bquote("critical value" == .(tcritl)), side=1, at=tcritl, line=2)
+mtext(bquote("critical value" == .(tcrith)), side=1, at=tcrith, line=2)
+@
+
+<<t12,echo=F,include=F,fig=T, height=6,width=6>>=
+x <- seq(-4,4, length.out=100)
+probx <- dt(x, df=100)
+plot(x, probx, type="l", xlab="t", ylab="probability density", main="")
+tcrith <- qt(0.05, df=100, lower.tail=FALSE)
+lines( c(tcrith, tcrith), c(0, dt(tcrith, df=100)), lty=4)
+mtext(bquote("critical value" == .(tcrith)), side=1, at=tcrith, line=2)
+@
+
+If Null Hypothesis is Correct, the estimate of $t$ will be distributed
+like this:
+\begin{columns}[t]
+
+
+\column{6cm}
+
+Two Tailed Test
+
+\includegraphics[width=5cm]{plots2/t-t11}
+
+Can reject null on either high or low side
+
+\column{6cm}
+
+One Tailed Test
+
+\includegraphics[width=5cm]{plots2/t-t12}
+
+Can reject null only on high side
+\end{columns}
+
+\end{frame}
+\begin{frame}{4 Steps of T-test: The Prestige Regression Slope}
+
+\begin{enumerate}
+\item State Theoretical model to define terms: $income_{i}=\beta_{0}+\beta_{1}\cdot education_{i}+e_{i}$,
+($E[e_{i}]=0,$ $E[e_{i}^{2}]=\sigma_{e}^{2}$)
+\item State Null Hypothesis (for example): $H_{0}:\beta_{1}=0$.
+\item Define decision guideline: with 100 df, the 0.05 critical value of
+t is 1.983 (two-tailed test).
+\item Calculate $\hat{t}=(898.8-0)/127=7.075$
+
+which is far greater than 1.983, so the null is rejected.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Estimated $s.e.(\hat{\beta}_{1})$ Will be High if}
+
+\begin{itemize}
+\item Recall, the estimated variance of an estimated slope:
+\[
+\widehat{Var(\hat{\beta}_{1})}=\widehat{\sigma_{e}^{2}}\left[\frac{1}{\sum(x_{i}-\bar{x})^{2}}\right]=\frac{RMSE^{2}}{\sum(x_{i}-\bar{x})^{2}}
+\]
+\item $se(\hat{\beta}_{1})$ will be high if
+
+\begin{itemize}
+\item $\widehat{\sigma_{e}^{2}}$ is high (so, Big error variance -> Big
+$\hat{\beta}$ Variance)
+\item $\sum(x_{i}-\bar{x})^{2}$ is small (Low variance of $x_{i}$ -> Big
+$\hat{\beta}$ Variance). 
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Confidence Interval of $\hat{\beta}_{j}$}
+\begin{frame}{Confidence Interval Reminder}
+
+\begin{itemize}
+\item Build a Confidence Interval around $\hat{\beta}$. 
+\end{itemize}
+\[
+CI:\,\,\,\hat{\beta}-t\cdot std.err(\hat{\beta})\leq\beta\leq\hat{\beta}+t\cdot std.err(\hat{\beta})
+\]
+
+We believe that the probability is 95\% that the ``true value of
+b'' will be in the CI. The $t$ value will depend on the degrees
+of freedom available (Sample Size minus parameters estimated, or $N-2$
+in this case). 
+\begin{itemize}
+\item Result was derived in previous lecture on Confidence Intervals. With
+probability 0.95, the estimated t ratio will lie in a range, 
+\end{itemize}
+\[
+Prob(-t\leq\frac{\widehat{\beta}-\beta}{std.err.(\hat{\beta})}\leq t)=0.95
+\]
+
+\begin{itemize}
+\item That implies this, with probability 0.95, the interval includes the
+``true'' $\beta$
+\end{itemize}
+\[
+-t\cdot std.err(\hat{\beta})\leq\hat{\beta}-\beta\leq t\cdot std.err(\hat{\beta})
+\]
+ 
+\end{frame}
+
+\begin{frame}{CI($\hat{\beta})$ Example: The Prestige Regression }
+
+\begin{itemize}
+\item Confidence Interval for slope estimate: $CI(\hat{\beta}_{1})$
+\end{itemize}
+\[
+\hat{\beta}_{1}\pm t\cdot std.err.(\hat{\beta}_{1})=
+\]
+\[
+898.8\pm1.98\times127
+\]
+
+\begin{itemize}
+\item Or
+\[
+[646.7792,\,\,\,1150.84748]
+\]
+\item Result: We believe that the probability is 0.95 that the ``true $\beta_{1}$''
+would be between 646.7 and 1150.8.
+\item Or, 95\% of the time, when we conduct this sampling experiment, the
+CI calculated according to this formula would include the true value.
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{In R, ask for the Confidence Intervals of all coefficients}
+
+<<inced63, include=F, echo=T>>=
+confint(incedmod1)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-inced63}
+
+\end{frame}
+
+\section{Afterthought: Simulated Distribution of $R^{2}$}
+
+\begin{frame}
+\frametitle{The Sampling Distribution of $R^2$}
+
+<<sim40,fig=T,echo=T,include=F>>=
+rsq <- vector(nsims, mode="numeric")
+for (i in 1:nsims){ rsq[i] <- res[[i]]$r.square}
+hist(rsq, breaks=20, probability=T, main="", xlab="R square")
+lines(density(rsq), lty=4)
+legend("topright",legend=c(paste("mean=",round(mean(rsq),3)),paste("std.dev.=",round(sd(rsq),3)) ))
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item $R^{2}$
+\item Cov(xy)/Sd(x)sd(y)
+\item not so encouraging
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-sim40}
+
+1000 Simulated Samples, N=100, x sample fixed
+\end{columns}
+
+\end{frame}
+
+\section{Prediction CI}
+\begin{frame}{Does $\mbox{\ensuremath{\hat{y_{i}}} }$estimate $E[y_{i}|x_{i}]$
+or $y_{i}$?}
+
+\begin{itemize}
+\item We are asking ``How meaningful is $\hat{y}_{i}$'' What is it good
+for?
+\item 2 possibilities. 
+
+\begin{itemize}
+\item estimate the ``true value'' of $y_{i}$, which is $E[y_{i}|x_{i}]$
+\item estimate a particular case's outcome, $y_{i}$
+\end{itemize}
+\item That leads to 2 different confidence intervals we can place around
+our prediction.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recall root MSE: estimated std.dev. of error term}
+
+<<wrong10, fig=T, include=F>>=
+b0 <- 2
+b1 <- 3
+plot(x=seq(0,10, length=10), y=seq(0,40, length=10), type="n", xlab="x", ylab="y")
+abline(a=b0, b=b1, lwd=2)
+abline(a=b0+8, b=b1, lty=3, col=gray(0.8), lwd=2)
+abline(a=b0-8, b=b1, lty=3, col=gray(0.8), lwd=2)
+text(1, 35, labels="Don't do this! \n it is wrong!")
+arrows(4, b0+b1*4,	4, (b0+8)+b1*4 , angle=90, length=0.05, code=3)
+text(4, (b0+8)+b1*4 , labels=expression(hat(y) + 2 %*% rmse), pos=2)
+arrows(5, b0+b1*5,	5, (b0-8)+b1*5 , angle=90, length=0.05, code=3)
+text(5.2, (b0-8)+b1*5 , labels=expression(hat(y) - 2 %*% rmse), pos=4)
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item If we knew $\beta_{o}$ and $\beta_{1}$ for sure, then we could draw
+lines$\pm2\times RMSE$ to predict 95\% of the observations (supposing
+$e_{i}$ is Normal, of course).
+\item That would be wrong: We don't know $\beta_{o}$ and $\beta_{1}$ for
+sure. 
+\item It is not wide enough to include our uncertainty!
+\end{itemize}
+
+\column{7cm}
+
+Danger, This is Wrong
+
+\includegraphics[width=7cm]{plots2/t-wrong10}
+\end{columns}
+
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Including uncertainty about $\hat{b}_0$ and $\hat{b}_1$ leads to an hour glass shaped region}
+
+Example: 100 regression lines
+
+$\beta_{0}=2,\beta_{1}=3,\sigma_{e}^{2}=80^{2}$
+
+<<RMSE10,fig=T,include=F,echo=T>>=
+x <- rnorm(100, m=50,s=10)
+y <- 2 + 3 * x + 80 * rnorm(100)
+plot(x,y, type="n",xlab="Indep. Var.", ylab="Dep. Var",ylim=c(0,350))
+for(i in 1:100){
+  y <- 2 + 3 * x + rnorm(100, m=0, s=80)
+  mod <- lm (y ~ x)
+  abline(mod,col=gray(.80))
+}
+points(x,y)
+@
+
+\includegraphics[width=9cm]{plots2/t-RMSE10}
+
+Note: Points represent one ``sample'', lines represent 100 ``sample
+fits''.
+
+\end{frame}
+\begin{frame}{Confidence and Prediction Intervals}
+
+\begin{itemize}
+\item Confidence Interval: 
+
+\begin{itemize}
+\item Given $x_{i}$ and predicted value $\hat{y}_{i}$, how wide must an
+interval be to include the ``true (error free) $y_{i}$'' with probability.
+\item Summarizes our uncertainty about $\hat{y}_{i}$ as an estimate of
+$E[y_{i}|x_{i}]$
+\item $\hat{y}_{i}$ should be ``pretty close'' to $E[y_{i}|x_{i}]$
+\end{itemize}
+\item Prediction interval:
+
+\begin{itemize}
+\item Given $x_{i}$ and predicted value $\hat{y}_{i}$, how wide must an
+interval be to include a randomly drawn observation
+\item Our uncertainty about $\hat{y}_{i}$ as an estimate of a particular
+observation
+\item Intuition: PI must be wider then CI because $y_{i}$ is less certain
+than $\hat{y}_{i}$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Confidence Interval for estimating $E[y|x]$}
+
+Please remember: The format of these CIs is symmetric, like $[\hat{y}-something,\hat{y}+something].$
+\begin{itemize}
+\item A 95\% ``confidence interval'' includes the true $E[y_{i}|x_{0}]$
+with probability 0.95 
+\begin{equation}
+Confidence\,Interval=\hat{y}_{0}\pm\,\,t\,\times\,\widehat{\sigma_{e}}\left[\frac{1}{N}+\frac{(x_{0}-\bar{x})^{2}}{\sum(x_{i}-\bar{x})^{2}}\right]^{1/2}
+\end{equation}
+\item To work with that, select some ``example'' values of the predictor.
+Call them $x_{0}\in\{0,2,4,6\},$ for example
+\item $\hat{y}_{o}$ is the predicted value for a particular x, $\hat{\beta}_{0}+\hat{\beta}_{1}x_{0}.$
+\item For 95\% CI, set $t$ 1.98 
+\item $\widehat{\sigma_{e}}$ is ``RMSE,'' the ``estimated standard deviation
+of the error term''
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Use predictOMatic to see some for some values of X}
+
+<<pom1, include=T, echo=T>>=
+predictOMatic(incedmod1, predVals = list(education = "quantile"), n = 10, interval = "confidence")
+@
+\begin{itemize}
+\item Steps across 10 values of education, showing fitted (predicted) values
+and lower and upper 95\% CI
+\item Will Plot below. Is ``hour glass shaped''.
+\end{itemize}
+\end{frame}
+\begin{frame}{Prediction Interval}
+
+\begin{itemize}
+\item A 95\% ``prediction Interval'' includes a randomly drawn outcomes
+$y_{i}$ with probability 0.95
+\begin{equation}
+\,Prediction\,Interval=\hat{y}_{0}\pm t\times\widehat{\sigma_{e}}\left[1+\frac{1}{N}+\frac{(x_{0}-\bar{x})^{2}}{\sum(x_{i}-\bar{x})^{2}}\right]^{1/2}
+\end{equation}
+\item Notice that the $something$ in the PI is equal to the $something$
+in the CI with an additional amount that depends directly on the standard
+deviation of the error term $\widehat{\sigma_{e}}$
+\item This interval is larger because we think of ``the line bouncing about'',
+and the random draws are added on after that.
+\end{itemize}
+\begin{description}
+\item [{Derivation}] of CI and PI is presented in Appendix~2
+\end{description}
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Use predictOMatic to see some for some values of X}
+
+<<pom2, include=T, echo=T>>=
+predictOMatic(incedmod1, predVals = list(education = "quantile"), n = 10, interval = "prediction")
+@
+
+Steps across 10 values of education, showing fitted (predicted) values
+and lower and upper 95\% PI
+
+\end{frame}
+\begin{frame}{The Hour Glass Shaped Confidence Interval}
+
+\begin{center}
+\includegraphics[width=7cm]{importfigs/modl1}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Prediction Interval also Hour-Glass Shaped, but Curvature Gradual}
+
+\begin{center}
+\includegraphics[width=7cm]{importfigs/modl3}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Compare PI and CI}
+
+\begin{center}
+\includegraphics[width=7cm]{importfigs/modl4}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Too Many Intervals Floating About?}
+
+\begin{itemize}
+\item I am always surprised that students don't see a difference between
+these confidence intervals. 
+\item The CI around $\hat{\beta}_{1}$ says we believe the true $\beta_{1}$
+lies in here: $[\hat{\beta}_{1}-something,\,\hat{\beta}_{1}+something]$
+\item We use $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$ and the predicted
+value $\hat{y}_{i}$. The value $E[y_{i}|x_{i}]=\beta_{0}+\beta_{1}x_{i}$
+is the ``true'' expected value of $y_{i}$, what would happen if
+there were no random error. $E[y_{i}|x_{i}]$ is likely in {[}$\hat{y}_{i}-something\,else,\hat{y}_{i}+something\,else${]}.
+The $something\,else$ includes our uncertainty about $\hat{\beta}_{0}$
+and $\hat{\beta}_{1}$.
+\item The prediction interval is a statement that, for a particular $x_{i}$,
+the observed $y_{i}$would be in: {[}$\hat{y}_{i}-something\,bigger,\hat{y}_{i}+something\,bigger${]}.
+That's bigger because it includes uncertainty about $\hat{\beta}_{0}$
+, $\hat{\beta}_{1}$ and $\widehat{\sigma_{e}}$. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Canadian Prestige: plotSlopes illustrates predictOMatic}
+
+\begin{columns}
+
+
+\column{5cm}
+\begin{itemize}
+\item Receive a fitted regression, plot one predictor and the desired interval
+\end{itemize}
+<<inced660, include=F, echo=T, fig=T>>=
+plotSlopes(incedmod1, plotx = "education", interval = "confidence")
+@
+
+\input{plots2/t-inced660}
+\begin{itemize}
+\item Argument ``plotx'': name of predictor on x axis
+\item Run example(plotSlopes) to get the big idea
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-inced660}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Prediction Intervals are Wider}
+
+\begin{columns}
+
+
+\column{5cm}
+\begin{itemize}
+\item Receive a fitted regression, plot one predictor and the desired interval
+\end{itemize}
+<<inced670, include=F, echo=T, fig=T>>=
+plotSlopes(incedmod1, plotx = "education", interval = "prediction", col = "red")
+@
+
+\input{plots2/t-inced670}
+\begin{itemize}
+\item Argument ``plotx'': name of predictor on x axis
+\item Run example(plotSlopes) to get the big idea
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots2/t-inced670}
+\end{columns}
+
+\end{frame}
+
+\section{Re-scale variables}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here are the main points}
+
+Re-scaling predictors has predictable effects on the intercept and
+slope.
+\begin{itemize}
+\item Multiply $x_{i}$ by a factor $k$ implies 
+
+\begin{itemize}
+\item new $\hat{\beta}_{1}$ will be $1/k$ times old $\hat{\beta}_{1}$
+\item new $std.err(\hat{\beta_{1})}$ will be $1/k$ times old $std.err.(\hat{\beta}_{1})$
+\item $\hat{t}$ ratio $\frac{\hat{\beta}_{1}}{std.err.(\hat{\beta}_{1})}$
+is thus UNCHANGED.
+\end{itemize}
+\item Add $k$ to $x_{i}$,
+
+\begin{itemize}
+\item new $\hat{\beta}_{1}$ exactly same as old $\hat{\beta}_{1}$. Same
+standard error, same $\hat{t}$
+\item new intercept estimate $\hat{\beta}_{0}$ and its standard error will
+be changed
+\item t statistic will be changed for $\hat{\beta}_{0}$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Multiply $x_{i}$ to Re-Scale It}
+
+\begin{frame}[containsverbatim]
+\frametitle{Your Data is in Pesos?}
+\begin{itemize}
+\item Problem. Income is a predictor, but it is coded in a small denomination
+\item Example: Chile data on status quo support
+\end{itemize}
+<<chile10, include=F, echo=F,results=tex>>=
+
+require(car)
+cmod10 <- lm(statusquo~income, data=Chile)
+outreg(cmod10, showAIC=F, float=F)
+@
+
+\input{plots2/t-chile10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Its Not Really Zero}
+
+It's 0.000000098
+
+<<chile10sum, include=F, echo=F>>=
+summary(cmod10)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-chile10sum}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Your Data is in 1000000's of Pesos}
+\begin{columns}[t]
+
+
+\column{6cm}
+\begin{columns}[t]
+\end{columns}
+
+\begin{itemize}
+\item Solution. Divide Income by 1,000,000
+\end{itemize}
+<<chile20, include=F, echo=F,results=tex>>=
+library(car)
+Chile$income2 <- Chile$income/1000000
+cmod20 <- lm(statusquo~income2, data=Chile)
+outreg(cmod20, showAIC=F, float=F)
+@
+
+\input{plots2/t-chile20}
+
+\column{6cm}
+\begin{itemize}
+\item Looks as if we had taken original $\hat{\beta}$ and $std.err.(\hat{\beta})$
+and chopped off 7 0's at the beginning of the fraction.
+\item Same 
+
+\begin{itemize}
+\item t-ratio 
+\item $R^{2}$ 
+\item intercept 
+\end{itemize}
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here's the Full Printout, Just For the Record}
+
+<<chile20sum, include=F, echo=F>>=
+summary(cmod20)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots2/t-chile20sum}
+
+\end{frame}
+
+\subsection{Subtract from $x_{i}$ to Make Intercept Easier to Interpret}
+
+\begin{frame}[containsverbatim]
+\frametitle{Problem: Estimated Intercept Seems Meaningless}
+\begin{columns}[t]
+
+
+\column{6cm}
+\begin{itemize}
+\item The Y axis is placed at $x_{i}=0$, but there are no observations
+near there
+\item Your $x$ data puts the ``data cloud'' out in the ``middle of nowhere''
+\item Example: Predict income from education. Nobody has education equal
+to 0.
+\item Seems silly to interpret the intercept in this case.
+\item You'd rather discuss the lowest observed education level.
+\end{itemize}
+
+\column{6cm}
+
+<<int10, fig=T,echo=F, include=F>>=
+x <- rpois(100, lambda=7) + 7
+y <- 1012 + 122*x + 250*rnorm(100)
+plot(x,y, xlab="education",ylab="income",xlim=c(0, max(x)), ylim=c(0, max(y)))
+abline(lm(y~x))
+@
+
+\includegraphics[width=6cm]{plots2/t-int10}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Solution: Push the y axis to the Edge of the Data Cloud}
+\begin{columns}[t]
+
+
+\column{6cm}
+\begin{itemize}
+\item Subtract 8 or 10 (or whatever you like) from $x$
+\item The ``y axis'' will ``move'' 8 or 10 (or whatever) to the right.
+\item Subtract smallest value of $x$, then you have the ``lowest educated
+person'' as a baseline
+\end{itemize}
+
+\column{6cm}
+
+<<int20, fig=T,echo=F, include=F>>=
+oldx <- x
+x <- x- min(x)
+plot(x,y, xlab="education - 7", ylab="income", ylim=c(0, max(y)))
+abline(lm(y~x))
+@
+
+\includegraphics[width=6cm]{plots2/t-int20}
+\begin{itemize}
+\item Education = Education - 7
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Mean-Center $x_i$: Then the y axis is at the mean of $x_i$.}
+\begin{columns}[t]
+
+
+\column{6cm}
+\begin{itemize}
+\item Rescale $x_{i}$=$x_{i}-\bar{x}$ , where $\bar{x}$ is the sample
+mean of $x$
+\item Pushes ``y axis'' into middle of data.
+\item Benefit of being in the middle! Remember the ``hourglass'' shape
+of the CI?
+\end{itemize}
+
+\column{6cm}
+
+<<int30, fig=T,echo=F, include=F>>=
+x <- oldx- mean(oldx)
+plot(x, y, xlab="mean centered education",ylab="income")
+dat <- data.frame(x,y)
+newx <- seq( min(x), max(x), length=100)
+mod <- lm(y ~ x, data=dat)
+axis(2, pos=0, labels=F)
+abline(v=0)
+p1 <-  predict(mod, newdata=data.frame(x=newx), interval=c("prediction"))
+p2 <-  predict(mod, newdata=data.frame(x=newx), interval=c("confidence"))
+lines(newx, p1[,1], lty=1)
+lines(newx, p1[,2], lty=2)
+lines(newx, p1[,3], lty=3)
+lines(newx, p2[,2], lty=4)
+lines(newx, p2[,3], lty=5)
+@
+
+\includegraphics[width=6cm]{plots2/t-int30}
+\begin{itemize}
+\item ``mean centered education'' = Education - mean(education)
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Rescaling By Subtraction (or Addition)...}
+\begin{itemize}
+\item leaves the slope estimate EXACTLY the same (1 unit increase in $x_{i}$
+causes a $\hat{\beta}_{1}$ change in $y_{i}$)
+\item changes the intercept estimate
+\item Changes the t-ratio
+\end{itemize}
+\begin{columns}[t]
+
+
+\column{6cm}
+
+<<results=tex, echo=F>>=
+outreg(lm(y~oldx), showAIC=F)
+@
+
+\column{6cm}
+
+<<results=tex, echo=F>>=
+outreg(lm(y~x), showAIC=F)
+@
+\end{columns}
+
+\end{frame}
+
+\subsection{Standardize Variables}
+
+\begin{frame}[containsverbatim]
+\frametitle{Rescale by Standardizing}
+\begin{itemize}
+\item Recall, to Standardize means subtract sample mean and divide by sample
+standard deviation
+\begin{equation}
+x_{i}^{st}=\frac{x_{i}-\bar{x}}{\widehat{Std.Dev.[x]}}\,\,\,\,\,\,\,\,y_{i}^{st}=\frac{y_{i}-\bar{y}}{\widehat{Std.Dev.[y]}}
+\end{equation}
+\item If we knew the ``true'' standard deviations, we could call these
+``Z scores'', $Z_{x_{i}}$ or $Z_{y_{i}}$.
+\item But we don't know true standard deviations, so these are just ``standardized
+variables''.
+\item For standardized data, ALWAYS,
+
+\begin{itemize}
+\item mean equals 0: $\widehat{E[x^{st}]}=0$
+\item variance=standard deviation=1: $\widehat{Var[x^{st}]}=1$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Note How this Changes Parameter Estimates}
+
+Recall the OLS estimator for the slope is
+
+\begin{equation}
+\hat{\beta}_{1}^{OLS}=\frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sum(x_{i}-\bar{x})^{2}}\label{bhat-1}
+\end{equation}
+
+\begin{itemize}
+\item Insert the standardized variables $x_{i}^{st}$ and $y_{i}^{st}$
+in place of $x_{i}$ and $y_{i}$, and what do you get?
+\item Lets call this ``standardized regression coefficient,'' $\hat{\beta}^{st}$.
+Note how the math simplifies, 
+\begin{equation}
+\hat{\beta}_{1}^{st}=\sum x_{i}^{st}\cdot y_{i}^{st}
+\end{equation}
+\item And the intercept ``disappears'', it becomes 0, denominator becomes
+1.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Standardized Regression Line}
+\begin{columns}[t]
+
+
+\column{6cm}
+\begin{itemize}
+\item The predicted value is $\hat{y}_{i}^{st}=\hat{\beta}_{1}^{st}x_{i}^{st}$
+\item The ``units of measurement'' become standard deviation units
+\item Dotted lines mark ``one standard deviation'' units
+\end{itemize}
+<<beta05, include=F, echo=F, results=tex>>=
+x <- rnorm(100)
+y <- 1 + 5*x + 10*rnorm(100)
+dat <- data.frame(x =as.numeric(scale(x, scale=T, center=T)),
+y = as.numeric(scale(y, scale=T, center=T)))
+modbeta <- lm(y ~ x -1, data = dat)
+outreg(modbeta, tight=F, showAIC=F)
+@
+
+\input{plots2/t-beta05}
+
+\column{6cm}
+
+<<beta10,include=F,echo=T,fig=T>>=
+plot(x,y, xlab="Standardized x", ylab="Standardized y")
+abline(v=c(-2,-1,0,1,2)*sd(x),lty=4)
+abline(h=c(-2,-1,0,1,2)*sd(y), lty=2)
+abline(modbeta)
+@
+
+\includegraphics[width=6cm]{plots2/t-beta10}
+
+``An increase in $x$ of one of its standard deviations causes a
+$\hat{\beta}_{1}$ standard deviation increase in $y$''
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interesting Tidbits}
+\begin{itemize}
+\item If there is just one independent variable, the $R^{2}$ reported with
+regression equals the $r$ squared. 
+\item If both the indep. and dependent variables are standardized, the slope
+coefficient of the fitted model equals the Pearson $r$.
+\item In rockchalk package, there are functions standardize() and meanCenter()
+that can make this more convenient.
+\end{itemize}
+\end{frame}
+
+\section{Appendix 1. Variance of $\hat{\beta}$}
+\begin{frame}{Fundamentals about Variance.}
+
+Recall the rules of working with Variance. Suppose $k$ and $m$ are
+constants and $x_{i}$ and $y_{i}$ are variables.
+\begin{enumerate}
+\item $V(k\cdot x_{i})=k^{2}V(x_{i})$
+\item $V(k\cdot x_{i}+m\cdot y_{i})=k^{2}V(x_{i})+m^{2}V(y_{i})+2\cdot k\cdot m\cdot Cov(x_{i},y_{i})$
+\end{enumerate}
+$V$ is variance
+
+$Cov$ is covariance
+\end{frame}
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Derive $Var(\hat{b})$}
+\begin{itemize}
+\item Make our lives simpler by beginning with the OLS estimator for ``data
+in deviations'' form:
+
+\begin{equation}
+\hat{\beta}_{1}=\frac{\sum x_{i}y_{i}}{\sum x_{i}^{2}}\label{eq:bhatdeviationsform}
+\end{equation}
+
+That means we have pre-scaled $x_{i}=x_{i}observed-\bar{x}$ and $y_{i}=y_{i}observed-\bar{y}$.
+That leaves $\hat{\beta}_{1}$ and the $Var[\hat{\beta}_{1}]$ unchanged,
+but math is easier. 
+\item Start by trying to figure out the ``true variance'' of $\hat{\beta}_{1}$.
+Apply the Var() operator to both sides of (\ref{eq:bhatdeviationsform})
+\begin{equation}
+Var(\hat{\beta}_{1})=Var\left(\frac{\sum x_{i}y_{i}}{\sum x_{i}^{2}}\right)\label{varb-1}
+\end{equation}
+\item The values of $x_{i}$ are not thought of as random variables. Instead,
+they are variables that are ``fixed'' attributes of the observations.
+(If you want $x_{i}$ to be a random variable, you can do that, but
+the math is slightly different). 
+\item With fixed $x_{i}$, the sum of $x_{i}^{2}$, $\sum x_{i}^{2}$ ,
+is a constant, ``just some number.'' 
+
+Applying Variance rule 1, we take $1/\sum x_{i}^{2}$ outside the
+parentheses in \ref{varb-1}. 
+\begin{equation}
+Var(\hat{\beta}_{1})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}Var\left(\sum x_{i}y_{i}\right)\label{varb2}
+\end{equation}
+
+\item Replace $y_{i}$ by $\beta_{1}x_{i}+e_{i}$ (recall $\beta_{0}$=0
+with deviations form data)
+\end{itemize}
+\begin{equation}
+Var(\hat{\beta}_{1})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}Var\left(\beta_{1}\sum x_{i}^{2}+\sum x_{i}e_{i}\right)\label{varb2a}
+\end{equation}
+
+\begin{itemize}
+\item Apply the Variance rule 2:
+\begin{eqnarray}
+Var(\hat{\beta}) & = & \left(\frac{1}{\sum x_{i}^{2}}\right)^{2}\left(Var\left(\beta_{1}\sum x_{i}^{2}\right)+Var\left(\sum x_{i}e_{i}\right)\right.\label{eq:varb3}\\
+ &  & \left.+2Cov\left(\beta_{1}\cdot\sum x_{i}^{2},\sum x_{i}e_{i}\right)\right)\nonumber 
+\end{eqnarray}
+\item Expression (\ref{eq:varb3}) is our focal point. We want to simplify
+that.
+
+\begin{itemize}
+\item Use a sneaky trick to make $Var(\beta_{1}\sum x_{i}^{2})$ go away.
+Obviously, that is equal to:
+\[
+\beta_{1}^{2}Var(\sum x_{i}^{2}).
+\]
+
+Now, here is the trick. Observe: 
+\[
+Var(\sum x_{i}^{2})=0.
+\]
+How? Recall, Var() refers to variance across experiments. Since we
+are thinking of $x_{i}$ as ``fixed'', then across experiments there
+is no variation in the sum of squared x's. That sum of squared x's
+is a constant. So its variance is 0.
+\item Make $2Cov\left(\beta_{1}\cdot\sum x_{i}^{2},\sum x_{i}e_{i}\right)$
+disappear. If $k$ is any constant, and x is a variable, then $Cov(k,x)=0$.
+Covariance between a constant and a variable equals 0. 
+\end{itemize}
+\item Thus (\ref{eq:varb3}) reduces to:
+\begin{equation}
+Var(\hat{\beta}_{1})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}Var\left(\sum x_{i}e_{i}\right)\label{varb4}
+\end{equation}
+
+Be verbose about it. There's a constant times the variance of a sum:
+
+\begin{equation}
+Var(\hat{\beta}_{1})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}Var\left(x_{1}e_{1}+x_{2}e_{2}+x_{3}e_{3}+...x_{n}e_{n}\right)\label{varb5}
+\end{equation}
+
+Now apply rule \#2 about variance. After a little thought, one must
+realize that $Cov(x_{i}e_{i},x_{j}e_{j})=0$ because all the error
+terms are 'stochastically independent' of each other and the x's are
+fixed. (If you don't assume the x's are fixed, you have to assume
+instead that the x's are uncorrelated with the e's). 
+\item After applying rule \#2 and throwing away all those Covariances (which
+are 0), we find:
+
+\begin{equation}
+Var(\hat{\beta}_{1})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}\left(x_{1}^{2}Var(e_{1})+x_{2}^{2}Var(e_{2})+...+x_{n}^{2}Var(e_{n})\right)\label{varb6}
+\end{equation}
+
+Since we assumed above that $Var(e_{i})=\sigma^{2},$ then this becomes:
+\end{itemize}
+\begin{equation}
+Var(\hat{\beta})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}\left(x_{1}^{2}\sigma^{2}+x_{2}^{2}\sigma^{2}+...+x_{n}^{2}\sigma^{2}\right)\label{varb7}
+\end{equation}
+
+\begin{equation}
+Var(\hat{\beta})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}\left(\sum x_{i}^{2}\sigma^{2}\right)\label{varb8}
+\end{equation}
+
+\begin{equation}
+Var(\hat{\beta})=\left(\frac{1}{\sum x_{i}^{2}}\right)^{2}\left(\sum x_{i}^{2}\right)*\sigma^{2}\label{varb9}
+\end{equation}
+
+\begin{equation}
+Var(\hat{\beta})=\left(\frac{1}{\sum x_{i}^{2}}\right)*\sigma^{2}\label{varb10-2}
+\end{equation}
+
+Whew. As Batman says, ``my work is done.''
+
+\end{frame}
+
+\section{Appendix 2: Proofs of CI and PI}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Show My Work: Derive Confidence Interval}
+\begin{itemize}
+\item We want to fill in ``something'' in this expression:
+\begin{equation}
+Pr[\hat{y}_{0}-something\,\leq E[y_{o}|x_{o}]\leq\hat{y}_{0}+something]=0.95
+\end{equation}
+\item ``Something'' depends on the sampling distribution of $\hat{y}_{0}-E[y_{0}|x_{0}]$.
+\end{itemize}
+\begin{eqnarray}
+Var(\hat{y}_{0}-E[y_{0}|x_{0}]) & = & Var[\hat{\beta}_{o}+\hat{\beta}_{1}x_{0}-E[y_{0}|x_{0}])\\
+ & = & Var[\hat{\beta}_{0}]+x_{0}^{2}Var[\hat{\beta}_{1}]+2x_{0}Cov(\hat{\beta}_{0},\hat{\beta}_{1})\nonumber 
+\end{eqnarray}
+
+\begin{itemize}
+\item Put in the estimated variances and covariances, and rearrange, and
+we end up with
+\end{itemize}
+\begin{equation}
+Var(\hat{y}_{0}-E[y_{0}|x_{0}])=\hat{\sigma}_{CI}^{2}=\sigma_{e}^{2}\left[\frac{1}{N}+\frac{(x_{0}-\bar{x})^{2}}{\sum(x_{i}-\bar{x})^{2}}\right]
+\end{equation}
+
+\begin{itemize}
+\item Replace the unknown $\sigma_{e}^{2}$ with the estimated $MSE$
+\item The square root of that is the ``standard error'' $SE$ that can
+be used to create the CI:
+\end{itemize}
+\begin{equation}
+\hat{y}_{0}\pm\,t_{\alpha/2,df}\times\hat{\sigma}_{CI}\label{eq:}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Show My Work: Derive the Prediction Interval}
+\begin{itemize}
+\item Go back to the basics of Confidence Intervals. We want to fill in
+``something'':
+\begin{equation}
+Pr[\hat{y}_{0}-something\,\leq y_{o}\leq\hat{y}_{0}+something]=0.95
+\end{equation}
+
+\begin{itemize}
+\item $y_{o}$ is the score that ``will be observed'' in a case.
+\item $\hat{y}_{o}$ is the predicted value for that case (point on regression
+line)
+\end{itemize}
+\item ``Something'' ends up being a standard error for many types of estimators
+(including regression coefficients), so we need the sampling distribution
+of $\hat{y}_{0}-y$.
+\end{itemize}
+\begin{eqnarray}
+Var[\hat{y}_{0}-y_{0}] & = & Var[\hat{\beta}_{o}+\hat{\beta}_{1}x_{0}-y_{0}]\\
+ & = & Var[\hat{\beta}_{0}]+x_{0}^{2}Var[\hat{\beta}_{1}]+2x_{0}Cov(\hat{\beta}_{0},\hat{\beta}_{1})+Var[e_{i}]\nonumber 
+\end{eqnarray}
+
+\begin{itemize}
+\item Put in the estimated variances and covariances, and rearrange, and
+we end up with
+\end{itemize}
+\begin{equation}
+Var(\hat{y}_{0}-y_{0})=\sigma_{e}^{2}\left[1+\frac{1}{N}+\frac{(x_{0}-\bar{x})^{2}}{\sum(x_{i}-\bar{x})^{2}}\right]
+\end{equation}
+
+\begin{itemize}
+\item Replace the unknown $\sigma_{e}^{2}$ with the estimated $MSE$
+\item The square root of that is the ``standard error'' $SE$.
+\end{itemize}
+\end{frame}
+
+\include{Regression-2-lecture-problems}
+\end{document}

@@ -1,0 +1,302 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Wishart//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Wishart}
+
+
+\author{Paul Johnson <pauljohn@ku.edu> \& James W. Stoutenborough <jstout@ku.edu>}
+
+\maketitle
+
+\section{Introduction.}
+
+Suppose you have drawn an observation from a Wishart distribution.
+What do you have?
+
+You have a matrix! Its a covariance matrix. A square set of numbers,
+its symmetric
+\[
+W=\left[\begin{array}{cccc}
+w_{11} & w_{12} & w_{13} & w_{14}\\
+w_{21} & w_{22} & w_{23} & w_{24}\\
+w_{31} & w_{32} & w_{33} & w_{44}\\
+w_{41} & w_{42} & w_{43} & w_{45}
+\end{array}\right]
+\]
+
+
+It is also positive definite. Positive definite means that it would
+be a suitable covariance matrix for a multivariate normal distribution.
+Technically, if we multiply that by any vector $x$ like this
+\[
+x'\, W\, x>0
+\]
+
+
+If we have any matrix--literally any matrix $X$--and calculate $X'X$,
+the result is a sum of squares and crossproducts matrix, which is
+symmetric and positive definite.
+
+Thus one lazy person's way to create Wishart variables is to draw
+p-variate multivariate normal observations, stack them into an Nxp
+matrix ($X)$, and then multiply $X'X$ to create a covariance matrix. 
+
+Run this in R, using the handy multivariate normal generator from
+the package mvtnorm:
+
+<<wishex1,eval=F,echo=T>>=
+library(mvtnorm)
+meanV <- c(0,0,0,0)
+varV <- 3*diag(4)
+X <- rmvnorm(10, mean = meanV, sigma = varV)
+W <- t(X) %*% X
+W
+@
+
+<<echo=F>>=
+<<wishex1>>
+@
+
+How about another Wishart? Re run, recalculate $X'X$?
+
+<<echo=F>>=
+<<wishex1>>
+@
+
+There's more where that came from:
+
+<<echo=F>>=
+<<wishex1>>
+@
+
+Are you getting the idea? It is like any other probability model we
+have studied, except this one is different because the outcome is
+a whole matrix. Each draw produces a block of wholly new numbers.
+It is not a single number like the Normal distribution. Its not a
+vector like multivariate Normal. Instead, its a whole block. The outcomes
+are blocks of numbers. How many ways can I say it? 
+
+Is there any restriction on these values? Yes. They are sums of squares
+and cross products.
+
+Just to be clear, we assume we are able to draw multivariate normal
+observations with a mean of 0 and a covariance matrix $\Sigma$. It
+has to be symmetric and positive definite, of course. 
+
+If we ``stack'' those p-variate normal draws into a matrix that
+is N rows and p columns wide, the result of $X'X$ follows a Wishart
+distribution. The number of rows in the matrix, which I called N here,
+plays the role of ``degrees of freedom''. The p x p matrix $\Sigma$
+can be any positive definite matrix you choose.
+
+R has a function for drawing samples from any Wishart distribution.
+It is called rWishart and in order to draw from it, we must specify
+the covariance matrix. Suppose the covariance matrix is $\Sigma$,
+``Sigma'' and the number of degrees of freedom. So far as I can
+tell, however, it is not doing anything fancy. It fills up a matrix
+of $X$, row-by-row, of p-variate normals, and then calculates X'X
+.
+
+
+\section{Mathematical Description}
+
+Please review the writeup on the Chi-Square distribution. Recall a
+Chi-Square variable can be thought of as the result of sampling from
+a standard normal distribution and then squaring the elements and
+summing them. In vectors, think of $x$ as a column vector. Then the
+sum of squares is: 
+\[
+x'\cdot x=\left[\begin{array}{cccc}
+x_{1} & x_{2} & x_{3} & x_{4}\end{array}\right]\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+x_{3}\\
+x_{4}
+\end{array}\right]
+\]
+
+
+If you draw a set of observations from this multivariate Normal distribution,
+then when you multiply, you'd have 
+\[
+X'X
+\]
+\\
+The number of rows in $X$ is the number of random samples drawn,
+and it is called the ``degrees of freedom.'' The number of columns
+is equal to the desired number of rows (= columns) of the Wishart
+output.
+
+The Wishart distribution is the multivariate analog to the chi-square,
+in the sense that the Wishart describes the variation you would observe
+if you repeatedly drew samples and calculated $X'X$. It is related
+to the multivariate normal in the same way that the chi-square is
+related to the univariate normal. 
+
+The Wishart draw $w_{i}$ might be thought of as a reflection of the
+PRECISION of an MVN distribution. If the covariance matrix of the
+MVN is called $\Sigma$, then its inverse, $\Sigma^{-1}$ , is its
+precision.
+
+
+\section{The Probability Denisty}
+
+The Wishart distribution can be characterized by its probability density
+fuction, as follows.
+
+Let $W_{i}$ be a $m\times m$ symmetric matrix which a randomly drawn
+value according to a Wishart distribution. The PDF of $W_{i}$ is:
+\[
+prob(W_{i}|v,S)\propto|W_{i}|^{(v-m-1)/2}exp(-\frac{1}{2}trace(S\cdot W_{i}))
+\]
+\\
+The ``trace'' is the sum of all diagonal elements.
+
+By construction, $W_{i}$ is ``positive definite'', so it can serve
+as a precision matrix in a MVN distribution. The parameter $v$ is
+``degrees of freedom'' and $S$ is a ``cross product'' matrix.
+See Lancaster, p. 179.
+
+
+\section{Moments}
+
+The expected value of a Wishart is
+\[
+E(W_{i})=v\, S^{-1}
+\]
+
+
+
+\section{About the example code.}
+
+The multivariate Normal is used here, and I chose a particularly simple
+covariance matrix (mostly because I was lazy). 
+\[
+\Sigma_{4}=3*\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+
+The inverse of that very simple matrix is (obviously) 
+
+\[
+1/3*\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+
+This plays the role of $S^{-1}$ in the model.
+\end{document}

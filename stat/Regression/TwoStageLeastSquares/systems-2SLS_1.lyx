@@ -1,0 +1,1061 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 2
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Systems of Equations.
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Date
+Nov 21, 2006
+\end_layout
+
+\begin_layout Section
+Terminology
+\end_layout
+
+\begin_layout Description
+exogenous determined 
+\begin_inset Quotes eld
+\end_inset
+
+outside
+\begin_inset Quotes erd
+\end_inset
+
+ the system under consideration, as we usually consider most 
+\begin_inset Quotes eld
+\end_inset
+
+independent variables
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+endogenous determined 
+\begin_inset Quotes eld
+\end_inset
+
+within
+\begin_inset Quotes erd
+\end_inset
+
+ the system, as in 
+\begin_inset Quotes eld
+\end_inset
+
+dependent variable
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+predetermined in a time series model, a lagged endogenous variable is treated
+ as if it were exogenous
+\end_layout
+
+\begin_layout Section
+Consider two regressions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+Y1_{i} & = & b_{0}+b_{1}X1_{i}+e1_{i}\nonumber \\
+Y2_{i} & = & c_{0}+c_{1}X1_{i}+e2_{i}\label{eq:sys1}\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can run OLS on those equations, either 
+\end_layout
+
+\begin_layout Standard
+separately 
+\end_layout
+
+\begin_layout Standard
+or 
+\end_layout
+
+\begin_layout Standard
+after 
+\begin_inset Quotes eld
+\end_inset
+
+stacking
+\begin_inset Quotes erd
+\end_inset
+
+ them into one data frame and then using 
+\begin_inset Quotes eld
+\end_inset
+
+dummy
+\begin_inset Quotes erd
+\end_inset
+
+ variables to estimate 
+\begin_inset Formula $b$
+\end_inset
+
+and 
+\begin_inset Formula $c$
+\end_inset
+
+ (and possibly adjusting for heteroskedasticity).
+ Let 
+\begin_inset Formula $D$
+\end_inset
+
+ represent the dichotomous variable, with 1 representing the fact that the
+ observation concerns 
+\begin_inset Formula $Y2_{i}$
+\end_inset
+
+(and 0 otherwise).
+ The combined regression would be like this:
+\begin_inset Formula \begin{eqnarray}
+Y1_{1} & = & b_{0}+b_{1}X1_{1}+e1_{1}\nonumber \\
+Y1_{2} & = & b_{0}+b_{1}X1_{2}+e1_{i}\label{eq:sys1combined}\\
+\vdots &  & \vdots\nonumber \\
+Y1_{N} & = & b_{0}+b_{1}X1_{N}+e1_{N}\nonumber \\
+Y2_{1} & = & b_{0}+g_{0}*D_{i}+b_{1}X1_{i}+g_{1}(X1_{1}*D)+e2_{1}\nonumber \\
+\vdots &  & \vdots\nonumber \\
+Y2_{N} & = & b_{0}+g_{o}*D_{i}+b_{1}X1_{i}+g_{1}(X1_{N}*D)+e2_{N}\nonumber \end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here, 
+\begin_inset Formula $g_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{1}$
+\end_inset
+
+ are 
+\begin_inset Quotes eld
+\end_inset
+
+intercept shifter
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+slope shifter
+\begin_inset Quotes erd
+\end_inset
+
+, respectively.
+ The estimate of the coefficient 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+is found by adding 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $g_{1}$
+\end_inset
+
+.
+ One can easily employ tests for heteroskedasticity to find out if the error
+ term has the same variance in the two dependent variables.
+ 
+\end_layout
+
+\begin_layout Section
+Seemingly unrelated regressions
+\end_layout
+
+\begin_layout Standard
+Recall the problem of autocorrelation? That refers to correlation in the
+ error terms between units.
+ If there is autocorrelation, the parameter estimates are biased and the
+ standard errors are wrong.
+ Autocorrelation has usually been thought of as a time series problem, since
+ exogenous shocks persist over time.
+\end_layout
+
+\begin_layout Standard
+However, if there are shocks that cause a correlation between 
+\begin_inset Formula $e1$
+\end_inset
+
+ and 
+\begin_inset Formula $e2$
+\end_inset
+
+ , then there are correlated errors.
+ This phenomenon is known as 
+\begin_inset Quotes eld
+\end_inset
+
+Seemingly unrelated regression
+\begin_inset Quotes erd
+\end_inset
+
+ (or SUR) and it was brought to the forefront by U.
+ of Chicago professor Edward Zellner.
+\end_layout
+
+\begin_layout Section
+Endogenous predictors
+\end_layout
+
+\begin_layout Subsection
+Cascade or 
+\begin_inset Quotes eld
+\end_inset
+
+blocked
+\begin_inset Quotes erd
+\end_inset
+
+ equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+Y1_{i} & = & b_{0}+b_{1}X1_{i}+e1_{i}\nonumber \\
+Y2_{i} & = & c_{0}+c_{1}Y1_{i}+c_{2}X1_{i}+e2_{i}\label{eq:sys2}\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X1$
+\end_inset
+
+ goes into 
+\begin_inset Formula $Y1$
+\end_inset
+
+, and then 
+\begin_inset Formula $Y1$
+\end_inset
+
+goes into 
+\begin_inset Formula $Y2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+As long as 
+\begin_inset Formula $e1$
+\end_inset
+
+ and 
+\begin_inset Formula $e2$
+\end_inset
+
+ are uncorrelated, then OLS can be used to estimate this.
+\end_layout
+
+\begin_layout Subsection
+Simultaneous equations: OLS is not suitable
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+Y1_{i}=b_{0}+b_{1}Y2_{i}+b_{2}X1_{i}+e1_{i}\nonumber \\
+Y2_{i}=c_{0}+c_{1}Y1+c_{2}X1_{i}+e2_{i}\label{eq:sys3}\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This one strains the brain.
+ 
+\begin_inset Formula $Y1$
+\end_inset
+
+ is affected by 
+\begin_inset Formula $Y2$
+\end_inset
+
+ and 
+\begin_inset Formula $e1$
+\end_inset
+
+ simultaneously and 
+\begin_inset Formula $Y2$
+\end_inset
+
+ is affected by 
+\begin_inset Formula $Y1$
+\end_inset
+
+ and 
+\begin_inset Formula $e2$
+\end_inset
+
+ at the same time.
+\end_layout
+
+\begin_layout Subsubsection
+Correlation between predictor and error
+\end_layout
+
+\begin_layout Standard
+Recall the fundamental assumption in regression that the error term is not
+ correlated with the independent variables.
+ This is violated in equation system 
+\begin_inset LatexCommand \ref{eq:sys3}
+
+\end_inset
+
+ because the endogenous predictors are related to the error terms.
+\end_layout
+
+\begin_layout Standard
+Consider this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Y2_{i}$
+\end_inset
+
+ has to be correlated with 
+\begin_inset Formula $e1_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Because 
+\begin_inset Formula $e1$
+\end_inset
+
+ is directly 
+\begin_inset Quotes eld
+\end_inset
+
+going into
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $Y1$
+\end_inset
+
+, and 
+\begin_inset Formula $Y1$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+goes into
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $Y2$
+\end_inset
+
+, and 
+\begin_inset Formula $Y2$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+goes back into
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $Y1$
+\end_inset
+
+, then some part of 
+\begin_inset Formula $e1$
+\end_inset
+
+ has to be hidden inside 
+\begin_inset Formula $Y2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Consider the linkage between the error terms
+\end_layout
+
+\begin_layout Standard
+Think of 
+\begin_inset Formula $Y1$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2$
+\end_inset
+
+ as observed 
+\begin_inset Quotes eld
+\end_inset
+
+known values.
+\begin_inset Quotes erd
+\end_inset
+
+ The theoretical 
+\begin_inset Quotes eld
+\end_inset
+
+exogenous shocks
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $e1$
+\end_inset
+
+ and 
+\begin_inset Formula $e2$
+\end_inset
+
+ are algebraically constrained by the values of 
+\begin_inset Formula $Y1$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2$
+\end_inset
+
+ that are observed.
+ Consider the coefficients 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+ as 
+\begin_inset Quotes eld
+\end_inset
+
+known
+\begin_inset Quotes erd
+\end_inset
+
+ (or conjectured) values.
+ Given values for the observed values 
+\begin_inset Formula $Y1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $X1$
+\end_inset
+
+, then 
+\begin_inset Formula $e1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $e2_{i}$
+\end_inset
+
+ are mathematically restricted because they have to be added in to produce
+ the correct observed values of 
+\begin_inset Formula $Y1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2_{i}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $e1_{i}$
+\end_inset
+
+ is increased by a certain amount, then it is algebraically necessary that
+ 
+\begin_inset Formula $e2_{i}$
+\end_inset
+
+ be adjusted so that the observed values stay at 
+\begin_inset Formula $Y1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If you accept this argument that 
+\begin_inset Formula $e1$
+\end_inset
+
+ and 
+\begin_inset Formula $e2$
+\end_inset
+
+ constrained by each other, then you should easily see that there will be
+ correlation between the endogenous predictors and the error terms.
+ 
+\end_layout
+
+\begin_layout Section
+Two Stage Least Squares
+\end_layout
+
+\begin_layout Standard
+This is the simplest 
+\begin_inset Quotes eld
+\end_inset
+
+fix
+\begin_inset Quotes erd
+\end_inset
+
+ for simultaneous equations.
+ It is a 
+\begin_inset Quotes eld
+\end_inset
+
+single equation
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+limited information
+\begin_inset Quotes erd
+\end_inset
+
+ approach.
+ As you will see, we create separate estimates of the equations for 
+\begin_inset Formula $Y1$
+\end_inset
+
+ and 
+\begin_inset Formula $Y2.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Stage 1: calculate a 
+\begin_inset Quotes eld
+\end_inset
+
+correlation purged
+\begin_inset Quotes erd
+\end_inset
+
+ estimate for each endogenous predictor.
+ Use any exogenous variables 
+\begin_inset Formula $Z1$
+\end_inset
+
+, 
+\begin_inset Formula $Z2$
+\end_inset
+
+ (and so forth) on the right hand side
+\begin_inset Formula \[
+\breve{Y1_{i}}=\hat{\pi}_{0}+\hat{\pi}_{1}Z1_{i}+\hat{\pi}_{2}Z2_{i}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Confusion: In the literature, the term 
+\begin_inset Quotes eld
+\end_inset
+
+instrumental variable
+\begin_inset Quotes erd
+\end_inset
+
+ is used for both 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ and for 
+\begin_inset Formula $\breve{Y_{i}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Stage 2: use the new estimate 
+\begin_inset Formula $\breve{Y1}$
+\end_inset
+
+ in place of 
+\begin_inset Formula $Y1$
+\end_inset
+
+ in the regression
+\begin_inset Formula \[
+Y2_{i}=c_{0}+c_{1}\breve{Y1}_{i}+c_{2}X1_{i}+e1_{i}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The estimates obtained in this second stage are 
+\end_layout
+
+\begin_layout Itemize
+consistent
+\end_layout
+
+\begin_layout Itemize
+efficient
+\end_layout
+
+\begin_layout Standard
+but not unbiased.
+\end_layout
+
+\begin_layout Standard
+In stage 1, it is customary to use ALL EXOGENOUS predictors to predict ALL
+ ENDOGENOUS variables.
+\end_layout
+
+\begin_layout Description
+reduced\InsetSpace ~
+form\InsetSpace ~
+equations refers to the system equations in which the endogenous
+ variables are arranged on the left hand side and the exogenous predictors
+ are on the right hand side:
+\begin_inset Formula \begin{eqnarray*}
+Y1_{i} & = & \pi_{10}+\pi_{11}X1_{i}+\pi_{12}X2_{i}+\zeta1_{i}\\
+Y2_{i} & = & \pi_{20}+\pi_{21}X1_{i}+\pi_{22}X2_{i}+\zeta1_{i}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The identification problem
+\end_layout
+
+\begin_layout Standard
+If two stage squares worked all the time, our work would be done.
+ But it doesn't.
+ And, somewhat to my surprise, the problem all traces back to multicollinearity.
+\end_layout
+
+\begin_layout Subsection
+Perfect collinearity in stage 2
+\end_layout
+
+\begin_layout Standard
+Recall the multicollinearity problem.
+ One cannot obtain reliable, separate estimates of coefficients for several
+ parameters because the variables are redundant (intercorrelated).
+ The redundancy of data makes estimation unreliable or impossible.
+\end_layout
+
+\begin_layout Standard
+Consider equation system 
+\begin_inset LatexCommand \ref{eq:sys3}
+
+\end_inset
+
+.
+ Suppose we have only one exogenous variable, 
+\begin_inset Formula $X1$
+\end_inset
+
+ and we use it to calculate the stage 1 estimate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\breve{Y1_{i}}=\hat{\pi}_{0}+\hat{\pi}_{1}X1_{i}\label{eq:stage1.1}\end{equation}
+
+\end_inset
+
+
+\newline
+And then that is inserted into the system in stage 2 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{multline}
+Y2_{i}=c_{0}+c_{1}(\hat{\pi}_{0}+\hat{\pi}_{1}X1_{i})+c_{2}X1_{i}+e2_{i}\label{eq:stage2.1}\end{multline}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Don't be a bonehead! Can't you see that's the definition of multicollinearity?
+ The variable 
+\begin_inset Formula $X1$
+\end_inset
+
+ can be used in a linear combination to reproduce the part in parentheses.
+ 
+\end_layout
+
+\begin_layout Standard
+Ouch! There's perfect multicollinearity here! Essentially, 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+is included twice.
+ The coefficients 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $c_{2}$
+\end_inset
+
+are not separately identified.
+\end_layout
+
+\begin_layout Subsection
+How do you fix that? You need more exogenous variables.
+\end_layout
+
+\begin_layout Standard
+Imagine you have some more exogenous variables sitting around.
+ Suppose, for example, you have 
+\begin_inset Formula $X1$
+\end_inset
+
+and 
+\begin_inset Formula $X2$
+\end_inset
+
+ in the first stage:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\breve{Y1_{i}}=\hat{\pi}_{0}+\hat{\pi}_{1}X1_{i}+\hat{\pi}_{2}X2_{i}\label{eq:stage1.2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{multline}
+Y2_{i}=c_{0}+c_{1}(\hat{\pi}_{0}+\hat{\pi}_{1}X1_{i}+\hat{\pi}_{2}X2_{i})+c_{2}X1_{i}+e2_{i}\label{eq:stage2.2}\end{multline}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note, now the multicollinearity still exists, but it is not perfect multicolline
+arity.
+ So the model can be estimated.
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+trick
+\begin_inset Quotes erd
+\end_inset
+
+ is to find some new exogenous variable 
+\begin_inset Formula $X2$
+\end_inset
+
+ that is NOT INCLUDED in the equation for 
+\begin_inset Formula $Y2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+This works because there is an exogenous variable that is used to create
+ the new predictor 
+\begin_inset Formula $\breve{Y1}$
+\end_inset
+
+and that exogenous variable is not included in the model for 
+\begin_inset Formula $Y2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+Y1_{i} & = & b_{0}+b_{1}Y2_{i}+b_{2}X1_{i}+b3X2_{i}+e1_{i}\nonumber \\
+Y2_{i} & = & c_{0}+c_{1}Y1+c_{2}X1_{i}+e2_{i}\label{eq:sys4}\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Order condition
+\end_layout
+
+\begin_layout Standard
+This is the most common way that people use to check to see if an equation
+ within a system can be estimated by 2SLS.
+ Basically, it says one must omit at least as many exogenous variables from
+ an equation as there are included endogenous variables.
+\end_layout
+
+\begin_layout Standard
+In a 2 equation system, identification requires that at least one 
+\begin_inset Formula $X$
+\end_inset
+
+ must be excluded from each equation.
+\end_layout
+
+\begin_layout Standard
+Please note, the order condition is necessary, but not sufficient for identifica
+tion.
+ So, it is mathematically wrong to assume the order condition provides all
+ of the needed information.
+ But people usually do, because the disjuncture between sufficiency and
+ necessity is not large in most cases.
+\end_layout
+
+\begin_layout Subsection
+Rank condition
+\end_layout
+
+\begin_layout Standard
+This is a matrix algebra check that can be applied to a system to find out
+ if its parameters are identified.
+ It gives an answer which is both necessary and sufficient.
+\end_layout
+
+\begin_layout Section
+2SLS with generalized linear models
+\end_layout
+
+\begin_layout Standard
+In the mid 1980s, the logistic regression model had become well established.
+ What if a logistic regression model is included in one of these systems?
+\end_layout
+
+\begin_layout Standard
+This has been a 
+\begin_inset Quotes eld
+\end_inset
+
+fly by the seat of the pants
+\begin_inset Quotes erd
+\end_inset
+
+ problem.
+ One must specify a theoretical model that is logically meaningful.
+ And it is not always easy.
+ For example, suppose 
+\begin_inset Formula $Y1$
+\end_inset
+
+ is dichotomous, coded 0 and 1.
+ If 
+\begin_inset Formula $Y1$
+\end_inset
+
+ is included in the equation for 
+\begin_inset Formula $Y2$
+\end_inset
+
+, do we mean that the input variable is really 0 or 1, or is it the probability
+ of 1, representing the proclivity? 
+\end_layout
+
+\begin_layout Section
+Full Information Maximum Likelihood versus Limited Information models
+\end_layout
+
+\begin_layout Standard
+2SLS is a 
+\begin_inset Quotes eld
+\end_inset
+
+limited information
+\begin_inset Quotes erd
+\end_inset
+
+ approach because the estimation of the equations is done separately.
+\end_layout
+
+\begin_layout Standard
+A 
+\begin_inset Quotes eld
+\end_inset
+
+full information
+\begin_inset Quotes erd
+\end_inset
+
+ approach is one that tries to estimate the parameters for all equations
+ jointly.
+ 
+\end_layout
+
+\begin_layout Standard
+Three Stage Least Squares is the most commonly used full information approach.
+ The process begins with 2SLS, and then uses the 2SLS estimates to estimate
+ the inter-correlation of the error terms from the different equations.
+ Then a sort of weighted least squares approach is used in the third stage.
+\end_layout
+
+\begin_layout Standard
+The danger of full information approaches is that a mistake in specification
+ of one equation will affect the estimates from all equations.
+\end_layout
+
+\begin_layout Section
+Structural Equation Models
+\end_layout
+
+\begin_layout Standard
+The econometric approach to these problems is to act as though the input
+ variables are measured correctly and then are used to predict the output
+ variables.
+ 
+\end_layout
+
+\begin_layout Standard
+Psychologists, on the other hand, often suppose that they can't measure
+ the real inputs.
+ Rather, they have multiple indicators.
+ So the goal is to somehow, simultaneously, use the multiple indicators
+ to get an idea about a subject's position on an 
+\begin_inset Quotes eld
+\end_inset
+
+underlying
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+latent
+\begin_inset Quotes erd
+\end_inset
+
+ variable, and then find out if that score on the latent variable is affecting
+ some other variables.
+ The model known as LISREL was pioneered by Joreskog to dramatically expand
+ the kinds of structures that are investigated in systems modeling.
+ 
+\end_layout
+
+\begin_layout Standard
+Structural Equation Modeling is a system in which systems are posited and
+ estimated.
+ 
+\end_layout
+
+\begin_layout Standard
+Identification is a major problem in SEM work, and some software programs
+ will provide parameter estimates for technically non-estimable problems.
+\end_layout
+
+\begin_layout Standard
+Bayesian models using Gibbs Sampling offers an alternative estimation technique
+ for these models.
+\end_layout
+
+\end_body
+\end_document

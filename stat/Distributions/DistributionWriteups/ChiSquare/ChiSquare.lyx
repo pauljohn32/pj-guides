@@ -1,0 +1,1291 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Chi-Square Distribution
+\end_layout
+
+\begin_layout Author
+James W.
+ Stoutenborough <jstout@ku.edu> and Paul E.
+ Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Chi-Square distribution is a staple of statistical analysis.
+ It is often used to judge 
+\begin_inset Quotes eld
+\end_inset
+
+how far away
+\begin_inset Quotes erd
+\end_inset
+
+ some number is from some other number.
+\end_layout
+
+\begin_layout Standard
+The simplest place to start is that the Chi-Square distribution is what
+ you get if you take observations from a standard Normal distribution and
+ square them and add them up.
+ If we use 
+\begin_inset Formula $Z_{1},$
+\end_inset
+
+
+\begin_inset Formula $Z_{2}$
+\end_inset
+
+, and so forth to refer to draws from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+, then 
+\begin_inset Formula 
+\[
+Z_{1}^{2}+Z_{2}^{2}+\ldots+Z_{N}^{2}=\,\sum_{i=1}^{N}Z_{i}^{2}\sim\chi_{N}^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+That's means the sum of 
+\begin_inset Formula $Z's$
+\end_inset
+
+ squared has a Chi-Square distribution with 
+\begin_inset Formula $N$
+\end_inset
+
+ degrees of freedom.
+ The term 
+\begin_inset Quotes eld
+\end_inset
+
+degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+ has some emotional and cognitive implications for psychologists, but it
+ is really just a parameter for us.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Things that are sums of squares have 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ distributions.
+\end_layout
+
+\begin_layout Standard
+Now, suppose the numbers being added up are not standardized, but they are
+ centered.
+ That is to say, they have a Normal distribution with a mean of 0 and a
+ standard deviation of 
+\begin_inset Formula $sd$
+\end_inset
+
+.
+ That means we would have to divide each observation by 
+\begin_inset Formula $sd$
+\end_inset
+
+ in order to obtain the 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+'s which are standardized Normal observations.
+ Obviously, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\frac{Y_{1}}{sd}\right)^{2}+\left(\frac{Y_{2}}{sd}\right)^{2}+\cdots+\left(\frac{Y_{N}}{sd}\right)^{2}=\frac{1}{sd^{2}}\sum_{i=1}^{N}Y_{i}^{2}=\sum_{i=1}^{N}Z_{i}^{2}\sim\chi_{N}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Equivalently, suppose you think of the 
+\begin_inset Formula $Y_{i}$
+\end_inset
+
+ as being proportional to the 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ in this way: 
+\begin_inset Formula 
+\[
+Y_{i}=sd*Z_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The coefficient 
+\begin_inset Formula $sd$
+\end_inset
+
+ is playing the role of a 
+\begin_inset Quotes eld
+\end_inset
+
+scaling coefficient
+\begin_inset Quotes erd
+\end_inset
+
+ and without too much effort you find out that if some variable 
+\begin_inset Formula $x_{i}=\sum Z_{i}^{2}$
+\end_inset
+
+ has a Chi-square distribution, 
+\begin_inset Formula $\chi_{N}^{2}$
+\end_inset
+
+, then 
+\begin_inset Formula $sd\times x_{i}$
+\end_inset
+
+ has a distribution equal to 
+\begin_inset Formula $sd\times\chi_{N}^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The elementary laws of expected values and variances dictate that
+\begin_inset Formula 
+\[
+E(sd\times x_{i})=sd*E(x_{i})
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+Var(sd\times x_{i})=sd^{2}Var(x_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In other words, the Chi-square distribution applies not just for a sum of
+ squares of a standardized Normal distribution, but in fact it describes
+ a sum of squares of any Normal distribution that is centered around zero.
+ 
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+The Chi-Square probability density function for 
+\begin_inset Formula $x_{i}=\sum Z_{i}^{2}$
+\end_inset
+
+ is defined as:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\[
+f\left(x_{i}\right)=\frac{x_{i}^{\left(N/2-1\right)}exp\left(-x_{i}/2\right)}{2^{N/2}\Gamma\left[N/2\right]}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is defined on a range of positive numbers,  
+\begin_inset Formula $0\leq x_{i}\leq\infty$
+\end_inset
+
+.
+ Because we are thinking of this value as a sum of squared values, it could
+ not possibly be smaller than zero.
+ It also assumes that 
+\begin_inset Formula $N$
+\end_inset
+
+ > 0, which is obviously true because we are thinking of the variable as
+ a sum of 
+\begin_inset Formula $N$
+\end_inset
+
+ squared items.
+\end_layout
+
+\begin_layout Standard
+Why does the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ have that functional form? Well, write down the probability model for a
+ standardized Normal distribution, and then realize that the probability
+ of a squared-value of that standardized Normal is EXTREMELY easy to calculate
+ if you know a little bit of mathematical statistics.
+ The only 
+\begin_inset Quotes eld
+\end_inset
+
+fancy
+\begin_inset Quotes erd
+\end_inset
+
+ bit is that this formula uses our friend the Gamma Function (see my handout
+ on the Gamma distribution), to represent a factorial.
+ But we have it on good authority (Robert V.
+ Hogg and Allen T.
+ Craig, Introduction to Mathematical Statistics, 4ed, New York: Macmillian,
+ 1978, p.
+ 115) that 
+\begin_inset Formula $\Gamma(1/2)=\sqrt{\pi}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+The probability density function of the Chi-Square distribution changes
+ quite a bit when one puts in different values of the parameters.
+ If somebody knows some 
+\begin_inset Quotes eld
+\end_inset
+
+interesting
+\begin_inset Quotes erd
+\end_inset
+
+ parameter settings, then a clear, beautiful illustration of the Chi-square
+ can be produced.
+ Consider the following code, which can be used to create the illustration
+ of 2 possible Chi-Square density functions in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Chi-Square1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Chi-Square1,echo=T, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,10,length.out=1000)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare1 <- dchisq(xvals, df=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare2 <- dchisq(xvals, df=6)
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(xvals, cbind(chisquare1, chisquare2), type="l", xlab="possible values
+ of x", ylab="probability of x",  ylim=c(0,1), main="Chi-Square Probability
+ Densities")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(.4, .9, "df=1", pos=4, col=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(4, .2, "df=6", pos=4, col=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Chi-Square1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ Density Functions
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Chi-Square1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The shape of the Chi-Square is primarily dependent upon the degrees of freedom
+ that are witnessed in any particular univariate analysis.
+ The adjustment of the degrees of freedom will have a substantial impact
+ on the shape of the distribution.
+ The following code will produce example density functions for a variety
+ of shapes with a variety of degrees of freedom.
+ Examples of Chi-Square density function with a variety of degrees of freedom
+ are found in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Chi-Square2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Chi-Square2,echo=F,eval=F,height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+xvals <- seq(0,22,length.out=1000)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare1 <- dchisq(xvals, df=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare2 <- dchisq(xvals, df=6)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare3 <- dchisq(xvals, df=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare4 <- dchisq(xvals, df=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare5 <- dchisq(xvals, df=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+chisquare6 <- dchisq(xvals, df=15)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(xvals, cbind(chisquare1, chisquare2, chisquare3, chisquare4, chisquare5,
+ chisquare6), type="l", xlab="possible values of x", ylab="probability of
+ x",  ylim=c(0,1), main="Chi-Square Probability Densities")
+\end_layout
+
+\begin_layout Plain Layout
+
+text(.4, .9, "df=1", pos=4, col=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(4.2, .15, "df=6", pos=4, col=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(.44, .4, "df=2", pos=4, col=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(1.7, .23, "df=3", pos=4, col=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(10, .10, "df=10", pos=4, col=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(15, .08, "df=15", pos=4, col=6)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=8,width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Chi-Square2>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Chi-Square Densities various df
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Chi-Square2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Expected Value, Variance, and the role of the parameters
+\end_layout
+
+\begin_layout Standard
+The Chi-Square distribution is a form of the Gamma distribution, and most
+ treatments of the Chi-Square rely on the general results about the Gamma
+ to state the characteristics of the special-case Chi-square.
+ The Gamma distribution 
+\begin_inset Formula $G(\alpha,\beta)$
+\end_inset
+
+ is a two parameter distribution, with parameters shape (
+\begin_inset Formula $\alpha$
+\end_inset
+
+) and scale 
+\begin_inset Formula $(\beta)$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+Gamma\, probability\, density=\frac{1}{\Gamma(\alpha)\beta^{\alpha}}x^{\alpha-1}e^{-x/\beta}
+\]
+
+\end_inset
+
+Note that if the shape parameter of a Gamma distribution is 
+\begin_inset Formula $\frac{N}{2}$
+\end_inset
+
+ and the scale parameter is equal to 2, then this probability density is
+ identical to the Chi-square distribution with degrees of freedom equal
+ to 
+\begin_inset Formula $N$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Since it is known that the expected value of a Gamma distribution is 
+\begin_inset Formula $\alpha\beta$
+\end_inset
+
+ and the variance is 
+\begin_inset Formula $\alpha\beta^{2}$
+\end_inset
+
+, that means that the expected value of a Chi-square for 
+\begin_inset Formula $N$
+\end_inset
+
+ observations is
+\begin_inset Formula 
+\[
+E(x)=N
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and the variance of a Chi-square variable is
+\begin_inset Formula 
+\[
+Var(x)=2N
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, if a variable is proportional to a Chi-Square 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{i}=\sigma x_{i}$
+\end_inset
+
+, we know that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ has a distribution
+\begin_inset Formula 
+\[
+y_{i}\sim\sigma\chi_{N}^{2}
+\]
+
+\end_inset
+
+ and the probability density is (via a 
+\begin_inset Quotes eld
+\end_inset
+
+change of variables
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f\left(y_{i}\right)=\frac{y{}_{i}^{\left(\frac{N}{2}-1\right)}exp\left(-\frac{y{}_{i}}{2\sigma}\right)}{\sigma^{N/2}2^{N/2}\Gamma\left[N/2\right]}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula 
+\[
+E(y_{i})=\sigma N
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Var(y_{i})=\sigma^{2}N
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The mode (for 
+\begin_inset Formula $N>2$
+\end_inset
+
+) is
+\begin_inset Formula 
+\[
+mode(y_{i})=\sigma(N-2)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Chi-Square is related to the Poisson distributions with parameter and
+ expected value equal to 
+\begin_inset Formula $\frac{x_{i}}{2}$
+\end_inset
+
+ by:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $P\left[Chi-Square(n)\geq x_{i}\right]=P\left[Poisson\left(\frac{x_{i}}{2}\right)\leq\frac{n}{2}-1\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+How is this useful in Bayesian analysis?
+\end_layout
+
+\begin_layout Standard
+In statistical problems, we often confront 2 kinds of parameters.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+slope coefficients
+\begin_inset Quotes erd
+\end_inset
+
+ of a regression model are one type, and we usually have priors that are
+ single-peaked and symmetric.
+ The prior for such a coefficient might be Uniform, Normal, or any other
+ mathematically workable distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+Sometimes other coefficients are not supposed to be symmetrical.
+ For example, the variance of a distribution cannot be negative, so we need
+ a distribution that is shaped to have a minimum at zero.
+ The Gamma, or its special case the Chi-square, is an obvious candidate.
+\end_layout
+
+\begin_layout Standard
+The most important aspect of the Chi-square, however, is that it is very
+ mathematically workable! If one is discussing a Normal distribution, for
+ example, 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+ one must specify prior beliefs about the distributions of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ Recall that in Bayesian updating, we calculate the posterior probability
+ as the product of the likelihood times the prior, so some formula that
+ makes that result as simple as possible would be great.
+\begin_inset Formula 
+\[
+p(\sigma^{2}|y)=p(y|\sigma^{2})p(\sigma^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the story that we told about where Chi-square variables come from,
+ it should be very obvious that if 
+\begin_inset Formula $y$
+\end_inset
+
+ is normal, we can calculate 
+\begin_inset Formula $p(y|\sigma^{2}$
+\end_inset
+
+) (assuming 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is taken as 
+\begin_inset Quotes eld
+\end_inset
+
+given
+\begin_inset Quotes erd
+\end_inset
+
+ for the moment).
+ So all we need is a prior that makes 
+\begin_inset Formula $p(\sigma^{2}|y$
+\end_inset
+
+) as simple as possible.
+ If you choose 
+\begin_inset Formula $p(\sigma^{2})$
+\end_inset
+
+ to be Chi-squared, then it turns out to be very workable.
+\end_layout
+
+\begin_layout Standard
+Suppose you look at the numerator from the Chi-Square, and 
+\begin_inset Quotes eld
+\end_inset
+
+guess
+\begin_inset Quotes erd
+\end_inset
+
+ that you want to put 
+\begin_inset Formula $1/\sigma^{2}$
+\end_inset
+
+ in place of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ You describe your prior opinion about 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $prior:\,\, p\left(\sigma^{2}\right)\propto(\sigma^{2})^{-N/2-1}exp\left(-\frac{1}{2}S_{o}/\sigma^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We use 
+\begin_inset Formula $N$
+\end_inset
+
+ and 
+\begin_inset Formula $S_{0}$
+\end_inset
+
+ as a 
+\begin_inset Quotes eld
+\end_inset
+
+scaling factors
+\begin_inset Quotes erd
+\end_inset
+
+ to describe how our beliefs vary from one situation to another.
+ N is the 
+\begin_inset Quotes eld
+\end_inset
+
+degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that is very convenient if your Normal theory for 
+\begin_inset Formula $y$
+\end_inset
+
+ says:
+\begin_inset Formula 
+\[
+p(y_{i}|\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}exp(-\frac{1}{2}\frac{(y_{i}-\mu)^{2}}{\sigma^{2}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose the sample size of the dataset is 
+\begin_inset Formula $n.$
+\end_inset
+
+ If you let 
+\begin_inset Formula $S=\sum_{i=1}^{n}(y_{i}-\mu^{2})$
+\end_inset
+
+ represent the sum of squares, then we rearrange to find a posterior:
+\begin_inset Formula 
+\[
+p(\sigma^{2}|y)\propto(\sigma^{2})^{-(N+n)/2-1}exp(-\frac{1}{2}(S_{o}+S)/\sigma^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Look how similar the prior is to the posterior.
+ 
+\end_layout
+
+\begin_layout Standard
+It gets confusing discussing 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $1/\sigma^{2}$
+\end_inset
+
+.
+ Bayesians don't usually talk about estimating the variance of 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, but rather the precision, which is defined as 
+\begin_inset Formula 
+\[
+\tau=\frac{1}{\sigma^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence, the distribution of the 
+\begin_inset Quotes eld
+\end_inset
+
+precision
+\begin_inset Quotes erd
+\end_inset
+
+ is given as a Chi-Square variable, and if your prior is 
+\begin_inset Formula 
+\[
+prior:\,\, p\left(\tau\right)\propto\tau{}^{N/2-1}exp\left(-\frac{1}{2}S_{o}\tau\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then the posterior is a Chi-Square variable
+\begin_inset Formula 
+\[
+(S_{o}+S)\tau\sim\chi_{N+n}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you really do want to talk about the variance, rather than the precision,
+ then you are using a prior that is an INVERSE Chi-Square.
+ Your prior is the inverse chi-square
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma^{2}\sim S_{o}X_{N}^{-2}
+\]
+
+\end_inset
+
+ which I've seen referred to as
+\begin_inset Formula 
+\[
+\sigma^{2}\sim(S_{0}+S)\chi_{N+n}^{-2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As a result, a prior for a variance parameter is often given as an inverse
+ Chi-square, while the prior for a precision parameter is given as a Chi-square.
+\end_layout
+
+\end_body
+\end_document

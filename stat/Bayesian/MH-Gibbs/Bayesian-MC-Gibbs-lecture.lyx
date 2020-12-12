@@ -1,0 +1,2820 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+MCMC 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2011
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+2011
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Overview}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Restate the Problem
+\end_layout
+
+\begin_layout Itemize
+MH
+\end_layout
+
+\begin_layout Itemize
+MCMC
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The Problem
+\end_layout
+
+\begin_layout BeginFrame
+Bayes Rule
+\end_layout
+
+\begin_layout Itemize
+Recall we want the posterior distribution, the probabilty that a particular
+ hypothesis 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $hyp$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is correct, in light of the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $data$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+Bayes\, Rule:\, p(hyp|data)=\frac{p(data|hyp)p(hyp)}{p(data)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And we often throw away the denominator because it is a 
+\begin_inset Quotes eld
+\end_inset
+
+constant
+\begin_inset Quotes erd
+\end_inset
+
+ in this context
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Bayes\, Rule:\, p(hyp|data)=p(data|hyp)p(hyp)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use 
+\begin_inset Formula $\theta$
+\end_inset
+
+ for the hypthesized parameter values
+\begin_inset Formula 
+\begin{equation}
+p(\theta|data)=p(data|\theta)p(\theta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $data$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is a collection of observations in a sample
+\begin_inset Formula 
+\begin{equation}
+data=(data_{1},data_{2},data_{3}\ldots,data_{N})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Likelihood 
+\begin_inset Formula $\times$
+\end_inset
+
+ prior
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $p(data|\theta)$
+\end_inset
+
+ is a likelihood function.
+ 
+\end_layout
+
+\begin_layout Itemize
+Assuming 
+\begin_inset Quotes eld
+\end_inset
+
+independence
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+p(data|\theta)=\Pi_{i=1}^{N}p(data_{i}|\theta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+So Bayes theorem means we need
+\begin_inset Formula 
+\begin{equation}
+p(\theta|data)=\left(\Pi_{i=1}^{N}p(data_{i}|\theta)\right)\times prior(\theta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+What does 
+\begin_inset Formula $\mbox{p(\theta|data)}$
+\end_inset
+
+ Look Like?
+\end_layout
+
+\begin_layout Itemize
+That's the million dollar question.
+ What outcomes are most likely? How 
+\begin_inset Quotes eld
+\end_inset
+
+widely spread
+\begin_inset Quotes erd
+\end_inset
+
+ is it.
+ 
+\end_layout
+
+\begin_layout Itemize
+In Jim Albert's book, one approximate approach is the Laplace approximation.
+ This finds the 
+\begin_inset Quotes eld
+\end_inset
+
+mode
+\begin_inset Quotes erd
+\end_inset
+
+ of the posterior, approximately.
+\end_layout
+
+\begin_layout Itemize
+Before high speed (parallel) computing, that was about as good as we can
+ do (and it is still a useful 
+\begin_inset Quotes eld
+\end_inset
+
+pedagogical
+\begin_inset Quotes erd
+\end_inset
+
+ approach).
+\end_layout
+
+\begin_layout Section
+MCMC
+\end_layout
+
+\begin_layout BeginFrame
+Remember 
+\begin_inset Quotes eld
+\end_inset
+
+acceptance sampling
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In my lecture on 
+\begin_inset Quotes eld
+\end_inset
+
+drawing random samples
+\begin_inset Quotes erd
+\end_inset
+
+, it was shown that one can draw random cases from a distribution by choosing
+ values from a candidate distribution and then accepting 
+\begin_inset Quotes eld
+\end_inset
+
+the right proportion
+\begin_inset Quotes erd
+\end_inset
+
+ of them.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is a one dimensional thing--a single parameter--then we could sample from
+ 
+\begin_inset Formula $p(\theta|data)$
+\end_inset
+
+ by ordinary acceptance sampling.
+\end_layout
+
+\begin_layout Itemize
+As long as the proposal distribution covers the whole range of 
+\begin_inset Formula $\theta$
+\end_inset
+
+'s possible values, this is a manageable project.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+If 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is Complicated...
+\end_layout
+
+\begin_layout Itemize
+Suppose the parameter vector is larger
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\theta=(\theta_{1},\theta_{2},\ldots,\theta_{m})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Problem: find a 
+\begin_inset Quotes eld
+\end_inset
+
+good
+\begin_inset Quotes erd
+\end_inset
+
+ multidimensional proposal distribution
+\end_layout
+
+\begin_layout Itemize
+Draw a reasonably large sample (and do so reasonably quickly, within our
+ lifetimes)
+\end_layout
+
+\begin_layout BeginFrame
+Metropolis Algorithm
+\end_layout
+
+\begin_layout Itemize
+Metropolis, Nicholas, Arianna W.
+ Rosenbluth, Marshall N.
+ Rosenbluth, Augusta H.
+ Teller, and Edward Teller.
+ 1953.
+ “Equation of State Calculations by Fast Computing Machines.” The Journal
+ of Chemical Physics 21(6): 1087.
+ 
+\end_layout
+
+\begin_layout Itemize
+Collect a sequence of values 
+\begin_inset Formula $\theta=\{\theta^{1},\theta^{2},\ldots,\theta^{T}\}$
+\end_inset
+
+ that will approximate 
+\begin_inset Formula $p(\theta|data)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In order to make sure that we 
+\begin_inset Quotes eld
+\end_inset
+
+explore
+\begin_inset Quotes erd
+\end_inset
+
+ the space, use a Markov Chain to draw new suggested points.
+ 
+\end_layout
+
+\begin_layout Itemize
+Recall Markov Chain: 
+\begin_inset Quotes eld
+\end_inset
+
+one step dependence
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\theta^{t}=some\, function\,(\theta^{t-1},any\, other\, info\, avail.\, at\, t-1)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The power of general theorems on Markov Chains comes into play, so that
+ the Metropolis algorithm does not have to prove everything completely from
+ scratch.
+\end_layout
+
+\begin_layout BeginFrame
+Implementation 
+\end_layout
+
+\begin_layout Itemize
+Metropolis, et al, proposed to begin at some arbitrary point 
+\begin_inset Formula $\theta^{0}$
+\end_inset
+
+ .
+ Calculate 
+\begin_inset Formula $p(\theta^{0}|data)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Then draw a new point for consideration at random by perturbation
+\begin_inset Formula 
+\begin{equation}
+\theta^{*}=\theta^{0}+\mbox{noise}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then calculate 
+\begin_inset Formula $p(\theta^{*}|data)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $p(\theta^{*}|data)>p(\theta^{0}|data)$
+\end_inset
+
+, that means hypothesis 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+more likely
+\begin_inset Quotes erd
+\end_inset
+
+ to be correct.
+ So we accept 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ into our collection of points.
+ Call that 
+\begin_inset Formula $\theta^{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Mountain Climbing is Overrated
+\end_layout
+
+\begin_layout Itemize
+If we only accept points such that 
+\begin_inset Formula $p(\theta^{*}|data)>p(\theta^{t-1}|data)$
+\end_inset
+
+, then we are 
+\begin_inset Quotes eld
+\end_inset
+
+hill climbing
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Suppose we are lucky, and there is just one 
+\begin_inset Quotes eld
+\end_inset
+
+global maximum
+\begin_inset Quotes erd
+\end_inset
+
+ (no local maxima), then this algorithm will find the 
+\begin_inset Quotes eld
+\end_inset
+
+most likely value
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and it will stay there forever.
+\end_layout
+
+\begin_layout Itemize
+That's not enough because
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+It does not 
+\begin_inset Quotes eld
+\end_inset
+
+explore
+\begin_inset Quotes erd
+\end_inset
+
+ the full extent of possible values of 
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We would like to say 
+\begin_inset Quotes eld
+\end_inset
+
+95% of the outcomes from 
+\begin_inset Formula $p(\theta|data$
+\end_inset
+
+) are between points A and B, and this does not allow such statements.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Go Sideways, or Down (sometimes)
+\end_layout
+
+\begin_layout Itemize
+Metropolis et al proposed to accept some values of 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ for which 
+\begin_inset Formula 
+\begin{equation}
+p(\theta^{*}|data)<p(\theta^{t-1}|data)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The chance of accepting a 
+\begin_inset Quotes eld
+\end_inset
+
+lower
+\begin_inset Quotes erd
+\end_inset
+
+ step was
+\begin_inset Formula 
+\begin{equation}
+r_{m}=\frac{p(\theta^{*}|data)}{p(\theta^{t-1}|data)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+So if 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+almost as likely
+\begin_inset Quotes erd
+\end_inset
+
+ as 
+\begin_inset Formula $\theta^{t-1}$
+\end_inset
+
+, then 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ is very likely to get added as 
+\begin_inset Formula $\theta^{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Even if 
+\begin_inset Formula $\theta^{*}$
+\end_inset
+
+ is far less likely than 
+\begin_inset Formula $\theta^{t-1}$
+\end_inset
+
+, it has a chance of getting selected.
+\end_layout
+
+\begin_layout Itemize
+Thus, there is at least 
+\begin_inset Quotes eld
+\end_inset
+
+a chance
+\begin_inset Quotes erd
+\end_inset
+
+ that even very unlikely spots will be visited.
+\end_layout
+
+\begin_layout BeginFrame
+Tweaks
+\end_layout
+
+\begin_layout Itemize
+Fiddle around with the procedure for drawing suggested points: Proposal
+ density.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Random Walk (depends on 
+\begin_inset Formula $\theta^{t-1}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Independent draws (does not depend on 
+\begin_inset Formula $\theta^{t-1}$
+\end_inset
+
+) 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Fiddle around with the criterion for deciding whether to accept points into
+ the chain.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Hastings's proposal (1970) (In Jackman's notation)
+\begin_inset Formula 
+\begin{equation}
+r=\frac{p(\theta^{*}|data)}{p(\theta^{t-1}|data)}\cdot\frac{J_{t}(\theta^{*},\theta^{t-1})}{J_{t}(\theta^{t-1},\theta^{*})}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+W.
+ K.
+ Hastings (1970) Monte Carlo Sampling Methods Using Markov Chains and Their
+ Applications, Biometrika, 57(1): 97-109 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $J_{t}$
+\end_inset
+
+ is the jumping distribution
+\end_layout
+
+\begin_layout Itemize
+Hastings (p.
+ 100) notes this is same as Metropolis if 
+\begin_inset Formula $J_{t}$
+\end_inset
+
+ is reversible, 
+\begin_inset Formula 
+\begin{equation}
+J_{t}(\theta^{*},\theta^{t-1})=J_{t}(\theta^{t-1},\theta^{*})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use of right 
+\begin_inset Formula $J_{t}$
+\end_inset
+
+ may improve 
+\begin_inset Quotes eld
+\end_inset
+
+mixing
+\begin_inset Quotes erd
+\end_inset
+
+ (exploration of parameter space) without raising the number of wasted (rejected
+) proposals.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Example Usage of MH
+\end_layout
+
+\begin_layout Standard
+Count model from MCMCpack in Jackman
+\end_layout
+
+\begin_layout BeginFrame
+Practical Problems of MH
+\end_layout
+
+\begin_layout Itemize
+Slow: creating draws in m dimensional space 
+\end_layout
+
+\begin_layout Itemize
+Slow: rejection rate high
+\end_layout
+
+\begin_layout Itemize
+Autocorrelation: Must aggressively 
+\begin_inset Quotes eld
+\end_inset
+
+thin
+\begin_inset Quotes erd
+\end_inset
+
+ (throw away observations)
+\end_layout
+
+\begin_layout BeginFrame
+Gibbs Sampling
+\end_layout
+
+\begin_layout Itemize
+Recall that 
+\begin_inset Formula 
+\begin{equation}
+Pr(x,y,z)=Pr(x|y,z)\cdot Pr(y,z)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+and
+\begin_inset Formula 
+\begin{equation}
+Pr(y,z)=Pr(y|z)\cdot P(z)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+So the 3-tuple's 
+\begin_inset Formula $(x,y,z)$
+\end_inset
+
+ distribution can be thought of as a series of conditional distributions.
+\end_layout
+
+\begin_layout BeginFrame
+Gibbs Sampling
+\end_layout
+
+\begin_layout Itemize
+The posterior distribution
+\begin_inset Formula 
+\begin{equation}
+p(\theta|data)\propto p(data|\theta)p(\theta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Draw each parameter conditionally on all the others
+\begin_inset Formula 
+\[
+draw\,\theta_{1}\, from\, g_{1}(\theta_{1}|\theta_{-1},data)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\[
+draw\,\theta_{2}\, from\, g_{2}(\theta_{2}|\theta_{-2},data)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\ldots
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+draw\,\theta_{m}\, from\, g_{m}(\theta_{m}|\theta_{-m},data)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Gibbs Sampling
+\end_layout
+
+\begin_layout Itemize
+The distribution of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ from those draws eventually converges to 
+\begin_inset Formula $p(\theta|data)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+At the start, 
+\begin_inset Formula $g(\theta)$
+\end_inset
+
+ does not resemble 
+\begin_inset Formula $p(\theta|data)$
+\end_inset
+
+, so it is necessary to throw away a chunk of observations.
+ (
+\begin_inset Quotes eld
+\end_inset
+
+burn in
+\begin_inset Quotes erd
+\end_inset
+
+ iterations)
+\end_layout
+
+\begin_layout BeginFrame
+When This is Done
+\end_layout
+
+\begin_layout Itemize
+We have a sample from the multivariate density 
+\begin_inset Formula $(\theta_{1},\theta_{2},\theta_{3}\ldots,\theta_{m})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+That's 
+\begin_inset Formula $m$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+columns
+\begin_inset Quotes erd
+\end_inset
+
+ of estimates, each of which is an 
+\begin_inset Quotes eld
+\end_inset
+
+exact sampling distribution
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+How is that different from Maximum Likelihood (?)
+\end_layout
+
+\begin_layout Itemize
+Can treat each column as a 
+\begin_inset Quotes eld
+\end_inset
+
+marginal posterior density
+\begin_inset Quotes erd
+\end_inset
+
+, (Jackman, p 220).
+ 
+\end_layout
+
+\begin_layout Itemize
+King's Clarify software uses these columns to calculate predicted values
+\end_layout
+
+\begin_layout BeginFrame
+Why Doesn't a Metropolis Algorithm Require a Burn In Period?
+\end_layout
+
+\begin_layout Itemize
+MH can use every sample drawn
+\end_layout
+
+\begin_layout Itemize
+Gibbs sampling cannot.
+ Why the difference
+\end_layout
+
+\begin_layout Itemize
+MH accepts suggestions in proportion to the desired probability (acceptance
+ sampling)
+\end_layout
+
+\begin_layout Itemize
+Gibbs accepts all draws, without checking that any particular one matches
+ the desired distribution
+\end_layout
+
+\begin_layout Itemize
+The premise is that Gibbs will be more efficient because it is so much simpler
+ to work with one parameter at a time, even though some must be discarded.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{An Ordinary Regression Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg10,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(foreign) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1 <- read.dta("/home/pauljohn/ps/SVN-repo/Rcourse/04245-0001-Data.dta")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043116 <- mydta1$V043116[,drop=T]
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(mydta1$V043116) <- c("SD","WD","ID","I","IR","WR","SR","O")
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043116[ mydta1$V043116 %in% levels(mydta1$V043116)[8] ] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043116 <- mydta1$V043116[,drop=T]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$th.bush.kerry <- mydta1$V043038 - mydta1$V043039
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##IDEO
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V045117 <- mydta1$V045117[ ,drop=T]
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(mydta1$V045117) <- c("EL","L","SL","M","SC","C","EC")
+\end_layout
+
+\begin_layout Plain Layout
+
+table(mydta1$V045117)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+##Gender
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(mydta1$V041109A) <- c("M","F")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+## Gay Marriage
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(mydta1$V043210) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043210[ mydta1$V043210 %in% levels(mydta1$V043210)[4:10] ] <-NA
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043210 <- mydta1$V043210[, drop=T]
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(mydta1$V043210) <- c("Allow","No","Med") 
+\end_layout
+
+\begin_layout Plain Layout
+
+source("/home/pauljohn/ps/SVN-repo/Rcourse/outreg-worked.R") 
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm (th.bush.kerry ~ V045117 + V043116 + V043210 + V043213 + V045145X
+ + V041109A, data=mydta1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V045117n <- as.numeric(mydta1$V045117)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043116n <- as.numeric(mydta1$V043116)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043210n <- as.numeric(mydta1$V043210)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V043213n <- as.numeric(mydta1$V043213)
+\end_layout
+
+\begin_layout Plain Layout
+
+mydta1$V045145Xn <- as.numeric(mydta1$V045145X)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1n <- lm (th.bush.kerry ~ V045117n + V043116n + V043210n + V043213n + V045145Xn
+ + V041109A, data=mydta1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MCMCpack)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg20,include=F,echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=F, modelLabels=c("Garbage Can Regression"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+scriptsize{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg20}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Treat some predictors as Numeric}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<reg25,include=F,echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1n, tight=F, modelLabels=c("Garbage Can Regression"), varLabels=list(V
+045117n="Ideology", V043116n="Party ID", V043210n="AntiGay", V043213n="Economy",
+ V045145Xn="Flag Love", V041109A="Female"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+scriptsize{
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-reg25.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MCMCpack has regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inteface:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+MCMCregress(formula, data = NULL, burnin = 1000, mcmc = 10000,         thin
+ = 1, verbose = 0, seed = NA, beta.start = NA,         b0 = 0, B0 = 0, c0
+ = 0.001, d0 = 0.001,         marginal.likelihood = c("none", "Laplace", "Chib95"),
+ ...)
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+frametitle{Run That through MCMCpack}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%<<mcmcreg1, include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+%mcmcreg1 <- MCMCregress(th.bush.kerry ~ V045117n + V043116n + %V043210n +
+ V043213n %+ V045145Xn + V041109A, data=mydta1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+%@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+input{plots/t-mcmcreg1.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Count Regression as a Hierarchical Bayesian Model
+\end_layout
+
+\begin_layout Itemize
+Suppose some 
+\begin_inset Quotes eld
+\end_inset
+
+count
+\begin_inset Quotes erd
+\end_inset
+
+ model follows a Poisson distribution.
+ The 
+\begin_inset Formula $i$
+\end_inset
+
+'th case:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula 
+\begin{equation}
+f(y_{i}|X,\beta)=\frac{X_{i}\beta^{y_{i}}}{y_{i!}}exp(-X_{i}\beta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\beta$
+\end_inset
+
+ is a vector of parameters, 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is a row of observations for the 
+\begin_inset Formula $i'th$
+\end_inset
+
+ case
+\end_layout
+
+\begin_layout Itemize
+Across a sample of N cases, that leads to a likelihood
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(y|X,\beta)=\Pi_{i=1}^{N}\frac{X_{i}\beta^{y_{i}}}{y_{i!}}exp(-X_{i}\beta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Frailty
+\end_layout
+
+\begin_layout Itemize
+Throw in 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(y|X,\beta)=\Pi_{i=1}^{N}\frac{X_{i}\beta^{y_{i}}}{y_{i!}}exp(-X_{i}\beta+\epsilon_{i})\mbox{}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 0, then this is just the same old model.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+However, if 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ has some noise in it, then it will cause the observations to fluctuate
+ more.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Any probability model for which 
+\begin_inset Formula $E[\epsilon_{i}]=0$
+\end_inset
+
+ can be used.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Rewrite Like This
+\end_layout
+
+\begin_layout Itemize
+Rearrange
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(y|X,\beta)=\Pi_{i=1}^{N}\frac{X_{i}\beta^{y_{i}}}{y_{i!}}exp(-X_{i}\beta)exp(\epsilon_{i})\mbox{}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Now think of the multiplicative error 
+\begin_inset Formula $\delta_{i}=exp(\epsilon_{i})$
+\end_inset
+
+ as something that has expected value 1.
+ 
+\end_layout
+
+\begin_layout Itemize
+The benefit here is that the terms are multiplicatively separated
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(y|X,\beta)=\Pi_{i=1}^{N}\frac{X_{i}\beta^{y_{i}}}{y_{i!}}exp(-X_{i}\beta)\delta_{i}\mbox{}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\delta\sim Gamma(\alpha,\alpha),$
+\end_inset
+
+ Recall 
+\begin_inset Formula $E[\delta]=\alpha/\alpha$
+\end_inset
+
+=1.
+ However, the Variance can differ, 
+\begin_inset Formula $Var[\delta]=1/\alpha$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+That gives 
+\begin_inset Formula $y$
+\end_inset
+
+ a Negative Binomial distribution.
+ (same expected value as Poisson, bigger variance.) 
+\end_layout
+
+\begin_layout BeginFrame
+Estimation
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+hyper parameter
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We need to estimate 
+\begin_inset Formula $\beta$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Because of Gibbs sampling, we can alternate between drawing values of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ from this posterior.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MCMCpoisson MCMCpack}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Markov Chain Monte Carlo for Poisson Regression
+\end_layout
+
+\begin_layout Plain Layout
+
+Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+     This function generates a sample from the posterior distribution  
+    of a Poisson regression model using a random walk Metropolis      algorithm.
+ The user supplies data and priors, and a sample from      the posterior
+ distribution is returned as an mcmc object, which      can be subsequently
+ analyzed with functions provided in the coda      package.
+\end_layout
+
+\begin_layout Plain Layout
+
+Usage:
+\end_layout
+
+\begin_layout Plain Layout
+
+     
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MCMCpoisson MCMCpack}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+MCMCpoisson(formula, data = NULL, burnin = 1000, mcmc = 10000,         thin
+ = 1, tune = 1.1, verbose = 0, seed = NA,  beta.start = NA,         b0 = 0,
+ B0 = 0, marginal.likelihood = c("none", "Laplace"), ...) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Priors: Prior on 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is 
+\begin_inset Formula $MVN(b_{0},B_{0}^{-1})$
+\end_inset
+
+ (
+\begin_inset Formula $B_{0}$
+\end_inset
+
+ is the prior's 
+\begin_inset Quotes eld
+\end_inset
+
+precision
+\begin_inset Quotes erd
+\end_inset
+
+, the reciprocal of variance).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Phony Example}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<MCMCpois10, fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MCMCpack)
+\end_layout
+
+\begin_layout Plain Layout
+
+counts <- c(18,17,15,20,10,20,25,13,12)
+\end_layout
+
+\begin_layout Plain Layout
+
+outcome <- gl(3,1,9)
+\end_layout
+
+\begin_layout Plain Layout
+
+treatment <- gl(3,3)  
+\end_layout
+
+\begin_layout Plain Layout
+
+posterior <- MCMCpoisson(counts ~ outcome + treatment)       
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(posterior)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(posterior)        
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-MCMCpois10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Default Plot}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=12cm]{plots/t-MCMCpois10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

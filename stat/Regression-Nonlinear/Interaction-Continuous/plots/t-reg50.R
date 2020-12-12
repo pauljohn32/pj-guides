@@ -1,0 +1,8 @@
+###################################################
+### code chunk number 32: reg50
+###################################################
+pfit2 <- fitted(m2)
+pfit3 <- fitted(m2centered)
+plot(pfit2, pfit3, xlab="Predicted from Uncentered Model", ylab="Predicted from Centered Model")
+
+

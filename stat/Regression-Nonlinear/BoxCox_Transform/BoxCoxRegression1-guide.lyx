@@ -1,0 +1,2066 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Paul Johnson
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Nonlinear Regression: Log transformations, Box-Cox transforms
+\end_layout
+
+\begin_layout Section
+The Problem: Licensing Older Drivers
+\end_layout
+
+\begin_layout Standard
+In a current project, we are investigating the impact of state drivers licensing
+ laws on highway fatalities among older drivers.
+ This was prompted by a few highly publicized incidents of elderly drivers
+ who lost control of their car and crashed into crowded markets (or such).
+\end_layout
+
+\begin_layout Standard
+The data on crashes among older drivers is not available for all U.S.
+ states for each year.
+ Through the 1990s, only 17 states reported that data.
+ However, for one year, 1998, the NHTSA did provide older driver fatality
+ data for all states, along with other useful information about the older
+ population.
+ 
+\end_layout
+
+\begin_layout Standard
+In each year from 1994-2001, the NHTSA does report the number of older drivers
+ who have driver's licenses.
+ So I wondered if we could not just use the number who have licenses as
+ an indicator for the effectiveness of state laws on drivers license tests.
+ Presumably, the number who are licensed will be closely related to the
+ danger that results on the road.
+\end_layout
+
+\begin_layout Standard
+I can make a test of the usefulness of the licensing levels by examining
+ the 1998 driver fatality data.
+ Maybe one can argue that policy effectiveness depends only on 
+\begin_inset Quotes eld
+\end_inset
+
+keeping the drivers licenses away from the seniors
+\begin_inset Quotes erd
+\end_inset
+
+ so we could use the 1994-2001 data.
+\end_layout
+
+\begin_layout Standard
+That purpose may or not be served, but it did lead to some interesting methodolo
+gical observations about nonlinear regression.
+ I put together a 2 variable dataset 
+\begin_inset Quotes eld
+\end_inset
+
+fatalLicenses.txt
+\begin_inset Quotes erd
+\end_inset
+
+ and that should be available in the POLS7070 web material.
+ That data has the 1998 figures on the licensed elderly drivers (called
+ 
+\emph on
+licenses
+\emph default
+ in the data) and fatalities among older drivers (
+\emph on
+fatals
+\emph default
+).
+ I read it into R with this command:
+\end_layout
+
+\begin_layout Standard
+dat <- read.table("fatalLicenses.txt",header=T)
+\end_layout
+
+\begin_layout Standard
+Consider a plot of the data on older driver fatalities and the number of
+ older licensed drivers, which is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:olderfatal1"
+
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:olderfatal1"
+
+\end_inset
+
+Older Drivers: Fatalities and Licenses
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/olderFatals1.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Is 
+\begin_inset Formula $y=b_{0}+b_{1}x+e$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+Clearly there is a relationship.
+ If you run a linear regression, these are the estimates in R:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coefficients
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+OLS estimate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Std.Error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Intercept
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16.6*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Older licenses
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0003977*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.0000282
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R^{2}=0.80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+adj 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+=0.79
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N=51
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Residual Std.Error=33.7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+* 
+\begin_inset Formula $p\leq0.05$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The regression purist will say 
+\begin_inset Quotes eld
+\end_inset
+
+there's heteroskedasticity in there, try logging the variables.
+\begin_inset Quotes erd
+\end_inset
+
+ Logging does make it look more homoskedastic.
+ As you see in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:olderFatal:-log-log"
+
+\end_inset
+
+, it does look much better.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:olderFatal:-log-log"
+
+\end_inset
+
+Older Drivers: log-log model
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/olderFatals2.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Still, there are some shortcomings.
+ To my eye, this scatter appears somewhat curved (concave downward).
+ There's a case which appears to be an outlier at the coordinates (11,1),
+ and that ought to be looked into.
+\end_layout
+
+\begin_layout Standard
+Nevertheless, I could be happy if I were on a deserted island and had only
+ this one scatterplot and could estimate just the one regression:
+\begin_inset Formula 
+\begin{equation}
+log(fatalities_{i})=b_{0}+b_{1}older\, licenses_{i}+\epsilon_{i}\label{eq:log-log}
+\end{equation}
+
+\end_inset
+
+ The parameter estimates of that regression are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coefficients
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+OLS estimate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Std.Error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Intercept
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-8.01*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.85
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+log(older licenses)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.032*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.07
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R^{2}=0.80$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+adj 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+=0.80
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N=51
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Residual Std.Error=0.53
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+* 
+\begin_inset Formula $p\leq0.05$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that the equation estimated as 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:log-log"
+
+\end_inset
+
+ represents an exponential relationship of this form
+\begin_inset Formula 
+\[
+fatalities_{i}=e^{b_{0}}(older\, licenses_{i})^{b_{1}}*e^{\epsilon_{i}}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Note that 
+\begin_inset Formula $E(e^{\epsilon_{i}})=1.$
+\end_inset
+
+ The key parameter is 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+.
+ That is important because it represents elasticity.
+ If 
+\begin_inset Formula $b_{1}>1$
+\end_inset
+
+, it means that a one percent increase in the number of licenses causes
+ a greater than one percentage point increase in fatalities.
+ And that means that if more older drivers are licensed, then more dangerous
+ drivers must be getting licenses.
+ As a result, the licensing rates might be a good indicator of the policy
+ impact of various proposals to deal with the dangers posed by elderly drivers.
+\end_layout
+
+\begin_layout Section
+Concentrate on the left hand side
+\end_layout
+
+\begin_layout Standard
+There is one problem with the functional form that we can learn something
+ about.
+ It is customary to add a constant to a variable before logging it.
+ That way, in case the observed value were 0, then the log of 
+\begin_inset Formula $(0+\alpha)$
+\end_inset
+
+could still be calculated and the model would not blow up.
+ But what should 
+\begin_inset Formula $\alpha$
+\end_inset
+
+be?
+\end_layout
+
+\begin_layout Standard
+In Venables & Ripley, MASS 4ed, p.
+ 171-172, they discuss a function (from the MASS package) called 
+\begin_inset Quotes eld
+\end_inset
+
+logtrans
+\begin_inset Quotes erd
+\end_inset
+
+.
+ logtrans uses maximum likelihood to plot the best choice of a constant
+ alpha in a regression equation like
+\begin_inset Formula 
+\[
+log(fatalities_{i}+\alpha)=b_{0}+b_{1}log(older\, licenses_{i})+\epsilon_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Actually, logtrans works to figure the best 
+\begin_inset Formula $\alpha$
+\end_inset
+
+whether you log the right hand side or not.
+ (I made the mistake of not logging it in my first go-round with this exercise
+ and got a weird result--see below).
+\end_layout
+
+\begin_layout Standard
+The graphical output from this R command:
+\end_layout
+
+\begin_layout Quote
+\align left
+vals <- logtrans(fatals 
+\begin_inset Formula $\sim$
+\end_inset
+
+ log(licenses), data=dat, alpha=seq(1,1000,len=200))
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:logtrans-log-licenses"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Quote
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:logtrans-log-licenses"
+
+\end_inset
+
+Logtrans output for (log(fatalities+
+\begin_inset Formula $\alpha)$
+\end_inset
+
+
+\begin_inset Formula $\sim$
+\end_inset
+
+log(licenses)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/logtrans1.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the 
+\begin_inset Quotes eld
+\end_inset
+
+best
+\begin_inset Quotes erd
+\end_inset
+
+ alpha is clearly a really small number, certainly not more than 50.
+ The point estimate of the best alpha is 21.08.
+\end_layout
+
+\begin_layout Standard
+If we make the dependent variable the log(fatalities+21.0), the scatterplot
+ looks just about right.
+ Please consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plot-of-log(fatalities+21)"
+
+\end_inset
+
+.
+ In my opinion, this scatterplot is slightly more linear in appearance than
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:olderFatal:-log-log"
+
+\end_inset
+
+, but either one is nice looking, compared to the one we started with.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Plot-of-log(fatalities+21)"
+
+\end_inset
+
+Plot of log(fatalities+21) against log(licenses)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/olderFatals4.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Box-Cox
+\end_layout
+
+\begin_layout Standard
+If you stop to think about it, the log(y) is a pretty arbitrary tranformation.
+ There is a whole range of similar functions that might do as well.
+\end_layout
+
+\begin_layout Standard
+In 1964, Box and Cox considered the log as one possible transformation in
+ a framework like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccccc}
+\, & \, & \, & \textrm{\ensuremath{\frac{y^{\lambda}-1}{\lambda}\,\,\,\,\,}} & \textrm{\ensuremath{\,\,\,\,\,\, if\,\,\lambda\neq0}}\\
+y^{(\lambda)} & = & \, & \, & \,\\
+\, & \, & \, & log(y)\,\,\,\, & \,\,\,\,\,\,\, if\,\,\textrm{\ensuremath{\lambda=0}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this framework, the parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ranges across a scale.
+ If 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ happens to be 0, then the output is the log of y.
+ But for other 
+\begin_inset Formula $\lambda,$
+\end_inset
+
+then different functions emerge.
+ For example, if it turns out that 
+\begin_inset Formula $\lambda=1,$
+\end_inset
+
+then you have a linear transformation.
+ If you set 
+\begin_inset Formula $\lambda=0.5$
+\end_inset
+
+, (recall that 
+\begin_inset Formula $y^{0.5}$
+\end_inset
+
+is just 
+\begin_inset Formula $\sqrt{y}$
+\end_inset
+
+), you have a square root representation that looks similar to a log, but
+ it is not exactly the same.
+ On the other hand, if you put 
+\begin_inset Formula $\lambda=2$
+\end_inset
+
+ , then you are essentially squaring y.
+ If you set 
+\begin_inset Formula $\lambda=-1$
+\end_inset
+
+, then the relationship is a reciprocal.
+ 
+\end_layout
+
+\begin_layout Standard
+You might wonder why they do it this way.
+ There's a mathematical argument which shows that as 
+\begin_inset Formula $\lambda$
+\end_inset
+
+gets closer and closer to 0, the formula
+\begin_inset Formula 
+\[
+(y^{\lambda}-1)/\lambda
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+converges to 
+\begin_inset Formula $log(y).$
+\end_inset
+
+ I know it 
+\begin_inset Quotes eld
+\end_inset
+
+seems
+\begin_inset Quotes erd
+\end_inset
+
+ as though this formula would become undefined because 
+\begin_inset Formula $0$
+\end_inset
+
+ would be in the denominator, but it just isn't so! (See Kmenta, Elements
+ of Econometrics 2ed, p.
+ 518).
+\end_layout
+
+\begin_layout Standard
+In the original Box-Cox approach, as far as I understand it, one was supposed
+ to apply this 
+\begin_inset Formula $\lambda$
+\end_inset
+
+- transformation to all the variables in the model.
+ So you would think about a theoretical model like:
+\begin_inset Formula 
+\begin{equation}
+\frac{y_{i}^{\lambda}-1}{\lambda}=b_{0}+b_{1}\frac{x_{i}^{\lambda}-1}{\lambda}+e_{i}\label{eq:boxCoxFull}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I do not know the detailed history of this approach, but I gather that,
+ pretty early on, people started to observe that there is no reason to apply
+ the same transformation across the whole model.
+ One might, for example, want something like this:
+\begin_inset Formula 
+\[
+\frac{y_{i}^{\lambda}-1}{\lambda}=b_{0}+b_{1}x_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\begin_inset Formula 
+\begin{equation}
+\frac{y_{i}^{\lambda}-1}{\lambda}=b_{0}+b_{1}log(x_{i})+e_{i}\label{eq:lambdalogx}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Venables and Ripley, 4ed, p.
+ 171, the approach being described is that LHS sort.
+ The boxcox method in the MASS package lets you estimate the best lambda
+ value for a given dependent variable against a set of independent variables
+ that the user can transform in any desired way.
+\end_layout
+
+\begin_layout Standard
+Suppose we want to reconsider the idea that the dependent variable should
+ be log(fatalities+21.0).
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boxcoxfatalitiesloglicenses"
+
+\end_inset
+
+, the result of the boxcox command is presented:
+\end_layout
+
+\begin_layout Quote
+\align left
+boxcox(fatals+21.0 ~ log(licenses), data=dat, plotit-T, xlab=
+\begin_inset Quotes erd
+\end_inset
+
+lambda, fatalities + 21.0~ log(licenses)
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boxcoxfatalitiesloglicenses"
+
+\end_inset
+
+boxcox(fatalities~log(licenses+21))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/boxcox4.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That result indicates that the appropriate 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ value is 0, or very close to it.
+ Hence there's no reason to reject the idea that the dependent variable
+ should be log(y+21.0).
+ 
+\end_layout
+
+\begin_layout Section
+Estimated model
+\end_layout
+
+\begin_layout Standard
+I don't feel entirely comfortable just throwing together variables in this
+ way.
+ Usually, if there is some theory about how variables are related, then
+ one can feel a bit more enthusiastic about specification.
+ 
+\end_layout
+
+\begin_layout Standard
+Given the information at hand--which is all I have--I believe the conclusion
+ should be that the best specification is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+log(fatalities_{i}+21.0)=b_{0}+b_{1}log(older\, licenses_{i})+\epsilon_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and so we estimate this model in R with the command:
+\end_layout
+
+\begin_layout Standard
+lm(log(fatals+21)~log(licenses),data=dat)
+\end_layout
+
+\begin_layout Standard
+\noindent
+and the parameter estimates are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coefficients
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+OLS estimate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Std.Error
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Intercept
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-2.97*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.43
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+log(older licenses)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.68*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.037
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R^{2}=0.85$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+adj 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+=0.85
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N=51
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Residual Std.Error=0.27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+* 
+\begin_inset Formula $p\leq0.05$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Well, note the residual standard error got smaller, the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+is pretty good.
+ We could be really happy except that the estimate of 
+\begin_inset Formula $b_{1}=0.68,$
+\end_inset
+
+ which does not help very much with the elasticity argument that I wanted
+ to make when this all started.
+ The estimated model implies the 
+\begin_inset Quotes eld
+\end_inset
+
+truth
+\begin_inset Quotes erd
+\end_inset
+
+ is something like:
+\begin_inset Formula 
+\[
+\widehat{fatalities_{i}}=-21+e^{-2.97}older\, licenses_{i}^{0.68}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All of this left hand side analysis is carried out on the assumption that
+ the right hand side is correctly specified.
+ As you will see in the next section, the conclusions you make about the
+ parameters 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda$
+\end_inset
+
+are vitally dependent on what is put in on the RHS of the equation.
+ If you look closely at the likelihood values displayed Box-Cox plots above
+ and below, I believe you will conclude that, between 
+\begin_inset Formula $older\, licenses_{i}$
+\end_inset
+
+and 
+\begin_inset Formula $log(older\, licenses_{i}),$
+\end_inset
+
+ the best fitting choice is indeed 
+\begin_inset Formula $log(older\, licenses_{i})$
+\end_inset
+
+.
+ But that does not mean that some other transformation might not be better.
+\end_layout
+
+\begin_layout Section
+Watch out for this pitfall
+\end_layout
+
+\begin_layout Standard
+As a concluding note, I want to confess that I made a couple of mistakes
+ in my first cut at this and I expect other people will make them as well.
+ The mistakes I made were all due to careless specification on the right
+ hand side of the equation in the commands logtrans and boxcox.
+\end_layout
+
+\begin_layout Standard
+If you forget to log the right hand side in the logtrans calculation, using
+ the command:
+\end_layout
+
+\begin_layout Standard
+vals <- logtrans(fatals 
+\begin_inset Formula $\sim$
+\end_inset
+
+ log(licenses), data=dat, alpha=seq(1,1000,len=200))
+\begin_inset Newline newline
+\end_inset
+
+then the estimate of alpha that is 191.0.
+ If you use that alpha as your working transformation for 
+\begin_inset Formula $fatalities_{i}$
+\end_inset
+
+, then you produce a scatterplot for the log relationship which is clearly
+ nonlinear (and mistaken).
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Mistaken-logtrans-fitting"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Mistaken-logtrans-fitting"
+
+\end_inset
+
+Mistaken logtrans fitting log(fatalities + 
+\begin_inset Formula $\alpha$
+\end_inset
+
+)
+\begin_inset Formula $\sim$
+\end_inset
+
+licenses
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/olderFatals3.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I made the same right-hand-side mistake when it came to the Box-Cox transformati
+on.
+ I had in mind the sort of model described in the Kmenta book (see equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:boxCoxFull"
+
+\end_inset
+
+).
+ I mistakenly assumed it would estimate the 
+\begin_inset Formula $\lambda$
+\end_inset
+
+coefficient on both sides when the following command was used:
+\end_layout
+
+\begin_layout Standard
+boxcox((fatals) 
+\begin_inset Formula $\sim$
+\end_inset
+
+ licenses, data=dat, plotit=T)
+\begin_inset Newline newline
+\end_inset
+
+But that does not estimate both sides, of course, it only estimates the
+ LHS transformation.
+ The boxcox procedure proceeds on the assumption we want the right hand
+ side to include licenses, not log(licenses), and the mistaken estimate
+ is 
+\begin_inset Formula $\lambda=0.5$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+boxcox(fatalities
+\begin_inset Formula $\sim$
+\end_inset
+
+licenses)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/boxcox1.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's giving a best estimate of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+that is pretty far from zero.
+ It could 
+\begin_inset Quotes eld
+\end_inset
+
+fool
+\begin_inset Quotes erd
+\end_inset
+
+ us to proceeding on the hypothesis that the dependent variable should be
+ 
+\begin_inset Formula $\sqrt{fatalities}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If you run it again with the transformed value of 
+\begin_inset Formula $y|+\alpha$
+\end_inset
+
+ with this command:
+\end_layout
+
+\begin_layout Standard
+boxcox((fatals+21) 
+\begin_inset Formula $\sim$
+\end_inset
+
+ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0")
+\end_layout
+
+\begin_layout Standard
+you get a similar result.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+boxcox(fatalities+21
+\begin_inset Formula $\sim$
+\end_inset
+
+licenses)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/boxcox3.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you follow along with the idea that the 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ coefficient should be 0.5, then you will arrive at some really peculiar
+ regression results and a bad looking scatterplot.
+\end_layout
+
+\end_body
+\end_document

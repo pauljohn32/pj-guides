@@ -1,0 +1,893 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 12
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+GLM (Generalized Linear Model) #3 (version 2)
+\layout Author
+
+Paul Johnson
+\layout Section
+
+Why do you need a 
+\begin_inset Quotes eld
+\end_inset 
+
+quasi
+\begin_inset Quotes erd
+\end_inset 
+
+ model at all?
+\layout Enumerate
+
+A fitted GLM appears to have 
+\begin_inset Quotes eld
+\end_inset 
+
+overdispersed
+\begin_inset Quotes erd
+\end_inset 
+
+ observations.
+\layout Enumerate
+
+You want to estimate parameters without specifying the probability distribution
+ of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ in complete detail.
+\layout Enumerate
+
+You want to estimate parameters for a model that is too complicated for
+ the solution of the likelihood function
+\layout Section
+
+If you have the problem of overdispersion, what are the alternatives? 
+\layout Standard
+
+Overdispersion is a primarily a phenomenon of the one-parameter exponential
+ distributions, Poisson and binomial, because those models restrict the
+ dispersion parameter to be 1.0.
+\layout Subsection
+
+Assume a Mixed Model
+\layout Standard
+
+If your model originally was this
+\begin_inset Formula \begin{equation}
+g(\mu_{i})=X_{i}b\end{equation}
+
+\end_inset 
+
+
+\newline 
+then assume that there is an additional random variable causing the extra
+ dispersion
+\begin_inset Formula \begin{equation}
+g(\mu_{i})=X_{i}b+e_{i}\end{equation}
+
+\end_inset 
+
+There are some fabulously successful 
+\begin_inset Quotes eld
+\end_inset 
+
+special cases.
+\begin_inset Quotes erd
+\end_inset 
+
+ Social scientists, following J.
+ Scott Long's influential textbook, are inclined to assume that 
+\begin_inset Formula $e_{i}$
+\end_inset 
+
+ is log Gamma, and that leads to 
+\begin_inset Formula $y$
+\end_inset 
+
+ which is Negative Binomial.
+ Its variance is larger than the Poisson.
+ Similarly, in a logistic regression, one can add a random error and estimate
+ a so-called 
+\begin_inset Quotes eld
+\end_inset 
+
+Beta-Binomial
+\begin_inset Quotes erd
+\end_inset 
+
+ model.
+ 
+\layout Standard
+
+McCullagh & Nelder oppose the knee-jerk adoption of the Beta-Binomial (or
+ Negative Binomial) models simply because they have dispersion patterns
+ that match data.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Though this is an attractive option from a theoretical standpoint, in practice
+ it seems unwise to rely on a specific form of over-dispersion, particularly
+ where the assumed form has been chosen for mathematical convenience rather
+ than scientific plausibility.
+\begin_inset Quotes erd
+\end_inset 
+
+ (p.
+ 126)
+\layout Standard
+
+Bayesian modeling opens up major opportunities for fitting models with user-dete
+rmined random errors.
+\layout Subsection
+
+Force a dispersion parameter into your GLM
+\layout Standard
+
+The quasibinomial and quasipoisson families included in the R stats package
+ are quite simple.
+ Following McCullagh & Nelder, the quasibinomial model keeps the same structure,
+ except that 
+\begin_inset Quotes eld
+\end_inset 
+
+the variance is inflated by an unknown factor 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+ (p.
+ 126).
+ This 
+\begin_inset Quotes eld
+\end_inset 
+
+unknown factor
+\begin_inset Quotes erd
+\end_inset 
+
+ was called the dispersion parameter 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ in my other handouts.
+ The estimates of the 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ are not changed, but the estimates of the standard errors are changed.
+ McCullagh & Nelder observe that the covariance matrix of the parameter
+ estimates is inflated according to the estimated value of the dispersion
+ coefficient
+\begin_inset Formula \begin{equation}
+Cov(\hat{b})=\phi\,(X'WX)^{-1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+There are other routines that have the same name, quasibinomial or quasipoisson,
+ impose a little more structure on the way that 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ is incorporated.
+ I've seen at least one routine that fits a model called 
+\begin_inset Quotes eld
+\end_inset 
+
+quasipoisson
+\begin_inset Quotes erd
+\end_inset 
+
+ but it is mathematically equivalent to the more familiar Negative Binomial.
+ So, when you find these things, you simply must read the manual.
+\layout Subsection
+
+Adopt a quasi-likelihood modeling strategy
+\layout Standard
+
+Quasi-likelihood was proposed by Wedderburn and then popularized in the
+ bible of generalized linear models, McCullagh & Nelder.
+ The user is asked to specify the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ as a function of the inputs as well as the dependence of the variance of
+ 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ on the mean (the so-called variance function).
+\layout Standard
+
+The Generalized Estimating Equations (GEE) are an extension of the quasi-likelih
+ood idea to estimate Generalized Linear Models with clustering of observations
+ and inter-temporal correlations.
+\layout Section
+
+Insert GLS notes here
+\layout Standard
+
+I have a brief handout on Generalized Least Squares.
+ If you don't have it, get it! Or some book...
+\layout Section
+
+Quasi likelihood
+\layout Standard
+
+As usual, the observations are collected into a column vector 
+\begin_inset Formula $y$
+\end_inset 
+
+.
+ The version of quasi-likelihood that was presented by Wedderburn (and later
+ McCullagh & Nelder) supposes that there are 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ mean values, 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ Recall that 
+\begin_inset Formula $\mu=(\mu_{1},\mu_{2},\cdots,\mu_{N})'$
+\end_inset 
+
+ is a vector of mean values, one for each case.
+ There are also observations 
+\begin_inset Formula $y=(y_{1},y_{2},\cdots,y_{N})'$
+\end_inset 
+
+ drawn from a distribution.
+ The original versions of this model, before the GEE was popularized, assumed
+ that the 
+\begin_inset Formula $y$
+\end_inset 
+
+'s were observed independently and that each 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is affected only by 
+\begin_inset Quotes eld
+\end_inset 
+
+its own
+\begin_inset Quotes erd
+\end_inset 
+
+ mean 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+\layout Standard
+
+The quasi-likelihood model consists of 3 parts.
+\layout Standard
+
+1.
+ A model for the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ for each case.
+ We might as well think of those as predicted values, 
+\begin_inset Formula $\hat{\mu}_{i}$
+\end_inset 
+
+.
+ The modeler is supposed to have in mind a relationship between the input
+ variables, 
+\begin_inset Formula $X$
+\end_inset 
+
+ and some parameters, 
+\begin_inset Formula $b$
+\end_inset 
+
+.
+ Obviously, a link function must be specified, 
+\begin_inset Formula $g(\mu_{i})=\eta_{i}=X_{i}b$
+\end_inset 
+
+
+\layout Standard
+
+2.
+ Variance of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ as it depends on the means.
+ 
+\begin_inset Formula $V$
+\end_inset 
+
+ is a matrix of values which show ow the variance of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is affected by the average.
+ This is a theoretically stated belief, not an empirically estimated function.
+ For a first cut at the problem, the observations are not autocorrelated,
+ so 
+\begin_inset Formula $V$
+\end_inset 
+
+ is diagonal: 
+\begin_inset Formula \begin{equation}
+V(\mu)=\left[\begin{array}{cccccc}
+V(\mu_{1}) &  &  &  & 0 & 0\\
+ & V(\mu_{2}) &  &  & 0 & 0\\
+ &  & \ddots\\
+\\0 &  &  &  & V(\mu_{N-1})\\
+0 & 0 &  &  &  & V(\mu_{N})\end{array}\right]\end{equation}
+
+\end_inset 
+
+ 
+\layout Standard
+
+3.
+ Quasi-likelihood and Quasi-score functions.
+\layout Standard
+
+See McCullagh & Nelder, 2ed, p.
+ 327.
+ 
+\layout Standard
+
+The quasi-log-likelihood for the 
+\begin_inset Formula $i$
+\end_inset 
+
+'th case has some properties of a log-likelihood function is defined as
+ 
+\begin_inset Formula \begin{equation}
+Q_{i}=\int_{y_{i}}^{\mu_{i}}\frac{y_{i}-t}{\phi V(t)}\, dt\end{equation}
+
+\end_inset 
+
+This might be described as a 
+\begin_inset Quotes eld
+\end_inset 
+
+variance weighted indicator of the gap between the observed value of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ and the expected value.
+\begin_inset Quotes erd
+\end_inset 
+
+ One should choose 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ to make this as large as possible.
+ If one chose 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ to optimize 
+\begin_inset Formula $Q_{i},$
+\end_inset 
+
+one would solve the first order condition
+\begin_inset Formula \begin{equation}
+\frac{\partial Q_{i}}{\partial\mu_{i}}=\frac{y_{i}-\mu_{i}}{\phi V(\mu_{i})}=0\end{equation}
+
+\end_inset 
+
+
+\newline 
+This is the result of the application of a first-year calculus result about
+ the differentiation of integrals with respect to their upper limit of integrati
+on.
+\layout Standard
+
+In the regression context, the parameter of interest is a regression coefficient
+ which is playing a role in predicting 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ .
+ The first order equation for the quasi-log-likelihood function is a quasi-score
+ function.
+ (Recall that a maximum likelihood score equation is a first order condition,
+ one that sets the first derivative of each parameter equal to 0.) The quasi-scor
+e function 
+\begin_inset Quotes eld
+\end_inset 
+
+looks like
+\begin_inset Quotes erd
+\end_inset 
+
+ a score equation from the GLM.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+U(b_{k})=\sum\frac{1}{\phi}\frac{\partial\mu_{i}}{\partial b_{k}}\frac{1}{V(\mu_{i})}(y_{i}-\mu_{i})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+It is 
+\begin_inset Quotes eld
+\end_inset 
+
+like
+\begin_inset Quotes erd
+\end_inset 
+
+ a score equation, in the sense that it satisfies many of the fundamental
+ properties of score equations.
+ Recall the ML Fact 1, 
+\begin_inset Formula $E(U(b_{k}))=0$
+\end_inset 
+
+, for example.
+\layout Standard
+
+In matrices, it would be stated
+\begin_inset Formula \begin{equation}
+U(b_{k})=\frac{1}{\phi}D^{'}V^{-1}(y-\mu)\end{equation}
+
+\end_inset 
+
+
+\newline 
+
+\begin_inset Formula $D$
+\end_inset 
+
+ is a matrix of partial derivatives showing the impact of each coefficient
+ on the predicted value for each case and 
+\begin_inset Formula $D'$
+\end_inset 
+
+ is the transpose of 
+\begin_inset Formula $D$
+\end_inset 
+
+.
+ 
+\begin_inset Formula \begin{equation}
+U(\hat{b})=\frac{1}{\phi}\left[\begin{array}{cccc}
+\frac{\partial\mu_{1}}{\partial b_{1}} &  &  & \frac{\partial\mu_{1}}{\partial b_{p}}\\
+\frac{\partial\mu_{2}}{\partial b_{1}} & \frac{\partial\mu_{2}}{\partial b_{2}} & \cdots\\
+\\\frac{\partial\mu_{N}}{\partial b_{1}} &  &  & \frac{\partial\mu_{N}}{\partial b_{p}}\end{array}\right]^{'}\left[\begin{array}{cccc}
+V(\mu_{1}) &  &  & 0\\
+ & V(\mu_{2})\\
+ &  & \ddots\\
+0 &  &  & V(\mu_{N})\end{array}\right]^{-1}\left[\begin{array}{ccc}
+y_{1} & - & \mu_{1}\\
+y_{2} & - & \mu_{2}\\
+\vdots &  & \vdots\\
+y_{N} &  & \mu_{N}\end{array}\right]\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+As long as we are working with the simple, nonautocorrelated case, the values
+ of 
+\begin_inset Formula $D'$
+\end_inset 
+
+ and 
+\begin_inset Formula $V^{T}$
+\end_inset 
+
+ can be easily written down:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+U(\hat{b})=\frac{1}{\phi}\left[\begin{array}{cccc}
+\frac{\partial\mu_{1}}{\partial b_{1}} & \frac{\partial\mu_{2}}{\partial b_{1}} &  & \frac{\partial\mu_{N}}{\partial b_{1}}\\
+\frac{\partial\mu_{1}}{\partial b_{2}} & \frac{\partial\mu_{2}}{\partial b_{2}} &  & \frac{\partial\mu_{N}}{\partial b_{2}}\\
+ &  & \ddots\\
+\frac{\partial\mu_{1}}{\partial b_{p}} & \frac{\partial\mu_{2}}{\partial b_{p}} &  & \frac{\partial\mu_{N}}{\partial b_{p}}\end{array}\right]\left[\begin{array}{cccc}
+\frac{1}{V(\mu_{1})}\\
+ & \frac{1}{V(\mu_{2})}\\
+ &  & \ddots\\
+ &  &  & \frac{1}{V(\mu_{N})}\end{array}\right]^{'}\left[\begin{array}{ccc}
+y_{1} & - & \mu_{1}\\
+y_{2} & - & \mu_{2}\\
+\vdots &  & \vdots\\
+y_{N} &  & \mu_{N}\end{array}\right]\end{equation}
+
+\end_inset 
+
+This is not derived from a Likelihood equation, but McCullagh & Nelder use
+ words like 
+\begin_inset Quotes eld
+\end_inset 
+
+related
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+connected
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The elements in 
+\begin_inset Formula $\partial u_{i}/\partial b_{j}$
+\end_inset 
+
+ carry along with them the information that is stated in the link function
+ as well as the impact of 
+\begin_inset Formula $b_{j}$
+\end_inset 
+
+ on 
+\begin_inset Formula $\eta_{j}$
+\end_inset 
+
+ .
+ Assuming that the predictive equation for the i'th case with the j'th variable
+ is 
+\begin_inset Formula $b_{j}x_{ij}$
+\end_inset 
+
+, 
+\begin_inset Formula \begin{equation}
+\frac{\partial\mu_{i}}{\partial b_{j}}=\frac{\partial g^{-1}(\eta_{i})}{\partial\eta_{i}}\cdot\frac{\partial\eta_{i}}{\partial b_{j}}=\frac{\partial g^{-1}(\eta_{i})}{\partial\eta_{i}}\cdot x_{ij}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Since the link function is continuous, differentiable, and monotonic, this
+ is the same as
+\begin_inset Formula \begin{equation}
+\frac{1}{\partial g/\partial\mu_{i}}x_{ij}=\frac{1}{g'(\mu_{i})}x_{ij}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The quasi-score equation looks almost exactly like the first order condition
+ (the normal equations) from GLS.
+ It also looks a lot like the first order condition of the GLM.
+\layout Standard
+
+The covariance matrix of 
+\begin_inset Formula $U(\hat{b})$
+\end_inset 
+
+ is a familiar looking thing, 
+\begin_inset Formula \begin{equation}
+\frac{1}{\phi}D^{'}V^{-1}D\end{equation}
+
+\end_inset 
+
+
+\newline 
+Please note that we did NOT assume anything about the precise distribution
+ of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+ We have only assumed the predictive formula for 
+\begin_inset Formula $\mu$
+\end_inset 
+
+ and the variance function.
+ 
+\layout Standard
+
+McCullagh & Nelder observe that the Newton-Raphson algorithm (using Fisher's
+ Information matrix) can be used to solve the score equation.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Approximate unbiasedness and asymptotic Normality of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ follow directly from (the algorithm) under the second-moment assumptions
+ made in this chapter
+\begin_inset Quotes erd
+\end_inset 
+
+ (p.
+ 328).
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+In all of the above respects the quasi-likelihood behaves just like an ordinary
+ log likelihood
+\begin_inset Quotes erd
+\end_inset 
+
+ (p.
+ 328).
+\layout Subsection
+
+Correlated cases
+\layout Standard
+
+When the cases are not independent from one another, the most important
+ change is in the matrix 
+\begin_inset Formula $V^{-1}$
+\end_inset 
+
+.
+ Now it is a general matrix of weights indicating the interdependence of
+ observed values 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ on the means of one or more observations.
+\layout Standard
+
+You can write it all out verbosely, suppose the coefficients are 
+\begin_inset Formula $b=(b_{1},b_{2},...,b_{p})'$
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{cccc}
+\frac{d\mu_{1}}{db_{1}} & \frac{d\mu_{2}}{db_{1}} & \cdots & \frac{d\mu_{N}}{db_{1}}\\
+\frac{d\mu_{1}}{db_{2}} & \frac{d\mu_{2}}{db_{2}} &  & \frac{d\mu_{N}}{db_{2}}\\
+\\\frac{d\mu_{1}}{db_{p}} & \frac{d\mu_{2}}{db_{p}} &  & \frac{d\mu_{N}}{db_{p}}\end{array}\right]\left[\begin{array}{cccc}
+w_{11} & w_{12} & \cdots & w_{1N}\\
+w_{12} & w_{22} &  & w_{2N}\\
+\vdots &  & \ddots & \vdots\\
+w_{N1} & w_{N2} & \cdots & w_{NN}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\mu_{1}\\
+y_{2}-\mu_{2}\\
+\vdots\\
+y_{N}-\mu_{N}\end{array}\right]=\left[\begin{array}{c}
+0\\
+0\\
+\vdots\\
+0\end{array}\right]\label{eq:QLE2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In a quasi-likelihood framework, one must begin with an estimate of the
+ coefficients 
+\begin_inset Formula $\hat{b}^{1}$
+\end_inset 
+
+and then iteratively calculate values for 
+\begin_inset Formula $\hat{\mu}$
+\end_inset 
+
+and 
+\begin_inset Formula $\hat{W}$
+\end_inset 
+
+ and 
+\begin_inset Formula $\hat{D'}$
+\end_inset 
+
+ and when the number smashing stops, one has obtained a quasi-likelihood
+ estimator.
+\layout Standard
+
+Liang and Zeger pioneered this.
+ They claim that the parameter estimates 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ are consistent and have many of the properties of maximum likelihood.
+\layout Section
+
+It's the same as OLS/GLS when the models 
+\begin_inset Quotes eld
+\end_inset 
+
+coincide.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+Suppose for a moment that we have 
+\begin_inset Formula $p$
+\end_inset 
+
+ variables and 
+\begin_inset Formula $p$
+\end_inset 
+
+ parameters to estimate.
+ We only assume that because I want to show the preceding is the same as
+ GLS if you assume the predictive model is linear.
+ The data for the input variables has 
+\begin_inset Formula $N$
+\end_inset 
+
+ rows and 
+\begin_inset Formula $p$
+\end_inset 
+
+ columns (one for each parameter), including a 
+\begin_inset Quotes eld
+\end_inset 
+
+constant
+\begin_inset Quotes erd
+\end_inset 
+
+ column of 1's if desired:
+\begin_inset Formula \begin{equation}
+X=\left[\begin{array}{ccccc}
+x_{11} & x_{12} & x_{13} & \cdots & x_{1p}\\
+x_{21} & x_{22}\\
+\vdots\\
+\\x_{N1} & x_{N2} & \cdots & x_{(N-1)(p-1)} & x_{Np}\end{array}\right]\end{equation}
+
+\end_inset 
+
+Note that if you have a linear model, 
+\begin_inset Formula $\mu=Xb$
+\end_inset 
+
+, then 
+\begin_inset Formula $\frac{d\mu_{i}}{db_{j}}=x_{ij}$
+\end_inset 
+
+, and 
+\begin_inset Formula $D'=X'$
+\end_inset 
+
+.
+ 
+\layout Section
+
+What good could it possibly be?
+\layout Standard
+
+It leads to the GEE framework for GLM applications to panel studies.
+ In other words, longitudinal data analysis with non-Normal variables.
+ 
+\layout Section
+
+Why is Quasi-Likelihood needed?
+\layout Standard
+
+If you read books on GLM, they go through all the general stuff about the
+ exponential models and then, at the end, they say 
+\begin_inset Quotes eld
+\end_inset 
+
+hey, look here, we can get something almost as good, but with weaker assumptions.
+ And its inspired by GLS.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+Maybe you are like me and you think to yourself, 
+\begin_inset Quotes eld
+\end_inset 
+
+Who the heck cares? If I want something 'like GLS,' I'll just use GLS.
+ I don't see why I need quasi-likelihood.
+\begin_inset Quotes erd
+\end_inset 
+
+ I read article after article and I did not see the point.
+ But then it hit me.
+\layout Standard
+
+OLS is meaningful for 
+\begin_inset Quotes eld
+\end_inset 
+
+symmetrical
+\begin_inset Quotes erd
+\end_inset 
+
+ error terms, especially the Normal.
+\layout Standard
+
+The motivation for GLS is minimizing the sum of squared errors.
+ That concept works for Normal distributions, and possibly other symmetric
+ distributions.
+ But its not going to help much for asymmetric distributions.
+\layout Standard
+
+And maximum likelihood is not an answer because the quasi development starts
+ by presupposing that you don't know 
+\begin_inset Formula $f(y_{i}|X_{i},b)$
+\end_inset 
+
+.
+\layout Standard
+
+And then the magical part of quasi-likelihood becomes apparent:
+\layout Standard
+
+When you want something as good as a 
+\begin_inset Quotes eld
+\end_inset 
+
+sum of squares model
+\begin_inset Quotes erd
+\end_inset 
+
+ or a maximum likelihood model, but you don't have the tools for either,
+ there is an alternative that is 
+\begin_inset Quotes eld
+\end_inset 
+
+almost as good.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\the_end

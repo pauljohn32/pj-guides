@@ -1,0 +1,216 @@
+\batchmode
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots3", recursive=T)
+dir.create("plots3", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots3/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.85}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\lyxframeend{}\section{Practice Problems}
+
+
+\lyxframeend{}
+
+\small
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Problems}
+\begin{enumerate}
+\item {\small \label{Prob 1-1}For the R Summer Course, I made several presentations
+about the plotting features of R. If you didn't know about them yet,
+this might be a good time to take a quick survey. In my guides folder,
+they are under Rcourse. }{\small \par}
+
+\begin{enumerate}
+\item plot-1
+\item plot-2
+\item plot-3d
+\item regression-tableAndPlot-1
+\end{enumerate}
+
+{\small For regression plots, I suppose you will be mainly interested
+in plot-1 (scatterplots and histograms) and regression-tableAndPlot-1.}{\small \par}
+
+
+You will see that there are many ways to draw a line on a scatterplot,
+perhaps too many ways with apparently identical results. Here is a
+little exercise that will give you a good foundation. 
+
+
+First, draw a scatterplot (Use any x and y you want, I'll make mine
+up).
+
+
+\begin{Sinput}
+x <- rpois(100, lambda=10)
+y <- rnorm(100, m=50, s=10)
+plot(x,y, xlab="x is here", ylab="y is here", cex=0.7, pch=13) 
+\end{Sinput}
+
+
+You can fiddle with ``cex'' and ``pch'' values, see what happens. 
+
+
+Then add a predictive line. My approach is to pick 2 values of x,
+the high and low from the range function, and then calculate predictions
+for those, then draw a line to connect the dots. For a simple straight
+line model, this may require a bit more work, but when you get to
+nonlinear models, it will really help to understand this.
+
+
+\begin{Sinput}
+xSequence <- range(x)
+predSequence <- predict(mod1, newdata=data.frame(x=xSequence))
+lines(xSequence, predSequence, col="red", lty=3, lwd=2)
+\end{Sinput}
+
+
+Why not try it out and fiddle with the color, lwd, lty values in the
+lines command. For colors, you can put in some common names like red,green,
+blue, but I usually use the shades of gray, and the function gray(.9)
+returns a very light gray, and gray(.6) is very dark. I mean, play
+with commands like
+
+
+\begin{Sinput}
+lines(xSequence, predSequence, col=gray(.5), lty=4, lwd=1)
+\end{Sinput}
+
+
+Then you can fiddle around with commands like this to draw horizontal
+lines.
+
+
+abline(h=mean(y), lty=5, col="green")
+
+\item {\small Can you suggest a method of making a diagnostic plot that
+might make the heteroskedasticity more apparent to the reader?}{\small \par}
+\item {\small \label{Prob2}Here's a trick question for you. Consider this
+display of a q-q plot. {[}imagine qq-plot that shows several points
+that are way far off the straight line.{]} Does this mean the regression
+results are wrong? Please explain. (This is a final exam sort of question.
+Its one that should make you connect theory and practice. One trick
+here is that I've used the word ``wrong'' and leave you to decide
+what wrong mean. Did I mean ``biased?'' ``Inconsistent''? Another
+trick here is that you can do almost all of the usual regression exercises
+without assuming that $e_{i}$ is normal. So think about how a regression
+can still be unbiased and consistent if the error is not normal.)}{\small \par}
+\item Here is one way to find out which cases are ``outliers.'' R has
+a function called ``identify'' and I've never gotten very good at
+it. But maybe you are better. The idea is that you can create a scatterplot
+and then click on certain points to identify them. Run ?identify to
+read more. Here's a working example.
+
+
+\begin{Sinput}
+x <- c(1,2,3,4,5)
+y <- c(5,4,3,4,5)
+nam <- c("Bill", "Charles","Jane","Jill","Jaime")
+dat <- data.frame(x,y,nam)
+rm(x,y,nam)
+plot(y~x, dat=dat)
+with(dat, identify(x,y, nam) )
+\end{Sinput}
+
+
+As soon as you hit return on the last line, the R session will seem
+to ``freeze''. It is waiting for you to left-click on the points
+in the graph. You left-click on a point to insert ``nam'' next to
+it, and when you are finished, you can right-click to ``release control''
+from the identify function. This is one way to spot outliers.
+
+
+The identify function is a struggle for me, mainly because all of
+my computers use non-standard video settings and so clicking on a
+point does not necessarily choose that point. But if you don't soup
+up your computers, I bet you will have more fun with it.
+
+\end{enumerate}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

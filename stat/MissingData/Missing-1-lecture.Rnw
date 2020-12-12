@@ -1,0 +1,897 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/MissingData//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+% In document Latex options:
+
+%% \newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(4.1, 4.1, 1.5, 2.1) 
+##pjmar <- par("mar")
+par(mar=pjmar, ps=11)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Missing 1]{Missing Data Tidbits 1}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2015]{2015}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Missing Data}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section*{Orientation}
+
+\begin{frame}
+\frametitle{This is a very immense literature}
+
+The focus on ``Incomplete Data'' flows from the highly influential
+research of Donald Rubin
+
+Dempster, A.P.; Laird, N.M.; Rubin, D.B. (1977). \textquotedbl{}Maximum
+Likelihood from Incomplete Data via the EM Algorithm\textquotedbl{}.
+\emph{Journal of the Royal Statistical Society, Series B} 39 (1):
+1\textendash{}38. 
+
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in
+surveys}. New York: Wiley. 
+
+Little, Roderick J.A.; Rubin, Donald B. (1987). \emph{Statistical
+Analysis with Missing Data}. Wiley Series in Probability and Mathematical
+Statistics. New York: John Wiley \& Sons. pp. 134\textendash{}136.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Polticial Science Contribution}
+
+In political science, this burst onto our consciousness after the
+publication of 
+\begin{itemize}
+\item King, Gary, James Honaker, Anne Joseph, and Kenneth Scheve. 2001.
+\textquotedblleft{}Analyzing Incomplete Political Science Data: An
+Alternative Algorithm for Multiple Imputation.\textquotedblright{}
+\emph{The American Political Science Review} 95(1): 49-69.
+\end{itemize}
+King et al explained the problem and provided computer software to
+help with the work required. That has been a major (major!) success,
+and there is an updated version of the software for the R computing
+platform described here.
+\begin{itemize}
+\item James Honaker, Gary King, Matthew Blackwell (2011). Amelia II: A Program
+for Missing Data. \emph{Journal of Statistical Software}, 45(7), 1-47.
+URL http://www.jstatsoft.org/v45/i07/. 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Listwise Deletion}
+
+
+\lyxframeend{}\lyxframe{Data Set: Columns of Same Length}
+\begin{itemize}
+\item Suggest model
+\begin{equation}
+income_{i}=\beta_{0}+\beta_{1}educ+\beta_{2}gender_{i}+e_{i},\,\, e_{i}\sim N(0,\sigma^{2})
+\end{equation}
+
+\item Variables are thought of as ``columns'' in a data frame
+\end{itemize}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+row number &
+respondent id &
+$income$ &
+$educ$  &
+gender\tabularnewline
+\hline 
+\hline 
+1 &
+243223 &
+4352.5 &
+6 &
+M\tabularnewline
+\hline 
+2 &
+151512 &
+112423 &
+21 &
+F\tabularnewline
+\hline 
+3 &
+515131 &
+55345.5 &
+13 &
+M\tabularnewline
+\hline 
+4 &
+166122 &
+3421.4 &
+12 &
+M\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{A Data Genie Loses Some of the Data}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+row number &
+respondent id &
+$income$ &
+$educ$  &
+gender\tabularnewline
+\hline 
+\hline 
+1 &
+243223 &
+4352.5 &
+6 &
+M\tabularnewline
+\hline 
+2 &
+151512 &
+NA &
+21 &
+F\tabularnewline
+\hline 
+3 &
+515131 &
+4345.5 &
+13 &
+M\tabularnewline
+\hline 
+4 &
+166122 &
+3421.4 &
+12 &
+NA\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{After Listwise Deletion}
+\begin{itemize}
+\item Stat packs, since the 1970s, have typically assumed that incomplete
+rows should be removed entirely
+\end{itemize}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+row number &
+respondent id &
+$income$ &
+$educ$  &
+gender\tabularnewline
+\hline 
+\hline 
+1 &
+243223 &
+4352.5 &
+6 &
+M\tabularnewline
+\hline 
+\sout{2} &
+\sout{151512} &
+\sout{NA} &
+\sout{21} &
+\sout{F}\tabularnewline
+\hline 
+3 &
+515131 &
+4345.5 &
+13 &
+M\tabularnewline
+\hline 
+\sout{4} &
+\sout{166122} &
+\sout{3421.4} &
+\sout{12} &
+\sout{NA}\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+\begin{itemize}
+\item Only rows 1 and 3 survive the listwise deletion
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Are The LD Estimates Valuable?}
+\begin{itemize}
+\item Every student knows: you get more precise parameter estimates if you
+have 1000 rows of data than if you have 10 rows of data.
+\item Listwise deletion wastes a lot of information!
+\item We want to know if the OLS estimates $\hat{\beta}^{listwise\, deletion}$
+are
+
+\begin{itemize}
+\item unbiased
+\item consistent. Does $N\rightarrow\infty$ have meaning if we throw away
+lots of rows?
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{You can see the Danger, right? Unrepresentative Samples}
+
+Example I'm making up from the top of my head
+\begin{itemize}
+\item You are studying the free-school lunch program expansion effect on
+educational test scores. 
+\item You attend the school on monday and collect data from all of the children.
+\item On Tuesday you return to collect more data. You get lots of material
+in the morning, but then at 11AM some kids vanish.
+
+\begin{itemize}
+\item almost of all of the kids who get the free lunch happen to be gone
+eating the free lunch. Their variables become missing data, ``NA''. 
+\item The only free lunchers from whom you collect data are the ones who
+refuse to go eat the free lunch on Tuesday, which is leftover glop
+from Thursday.
+\end{itemize}
+\item Question: To what extent are estimates from this data affected by
+the fact some variables are NA for many free lunch students? 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Some Jargon}
+\begin{description}
+\item [{Missing~Completely~at~Random~(MCAR).}] The data that is missing
+is gone, but there is no pattern determining which data is gone. It
+is \emph{as if} your data table is sitting in the back porch and a
+few rain drops fall and some cells are dissolved.
+\item [{Missing~at~Random~(MAR).}] A value is missing, but whether it
+is missing or not does not depend on its own value. However, the values
+of the missing variables are somehow predictable from the other variables
+you do have (and not predictable by other unmeasured forces)
+\item [{Missing~Not~Completely~at~Random~(MNAR).}] The missing information
+is gone for some systematic reason. The missing mechanism is not ``ignorable''.
+Some example fixes exist for MNAR data, but they are usually specialized
+to particular problems (example: Heckman's selection model).
+\end{description}
+
+\lyxframeend{}\lyxframe{I'm aiming for the ``In a nutshell'' explanation}
+\begin{itemize}
+\item Missing data methods can be a great career for you
+\item To truly master this, consider the graduate course in Psychology that
+studies missing data for a while semester.
+\item But for now, lets focus on the simple question: \end{itemize}
+\begin{quotation}%{}
+\noindent \begin{center}
+what am I supposed to do if there are missing scores?
+\par\end{center}
+\end{quotation}%{}
+
+\lyxframeend{}\lyxframe{When do you have a real problem?}
+\begin{itemize}
+\item If you suspect that some rows are entirely missing from your data
+set, you may have a problem known as ``selection bias''. Lets put
+that aside for today, work on it another time.
+\item If you are losing only 5\% of the rows in your data due to missing
+values, it is unlikely that any of the fancy fixups will make much
+difference.
+\item If you believe the missings are MCAR, then listwise deletion is as
+good as the fancy fixups. You assert the cases you do have are ``representative''. 
+\item If you have missings in more than 10\%, but not more than 50\% of
+your rows, then it is probably the case that
+
+\begin{itemize}
+\item listwise deletion estimates might be biased
+\item there are workable alternatives, especially if you have variables
+related to the missing values
+\end{itemize}
+\item If missings affect more than 50\% of rows, you are in dangerous territory.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{}
+
+
+\lyxframeend{}\section{The Big Picture on What you Ought to Do}
+
+
+\lyxframeend{}\lyxframe{2 Major options}
+\begin{enumerate}
+\item FIML: Full Information Maximum Likelihood analysis.
+\item Imputation of missing values. 
+
+\begin{description}
+\item [{Basic~Idea:}] make reasonable guesses, fill in NAs in the data.
+Repeat that several times. Re-estimate your model for each imputed
+data set. Pool-together the answers.
+\item [{Competing~Imputation~Methods}]~\end{description}
+\begin{enumerate}
+\item Multivariate Normal Approximation. 
+\item MICE: Multiple Imputation via Chained Equations.
+\item I'll ignore all of the other ``ad hoc'' ways. They have been shown
+to be flawed.
+\end{enumerate}
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{FIML}
+\begin{itemize}
+\item It is endorsed most clearly in this paper
+
+
+Allison, P. D. (2012). Handling missing data by maximum likelihood.
+Paper 312-2012 presented at the SAS Global Forum. \url{http://www.statisticalhorizons.com/wp-content/uploads/MissingDataByML.pdf}
+
+\item Difficult to get this done today unless you have access to some very
+specialized, expensive software.
+\item Working through this is more mathematically challenging than we need
+to be today.
+\item People who do Structural Equation Modeling may rely on FIML because
+it is integrated into some software.
+\end{itemize}
+
+\lyxframeend{}\section{Imputation}
+
+
+\lyxframeend{}\lyxframe{Imputation: Basic idea}
+\begin{itemize}
+\item Rubin's proposal
+
+\begin{enumerate}
+\item Use many variables, including the dependent variable and variables
+not planned for inclusion in the final model, to predict missings
+\item Create several ``Imputed'' data sets, where missings have been ``filled
+in''
+\item Run \emph{Each analysis }on \emph{Each Imputed Dataset}
+\item Combine the estimates, weight them to take uncertainty into account.
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Examples That Make this Believable}
+\begin{itemize}
+\item Record menus of 1000s of people that eat at McDonalds. 
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+entree &
+side &
+condiment &
+dessert\tabularnewline
+\hline 
+\hline 
+burger &
+fries &
+ketchup &
+none\tabularnewline
+\hline 
+burger &
+salad &
+italian dressing &
+none\tabularnewline
+\hline 
+chicken burger &
+fries &
+ketchup &
+cone\tabularnewline
+\hline 
+burger &
+fries &
+ketchup &
+pie\tabularnewline
+\hline 
+\end{tabular}
+
+\item If the Data Genie comes along and blots out the sides and/or condiments
+at random, you might be able to make some good guesses about what
+they were. (If you see fries, guess ketchup!)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Rubin's Rules for Combining Slope Estimates }
+\begin{itemize}
+\item Calculation of ``imputation averaged'' results for Maximum Likelihood
+Estimates of ``slope coefficients''.
+\item \textbf{EASY} Average the imputed, $\hat{\beta}=$ $\sum_{i=1}^{m}\hat{\beta}_{j}$
+\item \textbf{EASY} Variance of $\hat{\beta}$ is sum of 
+
+\begin{enumerate}
+\item average of $\widehat{Var(\hat{\beta}_{j})}$, i.e., ($\sum_{i=1}^{m}=\widehat{Var(\hat{\beta}_{j})}$),
+and 
+\item a penalty for uncertainty across samples , $\frac{1}{1+m}\sum(\hat{\beta_{j}}-\hat{\beta})^{2}$.
+\end{enumerate}
+\item Ratio $\hat{\beta}/\widehat{Var(\hat{\beta})}$ is distributed as
+a t-statistic
+\item The problem of ``averaging'' together slope estimates is thus mostly
+solved, however, we have not such clear guidance on combining estimates
+such as the $R^{2}$, RMSE, and so forth. Unclear (so far as I know)
+how to do follow-up F tests for subsets of coefficients.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Yes, but How do we do these Wonderful Imputations?}
+\begin{itemize}
+\item Expectation Maximization in a Multivariate Normal Approximation
+\item Multiple Imputation by Chained Equations
+\end{itemize}
+
+\lyxframeend{}\subsection*{MVN}
+
+
+\lyxframeend{}\lyxframe{Multivariate Normal Approximation}
+\begin{itemize}
+\item This was developed first. It is what Ruben had in mind. 
+\item Championed by many leading pioneers in analysis of incomplete data
+\item Software for this existed first, NORM, Amelia.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Rough Sketch of Amelia}
+\begin{itemize}
+\item Assume all variables are drawn from one Multivariate Normal Distribution,
+$MVN(\mu,\Sigma)$
+\item Conduct series of algorithms to estimate $\mu$ and $\Sigma$
+\item After estimating $\mu$ and $\Sigma$, then draw random samples from
+the MVN to fill in missing values
+\item Basic idea similar to ``Norm'' (J. Schafer), but algorithm may be
+faster.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Surprising Applicability of MVN}
+\begin{itemize}
+\item Most people say ``but my variables are not Normal.'' (gender, survey
+scales, etc)
+\item King (and others) argue the approximation is not harmful (various
+reasons)
+\item Amelia allows user to specify variables as ``nominal'' and ``ordinal''
+
+\begin{itemize}
+\item Nominal variables: The normal imputations are ``rounded off'' to
+values in the observed scale \{0,1,2\}
+\item Ordinal variables: Optionally ``rounded off'' to integers, but instructions
+discourage that
+\item They suggest a 7 point scale might meaningfully have imputed values
+in-between the integers
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+
+\frametitle{Syntax Sketch}
+
+There are full worked examples in the workshop notes:
+
+\url{http://pj.freefaculty.org/guides/Rcourse/multipleImputation}
+\begin{enumerate}
+\item Get rid of extraneous variables (to speed this up)
+
+
+\begin{Sinput}
+datsub <- dat[ , c("names", "of", "variables", "to", "be", "imputed", "or", "used", "in", "imputation")]
+\end{Sinput}
+
+\item Create imputed values
+
+
+\begin{Sinput}
+library(Amelia)
+datimpute <- amelia(datsub, m = 10, noms = c("proper", "names", "of", "nominal", "vars"))
+\end{Sinput}
+\begin{itemize}
+\item I asked for 10 sets of imputed data (Ruben suggested 5, others now
+say more needed).
+\item IF your data includes some highly multi-correlated columns, amelia
+may take a long time. May be necessary to use more arguments (empirical
+priors as in ``ridge'' regression)
+\item The list of nominal or ordinal variables does not affect the calculation
+of the MVN approximation, but it affects the format of the output
+(the extent of the rounding in the imputed variables).
+\end{itemize}
+\item Run the regression on each separate set.
+
+\begin{enumerate}
+\item amelia creates a list structure. The imputed sets are available as
+datimpute\$imputations.
+\item We use one of R's functions for handling a list of data structures
+(e.g., \code{lapply})
+\end{enumerate}
+
+\begin{Sinput}
+allimpest <- lapply(datimpute$imputations, function(x){
+    lm(dv ~ iv1 + iv2 + iv3, data = x)
+})
+\end{Sinput}
+\begin{enumerate}
+\item Remember: this can be time consuming because each separate data set
+must be estimated separately.
+\end{enumerate}
+\item Use an appropriate tool to summarize the separate estimates.
+
+\begin{enumerate}
+\item In the workshop notes, I demonstrate various ways this can be done.
+My favorite package for this is \code{mitools} by Thomas Lumley.
+\end{enumerate}
+
+\begin{Sinput}
+library(mitools)
+betas <- MIextract(allimpest, fun = coef)
+vars <- MIextract(allimpest, fun = vcov)
+summary(MIcombine(betas, vars))
+\end{Sinput}
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Some Example Output}
+
+\begin{Schunk}
+\begin{Soutput}
+Multiple imputation results:
+      MIcombine.default(betas, vars)
+            results    se (lower upper) missInfo
+(Intercept)    4.03 0.532  2.926  5.128     66 %
+pclass2nd     -1.44 0.258 -1.951 -0.931     27 %
+pclass3rd     -2.71 0.308 -3.339 -2.081     57 %
+sexmale       -2.53 0.175 -2.872 -2.184     18 %
+age           -0.05 0.011 -0.073 -0.027     73 %
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Some Example Output}
+
+\begin{Schunk}
+\begin{Sinput}
+ library(mix)
+ se.glm <- MIextract(allimplogreg, fun = function(x){sqrt(diag(vcov(x)))}) 
+ as.data.frame(mi.inference(betas, se.glm))
+\end{Sinput}
+\begin{Soutput}
+              est std.err  df  signif  lower  upper    r fminf
+(Intercept)  4.03   0.532  23 1.2e-07  2.926  5.128 1.72  0.66
+pclass2nd   -1.44   0.258 129 1.3e-07 -1.951 -0.931 0.36  0.27
+pclass3rd   -2.71   0.308  31 6.3e-10 -3.339 -2.081 1.17  0.57
+sexmale     -2.53   0.175 300 0.0e+00 -2.872 -2.184 0.21  0.18
+age         -0.05   0.011  18 2.5e-04 -0.073 -0.027 2.39  0.73
+\end{Soutput}
+\end{Schunk}
+
+df: degrees of freedom associated with the t reference distribution.
+
+r: estimated relative increases in variance due to nonresponse.
+
+fminf: estimated fractions of missing information.
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Amelia Questions}
+\begin{itemize}
+\item Do we really believe the data is multivariate normal?
+\item Is their handling of categorical variables persuasive?
+\item The imputer can fill in ``impossible'' values, like age of 244 when
+observed scores are in $\{1,\ldots,99\}$
+\end{itemize}
+
+\lyxframeend{}\subsection*{MICE}
+
+
+\lyxframeend{}\lyxframe{MICE}
+\begin{itemize}
+\item Championed by Stef van Buuren
+
+\begin{itemize}
+\item Van Buuren, S., Groothuis-Oudshoorn, K. (2011). \textquoteleft{}mice\textquoteright{}:
+Multivariate Imputation by Chained Equations in \textquoteleft{}R\textquoteright{}.
+\emph{Journal of Statistical Software}, 45(3), 1-67. <URL: http://www.jstatsoft.org/v45/i03/>
+\item Van Buuren, S. (2012). \_\emph{Flexible Imputation of Missing Data}.
+Boca Raton, FL: Chapman \& Hall/CRC Press.
+\end{itemize}
+\item Also a focus of a very large effort headed by Andrew Gelman (Columbia)
+called ``mi''. 
+
+\begin{itemize}
+\item Yu-Sung Su, Andrew Gelman, Jennifer Hill, Masanao Yajima. 2011. \textquotedblleft{}Multiple
+Imputation with Diagnostics (mi) in R: Opening Windows into the Black
+Box\textquotedblright{}. \emph{Journal of Statistical Software. }45(2)
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Basic Mice Idea}
+\begin{itemize}
+\item Separately process each column, predicting it from all the others.
+
+
+\textquotedbl{}The algorithm imputes an incomplete column (the target
+column) by generating 'plausible' synthetic values given other columns
+in the data.\textquotedbl{}
+
+\item Cycle through columns over and over, until model converges (in MCMC
+sense), then draw samples to impute.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Recommends ``predictive mean matching'' to select imputed values}
+\begin{itemize}
+\item When filling in missings, find cases with similar predicted values
+to the case in question
+\item From among those cases, collect their list of actual observed scores
+\item Draw imputations from that subset of actual scores
+\item ``Automatically'' solves the problem that imputations might have
+impossible values
+
+\begin{itemize}
+\item Imputations for categorical variables always match the original scale
+(sex is always 0 or 1, never 0.64)
+\item When a variable is badly skewed, the PMM always selects a realistic
+value.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Customizes to data types}
+\begin{itemize}
+\item Each column gets its own predictive model
+\item Defaults:
+\end{itemize}
+\begin{tabular}{|c|c|c|}
+\hline 
+data type &
+default &
+also available\tabularnewline
+\hline 
+\hline 
+numeric &
+pmm (predictive mean matching) &
+norm, 2level\tabularnewline
+\hline 
+binary &
+logreg (logistic regression) &
+lda\tabularnewline
+\hline 
+factor &
+polyreg (Bayesian polytomous regression) &
+\tabularnewline
+\hline 
+factor: ordinal &
+polr (prop. odds logistic (MASS)) &
+\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item Possible to
+
+\begin{itemize}
+\item add user-defined predictive tools
+\item control the sequence of column processing
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Other Handy mice Features}
+\begin{itemize}
+\item complete: function can
+
+\begin{itemize}
+\item return any of the individual imputed data frames
+\item return all data frames combined in the ``long'' format (rows stacked
+together)
+\item return all frames combined in the ``wide'' format (columns side-by-side)
+\end{itemize}
+\item pool: outputs many of Rubin's suggested diagnostic formulae (param,
+var, $R^{2}$)
+\item summary(pool( )): distills parameter estimates
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ample Diagnostic Information}
+
+All of this information is embedded in the output object
+
+{\footnotesize{}}%
+\begin{tabular}{|c|c|}
+\hline 
+{\footnotesize{}qhat: matrix of m complete data fits} &
+{\footnotesize{}b: within imputation variance}\tabularnewline
+\hline 
+{\footnotesize{}r: rel. incr var due to nonresponse} &
+{\footnotesize{}t: total variance of pooled estimates}\tabularnewline
+\hline 
+{\footnotesize{}qbar: pooled estimate} &
+{\footnotesize{}u: Variance matrices from m fits ($var\times var\times m$)}\tabularnewline
+\hline 
+{\footnotesize{}ubar: mean of variances across m fits} &
+{\footnotesize{}gamma: prop. variance explained by imputations}\tabularnewline
+\hline 
+{\footnotesize{}dfcom: df in complete analysis} &
+{\footnotesize{}df: df for pooled estimates}\tabularnewline
+\hline 
+ &
+{\footnotesize{}fmi: fraction missing information}\tabularnewline
+\hline 
+\end{tabular}{\footnotesize \par}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Default Output more Modest}
+
+\begin{Schunk}
+\begin{Sinput}
+ miceTitanic <- mice( subset( titanic, select = c('survived', 'pclass', 'sex', 'age', 'embarked')), m = 10, maxit  = 10, printFlag=FALSE) 
+ miceFitTitanic <- with(data = miceTitanic, exp = glm(survived ~ pclass + sex + age, family = binomial))
+ pool(miceFitTitanic)
+\end{Sinput}
+\begin{Soutput}
+Call: pool(object = miceFitTitanic)
+
+Pooled coefficients:
+(Intercept)     pclass2     pclass3        sex2         age 
+       3.97       -1.24       -2.81       -2.31       -0.05 
+
+Fraction of information about the coefficients missing due to nonresponse: 
+(Intercept)     pclass2     pclass3        sex2         age 
+       0.92        0.75        0.77        0.81        0.93 
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Summary looks familiar, though}
+
+\def\Sweavesize{\tiny}
+\begin{Schunk}
+\begin{Sinput}
+ round(summary(pool(miceFitTitanic)), 2)
+\end{Sinput}
+\begin{Soutput}
+              est   se    t   df Pr(>|t|) lo 95 hi 95 nmis  fmi lambda
+(Intercept)  3.97 1.03  3.9 10.1     0.00   1.7   6.3   NA 0.92   0.90
+pclass2     -1.24 0.40 -3.1 16.7     0.01  -2.1  -0.4   NA 0.75   0.72
+pclass3     -2.81 0.41 -6.9 15.8     0.00  -3.7  -1.9   NA 0.77   0.74
+sex2        -2.31 0.35 -6.5 13.8     0.00  -3.1  -1.6   NA 0.81   0.79
+age         -0.05 0.02 -2.5  9.8     0.03  -0.1   0.0  680 0.93   0.92
+\end{Soutput}
+\end{Schunk}\end{frame}
+\end{document}

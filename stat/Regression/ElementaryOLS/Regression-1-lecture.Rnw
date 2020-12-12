@@ -1,0 +1,1762 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/ElementaryOLS//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+% In document Latex options:
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(4.1, 4.1, 1.5, 2.1) 
+##pjmar <- par("mar")
+par(mar=pjmar, ps=11)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Regression 1]{Elementary Regression 1}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Psychology
+}
+
+
+\date[2020]{2020}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Elementary OLS}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction: Key Terms}
+
+
+\lyxframeend{}\lyxframe{Data Set: Columns of Same Length}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+row number &
+respondent id &
+$income$ &
+$educ$  &
+gender\tabularnewline
+\hline 
+\hline 
+1 &
+243223 &
+4352.5 &
+6 &
+M\tabularnewline
+\hline 
+2 &
+151512 &
+6525.1 &
+21 &
+F\tabularnewline
+\hline 
+3 &
+515131 &
+4345.5 &
+13 &
+M\tabularnewline
+\hline 
+4 &
+166122 &
+3421.4 &
+12 &
+F\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+\begin{itemize}
+\item Variables are ``columns'' in a data frame
+\item Rows are called ``observations'' or ``cases'' or ``respondents''
+or ``subjects''
+\item Talk about row ``i'' if you mean to say something that applies for
+each row
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Design Matrix}
+\begin{itemize}
+\item Regression is, inherently, a procedure for estimating effects of numeric
+predictors
+\item The data frame (in R, the ``model frame'') has to be converted from
+data as we see it into a thing that has only numeric columns.
+\item Categorical predictors are converted into ``indicator'' variables
+(dummy variables, usually coded \{0,1\} or \{-1,1\}
+\end{itemize}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+row number &
+respondent id &
+$income$ &
+$educ$  &
+gender\tabularnewline
+\hline 
+\hline 
+1 &
+243223 &
+4352.5 &
+6 &
+1\tabularnewline
+\hline 
+2 &
+151512 &
+6525.1 &
+21 &
+0\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Scatterplot: One Input, One Output}
+
+\begin{center}
+<<carinced10, fig=T, include=F>>=
+library(car)
+plot(income ~ education, data=Prestige, ylab="Income", xlab="Education" )
+@
+\par\end{center}
+
+\includegraphics[width=6cm]{plots/t-carinced10}
+
+.
+
+.
+
+The ``Prestige'' dataset in the R package ``car'' by John Fox
+
+
+\lyxframeend{}\lyxframe{Dependent, Independent}
+\begin{itemize}
+\item DV: Dependent Variable: The thing we are predicting
+
+\begin{itemize}
+\item The ``output'' variable, generally we call it $y_{i}$
+
+\begin{itemize}
+\item In this case ``$income_{i}$''.
+\end{itemize}
+\item Synonyms: ``endogenous variable'' ``outcome variable''
+\end{itemize}
+\item IV: Independent Variable
+
+\begin{itemize}
+\item The ``input'' variable, generally call it $x_{i}$, 
+
+\begin{itemize}
+\item In this case ``$education_{i}"$.
+\end{itemize}
+\item Synonyms: ``exogenous variable'' ``predictor'' ``covariate''
+\end{itemize}
+\item Regression allows several input variables, but for now we consider
+only one.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Line of Best Fit }
+
+\begin{center}
+<<carinced20, fig=T, include=F, height=4, width=5>>=
+incedmod1 <- lm(income~education, data=Prestige)
+plot(income~education, data=Prestige, xlab="Education", ylab="Income")
+abline(incedmod1)
+@
+\par\end{center}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-carinced20}
+
+
+\column{6cm}
+\begin{itemize}
+\item This is the Straight Line that ``best fits'' the data
+\item Best fit = minimizes a criterion, here the ``sum of squared errors''
+\item ``Predicted value'' synonym for ``fitted value'' or ``conditional
+expected value''
+
+\begin{itemize}
+\item For any value of $education$, we predict an outcome on the line
+\end{itemize}
+\item Later, we will use diagnostics to test suitability of this model
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{Typical Computer Printout Summarizing a Fitted Regression}
+
+\begin{center}
+<<carinced21, include=F, echo=F>>=
+summary(incedmod1)
+@
+\par\end{center}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-carinced21}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Make a Professionally Acceptable Regression Table}
+
+<<outreg10, include=F, echo=F, results=tex>>=
+library(rockchalk)
+outreg(incedmod1, tight=F)
+@
+\input{plots/t-outreg10.tex}
+\begin{itemize}
+\item When we are finished, you will understand all of these details.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{In R, after "lm", run follow-up functions}
+\begin{topcolumns}%{}
+
+
+
+
+\column{6cm}
+
+
+There are many (at least 30) ``methods'' that can be used to explore
+that fitted model.
+
+
+<<carinced60, include=F, echo=T, eval=F>>=
+incedmod1 <- lm(income~education, data=Prestige)
+summary(incedmod1)
+anova(incedmod1, test="F")
+vcov(incedmod1)
+confint(incedmod1)
+plot(incedmod1)
+termplot(incedmod1, se=T, partial=T)
+@
+
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-carinced60}
+
+
+\column{6cm}
+\begin{itemize}
+\item lm: creates the regression model ``incedmod1''
+\item summary: main regression table
+\item anova: asks for sum of squares information
+\item vcov: asks for the variance/covariance matrix of $\hat{\beta}$'s
+\item confint: confidence intervals for intercept and slope
+\item plot: creates diagnostic displays
+\item termplot: plots the predictive line
+\item many methods in the ``car'' package
+\item rockchalk plotting and diagnostic routines
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\section{People Always Ask Me$\ldots$}
+
+
+\lyxframeend{}\lyxframe{1. Can I Run Regression on This?}
+
+<<q10a, fig=T, include=F, echo=T>>=
+N <- 200
+x <- runif(N, 0, 45)
+y <- 2 + 0.1 *x + 0.5 * rnorm(N)
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+@
+
+\includegraphics[width=10cm]{plots/t-q10a}
+
+
+\lyxframeend{}\lyxframe{1. As we say in Francais, Oui!}
+
+<<q10b, fig=T, include=F, echo=T>>=
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+m1 <- lm(y ~ x)
+abline(m1, lwd = 2)
+legend("topleft", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q10b}
+
+2 numeric variables, passes the ``inter-occular trauma test''
+
+
+\lyxframeend{}\lyxframe{2. Can I Run Regression on This?}
+
+<<q20a, fig=T, include=F, echo=T>>=
+N <- 20
+x <- runif(N, 0, 45)
+y <- 2 + 0.4 *x + 7 * rnorm(N)
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+@
+
+\includegraphics[width=10cm]{plots/t-q20a}
+
+
+\lyxframeend{}\lyxframe{2. Sure, Why Not?}
+
+<<q20b, fig=T, include=F, echo=T>>=
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+m1 <- lm(y ~ x)
+abline(m1, lwd = 2)
+legend("topleft", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q20b}
+
+The ``straight line'' prediction is not wrong. But not precise,
+either.
+
+
+\lyxframeend{}\lyxframe{3. Can I Run Regression on This?}
+
+<<q30a, fig=T, include=F, echo=T>>=
+N <- 200
+x <- runif(N, 0, 45)
+y <- 2 + 0.1 *x + 10 * rnorm(N)
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+@
+
+\includegraphics[width=10cm]{plots/t-q30a}
+
+
+\lyxframeend{}\lyxframe{3. En Espanol, Si!}
+
+<<q30b, fig=T, include=F, echo=T>>=
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+m1 <- lm(y ~ x)
+abline(m1, lwd = 2)
+legend("topleft", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q30b}
+
+
+\lyxframeend{}\lyxframe{4. Can I Run Regression on This?}
+
+<<q40a, fig=T, include=F, echo=T>>=
+N <- 400
+x <- 20 + rgamma(N, shape=2, scale=5)
+y <- 2 + 0.1 *x + 10 * rnorm(N)
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+@
+
+\includegraphics[width=10cm]{plots/t-q40a}
+
+
+\lyxframeend{}\lyxframe{4. OK, I Don't Mind a Bit}
+
+<<q40b, fig=T, include=F, echo=T>>=
+plot(y ~ x, xlab = "One Mysterious Predictor", ylab="An Output Variable")
+m1 <- lm(y ~ x)
+abline(m1, lwd = 2)
+legend("topright", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q40b}
+
+I don't know of any reason why you expect the predictor to be ``evenly
+distributed'' or ``normal'' or whatnot
+
+
+\lyxframeend{}\lyxframe{5. Can I Run Regression on This?}
+
+<<q50a, fig=T, include=F, echo=T>>=
+N <- 400
+x <- 20 + rgamma(N, shape=2, scale=5)
+y <- 2 + ifelse(x < 30, 2 + 2 *x, 2 + 2 * x - 6 * (x-30)) + 5 * rnorm(N)
+plot(y ~ x, col = gray(.50), xlab = "One Mysterious Predictor", ylab="An Output Variable")
+@
+
+\includegraphics[width=10cm]{plots/t-q50a}
+
+
+\lyxframeend{}\lyxframe{5. No. Are You Joking?}
+
+<<q50b, fig=T, include=F, echo=T>>=
+plot(y ~ x, col = gray(.50), xlab = "One Mysterious Predictor", ylab="An Output Variable")
+m1 <- lm(y ~ x)
+abline(m1, lwd = 2)
+legend("topright", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q50b}
+
+Straight line does not suit this data
+
+
+\lyxframeend{}\lyxframe{What's the point so far?}
+\begin{itemize}
+\item We don't assume much about the predictor
+\item We do assume a LOT about the outcome variable
+
+\begin{itemize}
+\item it is supposed to be scattered ``equally likely'' above and below
+the line
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{6. Can I Run Regression on This?}
+
+<<q60a, fig=T, include=F, echo=T>>=
+N <- 300
+x <- rnorm(N)
+xcat2 <- cut(x, breaks=c(-Inf, 0.5, Inf), labels=c("L", "R"))
+xcat2c <- contrasts(xcat2)[xcat2, ]	
+xcat2n <- as.numeric(xcat2)-1
+ycatn <- ifelse(x < x + rnorm(N), 0, 1)
+plot.default(ycatn ~ xcat2n, xlim=c(-0.5, 1.5), ylim = c(-0.5, 1.5), xlab = "One Categorical Predictor", ylab="An Output Variable", axes = F, bty="L")
+axis(1, at = c(0, 1), labels = c("L","R"))
+axis(2, at = c(0, 1), labels = c("L", "H"))
+@
+
+\includegraphics[width=10cm]{plots/t-q60a}
+
+
+\lyxframeend{}\lyxframe{6. Maybe, But You'd Really Have to Stretch}
+
+<<q60b, fig=T, include=F, echo=T>>=
+m1 <- lm(ycatn ~ xcat2n)
+plot.default(ycatn ~ xcat2n, xlim=c(-0.5, 1.5),ylim = c(-0.5, 1.5), xlab = "One Categorical Predictor", ylab="An Output Variable", axes = F, bty="L")
+axis(1, at = c(0, 1), labels = c("L=0","R=1"))
+axis(2, at = c(0, 1), labels = c("L=0", "H=1"))
+@
+
+\includegraphics[width=10cm]{plots/t-q60b}
+
+Its tough for me to see a ``regression line'' in there, but some
+people do.
+
+
+\lyxframeend{}\lyxframe{7. Can I Run Regression on This?}
+
+<<q70a, fig=T, include=F, echo=T>>=
+N <- 300
+xcat2 <- cut(rnorm(N), breaks=c(-Inf, 0.5, Inf), labels=c("R", "M"))
+xcat2c <- contrasts(xcat2)[xcat2, ]	
+xcat2n <- as.numeric(xcat2)-1
+y <- 2 + 0.1 * xcat2n + 3 * rnorm(N)
+plot.default(y ~ xcat2n, xlim=c(-0.5, 1.5), xlab = "One Categorical Predictor", ylab="An Output Variable", xaxt = "n")
+axis(1, at = c(0, 1), labels = c("L","R"))
+@
+
+\includegraphics[width=10cm]{plots/t-q70a}
+
+
+\lyxframeend{}\lyxframe{7. Probably, if you recode the predictor as \{0,1\}}
+
+<<q70b, fig=T, include=F, echo=T>>=
+m1 <- lm(y ~ xcat2n)
+plot.default(y ~ xcat2n, xlab = "One Categorical Predictor", ylab = "An Output Variable", xaxt = "n", xlim = c(-0.5, 1.5))
+axis(1, at = c(0, 1), labels = c("L=0","R=1"))
+p1 <- predict(m1, newdata = data.frame(xcat2n = c(0,1)))
+lines(c(-0.25, 0.25), c(p1[1], p1[1]), lwd = 2)
+lines(c(0.75, 1.25), c(p1[2], p1[2]), lwd = 2)
+legend("top", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q70b}
+
+The appropriate graph has ``steps'', rather than a line. Predictions
+for discrete points.
+
+
+\lyxframeend{}\lyxframe{8. Can I Run Regression on This?}
+
+<<q80a, fig=T, include=F, echo=T>>=
+N <- 500 
+xcat2 <- cut(rnorm(N), breaks=c(-Inf, -2, 0, 0.5, 1, Inf), labels=c("R", "M", "D", "A", "F"))
+xcat2n <- contrasts(xcat2)[xcat2, ]	
+y <- 2 + xcat2n %*% c(3.5, -2.0, 1.3, -0.2) + 1 * rnorm(N)
+plot(y ~ (as.numeric(xcat2) -1), xlab = "One Ordinal Predictor", ylab="An Output Variable", xaxt = "n")
+axis(1, at = 1:5, labels = c("R", "M", "D", "A", "F"))
+@
+
+\includegraphics[width=10cm]{plots/t-q80a}
+
+
+\lyxframeend{}\lyxframe{8. As Yoda says, ``Mistaken, This Appears''}
+
+<<q80b, fig=T, include=F, echo=T>>=
+plot(y ~ (as.numeric(xcat2)-1), xlab = "One Mysterious Predictor", ylab="An Output Variable", xaxt = "n")
+axis(1, at = 1:5, labels = c("R=0", "M=1", "D=2", "A=3", "F=4"))
+m1 <- lm(y ~ as.numeric(xcat2)-1)
+abline(m1, lwd = 2)
+legend("topright", legend=c("OLS Predicted value"), lty = 1)
+@
+
+\includegraphics[width=10cm]{plots/t-q80b}
+
+
+\lyxframeend{}\section{The Underlying Theory}
+
+
+\lyxframeend{}\lyxframe{Assumption 1: Linear Relationship}
+\begin{itemize}
+\item For each ``case'' $i$, the following is true: 
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}\label{eq:linearModel}
+\end{equation}
+
+\item The \alert{parameters} are $\beta_{0}$, $\beta_{1}$, and $\sigma_{e}$
+
+\begin{itemize}
+\item $\beta_{0}$ is the ``constant'' or ``y intercept''. 
+\item $\beta_{1}$ is the slope of the line.
+\item $\sigma_{e}$ is the standard deviation of a ``random effect,''
+$e_{i}$, that is uniquely drawn for each observation.
+\end{itemize}
+\item The subscript $i$ means $x_{i}$ and $y_{i}$ are individual specific.
+Note no $i$ on $\beta$'s or $\sigma_{e}$
+\item In the past, my notes used the letter $b$ for coefficients, not $\beta$,
+mostly because $b$ was easier to type in MS Word. Now I use \LaTeX{},
+I don't have that problem anymore. But I have not updated all of my
+notes about everything.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Random and Deterministic Parts}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The deterministic part is the ``true line'' $\beta_{0}+\beta_{1}x_{i}$
+\item The stochastic (random part) ``throws'' observed scores up and down
+\end{itemize}
+
+\column{6cm}
+
+
+\begin{center}
+\includegraphics[bb=14bp 94bp 655bp 500bp,clip,width=7cm]{0_home_pauljohn_SVN_SVN-guides_stat_Regression_ElementaryOLS_importfigs_bivar1.pdf}
+\par\end{center}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Separate Deterministic and Stochastic Parts}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Suppose $\beta_{0}=3$ and $\beta_{1}=1.3.$ 
+\item The ``true relationship'':
+\[
+\mbox{\ensuremath{y_{i}}}=3+1.3\cdot x_{i}+e_{i}
+\]
+
+\item The deterministic part:
+\[
+3+1.3\cdot x_{i}
+\]
+
+\item The stochastic part is $e_{i}$.
+\end{itemize}
+
+\column{6cm}
+
+
+<<line20,echo=F,include=F,fig=T>>=
+x <- c(0,8)
+ftrue <- function(x){3 + 1.3*x}
+y <- ftrue(x)
+plot(y ~ x, type = "l", xlab = expression(x[i]), ylab = expression(y[i]), ylim = c(0,10), xlim = c(-1,8), axes = F)
+axis(1, pos = 0)
+axis(2, pos = 0)
+@
+
+\includegraphics[width=6cm]{plots/t-line20}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Refresher: Linear Equation}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item \textrm{$3+1.3\cdot x_{i}$}
+\item The slope: 1.3 is the ``rise over run''
+
+\begin{itemize}
+\item For each 1 unit increase in $x_{i}$, the outcome increases by $1.3$.
+\end{itemize}
+\item The intercept: 3
+
+\begin{itemize}
+\item When $x_{i}=0,$ the outcome will be $3$.
+\end{itemize}
+\end{itemize}
+
+\column{7cm}
+
+
+<<line90, echo=T, fig=T, include=F>>=
+x <- c(0,8); b0=3; b1=1.3
+fx <- function(x){b0 + b1*x}
+y <- fx(x)
+plot(y ~ x, type="l",xlab=expression(paste(x[i])), ylab=expression(paste(y[i])), ylim=c(0,10), xlim=c(-1,8), axes=F)
+axis(1, pos=0)
+axis(2, pos=0)
+lines(c(0,2),c(b0, b0),lty=2)
+text(2.2, b0, "the intercept", pos=4)
+segments(c(4,5),fx(c(4,4)),c(5,5),fx(c(4,5)))
+text(5, fx(3), paste("slope: \n over one \n up", b1), pos=4)
+@
+
+
+\includegraphics[width=6cm]{plots/t-line90}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{The Fitted Line in the Income Equation}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Note the difference between the theory and the estimate
+\item Theory: $income_{i}=\beta_{0}+\beta_{1}education_{i}+e_{i}$
+\item Estimated line: 
+\end{itemize}
+
+\begin{equation}
+\widehat{income}_{i}=-2853.585+898.813\cdot education_{i}
+\end{equation}
+
+\begin{itemize}
+\item There is no ``error term'' in the equation for the predicted line.
+That's because we assume $E[e_{i}]=0$. 
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-carinced20}
+
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{The Fitted Line in the Income Equation}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item A 1 unit increase in $education_{i}$ ``is associated with''( causes?)
+a 898.8 increase in $income_{i}$
+\item The subscript $i$ is important. It helps us remember the assumption
+that the same relationship applies for all cases, $i\in\{1,\ldots,N\}$
+\item The regression model also summarizes the ``scatter'' above and below,
+which is our next topic.
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-carinced20}
+
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{Assumption 2: A ``Well Behaved Error Term''}
+\begin{itemize}
+\item We don't have to say $e_{i}$ is $Normal(0,\sigma_{e}^{2})$. But
+we could. Some people do.
+\item Well behaved means ``symmetric'' and ``homogeneous'', which is
+not as strong as assuming Normal
+
+\begin{itemize}
+\item Assumption 2A: $e_{i}$ is ``on average'' 0: $E[e_{i}]=0$
+\item Assumption 2B: all observations are drawn from the same distribution
+with a constant variance, $\sigma_{e}^{2}$ (a.k.a ``homoskedasticity'')
+\[
+Var[e_{i}]=E[e_{i}^{2}]=\sigma_{e}^{2}
+\]
+
+\end{itemize}
+\item Violations of these assumptions lead to re-specification and advanced
+model-fitting techniques (nonlinear models, weighted least squares,
+random effects models)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Assumption 2A: $E[e_{i}]=0$}
+\begin{itemize}
+\item The error term has an average value of $0$:
+\end{itemize}
+\begin{equation}
+E(e_{i})=0
+\end{equation}
+
+\begin{itemize}
+\item Thus $E[y_{i}|x_{i}]=E[\beta_{0}+\beta_{1}x_{i}+e_{i}]=\beta_{0}+\beta_{1}x_{i}+0$
+\item You can guess where this leads, right? 
+
+\begin{itemize}
+\item If we had reasonable estimates $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$,
+the predicted value $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x_{i}$
+is a reasonable estimate of the expected value, given $x_{i}$.
+\item In other words, it is not ridiculous to use predicted (or fitted)
+value $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x_{i}$ as an estimated
+value for $y_{i}$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Assumption 2B: Homoskedasticity}
+\begin{itemize}
+\item The error term's variance is constant, i.e, the same for all cases
+$i$
+\end{itemize}
+\begin{equation}
+Variance[e_{i}]=\sigma_{e}^{2}\label{eq:Varesig2}
+\end{equation}
+
+\begin{itemize}
+\item I.e., $\sigma_{e}^{2}$ \textbf{is the same for all cases}. It is
+not subscripted by $i$.
+
+\begin{itemize}
+\item Every case's ``random effect'' comes from a distribution with the
+same amount of uncertainty in it.
+\end{itemize}
+\item This assumption is vital in our understanding of uncertainty, or variance,
+in the estimates.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Sidenote. Explain $E[e_{i}^{2}]=\sigma_{e}^{2}$}
+\begin{itemize}
+\item The Variance of the error term equals the expected value of $e_{i}^{2}$.
+\item Many stats book will define ``homogeneous variance'' as: 
+\[
+E[e_{i}^{2}]=\sigma_{e}^{2}
+\]
+
+
+
+rather than the more obvious
+\begin{equation}
+Var[e_{i}]=\sigma_{e}^{2}
+\end{equation}
+
+
+\item While disconcerting, we can show these are the SAME definitions. Start
+with the definition of variance
+\end{itemize}
+\[
+V(e_{i})=\sigma_{e}^{2}=E[(e_{i}-E[e_{i}])^{2}]
+\]
+
+\begin{itemize}
+\item Recall $E(e_{i})=0$, so
+\end{itemize}
+\[
+V[e_{i}]=E[(e_{i}-0)^{2}]=E[e_{i}^{2}]
+\]
+
+
+
+\lyxframeend{}\lyxframe{In Maximum Likelihood Analysis, A Stronger Assumption Would be Required}
+\begin{itemize}
+\item In ML (including the generalized linear model), we would assume a
+specific distribution for $e_{i}$, which amounts to saying that we
+can state the distribution of $y_{i}$ given $x_{i}$ and the $\beta$'s. 
+\item We would usually say $y_{i}$, depends on ``linear predictor'' ($\beta_{0}+\beta_{1}x_{i})$.
+\item For example, given $x_{i}$, $y_{i}$ is Normal, i.e., drawn from
+$N(\beta_{0}+\beta_{1}x_{i},\,\,\sigma_{e}^{2})$
+\item Until the end of this class, we don't need to make that assumption,
+but you can if you like it! 
+\item When you get to GLM, you can assume that $y_{i}$ is Poisson, Gamma,
+or whatever you like.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Roadmap of Ahead}
+\begin{enumerate}
+\item calculate estimates of $\beta_{0}$ and $\beta_{1}$ (which we will
+call $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$) 
+\item evaluate our uncertainty about the $\hat{\beta}$'s by calculating
+standard errors of the $\hat{\beta}$.
+\item estimate the variance of $e_{i}$, $\widehat{\sigma_{e}^{2}}$
+\item conduct some ``diagnostics'' to find out if we might fit a better
+model.
+\end{enumerate}
+
+\lyxframeend{}\section{Estimate $\beta$'s}
+
+
+\lyxframeend{}\lyxframe{Treat $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$ as unknowns.}
+\begin{itemize}
+\item This week, we only use a ``straight line'' predicted value formula. 
+\end{itemize}
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}\cdot x_{i}
+\end{equation}
+
+\begin{itemize}
+\item The observed variables $x_{i}$ and $y_{i}$ are now treated as ``known
+values'', 
+\item The parameter estimates $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$
+become variables that we adjust to find the best prediction.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{OLS: The Sum of Squares as a Criterion}
+\begin{itemize}
+\item Predicted: $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x_{i}$ 
+\item Residual: Difference between observed $y_{i}$ and predicted $\hat{y}_{i}$.
+\item $S(\hat{\beta}_{0},\hat{\beta}_{1}):$Sum of Squared Residuals depends
+on $\hat{\beta}_{0}$, $\hat{\beta}_{1}$
+\end{itemize}
+\begin{eqnarray}
+S(\hat{\beta}_{0},\hat{\beta}_{1}) & = & \sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}\\
+ & = & \,\sum_{i=1}^{N}(y_{i}-(\hat{\beta}_{0}+\hat{\beta}_{1}x_{i}))^{2}\nonumber \\
+ & = & \,\sum_{i=1}^{N}(y_{i}-\hat{\beta}_{0}-\hat{\beta}_{1}x_{i})^{2}\nonumber 
+\end{eqnarray}
+
+\begin{itemize}
+\item OLS Criterion: minimize the sum of squared residuals by adjusting
+$\hat{\beta}_{0}$ and $\hat{\beta}_{1}$
+\item Notation alert: Often also called ``sum of squared errors'', but
+better to be clear: we never know ``true errors'', we only know
+``residuals''. So I'm trying to remember to call it sum of squared
+residuals.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Estimation process is outlined in the Appendix}
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item The sum of squared residuals is an objective function that we minimize
+by adjusting $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$
+\item Because the sum of squares is a ``U'' shaped function, we can visualize
+the solution.
+\end{itemize}
+
+\column{7cm}
+
+
+\includegraphics[width=7cm]{1_home_pauljohn_SVN_SVN-guides_stat_Regression_ElementaryOLS_importfigs_OLSdemo-3d.pdf}
+
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{[allowframebreaks]The Solutions are the ``OLS Estimators''}
+\begin{itemize}
+\item We'd ordinarily use matrix algebra to solve this problem, but I don't
+want to go into matrices at this point.
+\item Thus I write out the solution in ``scalar'' format, using ordinary
+summations and such.
+\end{itemize}
+\begin{equation}
+\hat{\beta}_{1}^{OLS}=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sum_{i=1}^{N}(x_{i}-\bar{x})^{2}}\label{bhat-1}
+\end{equation}
+
+
+$\bar{x}$ and $\bar{y}$ are sample means. 
+\begin{itemize}
+\item Note
+
+\begin{itemize}
+\item numerator terms: product of $x$ deviations and $y$ deviations about
+their means
+\item denominator terms: $x$ deviations squared.
+\end{itemize}
+\item If you have ``mean centered data'', this simplifies to
+\begin{equation}
+\hat{\beta}_{1}^{OLS}=\frac{\sum x_{i}y_{i}}{\sum x_{i}^{2}}
+\end{equation}
+
+\item And the intercept estimate: $\hat{\beta}_{0}^{OLS}=\bar{y}-\hat{\beta}_{1}^{OLS}\bar{x}$
+\item If you were paying attention when we studied Variance and Covariance,
+you notice the formula for $\hat{\beta}$ is $Cov(x,y)/Var(x)$. Interesting
+co-incidence, there.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Gauss Markov Theorem: OLS is B.L.U.E.}
+\begin{itemize}
+\item $\hat{\beta}^{OLS}$ is an \alert{Unbiased} estimator, it is ``on
+average'' correct: $E[\hat{\beta}^{OLS}]=\beta$
+\item $\hat{\beta}^{OLS}$ is \alert{Consistent}, as $N\rightarrow\infty$,
+$\hat{\beta}^{OLS}.\rightarrow\beta$. (the probability that the gap
+$|\hat{\beta}^{OLS}-\beta|$ is bigger than any small number shrinks
+toward $0$ as $N\rightarrow\infty$).
+\item $\hat{\beta}^{OLS}$ is \alert{Efficient}: No linear unbiased estimating
+formulae has lower variance than $\hat{\beta}^{OLS}$.
+\end{itemize}
+
+\lyxframeend{}\section{$\widehat{\sigma_{e}^{2}}$: Mean Square Error}
+
+
+\lyxframeend{}\lyxframe{Define residual, as opposed to ``error''}
+\begin{itemize}
+\item $e_{i}$ is an ``error term'', it is unmeasured, unknown. 
+
+\begin{itemize}
+\item Its ``true mean'' (expected value) is assumed to be 0
+\item Its ``true variance'' is $\sigma_{e}^{2}$, also unknown.
+\end{itemize}
+\item $\hat{e}_{i}$ is the ``residual'', $y_{i}-\hat{y}_{i}$. It serves
+as an estimate of the error term.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{MSE=Mean Square Error }
+\begin{itemize}
+\item Predict $\hat{y}_{i}$ from the best fitting model
+\item The commonly-called MSE (Mean Squared Error) is the mean of squared
+\textbf{residuals}.
+\begin{equation}
+MSE=\frac{\sum(y_{i}-\widehat{y_{i}})^{2}}{N-2}=\frac{\sum\widehat{e_{i}}^{2}}{N-2}\label{MSE}
+\end{equation}
+
+\item MSE = unbiased estimator of $\sigma_{e}^{2}$ (because of $N-2$ in
+denominator). Unbiased means
+\begin{equation}
+E[MSE]=\sigma_{e}^{2}
+\end{equation}
+
+\item Other notation for MSE: $\widehat{\sigma_{e}^{2}}$,$\widehat{Var[e_{i}]}$,
+$s_{e}^{2}$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{RMSE=Root Mean Squared Error}
+\begin{itemize}
+\item RMSE (root MSE) is the SAS name for the square root of the MSE.
+\item $\hat{\sigma}_{e}$ : The square root of MSE serves as an estimate
+of the standard deviation of the error term.
+\item Other names for root MSE:
+
+\begin{itemize}
+\item standard error of the estimate (in SPSS)
+\item Residual standard error (in R)
+\item $std.err.(e)$. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Correlation and $R^{2}$}
+
+
+\lyxframeend{}\subsection{The $R^{2}$}
+
+
+\lyxframeend{}\lyxframe{$R^{2}$. The Coefficient of Determination}
+\begin{itemize}
+\item $R^{2}$ is the ``coefficient of determination'' 
+\item $R^{2}$ has a minimum of 0 and a maximum of 1.
+\item $R^{2}$ mostly about ``how big'' the error variance is compared
+to the variance of $x$ and $y$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The ``Proportion of Variance Explained''}
+\begin{itemize}
+\item Some people write that the $R^{2}$ represents the proportion of variance
+in y explained by x. Where do they get that?
+\item The Total Sum of Squares: $TSS=\sum(y_{i}-\bar{y})^{2}$
+\item The Error Sum of Squares: $ESS=\sum(y_{i}-\hat{y}_{i})^{2}$
+\item Regression Sum of Squares
+
+\begin{itemize}
+\item $RSS=TSS-ESS$
+\item $RSS=\sum(\hat{y}_{i}-\bar{y}_{i})^{2}$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{``Proportion of Variance''(cont)}
+\begin{itemize}
+\item Notice
+\end{itemize}
+\[
+TSS=RSS+ESS
+\]
+
+\begin{itemize}
+\item Divide all terms by $TSS$ and we see that the two ``proportions''
+of variance add up to one
+\end{itemize}
+\[
+1=\frac{RSS}{TSS}+\frac{ESS}{TSS}
+\]
+
+\begin{itemize}
+\item That's
+\begin{equation}
+1=part\, accounted\, for\, by\, regression+part\, accounted\, for\, by\, error
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{``Proportion of Variance''(cont)}
+\begin{itemize}
+\item Let the ``coefficient of determination'' be
+\[
+R^{2}=\frac{RSS}{TSS}
+\]
+
+\item which is the same as
+\item 
+\[
+1-\frac{ESS}{TSS}
+\]
+ 
+\item Put that in words: $R^{2}$ is the proportion of variance left over
+after we take out the part contributed by random error term. 
+\item Calculate the 'anova' table for a regression model, you'll see for
+yourself.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{How Important is $R^{2}$}
+\begin{itemize}
+\item Experienced statisticians may have rules of thumb about $R^{2}$.
+For example, $R^{2}$ should be bigger than 0.2 before a model is
+worth reporting. 
+\item For various reasons (next slides), I think that's silly.
+\item Sometimes practitioners think a low $R^{2}$ is a general warning
+sign that ``something is wrong.'' 
+\item That's also mistaken: it might be there's not powerful predictive
+relationship to be found. We shouldn't torture the data.
+\item $R^{2}$ is partly dependent on the error term's variance, and we
+will see later that big variance -> wide confidence intervals. I often
+do wish error variance were smaller. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Don't Over-Emphasize $R^{2}$ }
+\begin{itemize}
+\item A slope is a slope is a slope, no matter how big the error variance
+might be. The same $b$'s underlie both, but $R^{2}=0.70$ on left
+and $0.15$ on right:
+\end{itemize}
+<<RSQ10,fig=T,include=F,echo=T,height=5,width=5>>=
+set.seed(12323)
+x <- rnorm(100, m=50,s=10)
+y <-  2 + 3 *x + rnorm(100,m=0, s=20)
+y2 <- 2 + 3 * x + rnorm(100, m=10, s=80)
+mod1 <- lm(y ~ x)
+mod2 <- lm(y2 ~ x)
+plot(x,y, main="", xlab="Indep. Var.", ylab="Dep. Var",ylim=1.2*range(y2))
+abline(2,3,lty=4, col="red")
+abline(mod1)
+legend("bottomright",legend=c("True Relationship","Sample Estimate"), lty=c(4,1),col=c("red","black"))
+@
+
+<<RSQ20,fig=T,include=F,echo=T,height=5,width=5>>=
+plot(x,y2, main="", xlab="Indep. Var.", ylab="Dep. Var.",ylim=1.2*range(y2))
+abline(2,3,lty=4, col="red")
+abline(mod2)
+legend("bottomright",legend=c("True Relationship","Sample Estimate"), lty=c(4,1),col=c("red","black"))
+@
+
+\includegraphics[width=5cm]{plots/t-RSQ10.pdf}\includegraphics[width=5cm]{plots/t-RSQ20.pdf}
+
+
+\lyxframeend{}\lyxframe{$R^{2}$continued}
+\begin{itemize}
+\item The $R^{2}$ reflects 3 factors that melt together
+
+\begin{itemize}
+\item The range of $x$
+\item The size of the slope coefficient
+\item The standard deviation of the error term.
+\end{itemize}
+\item Any of those 3 culprits can make the $R^{2}$ shrink.
+\item Does not necessarily imply that some better regression model exists--it
+may just be that the process under study has inherent uncertainty. 
+\item Careful: Wrong to compare $R^{2}$ across models with different data.
+(Both $Var[x_{i}]$ and $Var[e_{i}]$ can change across data sets.)
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\subsection{Correlations}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Scatterplot: How Strongly Are These Variables Related?}
+
+<<cor10,fig=T,include=F,echo=T>>=
+set.seed(234234)
+N <- 25; stde <- 2; b <- 0.14
+x <- rnorm(N, m=50, sd=10)
+x <- x[order(x)]
+y <- 0.3 + b*x + rnorm(N, m=0, sd=stde)
+mx <- round(mean(x),2)
+my <- round(mean(y),2)
+rx <- range(x)
+ry <- range(y)
+cov(x,y)
+plot(x,y, main="")
+@
+
+\includegraphics[width=10cm]{plots/t-cor10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Covariance: Consider the Quadrants}
+
+<<cor30,fig=T,include=F,echo=T, width=6, height=6>>=
+mycols <- ifelse((x-mx)*(y-my) > 0, "blue","red")
+plot(x,y, main="", col=mycols)
+abline(h=my, lty=4, col="black")
+abline(v=mx, lty=4, col="black")
+mtext(bquote(bar(x) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(bar(y) ==.(my)), side=2, line=2, at=my)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-cor30}
+
+
+\column{6cm}
+\begin{itemize}
+\item Covariance: For each point, calculate $(x_{i}-\bar{x})(y_{i}-\bar{y})$
+\item Covariance: add those up, divide by N.
+\item blue points have positive products
+\item red points have negative products
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{How strong is this relationship?}
+
+<<cor61,fig=T,include=F,echo=T, width=6, height=6>>=
+plot(x,y, main="")
+abline(h=my, lty=4, col="black")
+abline(v=mx, lty=4, col="black")
+mtext(bquote(bar(x) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(bar(y) ==.(my)), side=2, line=2, at=my)
+text(1.2*rx[1],ry[2],pos=1, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+@
+
+\includegraphics[width=7cm]{plots/t-cor61}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Is this relationship stronger?}
+
+<<cor70,fig=T,include=F,echo=T, width=6, height=6>>=
+N <- 25; stde <- 3; b <- -1.0
+x <- rnorm(N, m=50, sd=10)
+x <- x[order(x)]
+y <- 0.3 + b*x + rnorm(N, m=0, sd=stde)
+mx <- round(mean(x),2)
+my <- round(mean(y),2)
+rx <- range(x)
+ry <- range(y)
+plot(x,y, main="")
+abline(h=my, lty=4, col="black")
+abline(v=mx, lty=4, col="black")
+mtext(bquote(bar(x) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(bar(y) ==.(my)), side=2, line=2, at=my)
+text(.9*rx[2],ry[2],pos=1, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=", round(cor(x,y),2)))
+@
+
+\includegraphics[width=7cm]{plots/t-cor70}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Correlation=scaled covariance}
+\begin{itemize}
+\item Question: How do you know if $\widehat{Cov[x,y]}$ is ``big'' or
+``medium'' or ``small''
+\item Karl Pearson's Answer: form a correlation coefficient by scaling the
+covariance 
+\begin{equation}
+r=\frac{\widehat{Cov[x,y]}}{\widehat{Std.Dev.[x]}\cdot\widehat{Std.Dev.[y]}}
+\end{equation}
+
+\item $r\in[-1,1]$ . That's all I know for sure about Pearson's r.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\subsection{Understand $r$ from a Regression Point of View}
+
+\begin{frame}
+\frametitle{If there is One Input}
+\begin{itemize}
+\item The Pearson's $r$ squared equals the $R^{2}$ in a one-predictor
+regression.
+\item Since we already argued that $R^{2}$ has a ``proportion of variance
+accounted for'' interpretation, that means Pearson's $r$ squared
+has same meaning.
+\item The $r_{yx}$ (and $R^{2})$ balance Covariance against the variance
+of x and y.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Simulate Data For Regression}
+
+<<reg10,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 0.25; stde <- 0.0
+x <- rnorm(100, m=50, s=10)
+x <- x[order(x)]
+y <- b0 + b1 * x
+rx <- range(x)
+ry <- range(y)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+text(.8*rx[2],ry[2],pos=1, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+This has no ``random error term'' ($e_{i}=0$)
+\begin{itemize}
+\item $\beta_{0}=3$
+\item $\beta_{1}=0.25$
+\item $x_{i}\sim N(50,100)$, $i=\{1,2,\ldots100\}$
+\item $y_{i}=\beta_{0}+\beta_{1}x_{i}$
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg10}
+
+There's no ``error term''
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Some Error to $y_i$ to adjust $\sigma_e$ (and hence $R^2$)}
+
+<<reg20,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 0.25; stde <- 5
+e1 <- rnorm(100,m=0, s=1)
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+abline(lm(y~x))
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+@
+
+<<reg20mod,echo=F, include=F,results=tex>>=
+library(rockchalk)
+mod <- lm(y~x)
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+
+
+\column{6cm}
+\begin{itemize}
+\item Same $\beta_{0}$=3, $\beta_{1}=0.25$, $x_{i}$
+\item $y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}$
+\item $e_{i}\sim N(0,5^{2})$
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg20mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg20}
+
+Std. Deviation of error term is 5
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Tune Up Std.Dev.(e) -> Shrink the Correlation}
+
+<<reg30,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 0.25; stde <- 10
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+mod <- lm(y~x)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+abline(mod, col="gray80")
+@
+
+<<reg30mod,echo=F, include=F,results=tex>>=
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Same $\beta_{0}=3$, $\beta_{1}=0.25$, $x_{i}$
+\item $y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}$
+\item $e_{i}\sim N(0,10^{2})$
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg30mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg30}
+
+Std. Deviation of error term is 10
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Massive Std.Dev.(e) Makes $R^2$ Even Smaller}
+
+<<reg45,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 0.25; stde <- 50
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+mod <- lm(y~x)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+abline(mod, col="gray80")
+@
+
+<<reg45mod,echo=F, include=F,results=tex>>=
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Same $\beta_{0}$, $\beta_{1}$, $x$
+\item $y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}$
+\item $e_{i}\sim N(0,50^{2})$
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg45mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg45}
+
+Std. Deviation of error term is 50
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Leave Std.Dev.(e) Large, but Raise $b_1$}
+
+<<reg50,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 2; stde <- 50
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+mod <- lm(y~x)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+abline(mod, col="gray80")
+@
+
+<<reg50mod,echo=F, include=F,results=tex>>=
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Same $\beta_{0}$, $x$, and $e_{i}\sim N(0,50^{2})$
+\item Make $\beta_{1}$ bigger
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg50mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg50}
+
+Std. Deviation of error term is 50, $\beta_{1}=2$
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Make $b_1$ Even Larger}
+
+<<reg60,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 10
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+mod <- lm(y~x)
+plot(y ~ x, type="p", xlab="x: the IV", ylab="y: the DV")
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x,y),2),"\n r=",round(cor(x,y),2)))
+abline(mod, col="gray80")
+@
+
+<<reg60mod,echo=F, include=F,results=tex>>=
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Same $\beta_{0}$, $\beta_{1}$, $x$
+\item $y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}$
+\item $e_{i}\sim N(0,50^{2})$
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg60mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg60}
+
+Std. Deviation of error term is 50 and $\beta_{1}=10$
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{What are you Supposed to Conclude?}
+\begin{itemize}
+\item The slope and the error variance are ``balancing'' each other.
+\item If the error variance is large, we need a steep slope to compensate
+and keep $R^{2}$ in the same vicinity.
+\item We can also fiddle with $R^{2}$ by adjusting the range of $x$ (shown
+next).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Restricted $x$ Range Makes r Smaller}
+
+<<reg70,fig=T,echo=T,include=F>>=
+b0 <- 3; b1 <- 10
+y <- b0 + b1 * x + stde*e1
+rx <- range(x)
+ry <- range(y)
+x2 <- x
+x2[x2 > mean(x)] <- NA
+mod <- lm(y~x2)
+plot(y ~ x, type="n", xlab="x: the IV", ylab="y: the DV")
+points(x2,y)
+text(.93*rx[2],ry[1],pos=3, paste("Cov[x,y]=",round(cov(x2,y,use="complete.obs"),2),"\n r=",round(cor(x2,y,use="complete.obs"),2)))
+abline(mod, col="gray80")
+@
+
+<<reg70mod,echo=F, include=F,results=tex>>=
+outreg(mod, tight=F, showAIC=F, float=F)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Chopped off the top half of the $x_{i}$ observations
+\item Wow. The effect of $x$ on $y$ is the same, $\beta_{1}=10$ 
+\item Smaller $Var(x)$$\rightarrow$ Smaller $R^{2}$ (``design'' implication)
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-reg70mod}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-reg70}
+
+Std. Deviation of error term is 50 and $\beta_{1}=10$
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Section Summary}
+\begin{itemize}
+\item Correlation depends on several components, $Var(x_{i})$, $b_{1}$,
+and $Var(e_{i}$).
+\item The ``correlation coefficient'' is not a ``parameter.'' It is
+a description or a 'weighted summary' of the effect of parameters
+on the data. 
+\item Goldberger (1991, p.177) puts it the following way: \textquotedblleft{}Nothing
+in the CR (Classical Regression) model requires that $R^{2}$ be high.
+Hence, a high $R^{2}$ is not evidence in favor of the model, and
+a low $R^{2}$ is not evidence against it.\textquotedblright{} 
+\item Nevertheless, $R^{2}$ can be a persuasive tool because many people
+think a model is ``wrong'' if the $R^{2}$ does not meet some subjective
+standard.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Show My Work: Derivation of $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$}
+
+
+\lyxframeend{}\lyxframe{SMW: Use Calculus to Minimize $S(\hat{\beta}_{0},\hat{\beta}_{1})$}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Must find the minimum $S$, which is shaped like a bowl
+\item Find combination of $(\hat{\beta}_{0}$ $\hat{\beta}_{1})$ where
+the function is ``flat'', at bottom of bowl
+\item First Order Conditions: 
+\begin{equation}
+\frac{\partial S(\hat{\beta}_{0},\hat{\beta}_{1})}{\partial\hat{\beta}_{0}}=0
+\end{equation}
+ and 
+\begin{equation}
+\frac{\partial S(\hat{\beta}_{0},\hat{\beta}_{1})}{\partial\hat{\beta}_{1}}=0
+\end{equation}
+
+\end{itemize}
+
+\column{6cm}
+
+
+Sketch something here:
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{SMW: First Order Condition for $\hat{\beta}_{0}$:}
+
+\[
+\frac{\partial S(\hat{\beta}_{0},\hat{\beta}_{1})}{\partial\hat{\beta}_{0}}=-2\sum(y_{i}-\hat{\beta}_{0}-\hat{\beta}_{1}\cdot x_{i})=0
+\]
+
+
+\[
+=\sum y_{i}-\sum\hat{\beta}_{0}-\sum\hat{\beta}_{1}\cdot x_{i}=0
+\]
+\begin{equation}
+=\sum y_{i}-N\cdot\hat{\beta}_{0}-\hat{\beta}_{1}\cdot\sum x_{i}=0\label{N1}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{SMW: First Order Condition for $\hat{\beta}_{1}$:}
+
+\[
+\frac{\partial S(\hat{\beta}_{0},\hat{\beta}_{1})}{\partial\hat{\beta}_{1}}=-2\sum(y_{i}-\hat{\beta}_{0}-\hat{\beta}_{1}\cdot x_{i})x_{i}=0
+\]
+
+
+\begin{equation}
+=\sum y_{i}-\sum\hat{\beta}_{0}\cdot x_{i}-\sum\hat{\beta}_{1}\cdot x_{i}^{2}=0\label{N2}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{SMW: Normal Equations.}
+
+Equations \ref{N1} and \ref{N2} can be re-arranged as the so-called
+``normal equations''.
+
+\[
+\sum y_{i}=N\hat{\beta}_{0}+\left(\sum x_{i}\right)\hat{\beta}_{1}
+\]
+
+
+and
+
+\[
+\sum x_{i}y_{i}=\left(\sum x_{i}\right)\hat{\beta}_{0}+\left(\sum x_{i}^{2}\right)\hat{\beta}_{1}
+\]
+
+
+
+\lyxframeend{}\lyxframe{SMW: Note that is a LINEAR Matrix Equation}
+
+\begin{equation}
+\begin{array}{cccc}
+\begin{array}{c}
+\left[\begin{array}{c}
+\sum y_{i}\\
+\sum x_{i}y_{i}
+\end{array}\right]\end{array} & = & \left[\begin{array}{cc}
+N & \sum x_{i}\\
+\sum x_{i} & \sum x_{i}^{2}
+\end{array}\right] & \left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}
+\end{array}\right]\end{array}\label{matrix}
+\end{equation}
+
+
+Refer to the coefficient estimates as $\hat{\beta}$ :
+
+$\hat{\beta}=\left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}
+\end{array}\right]$, 
+
+
+\lyxframeend{}\lyxframe{SMW: The Solution}
+\begin{itemize}
+\item The ``sum of squares minimizing'' estimate vector is
+\begin{equation}
+\hat{\beta}^{OLS}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\item Definition: $X$ is predictor ``design matrix'', $X=\left[\begin{array}{cc}
+1 & x_{1}\\
+1 & x_{2}\\
+\vdots & \vdots\\
+1 & x_{N-1}\\
+1 & x_{N}
+\end{array}\right]$
+\item And $y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\ldots\\
+y_{N-1}\\
+y_{N}
+\end{array}\right]$
+\end{itemize}
+
+\lyxframeend{}
+\end{document}

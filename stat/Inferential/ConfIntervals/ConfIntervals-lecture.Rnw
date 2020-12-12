@@ -1,0 +1,1420 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Inferential/ConfIntervals//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{wasysym}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+ \newenvironment{lyxcode}
+   {\par\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \setlength{\listparindent}{0pt}% needed for AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \def\{{\char`\{}
+    \def\}{\char`\}}
+    \def\textasciitilde{\char`\~}
+    \item[]}
+   {\end{list}}
+ \long\def\lyxplainframe#1{\@lyxplainframe#1\@lyxframestop}%
+ \def\@lyxplainframe{\@ifnextchar<{\@@lyxplainframe}{\@@lyxplainframe<*>}}%
+ \long\def\@@lyxplainframe<#1>#2\@lyxframestop#3\lyxframeend{%
+   \frame<#1>[plain]{\frametitle{#2}#3}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+
+\mode<presentation>
+
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par(no.readonly=T) 
+#pjmar <- c(5.1, 5.1, 2.5, 2.1) 
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Confidence Intervals}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{\today}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{What is this Presentation?}
+\begin{itemize}
+\item Terminology review
+\item The Idea of a CI
+\item Proportions
+\item Means
+\item Etc
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{What do you really need to learn?}
+\begin{itemize}
+\item The big idea: we make estimates, try to summarize our uncertainty
+about them. 
+\item The Conf Interval idea presumes we can 
+
+\begin{itemize}
+\item imagine a sampling distribution
+\item find a way, using only one sample, get estimate of how uncertain we
+are
+\end{itemize}
+\item This can be tricky in some cases, but we try to understand the important
+cases clearly (and hope we can read a manual when we come to unusual
+ones)
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Recall Terminology:}
+\begin{description}
+\item [{Parameter:~$\theta$}] is a ``parameter'', a ``true value''
+that governs a ``data generating process.'' It is the characteristic
+of the thing from which we draw observations, which in statistics
+is often called ``the population''. Because that is confusing/value
+laden, I avoid ``population'' terminology.
+\item [{Parameter~Estimate:~$\hat{\theta}$}] is a number that gets calculated
+from sample data. Hopefully, it is 
+
+\begin{itemize}
+\item consistent (reminder from last lecture).
+\end{itemize}
+\item [{Sampling~Distribution:}] the assumed probability model for $\hat{\theta}$.
+If a particular theory about $\theta$ is correct, what would be the
+PDF of $\hat{\theta}$?
+
+
+A Sampling Distributions is characterized by an Expected Value and
+Variance (as are all random variables).
+
+\item [{Standard~Error:}] From one sample, estimate the standard deviation
+of $\hat{\theta}$ (How much $\hat{\theta}$ would vary if we collected
+a lot of estimates). Recall the silly notation, $\sqrt{\widehat{Var(\hat{\theta})}}$,
+The estimate of the uncertainty of an estimate.
+\end{description}
+
+\lyxframeend{}\lyxframe{Today's Focus: Confidence Interval}
+\begin{itemize}
+\item General~idea: We know that estimates from samples are not exactly
+equal to the ``true'' parameters we want to estimate
+\item Ever watch CNN report that ``41\% of Americans favor XYZ, plus-or-minus
+3\%''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Sampling Dist.}
+
+Suppose you know that the Sampling Dist is like so:
+
+\resizebox{12cm}{!}{\input{0_home_pauljohn_SVN_SVN-guides_stat_Inferential_ConfIntervals_importfigs_samplingDist.pdftex_t}}
+
+This was selected from the elaborate collection of ugly distributions,
+a freely available library that I can share to you any time you like
+:).
+
+
+\lyxframeend{}\section{Confidence}
+
+
+\lyxframeend{}\lyxframe{Define Confidence Interval}
+\begin{itemize}
+\item $\hat{\theta}$ is a estimate from a sample, a value that would fluctuate
+from sample-to-sample
+\item \textbf{Confidence Interval}: From one estimate $\hat{\theta}$, construct
+a range $[\hat{\theta}_{low},\hat{\theta}_{high}]$ that we think
+is likely to contain the truth.
+\item We decide ``how likely'' it must be that the truth is in there,
+then we construct the CI. Common to use 95\%.
+\item A 95\% Confidence Interval would have 2 meanings
+
+\begin{itemize}
+\item 1. Repeated Sampling: 95\% of sample estimates would fall into $[\hat{\theta}_{low},\,\hat{\theta}_{high}]$
+\item 2. Degree of Belief: The probability is 0.95 that $\theta$ is in
+$[\hat{\theta}_{low},\hat{\,\theta}_{high}]$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{CI: The First Interpretation: Repeated Sampling}
+\begin{itemize}
+\item If you knew the sampling distribution, you could get a math genius
+to figure out the range.
+
+
+\begin{equation}
+Prob(\widehat{\theta_{low}}<\widehat{\theta}<\widehat{\theta_{high}})\label{eq:-7}
+\end{equation}
+
+
+
+This pre-supposes you know the ``true $\theta$'' and the PDF of
+$\hat{\theta}$. (And that you know a math genius.)
+
+\item One custom is to pick the low and high edges so that
+
+
+\begin{equation}
+Prob(\widehat{\theta_{low}}<\widehat{\theta}<\widehat{\theta_{high}})=0.95\label{eq:-8}
+\end{equation}
+If we repeated this experiment over and over, then the probability
+that the estimate will be between $\widehat{\theta_{low}}$ and $\widehat{\theta_{high}}$
+is 0.95.
+
+\item Repeat: There is a 95\% chance that a random sample estimate will
+lie between the two edges.
+\item The ``p-value'' in statistics is the part that is outside of that
+range. Here, $p=0.05$.
+\item ``p-value'' sometimes referred to as $\alpha$, or \emph{alpha level}. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{CI: Second Interpretation: The Degree of Belief }
+\begin{itemize}
+\item This is a stronger statement, one I resisted for many years:\end{itemize}
+\begin{theorem}%{}
+Construct a CI $[\widehat{\theta_{low}},\widehat{\theta_{high}}]$
+from one sample. The probability that the true value of $\theta$
+is in that interval is 0.95. 
+\end{theorem}%{}
+
+\lyxframeend{}\lyxframe{Work through Verzani's argument}
+\begin{description}
+\item [{Claim:}] Given $\hat{\theta}$, there is a 0.95 probability (a
+95\% chance) that the ``true value of $\theta$'' is between $\hat{\theta}_{low}$
+and $\hat{\theta}_{high}$.\end{description}
+\begin{itemize}
+\item Think of the low and high edges as plus or minus the true $\theta$:
+\begin{eqnarray}
+Prob(\theta-something\, on\, the\, left<\nonumber \\
+\widehat{\theta}<\theta+something\, on\, the\, right)=0.95
+\end{eqnarray}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{If the Sampling Distribution is Symmetric}
+\begin{itemize}
+\item If the sampling distribution is symmetric, we subtract and add the
+same ``something'' on either side. 
+\end{itemize}
+\[
+Prob(\theta-something<\widehat{\theta}<\theta+something)=0.95
+\]
+
+\begin{itemize}
+\item Subtract $\theta$ from each term
+\end{itemize}
+\[
+Prob(-something<\widehat{\theta}-\theta<something)=0.95
+\]
+
+\begin{itemize}
+\item Subtract $\widehat{\theta}$ from each term
+\end{itemize}
+\[
+Prob(-\hat{\theta}-something<-\theta<-\widehat{\theta}+something)=0.95
+\]
+
+\begin{itemize}
+\item Multiply through by $-1$ and you get ....
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Big Conclusion: }
+\begin{itemize}
+\item A Confidence Interval is
+\end{itemize}
+\begin{equation}
+Prob(\hat{\theta}-something<\theta<\widehat{\theta}+something)=0.95\label{eq:CI}
+\end{equation}
+
+\begin{itemize}
+\item We believe ``with 95\% confidence'' that the true value will lie
+between two outside edges,
+\[
+[\hat{\theta}-something,\,\hat{\theta}+something]
+\]
+.
+\item The $something$ is the ``margin of error'' 
+\end{itemize}
+
+\lyxframeend{}\section{Where do CI come from?}
+
+
+\lyxframeend{}\lyxframe{The Challenge: Find Way To Calculate CIs}
+\begin{itemize}
+\item A CI requires us to know the sampling distribution of $\hat{\theta}$,
+and then we:
+
+\begin{itemize}
+\item ``grab'' the middle 95\%
+\end{itemize}
+\item Not all CIs are symmetric, but the easiest ones to visualize are symmetric
+(estimated means, slope coefficients)
+\item Symmetric CI: $[\hat{\theta}_{low},\hat{\theta}_{high}]=\hat{[\theta}-something,\hat{\theta}+something]$
+\item If sampling distribution of $\hat{\theta}$ not symmetric, problem
+is harder. Will need a formula like 
+\[
+[\hat{\theta}-something\, left,\hat{\theta}+something\, right]
+\]
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Every Estimator has its own CI formula}
+\begin{itemize}
+\item The challenge of the CI is that there is no universal formula
+\item For some estimates, we have ``known solutions''. 
+\item R has a function \lstinline!confint()! for some estimators
+\item Some estimators have no agreed-upon CI.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Many Symmetric CIs have a simple/similar formula}
+\begin{itemize}
+\item Put the estimate $\hat{\theta}$ in the center
+\item Calculate $something$ to add and subtract. Generally, it depends
+on 
+
+\begin{enumerate}
+\item Standard error of the estimate
+\item Sample size
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\section{Example 1: The Mean has a Symmetric CI}
+
+
+\lyxframeend{}\subsection{One Observation From a Normal}
+
+
+\lyxframeend{}\lyxframe{If We Knew the Sampling Distribution, life would be easy}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Suppose $\hat{\mu}$ has a sampling distribution that is Normal with
+variance 1, i.e., $N(\mu,1)$. 
+\item An observation $\hat{\mu}$ is an unbiased estimator of $\mu$. 
+\item Since $\sigma^{2}=1$, our knowledge of the Normal tells us that $\mu$
+is very likely in this region
+\end{itemize}
+
+\begin{eqnarray*}
+Prob(\mu\in[\hat{\mu}-1.96,\hat{\mu}+1.96])=0.95
+\end{eqnarray*}
+
+
+
+\column{7cm}
+
+<<stdnorm10,fig=T,include=F,echo=T,width=4, height=4>>=
+mu <- 0
+sd <- 1
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+xden <- dnorm(x, m=mu, sd=sd)
+plot(x, xden, type="l", main="", xlab=expression(hat(mu)), ylab="")
+h <- 0.5*dnorm(-1.96*sd, m=mu, sd=sd)
+arrows(-1.96, h, 1.96, h , angle=90, length=0.05, code=3)
+text(0,0.5*h,"Confidence Interval",cex=0.5)
+@
+
+\includegraphics[width=7cm]{plots/t-stdnorm10}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Suppose $\sigma$ were 4}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Suppose $\hat{\mu}$is Normal, but with standard deviation $sd(\hat{\mu})=\sigma=4$.
+Then $\hat{\mu}\sim N(0,4^{2})$.
+\item The 0.95 CI is
+\end{itemize}
+
+\begin{eqnarray*}
+[\hat{\mu}-1.96\cdot4),\\
+\hat{\mu}+1.96\cdot4]
+\end{eqnarray*}
+
+
+
+\column{7cm}
+
+<<stdnorm20, fig=T, include=F, echo=T, width=4, height=4>>=
+mu <- 0
+sd <- 4
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+xden <- dnorm(x, m=mu, sd=sd)
+plot(x,xden, type="l", main="", xlab=expression(hat(mu)), ylab="")
+h <- 0.5*dnorm(-1.96*sd, m=mu, sd=sd)
+text(0,0.5*h,"Confidence Interval",cex=0.5)
+arrows(-1.96*sd, h, 1.96*sd, h , angle=90, length=0.05,code=3)
+@
+
+\includegraphics[width=7cm]{plots/t-stdnorm20}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{How do we know $1.96$ is the magic number?}
+\begin{description}
+\item [{Correct~Answer}] We stipulated that the sampling distribution
+was Normal. The probability of an outcome below $-1.96$ is 0.025
+and the chance of an outcome greater than $1.96$ is 0.025. 
+\item [{Another~Correct~Answer}] In the old days, we'd look it up in
+a stats book that has the table of Normal Probabilities.
+\item [{Another~Correct~Answer}] Today, we ask R, using the qnorm function:\end{description}
+\begin{lyxcode}
+>~qnorm(0.025,~m~=~0,~sd~=~1)
+
+{[}1{]}~-1.959964
+\end{lyxcode}
+The value $-1.959964\approx-1.96$ is greater than 0.025 of the possible
+outcomes.
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxplainframe{}
+
+<<stdnorm40,fig=T,echo=T, include=F, width=8, height=4>>=
+mu <- 0
+sd <- 1
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+xden <- dnorm(x, m=mu, sd=sd)
+xcum <- pnorm(x, m=mu, sd=sd)
+plot(x, xcum, type="l", main="", xlab=expression(hat(mu)), ylab=expression(F(mu)))
+text(1, 0.20*max(xcum), "CDF")
+@
+
+<<stdnorm50,fig=T, include=F, echo=T, width=8, height=4>>=
+plot(x,xden, type="l", main="",xlab=expression(hat(mu)),ylab=expression(f(mu)))
+text(0, 0.20*max(xden), "PDF")
+@
+
+\includegraphics[height=4.5cm]{plots/t-stdnorm40}
+
+\includegraphics[height=4.5cm]{plots/t-stdnorm50}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Some Example Values}
+\begin{itemize}
+\item Some easy to remember values from the Standard Normal are
+\end{itemize}
+\begin{tabular}{|c|c|c|}
+\hline 
+Examples: &
+\begin{minipage}[t]{1.3in}%
+\begin{lyxcode}
+\textrm{\textbf{\footnotesize{>~qnorm(0.5)}}}{\footnotesize \par}
+
+\textrm{\textbf{\footnotesize{{[}1{]}~0}}}\end{lyxcode}
+%
+\end{minipage} &
+\begin{minipage}[t]{1.5in}%
+\begin{lyxcode}
+\textrm{\textbf{\footnotesize{>~qnorm(0.05)}}}{\footnotesize \par}
+
+\textrm{\textbf{\footnotesize{{[}1{]}~-1.6448}}}\end{lyxcode}
+%
+\end{minipage}\tabularnewline
+\hline 
+\end{tabular}
+
+Some values from the CDF:
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+$F(-\infty)=0$ &
+$F(-1.96)=0.025$ &
+\textrm{$F(-1.65)=0.05$} &
+$F(0)=0.5$\tabularnewline
+\hline 
+ &
+$F(1.65)=0.95$ &
+$F(1.96)=0.975$ &
+$F(\infty)=1$\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item Conclusion: The $\alpha=0.05$ confidence interval for a estimator
+that is $N(\mu,1)$ is 
+\begin{equation}
+(\hat{\mu}-1.96,\hat{\mu}+1.96)\label{eq:N01ConfInt}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\subsection{Student's T Distribution}
+
+
+\lyxframeend{}\lyxframe{The Sampling Distribution of the Mean/Std.Err.(Mean) }
+\begin{itemize}
+\item Previous supposed I knew $\sigma$, the ``true'' standard deviation
+of $\hat{\mu}$.
+\item Now I make the problem more challenging, forcing myself to estimate
+the mean, and standard error of the mean.
+\item In the end, we NEVER create a sampling distribution for the mean by
+itself.
+\item We DO estimate the sampling distribution of the ratio of the ``estimation
+mean'' ($\hat{\mu}-\mu$) to its standard error.
+\item Intuition: The CI will be symmetric, $\hat{\mu}\pm something$, using
+the sampling distribution 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Sample Mean}
+\begin{itemize}
+\item Collect some observations, $x_{1}$, $x_{2}$, $x_{3}$, $\ldots,$
+$x_{N}$
+\item The sample mean (call it $\bar{x}$ or $\hat{\mu}$) is an estimate
+of the ``expected value'',
+\end{itemize}
+\begin{equation}
+sample\, mean\, of\, x:\bar{x}=\hat{\mu}=\frac{1}{N}\sum x_{i}
+\end{equation}
+
+\begin{itemize}
+\item The mean is an ``unbiased'' estimator, meaning its expected value
+is equal to the ``true value'' of the expected value
+\begin{equation}
+E[\bar{x}]\equiv E[\hat{\mu}]=E[x_{i}]=\mu
+\end{equation}
+
+\item If $x_{i}\sim N(\mu,\sigma^{2})$, the experts tell us that $\bar{x}$
+(or$\hat{\mu}$) is Normally distributed $Normal(\mu,\frac{1}{N}\sigma^{2})$
+\item Recall the CLT as a way to generalize this finding: the sampling distribution
+of the mean is Normal
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Estimate the Parameter Sigma}
+\begin{itemize}
+\item The Sample Variance is the mean of squared errors
+\begin{equation}
+sample\, variance(x_{i})=\frac{\sum(x_{i}-\bar{x})^{2}}{N}
+\end{equation}
+
+\item Now the ``N-1'' problem comes in. This sample variance is not an
+``unbiased'' estimate of $\sigma^{2}$. I mean, sadly,
+\begin{equation}
+E[sample\, variance(x_{i})]\neq\sigma^{2}
+\end{equation}
+
+\item However, a corrected estimator 
+
+
+\begin{equation}
+unbiased\, sample\, variance(x_{i})=\frac{\sum(x_{i}-\bar{x})^{2}}{N-1}
+\end{equation}
+
+
+
+is unbiased:
+
+\end{itemize}
+\begin{equation}
+E[unbiased\, sample\, variance(x_{i})]=\sigma^{2}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Standard Error of the Mean}
+\begin{itemize}
+\item Two lectures ago, I showed that the variance of the mean is proportional
+to the true variance of $x_{i}$. 
+\begin{equation}
+Var[\hat{\mu}]\, same\, as\, Var[\bar{x}]=\frac{1}{N}Var[x_{i}]=\frac{1}{N}\sigma^{2}
+\end{equation}
+(no matter what the distribution of $x_{i}$ might be).
+\item We don't know the ``true'' variance $Var[x_{i}]=\sigma^{2}$, but
+we can take the unbiased sample estimator and use it place of $\sigma^{2}$. 
+\item That gives us the dreaded double hatted estimate of the estimated
+mean:
+\begin{equation}
+\widehat{Var[\hat{\mu]}}=\frac{1}{N}unbiased\, sample\, variance(x_{i})
+\end{equation}
+
+\item You can ``plug in'' the $unbiased\, sample\, variance\, of\, x_{i}$
+from the previous page if you want to write out a formula!
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The magical ratio of $\hat{\mu}$ to $std.err.(\hat{\mu})$}
+\begin{itemize}
+\item Because the double hat notation is boring, we call the square root
+of it the standard error.
+\end{itemize}
+\begin{equation}
+std.err.(\bar{x})\, same\, as\, std.err.(\hat{\mu})=\sqrt{\widehat{Var[\hat{\mu]}}}=\sqrt{\frac{1}{N}unbiased\, sample\, variance(x_{i})}
+\end{equation}
+
+\begin{itemize}
+\item Recall the definition of the term ``standard error.'' It is an estimate
+of the standard deviation of a sampling distribution.
+\item Gosset showed that although the true $\sigma^{2}$ is unknown, the
+ratio of the estimated mean's fluctuations about its true value to
+the estimated standard deviation of the mean follows a T distribution:
+\begin{equation}
+\frac{\hat{\mu}-\mu}{\widehat{std.dev.(\hat{\mu})}}=\frac{\hat{\mu}-\mu}{std.err.(\hat{\mu})}\sim T(\nu=N-1)
+\end{equation}
+
+\item This new ``t variable'' becomes our primary interest. Since $Var[x]$
+is unknowable, we have to learn to live with the estimate of it, and
+that brings us down a chain to T.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{T distribution with 10 d.f.}
+
+<<T10,fig=T,include=F,echo=T>>=
+x <- seq(-5,5,by=0.015)
+denx <- dt(x, df=10)
+plot(x, denx, main="", type="l",ylab="density", xlab="t distribution")
+lines(x, dnorm(x), lty=2, col="red")
+legend("topright",legend=c("T","Normal"),lty=c(1,2), col=c("black","red"))
+@
+\includegraphics[width=11cm]{plots/t-T10}
+
+
+\lyxframeend{}\lyxframe{T is Similar to Standard Normal, N(0,1)}
+\begin{itemize}
+\item symmetric
+\item single peaked
+\item But, there is a difference: T depends on a degrees of freedom, $N-1$
+
+\begin{itemize}
+\item T is different for every sample size
+\item T tends to be ``more and more'' Normal as the sample size grows
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare 95\% Ranges for Normal and T}
+
+<<T20,echo=T>>=
+qnorm(0.025, m=0, s=1)
+qt(0.025, df=10)
+qnorm(0.975, m=0, s=1)
+qt(0.975, df=10)
+@
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{T-based Confidence Interval}
+\begin{itemize}
+\item Using the T distribution, we can ``bracket'' the 0.95 probability
+``middle part''.
+\item That puts $\alpha/2$ of the probability outside the 95\% range on
+the left, and $\alpha/2$ on the right
+\item In a T distribution with 10 degrees of freedom, the range stretches
+from ($\hat{\mu}$-2.3, $\hat{\mu}+$2.3)
+\item That's wider than $N(0,1)$ would dictate, of course. The extra width
+is the penalty we pay for using the estimate $\hat{\sigma}$ .
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Lets Step through some df values}
+
+Note that $T$ is symmetric, so the upper and lower critical points
+are generally just referred to as $-t_{0.025,df}$ and $t_{0.025,df}$
+for a 95\% CI with $df$ degrees of freedom
+
+df=20 
+
+<<echo=F>>=
+(c(qt(0.025, 20), qt(0.975, 20)))
+@
+
+df=50
+
+<<echo=F>>=
+(c(qt(0.025, 50), qt(0.975, 50)))
+@
+
+df=100
+
+<<echo=F>>=
+(c(qt(0.025, 100), qt(0.975, 100)))
+@
+
+df=250
+
+<<echo=F>>=
+(c(qt(0.025, 250), qt(0.975, 250)))
+@
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Summary: The CI for an Estimated Mean Is...}
+\begin{itemize}
+\item If 
+
+\begin{itemize}
+\item $\hat{\mu}$ is Normal, $N(\mu,\sigma^{2})$
+\item std.err($\hat{\mu})$= $\hat{\sigma}/\sqrt{N}$ (an estimate of the
+standard deviation of $\hat{\mu}$)
+\end{itemize}
+\item Then:
+\end{itemize}
+\begin{equation}
+CI=[\hat{\mu}-t_{n,\alpha/2}std.err.(\hat{\mu)},\hat{\,\,\mu}+t_{n,\alpha/2}std.err.(\hat{\mu)}]
+\end{equation}
+
+\begin{itemize}
+\item $"something"$ in the CI of the mean is $t_{n,\alpha/2}\times\hat{\sigma}/\sqrt{N}$
+\item If your sample is over 100 or so, $t_{n,\alpha/2}$ will be very close
+to $2,$ hence most of us think of the CI for the mean as
+\begin{equation}
+[\hat{\mu}-2\, std.err.(\hat{\mu}),\,\hat{\mu}+2\, std.err(\hat{\mu})]
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Symmetric Estimators are easy}
+\begin{itemize}
+\item So far as I know, Every estimator that has a symmetrical sampling
+distribution ends up, one way or another, with a T-based CI.
+\item Thus, we are preoccupied with finding parameter estimates and standard
+errors because they lead to CIs that are manageable.
+\item With NON-symmetric estimators, the whole exercise goes to hell. Everything
+becomes less generalizable, more estimator-specific, and generally
+more frustrating \frownie{}.
+\end{itemize}
+
+\lyxframeend{}\section{Asymmetric Sampling Distribution: Correlation Coefficient}
+
+
+\lyxframeend{}\lyxframe{Correlation Coefficient}
+\begin{itemize}
+\item The product-moment correlation varies from -1 to 1, and 0 means ``no
+relationship''.
+\item The ``true'' correlation for two random variables is defined as
+\begin{eqnarray}
+\rho & = & \frac{Cov(x,y)}{\sqrt{Var(x)Var(y)}}=\frac{Cov(x,y)}{Std.Dev.(x)Std.Dev.(y)}\\
+ & = & \frac{E[(x-E[x])\cdot(y-E[y])]}{\sqrt{E[(x-E[x])^{2}]}\sqrt{E[(y-E[y])^{2}]}}
+\end{eqnarray}
+
+\item Replace those ``true values'' with sample estimates to calculate
+$\hat{\rho}$.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{How Sample Estimates are Calculated}
+\begin{itemize}
+\item Sample Variance: Mean Square of Deviations about the Mean (unbiased
+version). 
+\begin{equation}
+\widehat{Var[x]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})^{2}}{N-1}
+\end{equation}
+
+\item The sample covariance of $x$ and $y$:
+\begin{equation}
+\widehat{Cov[x,y]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})}{N-1}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Covariance: What is that Again?}
+\begin{itemize}
+\item Intuition: 
+
+\begin{itemize}
+\item If $x$ and $y$ are both ``large'', or both ``small'', then covariance
+will be positive.
+\item If $x$ is ``large'', but $y$ is ``small'' (or vice versa), then
+covariance will be negative.
+\end{itemize}
+\item The sample ``covariance of $x$ with itself'' is obviously the same
+as the variance:
+\begin{equation}
+\widehat{Cov[x,x]}=\widehat{Var[x]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})(x_{i}-\widehat{E[x]})}{N-1}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Consider a Scatterplot}
+
+<<cor10,fig=T,include=F,echo=T, width=6, height=6>>=
+set.seed(234234)
+N <- 25; stde <- 2; b <- 0.14
+x <- rnorm(N, m=50, sd=10)
+x <- x[order(x)]
+y <- 0.3 + b*x + rnorm(N, m=0, sd=stde)
+mx <- mean(x)
+my <- mean(y)
+rx <- range(x)
+ry <- range(y)
+cov(x,y)
+plot(x,y, main="")
+@
+
+\includegraphics[width=8cm]{plots/t-cor10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw in Lines for the Means}
+
+<<cor20,fig=T,include=F,echo=T, width=6, height=6>>=
+options(digits=2)
+plot(x,y, main="")
+abline(h=my, lty=4, col="black")
+abline(v=mx, lty=4, col="black")
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2, at=my)
+@
+
+\includegraphics[width=8cm]{plots/t-cor20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Easier to See Pattern with Some Color}
+
+<<cor30,fig=T,include=F,echo=T, width=6, height=6>>=
+mycols <- ifelse((x-mx)*(y-my) > 0, "blue","red")
+plot(x,y, main="", col=mycols)
+abline(h=my, lty=4, col="black")
+abline(v
+=mx, lty=4, col="black")
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2, at=my)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-cor30}
+
+
+\column{6cm}
+\begin{itemize}
+\item For each point, necessary to calculate $(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[x]})$
+\item add those up!
+\item blue points have positive products
+\item red points have negative products
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{+ times + = +, but + times - equals -}
+
+<<cor40,fig=T,include=F,echo=T, width=8, height=8>>=
+mycols <- ifelse((x-mx)*(y-my) > 0, "blue","red")
+plot(x,y, main="", type="n", col=mycols)
+abline(h=my, lty=4, col="black", lwd=0.7)
+abline(v=mx, lty=4, col="black", lwd=0.7)
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2, at=mx)
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2, at=my)
+points(x[25],y[25])
+arrows(x[25],my,x[25],.97*y[25], lty=2, lwd=1, code=3, length=0.1)
+text(mx + 0.5*(x[25]-mx), y[25], label = expression(x-widehat(E*group("[",list(x),"]"))), pos=3)
+arrows(mx,y[25],.97*x[25], y[25], lty=2, lwd=1, code=3, length=0.1)
+text(x[25], my+0.5*(y[25]-my), label= expression(y-widehat(E*group("[",list(y),"]"))), pos=2)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Here, $(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})>0$
+\item Hm. I never noticed before, but that's also the ``area'' of the
+rectangle
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots/t-cor40}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Remaining Problems}
+\begin{itemize}
+\item How do I know 97 is ``big'' or ``medium'' number for Covariance
+\item ``How much'' will covariance fluctuate from one sample to another,
+if the parameters of the data generating process remain fixed?
+\end{itemize}
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Correlation: Standardize Covariance}
+\begin{itemize}
+\item Divide Covariance by the Standard Deviations
+\begin{eqnarray}
+ & \frac{\widehat{Cov[x,y]}}{\widehat{Std.Dev.[x]}\cdot\widehat{Std.Dev.[y]}}\\
+= & \frac{\sum(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})/(N-1)}{\left(\sqrt{\sum(x-\widehat{E[x]})^{2}/(N-1)}\right)\left(\sqrt{\sum(y-\widehat{E[y]})^{2}/(N-1)}\right)}
+\end{eqnarray}
+
+\item That produces a number that ranges from $-1$ to $+1$
+
+\begin{itemize}
+\item Check that: Calculate the correlation of $x$ with itself.
+\end{itemize}
+\item Karl Pearson called it a ``product-moment correlation coefficient''
+\item We often just call it ``Pearson's r'', or ``r''.
+\item Often use variable names in subscript $r_{xy}$ to indicate which
+variables are correlated.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{The Distribution of $\hat{\rho}$ is Symmetric only if $\rho$ is
+near $0$}
+\begin{itemize}
+\item If true correlation $\rho=0$, then the sampling distribution of $\hat{\rho}$
+is perfectly symmetric.
+\item However, if $\rho\neq0$, the Sampling distribution is not symmetric,
+and as $\rho\rightarrow-1$ or $\rho\rightarrow+1,$ the Sampling
+distribution becomes more and more Asymmetric
+\end{itemize}
+
+\lyxframeend{}\lyxframe{If $\rho=0$ ,}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The Sampling Distribution of $\hat{\rho}$ is Symmetric
+\item Apparently normal, even with small samples. 
+\end{itemize}
+
+\column{8cm}
+
+<<cor110, fig=T, echo=T, include=F, height=7, width=7>>=
+library(mvtnorm)
+m1 <- c(0,0)
+rho <- 0
+sig0 <- matrix( c(1,rho, rho,1), nrow=2, ncol=2)
+
+simCor <- function(N, mmean=NULL, msig=NULL) {
+  xy <- rmvnorm(N, mean=mmean, sigma=msig)
+  cor(xy[,1], xy[,2])
+}
+
+drawHist <- function(N=NULL, sig=NULL){
+  cors <- sapply(rep(N,5000), simCor, mmean=m1 , msig=sig)
+  cr <- range(cors)
+ xlab <- bquote (paste("5000 Observed Correlations(", Sample== .(N),", ", rho== .(round(rho, 2)),')') )
+  hist(cors, prob=T, xlim=cr, border=gray(.80), xlab=xlab, breaks=100, main="")
+  lines(density(cors), col="red", lty=2, lwd=2)
+
+  ind <- seq(cr[1], cr[2], length.out=100)
+  cm1 <- round(mean(cors), 3)
+  cs1 <- round(sd(cors), 3)
+  nprob <- dnorm(ind, m=cm1, s=cs1)
+  lines(ind, nprob, lty=1, col="black")
+  nlab <-   bquote(paste("Normal(", .(round(cm1,3)),",", .(round(cs1,3))^2,")"))
+  legend("topleft",legend=c("Kernel Density", as.expression(nlab)), lty=c(2,1), col=c("red","black"), lwd=c(1.5,1))
+  legend("left", legend=c(paste("Obs. Mean=", cm1),paste("Obs. sd=",cs1)))
+}
+
+
+drawHist(N=30, sig=sig0 )
+@
+
+\includegraphics[width=7cm]{plots/t-cor110}
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{If $\rho=.90$, $\hat{\rho}$ NOT Symmetric}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The Sampling Distribution of $\hat{\rho}$ is apparently NOT symmetric
+or normal
+\item Think for a minute. If the ``true rho'' is .9, then sampling fluctuation
+can 
+
+\begin{itemize}
+\item bump up the observed value only between 0.9 and 1.0
+\item bump down the observed value between -1.0 and 0.9
+\end{itemize}
+\end{itemize}
+
+\column{8cm}
+
+<<cor120,fig=T, echo=T, include=F, height=7, width=7>>=
+rho=0.90
+sig2 <- matrix( c(1, rho, rho, 1), nrow=2, ncol=2)
+drawHist(N=30, sig=sig2)
+@
+
+\includegraphics[width=7cm]{plots/t-cor120}
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Asymmetric Confidence Interval}
+\begin{itemize}
+\item In previous example, the true $\rho$ is 0.9, and the mean of the
+observed $\rho$ is close to that.
+\item But the 95\% confidence interval is clearly not symmetric. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Can reduce Asymmetry with Gigantic Sample}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item Large samples lead to more precise estimates of $\rho$.
+\item The sampling distribution of $\hat{\rho}$ is more symmetric when
+each sample is very large
+\item Not so non Normal. 
+\end{itemize}
+
+\column{8cm}
+
+<<cor130, fig=T, echo=T, include=F, height=7, width=7>>=
+drawHist(N=2000, sig=sig2)
+@
+
+\includegraphics[width=8cm]{plots/t-cor130}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Details, Details}
+\begin{itemize}
+\item AFAIK, there is no known formula for the exact sampling distribution
+of $\hat{\rho}$ or its CI
+\item Formulae have been proposed to get better approximations of the CI
+\item Fisher proposed this transformation that converts a non-Normal distribution
+of $\hat{\rho}$ into a more Normal distribution
+
+
+\begin{equation}
+Z=0.5ln\left(\frac{1+\hat{\rho}}{1-\hat{\rho}}\right)
+\end{equation}
+
+
+\item The CI can be created in that ``transformed space''
+\item Map back to original scale to get 95\% CI.
+\item Result is an asymmetric CI centered on the sample estimate.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Checkpoint: What's the Point?}
+\begin{itemize}
+\item As long as you know the ``sampling distribution'', you can figure
+out a confidence interval.
+\item Work is easier if the CI is symmetric around the estimate $\hat{\theta}$.
+Usually, with means or regression estimates, the CI is something like
+\begin{equation}
+\widehat{\theta}\, plus\, or\, minus\,2\cdot std.err.(\hat{\theta})
+\end{equation}
+
+\item For Asymmetric sampling distributions, CI have to be approximated
+numerically (difficult)
+\end{itemize}
+
+\lyxframeend{}\section{Asymmetric CI: Estimates of Proportions}
+
+
+\lyxframeend{}\lyxframe{Use $\pi$ for True Proportion, $\hat{\pi}$ for estimate.}
+\begin{itemize}
+\item We already used p for probability and for p-value. 
+\item To avoid conclusion, use $\pi$ for the Binomial probability of a
+success
+
+\begin{itemize}
+\item $\pi$ proportion parameter 
+\item $\hat{\pi}$ a sample estimator
+\end{itemize}
+\item The ``true'' probability model is $Binomial(n,\pi)$
+\item We wish we could estimate $\pi$ and create a 95\% CI
+\end{itemize}
+\begin{equation}
+\hat{\pi}-something,\,\,\hat{\pi}+something\label{eq:NormalConfInt-1-1}
+\end{equation}
+
+\begin{itemize}
+\item But, the sampling distribution is NOT symmetric, so doing that is
+wrong, which means people who say a CI (margin or error) is $mean\, plus\, or\, minus\, something$
+are technically wrong.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Binomial Distribution}
+\begin{itemize}
+\item $Binomal(n,\pi)$ is number of ``successes'' in $n$ ``tests''
+with probability of success $\pi$ for each one.
+\item The observed number of successes from $B(n,\pi)$ is approximately
+normal if
+
+\begin{itemize}
+\item if $n$ is ``big enough''
+\item and $\pi$ is not too close to 0 or 1. 
+\end{itemize}
+\item if $\pi=0.5$, the number of successes $y\sim B(n,\pi)$ is approximately
+$Normal(n*\pi,\,\pi(1-\pi)/n)$, 
+\item The proportion of successes, $x=y/n$, is approximately $Normal(\pi,\pi(1-\pi)$)
+\item Otherwise, the Binomial is decidedly NOT normal, as we can see from
+some simulations.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{n=30, $\pi=0.05$ ; 2000 samples}
+
+<<bin10,fig=T,include=F,echo=T>>=
+SS <- 30
+p <- 0.05
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+hist(means, xlim=c(0,0.7), prob=T, breaks=20, main="", xlab="proportion successes observed")
+mym <- round(mean(means),3)
+obssd <- round(sd(means),3)
+theomean <- pi
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+legend("topright", legend=c(paste("EV[x]=", p), paste("Obs.Mean=", mym), paste("Theo sd(mean)=", theosd), paste("Obs. sd(mean)=", obssd)))
+@
+
+\includegraphics[width=10cm]{plots/t-bin10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Simulate n=500, $\pi=0.05$ (2000 estimated proportions)}
+
+It doesn't help to make each sample bigger
+
+<<bin15,fig=T,include=F,echo=T>>=
+SS <- 500
+p <- 0.05
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+hist(means, xlim=c(0,0.7), prob=T, breaks=20, main="", xlab="proportion successes observed")
+mym <- round(mean(means),3)
+obssd <- round(sd(means),3)
+theomean <- pi
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+legend("topright", legend=c(paste("EV[x]=", p), paste("Obs.Mean=", mym), paste("Theo sd(mean)=", theosd), paste("Obs. sd(mean)=", obssd)))
+@
+
+\includegraphics[width=10cm]{plots/t-bin10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{More Normal with moderate $\pi$}
+
+Simulate n=100, $\pi=0.2$ (2000 samples)
+
+<<bin20,fig=T,include=F,echo=T, width=8, height=5>>=
+SS <- 100
+p <- 0.2
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+hist(means, xlim=c(0,0.7), prob=T, breaks=20,main="", xlab="proportion successes observed")
+lines(density(means))
+mym <- round(mean(means),3)
+obssd <- round(sd(means),3)
+theomean <- 0.2
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+x <- seq(0,0.5, by =0.01)
+lines(x, dnorm(x, m=theomean, sd=theosd), lty=2, col="red")
+legend("topright", legend=c(paste("EV[x]=",p), paste("Obs. Mean=",mym),paste("Theo sd(mean)=", theosd), paste("Obs. sd(mean)=", obssd)))
+legend("right", legend=c("Kernel Density",paste("Normal(", theomean, "," ,theosd, "^2)",sep="")), lty=c(1,2), col=c("black","red"))
+@
+
+\includegraphics[width=10cm]{plots/t-bin20}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Proportions}
+\begin{itemize}
+\item The Normal approximation is widely used, but...
+\item Its valid when $N$ is more than 100 or so and $\pi$ is in the ``mid
+ranges''.
+\item The Normal approximation lets us take this general idea: 
+\[
+CI=[\hat{\pi}-something\, low,\,\,\hat{\pi}+something\, high]
+\]
+
+\item and replace it with 
+\[
+CI=[\hat{\pi}-1.96\cdot std.error.(\hat{\pi}),\hat{\pi}+1.96\cdot std.error(\hat{\pi})]
+\]
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Show My Work: Derive the std.error($\hat{\pi}$)? }
+
+This is a Sidenote. Start with the Expected Value
+\begin{itemize}
+\item Recall, for any random variable $x$, 
+\begin{equation}
+E[x]=\sum prob(x)*x
+\end{equation}
+
+\item The chance of a $1$ is $\pi$ and the chance of a $0$ is $(1-\pi)$.
+\item The expected value of $x_{i}$ is clearly $\pi$:
+\end{itemize}
+\begin{eqnarray}
+E[x] & = & \pi*1+(1-\pi)*0\nonumber \\
+ & = & \pi\label{eq:-4}
+\end{eqnarray}
+
+
+
+\lyxframeend{}\lyxframe{Show My Work: For the Binomial Case}
+\begin{itemize}
+\item The observations are 1's and 0's representing successes and failures:
+$0,1,0,1,1,0,1$. 
+\item The estimated mean is the ``successful'' proportion of observed
+scores
+\begin{equation}
+\hat{\pi}=\frac{\sum x_{i}}{N}
+\end{equation}
+
+\item Recall this is always true for means, the expected value of the estimate
+the mean is the expected value of $x_{i}$ 
+\begin{equation}
+E[\hat{\pi}]=\pi\label{eq:-1}
+\end{equation}
+
+\item So it makes sense that we act as though $\hat{\pi}$ is in the center
+of the CI.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Show My Work: $E[\hat{\pi}]=E[x]=\pi$}
+
+This uses the simple fact that expected value is a ``linear operator'':
+$E[a\cdot x_{1}+bx_{2}]=aE[x_{1}]+bE[x_{2}]$
+
+Begin with the definition of the estimated mean:
+
+\begin{equation}
+\hat{\pi}=\frac{x_{1}}{N}+\frac{x_{2}}{N}+\ldots+\frac{x_{N}}{N}
+\end{equation}
+\begin{equation}
+E[\hat{\pi}]=E\left[\frac{x_{1}}{N}\right]+\left[\frac{x_{2}}{N}\right]+\ldots+\left[\frac{x_{N}}{N}\right]
+\end{equation}
+
+
+\begin{equation}
+E[\hat{\pi}]=N\cdot\frac{E[x]}{N}=E[x]=\pi
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Show My Work: Variance is Easy Too}
+\begin{itemize}
+\item Recall the variance is a probability weighted sum of squared deviations
+\end{itemize}
+\begin{equation}
+Var[x]=\sum prob(x)*x
+\end{equation}
+
+\begin{itemize}
+\item For one draw, 
+\begin{eqnarray}
+Var[x]= &  & \pi*(1-\pi)^{2}+(1-\pi)(0-\pi)^{2}\nonumber \\
+ & = & (1-\pi)(\pi*(1-\pi)+\pi^{2})\nonumber \\
+ & = & \pi(1-\pi)\label{eq:-5}
+\end{eqnarray}
+
+\item And if we draw N times and calculate $\hat{\pi}=\sum x/N$
+\begin{equation}
+Var[\hat{\pi}]=\frac{Var[x]}{N}=\frac{\pi(1-\pi)}{N}
+\end{equation}
+
+\item Note that's the ``true variance'', AKA the ``theoretical variance''
+of $\hat{\pi}$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Show My Work: Here's where we get the standard error}
+\begin{itemize}
+\item The standard deviation of $\hat{\pi}$ is the square root of the variance 
+\end{itemize}
+\begin{equation}
+std.dev.(\hat{\pi})=\sqrt{Var[\hat{\pi}]}=\frac{\sqrt{\pi(1-\pi)}}{\sqrt{N}}
+\end{equation}
+
+\begin{itemize}
+\item That is the ``true standard deviation.''
+\item As we saw in the CLT lecture, the dispersion of the estimator ``collapses''
+rapidly as the sample increases because it is the variance divided
+by $\sqrt{N}$.
+\item We don't know $\pi$, however. So from the sample, we estimate it
+by $\bar{x}$ (or, we could call it $\hat{\mu}$). 
+\item Use that estimate in place of the true $\pi$ and the value is called
+the standard error 
+\[
+std.error(\hat{\pi})=\sqrt{\pi(1-\pi)}/\sqrt{N}
+\]
+. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Citations on Calculations of CI for Proportions}
+\begin{itemize}
+\item These give non-symmetric CI's
+
+
+Brown, L. D. Cai, T. T. and DasGupta, A. (2001). ``Interval estimation
+for a binomial proportion.'' \emph{Statistical Science}, 16(2), 101-133. 
+
+
+Agresti, A. and Coull, B. A. (1998). ``Approximate is better than
+'exact' for interval estimation of binomial proportions,'' \emph{The
+American Statistician}, 52(2), 119-126. 
+
+\end{itemize}
+
+\lyxframeend{}\section{Summary}
+
+
+\lyxframeend{}\lyxframe{What To Remember}
+\begin{itemize}
+\item Parameter Estimate, Sampling Distribution, Confidence Interval
+\item The appeal of the CI is that it gives a ``blunt'' answer to the
+question, ``how confident are you in that estimate''?
+\item The symmetric Sampling Distributions usually lead back to the T distribution,
+which is almost same as $N(0,1)$ for large sample sizes, and a pleasant,
+symmetric
+\begin{equation}
+CI=[\hat{\theta}-2\cdot std.err.(\hat{\theta})\,,,\hat{\theta}+2\cdot std.err.(\hat{\theta})]
+\end{equation}
+
+\item The nonsymmetric Sampling Distributions do not have symmetric CI's,
+and the description of their CI's is case specific and contentious.
+\end{itemize}
+
+\lyxframeend{}
+\end{document}

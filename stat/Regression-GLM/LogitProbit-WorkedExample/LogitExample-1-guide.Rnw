@@ -1,0 +1,1184 @@
+%% LyX 2.3.0 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,letterpaper,english]{extarticle}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{babel}
+\usepackage{url}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\usepackage{breakurl}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\special{papersize=\the\paperwidth,\the\paperheight}
+
+%% Special footnote code from the package 'stblftnt.sty'
+%% Author: Robin Fairbairns -- Last revised Dec 13 1996
+\let\SF@@footnote\footnote
+\def\footnote{\ifx\protect\@typeset@protect
+    \expandafter\SF@@footnote
+  \else
+    \expandafter\SF@gobble@opt
+  \fi
+}
+\expandafter\def\csname SF@gobble@opt \endcsname{\@ifnextchar[%]
+  \SF@gobble@twobracket
+  \@gobble
+}
+\edef\SF@gobble@opt{\noexpand\protect
+  \expandafter\noexpand\csname SF@gobble@opt \endcsname}
+\def\SF@gobble@twobracket[#1]#2{}
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\providecommand*{\code}[1]{\texttt{#1}}
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% Following comment is required. Do not delete it.
+%\usepackage{Sweave}
+
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+
+\usepackage{booktabs}
+\usepackage{dcolumn}
+
+\input{theme/guidePreambleHeader.tex}
+\input{theme/preambleFooter.tex}
+\input{theme/guidePreambleSweavel.tex}
+
+\makeatother
+
+\begin{document}
+%% Fill in values of the arguments here, 
+%% If blanks are needed, must insert value " ~ "
+%% If comma needed inside value, wrap in {}.
+%% Delete secondauthor and thirdauthor if not needed
+\guidesetup{%
+  author={
+    lastname=Johnson, 
+    firstname=Paul, 
+    affiliation=CRMDA,
+    email=pauljohn@ku.edu},
+  url={https://crmda.ku.edu/guides},
+  keywords={single-authoring, just one},
+  title={A Title for Skeleton Template: rnw2pdf-guide-sweave},
+  leftlogo={theme/logoleft.pdf},
+  rightlogo={theme/logo-vert.pdf},
+}
+\guidehdr
+
+% tmpout directory must exist first
+<<tmpout, echo=FALSE, include=FALSE, results=hide>>=
+if(!dir.exists("tmpout")) dir.create("tmpout", showWarnings=FALSE)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=tmpout/t, split=TRUE, ae=FALSE, height=4.5, width=7}
+
+<<Roptions, echo=FALSE, include=FALSE, results=hide>>=
+opts.orig <- options()
+options(width=90, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+options(SweaveHooks=list(fig=function() par(ps=10)))
+pdf.options(onefile=FALSE,family="Times",pointsize=10)
+@
+
+%The listings class used here allows within-document style
+%changes. R input boxes are governed by 
+% "Rsize", "Rbackground" and "Rcolor", while R output boxes depend on
+% "Routsize", "Routbackground", and "Routcolor". Colors
+% can be specified in many ways, as shown here
+%\def\Rsize{\huge\ttfamily}
+%\def\Routsize{\huge}
+%\def\Rbackground{\color[gray]{0.90}}
+%\def\Routbackground{\color[gray]{0.40}}
+%\def\Rcolor{\color[gray]{0.60}
+%\def\Routcolor{\color[rgb]{0.9, 0.1, 0.1}]}
+%\def\Rcommentcolor{\color{green}}
+\begin{abstract}
+\noindent Some variables from the American National Election Study
+of 2002 are used to demonstrate logistic regression in R. The same
+old SAS export file that we created 2003 still works, all these years
+later. 
+\end{abstract}
+\tableofcontents{}
+
+\section{Get that ANES 2002 dataset}
+
+In 2003, some students and I used SAS to pull variables from the American
+National Election Study. That effort was immortalized in a post on
+the KU server, then called lark. When lark closed, I copied that material
+onto my personal web server, \url{http://pj.freefaculty.org/DataSets/ANES/2002}.
+The result of the importation was a SAS export file, which I called
+``PJTEST.sasxport'' because I did not think it would work. But it
+did. 
+
+The data import process today might be handled differently, but this
+one is still to be cherished because of its special place in time.
+That was the semester when I quit teaching stats with SAS and asked
+the students to use R (\citet{RCore}).
+
+There is a SAS export dataset that is the primary source material
+for this exercise. 
+
+There is one very important thing to explain about this data. The
+variable labels were lost, we have just the numeric values for them.
+Hence, to create factors in R, we have to do a little work. 
+
+Now, in 2018, I'd be telling everybody ``don't bother with that,
+use the variable key in the kutils package.'' But I realize that's
+an unfamiliar thing to most people, so I'll do the recoding the old
+fashioned way here.
+
+\subsection{Check the Codebook}
+
+The full variable list of the original survey is oneline:
+
+\url{http://pj.freefaculty.org/DataSets/ANES/2002/RELEASE/nes02var.txt}
+
+Some of the highlights are as follows.
+
+\textbf{V023131} Y3x. Summary: R Education 
+
+What is the highest grade of school or year of college you completed? 
+
+1. 8 grades or less and no diploma or equivalency 
+
+2. 9-11 grades, no further schooling 
+
+3. High school diploma or equivalency test 
+
+4. More than 12 years of schooling, no higher degree 
+
+5. Junior or community college level degrees (AA degrees) 
+
+6. BA level degrees; 17+ years, no advanced degree 
+
+7. Advanced degree, including LLB
+
+9. Refused 
+
+0. NA in Y3, Y3a or Y3b
+
+V023131 Frequency ------------------- 
+
+0 2 
+
+1 36 
+
+2 70 
+
+3 399 
+
+4 313 
+
+5 155 
+
+6 347 
+
+7 178 
+
+9 11
+
+===============================
+
+\textbf{V023111} Q1a. Who did R vote for in 2000 Pres Election 
+
+Which one did you vote for? 
+
+1. Al Gore 
+
+3. George W. Bush 
+
+5. Ralph Nader 
+
+7. Other \{SPECIFY\}
+
+8. Dont know 
+
+9. Refused 0. NA
+
+INAP. Fresh Cross-Section respondent; 5,8,9 in Q1
+
+V023111 Frequency ------------------- . 
+
+526 0 1 1 431 3 502 5 32 7 8 8 1 9 10
+
+============================== 
+
+\textbf{V023036} J1. R Consider Self Dem/Rep/Ind Numeric Missing eq
+0, ge 8
+
+J1.
+
+Generally speaking, do you usually think of yourself as a REPUBLICAN,
+a DEMOCRAT, an INDEPENDENT, or what? ---------------------------------------
+
+1. Democrat 
+
+2. Republican 
+
+3. Independent 
+
+4. Other Party \{VOL\} \{SPECIFY\} 
+
+5. No Preference \{VOL\}
+
+8. Don't know 
+
+9. Refused 0. NA
+
+V023036 Frequency ------------------- 
+
+0 13 
+
+1 502 
+
+2 474 
+
+3 429 
+
+4 27 
+
+5 59 
+
+8 5 
+
+9 2
+
+============================== 
+
+\textbf{V023022} R 7Pt Scale Lib-Con Self-Placement 
+
+We hear a lot of talk these days about liberals and conservatives.
+When it comes to politics, do you usually think of yourself as EXTREMELY
+LIBERAL, LIBERAL, SLIGHTLY LIBERAL, MODERATE OR MIDDLE OF THE ROAD,
+SLIGHTLY CONSERVATIVE, CONSERVATIVE, EXTREMELY CONSERVATIVE, or haven't
+you thought much about this? --------------------------------------------------------------------------
+
+01. Extremely Liberal 
+
+02. Liberal 
+
+03. Slightly Liberal 
+
+04. Moderate; Middle of the Road 
+
+05. Slightly Conservative 
+
+06. Conservative 
+
+07. Extremely Conservative
+
+08. Don't know 
+
+09. Refused 
+
+90. Haven't thought much {[}Do Not Probe{]} 
+
+00. NA
+
+V023022 Frequency ------------------- 
+
+0 11 
+
+1 23 
+
+2 181 
+
+3 135 
+
+4 340 
+
+5 186 
+
+6 315 
+
+7 65 
+
+8 8 
+
+9 3 
+
+90 244
+
+============================== 
+
+\textbf{V023027} H1. US Economy Better/Worse in Last Yr
+
+Now thinking about the economy in the country as a whole, would you
+say that over the past year the nation's economy has gotten BETTER,
+STAYED ABOUT THE SAME, or gotten WORSE? ---------
+
+1. Better 
+
+3. Same 
+
+5. Worse
+
+8. Don't know 
+
+9. Refused 
+
+0. NA
+
+V023027 Frequency ------------------- 
+
+0 6 
+
+1 69 
+
+3 321 
+
+5 1112 
+
+8 3
+
+===================================
+
+\textbf{V023010}: Where on that thermometer would you rate George
+W. Bush? (on a scale from 0 to 100) 
+
+====================
+
+\subsection{Use foreign::read.xport to import the data}
+
+R's package ``foreign'' has a number of procedures to import data
+from other packages. Happily, this data imports correctly.
+
+First, I'll retrieve a copy of the file from the web server. I'll
+rename it ``anes2002.sasxport''. To keep this simple, I'll just
+drop it in the current working directory. (In real projects, I'd put
+it in a separate folder.)
+
+<<2a>>=
+url <- "http://pj.freefaculty.org/DataSets/ANES/2002/PJTEST.sasxport"
+fn <- "anes2002.sasxport"
+if(!file.exists(fn)){
+    download.file(url, mode="wb", destfile="anes2002.sasxport")
+}
+@
+
+The SAS export file is easy to import
+
+<<>>=
+library(foreign) 
+nes2002 <- read.xport(fn)
+@
+
+I've got \Sexpr{dim(nes2002)[1]} rows and \Sexpr{dim(nes2002)[2]}
+columns. 
+
+Unfortunately, all of the variable labels were lost in the process,
+I have only the numeric scores. I found that out by using the str()
+function:
+
+<<>>=
+str(nes2002)
+@
+
+\subsection{Recodes}
+
+I've got a few challenges. For categorical variables, it is best to
+use R factors, rather than integers to record the information. This
+would have been easier if I had made a variable key, I'm sorry I did
+not. But I'll make an informal variable table to help trace this through.
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+name\_old & name\_new &  & class\_new & value\_new\tabularnewline
+\hline 
+\hline 
+V023111 & bushvotef &  & factor & ``Gore'', ``Bush''\tabularnewline
+\hline 
+V023111 & bushvote &  & integer & 0=Gore,1=Bush\tabularnewline
+\hline 
+V023036 & partyid &  & factor & ``D'',''R'',''I''\tabularnewline
+\hline 
+V023036 & repub &  & integer & 1=''R'',0=''D'',''I'',or''NA''\tabularnewline
+\hline 
+V023036 & democ &  & integer & 1=''D'',0=''R'',''I'',or''NA''\tabularnewline
+\hline 
+V023022 & ideolf &  & factor & ``EL'', ``L'',...,''EC''\tabularnewline
+\hline 
+V023022 & ideoln &  & integer & 1-7\tabularnewline
+\hline 
+\end{tabular}
+\begin{enumerate}
+\item Create ``bushvote'', a binary variable for Gore vs Bush, and all
+of the other candidates are treated as missing.
+
+<<rec10,echo=T>>=
+nes2002$bushvotef <- factor(nes2002$V023111, levels = c(1, 3), labels = c("Gore", "Bush"))
+table(nes2002$bushvote, nes2002$V023111, exclude = NULL)
+@
+
+<<rec15, echo=T>>=
+nes2002$bushvote <- ifelse(nes2002$bushvotef == "Bush", 1, 0)
+table(nes2002$bushvote, nes2002$V023111)
+@
+\item For political party, it looks like I featured the simple 3 category
+variable, V023036, not the 7 point ``strength of identification''
+scale that you see in some projects. First I'll assign labels for
+the 3 most widely used party labels.
+
+<<rec20,echo=T>>=
+nes2002$partyid <- factor(nes2002$V023036, levels = c(3,1, 2), labels = c("I", "D", "R"))
+table(nes2002$partyid, nes2002$V023036, exclude = NULL)
+@
+
+In the analysis below, I have some illustrations using democrat and
+republican dummy variables. 
+
+<<rec30,echo=T>>=
+nes2002$democ <- ifelse(nes2002$partyid == "D", 1, 0)
+table(nes2002$democ, nes2002$partyid, exclude = NULL)
+nes2002$repub <-ifelse(nes2002$partyid == "R", 1, 0)
+table(nes2002$repub, nes2002$partyid, exclude = NULL, dnn = list("repub", "partyid"))
+@
+
+As I look at that now, I have some misgivings about it because of
+the way missing values are handled. Can you see why I might worry? 
+
+(Concern is that when we say democ = 0, we might mean everybody who
+is not a democrat, EVEN including missing values on party. In this
+current coding, we don't have that, we have missings on democ unless
+party is D, R, or I.
+
+The most I think about that, the more I think I ought to fix it. So
+here's a fix:
+
+<<rec31,echo=T>>=
+nes2002$democ <- 0
+nes2002$democ[!is.na(nes2002$partyid) & nes2002$partyid == "D"] <- 1
+table(nes2002$democ, nes2002$partyid, exclude = NULL)
+nes2002$repub <- 0
+nes2002$repub[!is.na(nes2002$partyid) & nes2002$partyid == "R"] <- 1
+table(nes2002$repub, nes2002$partyid, exclude = NULL, dnn = list("repub", "partyid"))
+@
+
+The important thing about this ``fix'' is that we mean to say that
+democ is 1 if a person is a democrat, and they are 0 no matter what
+otherwise. They are 0 even if they did not answer the party identification
+question. This is aggressive coding, I think. It is the way we always
+used to do it in SAS, however.
+\item Fix Ideology. Some authors treat ideology as a numeric variable, as
+if 1 through 7 are numerically meaningful scores. Some authors say
+``that's a categorical variable, don't do that.'' We can try both
+ways. Hence we have ideolf and ideoln
+
+<<rec50,echo=T>>=
+nes2002$ideolf <- factor(nes2002$V023022, levels = 1:7, labels = c("EL", "L", "SL", "M", "SC", "C", "EC"), ordered = TRUE)
+table("ideology factor" = nes2002$ideolf, "original ideology" = nes2002$V023036, exclude = NULL)
+@
+
+<<rec51,echo=T>>=
+nes2002$ideoln <- as.numeric(nes2002$ideolf) # converts to 1 thru 7
+table(nes2002$ideoln, nes2002$V023036, exclude = NULL)
+table(nes2002$ideolf, nes2002$ideoln, dnn = list("factor version", "ideology: numeric version"), exclude = NULL)
+@
+\end{enumerate}
+In the discussion below, I compare an ideology variable coded 1-2-3-4-5-6-7
+against one that is coded with labels.
+
+\section{Ideology and the vote}
+
+I decided to ``be stupid'' and simply treat Ideology as a 7 point
+numerical variable (even though it is actually an ordered factor).
+
+\subsection*{Plot The Vote's Dependence on Ideology}
+
+Consider the very uninformative plot in Figure \ref{cap:scatter1}.
+That's really quite pathetic. The visual impact is not quite so depressing
+in Figure \ref{cap:jittered1}, which uses ``jittered'' values to
+display overlapped points. That figure includes the predicted values
+from the OLS regression (discussed next).
+
+\begin{figure}[h]
+\caption{Scatterplot showing impact of ideology on vote choice in 2000\label{cap:scatter1}}
+
+<<3b,fig=T,echo=T,height=5>>=
+plot(nes2002$ideoln, nes2002$bushvote, ylim=c(0,1), xlab="Ideology (numeric)", ylab="Vote (Bush=1, Gore=0)")
+@
+\end{figure}
+
+
+\subsection*{Ordinary Least Squares}
+
+The ordinary least squares result is obtained with the lm (short for
+``linear model'') function in R. The fitted model is saved as an
+object that we call ols1. The summary results are obtained by applying
+the summary function to the result. 
+
+<<3c,echo=T>>=
+ols1 <- lm(bushvote ~ ideoln, data=nes2002) 
+summary(ols1)
+@
+
+\begin{figure}[h]
+\caption{Jittered values reveal more information\label{cap:jittered1}}
+
+<<3d,fig=T,echo=T>>=
+with(nes2002, plot(jitter(ideoln), jitter(bushvote), ylim=c(-0.2, 1.2), 
+   xlab="Ideology (numeric)", ylab="Vote (Bush=1,Gore=0)"))
+nd <- data.frame(ideoln = 1:7)
+nd$fit <- predict(ols1, newdata = nd)
+lines(nd$ideoln, nd$fit)
+@
+\end{figure}
+
+
+\subsection*{Logistic estimation with glm}
+
+The R team prefers that we think of the logit model as a Generalized
+Linear Model (GLM). We are supposed to think of the outcomes as draws
+from a Binomial distribution (coin flips) with probability equal to
+the following formula:
+
+\[
+P(Y_{i}=1)=\frac{1}{1+e^{-(\beta_{0}+\beta_{1}X_{i})}}
+\]
+
+Imagine searching through the possible combinations of $\hat{\beta}_{0}$
+and $\hat{\beta}_{1}$. For each combination, we can calculate $\hat{p}_{i}$,
+an estimate of the probability that the $i$'th observation will be
+1. 
+
+\[
+\hat{p}_{i}=\frac{1}{1+e^{-(\hat{\beta}_{0}+\hat{\beta}_{1}X_{i})}}
+\]
+The estimator will tune $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$
+up and down, trying to make the observed data as likely as possible.
+
+The ``raw'' output from R is as follows. 
+
+<<3e,echo=T>>=
+bushideoglm1 <- glm(bushvote ~ ideoln, family=binomial, data=nes2002) 
+summary(bushideoglm1)
+@
+
+\subsection*{Presentable Tables}
+
+<<3e2,echo=F,results=hide>>=
+library(memisc)
+library(rockchalk)
+@
+
+The first package I know of that incorporated a high-quality LaTeX
+table was ``memisc'', authored by Martin Elff. The regression table
+has some interesting features. The LaTeX rendering from the use of
+the memisc package is displayed in Table \ref{tab:memisc1}:
+
+\begin{table}
+
+\caption{Logistic Regression Tables (memisc)\label{tab:memisc1}}
+
+<<3f, echo=T, results=tex>>=
+toLatex(mtable(bushideoglm1))
+@
+\end{table}
+
+The strength of this is the profuse listing of summary statistics. 
+
+I don't want student papers to include a profusion of summary statistics
+that they don't understand. That's why rockchalk::outreg's output,
+which is displayed in the bottom part of Table . 
+\begin{center}
+\begin{table}
+\caption{Logistic Regression Table (outreg)\label{tab:outreg1}}
+
+<<3g, echo=T, results=tex>>=
+outreg(bushideoglm1, tight=F)
+@
+\end{table}
+\par\end{center}
+
+\subsection{How to interpret these estimates.}
+
+Most of our emphasis is on the estimates of the $\beta$'s. We wonder
+``does the predictor significantly increase the chances that the
+outcome will be 1?'' 
+
+The probability is defined in this two step procedure.
+
+1. Calculate the Linear Predictor
+
+\begin{equation}
+\hat{\eta}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x_{i}+more\,\hat{\beta}\cdot x's
+\end{equation}
+
+2. ``Bend'' the Linear Predictor into a Probability curve
+\begin{equation}
+\hat{p}_{i}=Prob(Y_{i}=1|\hat{\eta}_{i})=\frac{1}{1+e^{-\hat{\eta}}}
+\end{equation}
+
+The intercept and the predictor variables all ``blend together''
+in the linear predictor to control the chances that the outcome will
+be 1. 
+
+The best way to understand the $\beta$'s is to calculate $\hat{p}_{i}$
+for ``interesting'' values of the input variables.
+
+Please remember this very important thing:
+\begin{quote}
+To calculate a predicted value, one must include values for all input
+variables and all parameters.
+\end{quote}
+That means the ``effect of x'' does really depend on the values
+of all of the other input variables.
+
+The usual approach is to set all of the variables at their ``means''
+or ``modes'' and then adjust the values of a particular input to
+findout how the predicted probability changes.
+
+\subsection{Use the predict function}
+
+In the past, I have calculated predicted values ``manually'' by
+taking the estimated coefficients and using them in the logistic equation.
+R offers a function ``predict'' to handle that for us. 
+
+In this case, since ideology takes on values from 1 to 7, we need
+only calculate 7 predictions. To obtain predicted values from the
+glm output, one uses the following approach:
+
+<<52,echo=T>>=
+nd <- data.frame(ideoln = 1:7)
+pp3<-predict(bushideoglm1, newdata=nd, type="response", se.fit=T)
+pp3
+@
+
+The calculation of the confidence intervals for those predictions
+is a bit more complicated. The predict method for glm has no argument
+interval=''confidence'', as does the predict for linear models.
+One must then construct a confidence interval in the un-transformed
+``log odds'' scale and then map that onto the logistic scale. That
+is done in Figure \ref{fig:LogitWConfInt}.
+
+\begin{figure}
+\caption{Fitted Values and Confidence Interval of Logistic Regression\label{fig:LogitWConfInt}}
+
+<<fig=TRUE,echo=TRUE>>=
+plot(bushvote ~ ideoln, data=nes2002, ylim=c(0,1), xlab="Ideology(numeric)", ylab="Vote (Bush=1, Gore=0)", main="Predicted Probabilities from Logistic Regression")
+pp3 <- predict(bushideoglm1, newdata=nd, se.fit=T)
+pp3$upr <- pp3$fit + 1.96*pp3$se.fit
+pp3$lwr <- pp3$fit - 1.96*pp3$se.fit
+pp3logistic <- lapply(pp3, plogis)
+pp3logistic
+lines(1:7, pp3logistic$fit)
+lines(1:7, pp3logistic$lwr, lty=4)
+lines(1:7, pp3logistic$upr, lty=4)
+@
+\end{figure}
+
+
+\subsection*{rockchalk to make that automatic? Maybe}
+
+Because some students have trouble putting together the sequence of
+calculations, the rockchalk package has functions that are intended
+to do this work. These are described in the vignette rockchalk, but
+here's the high level overview. 
+
+The predictOMatic function is supposed to look at the regression,
+find the predictors, get ``interesting'' example values, and then
+calculate the predictions (possibly with a confidence interval). It
+turns out that deciding what is ``interesting'' is subjective, so
+the predVals parameter has a \emph{whole lot} of options. At the current
+time, the options are difficult to understand and it is necessary
+to study the help page and the examples to truly grasp the power and
+beauty of this fully operational death star. Here I take the easy
+road by simply listing the values for the one predictor.
+
+<<pm10>>=
+predictOMatic(bushideoglm1, predVals = list(ideoln=1:7), interval="confidence")
+@
+
+I think it is useful to run \code{predictOMatic}, especially if an
+output table of predicted probabilities is needed. These can be used
+to create a predicted value plot.
+
+On the other hand, it is not necessary for the user to run \code{predictOMatic}
+to get a nice looking plot. The \code{plotCurves} function will run
+predictOMatic in the background and draw a plot. An example of plotCurves
+is found in Figure \ref{fig:plotCurves-ideoln}. 
+
+\begin{figure}[h]
+<<pm20,fig=T>>=
+plotCurves(bushideoglm1, plotx=ideoln, interval="confidence", ylim = c(0, 1.2))
+@
+
+\caption{plotCurves demonstration with ideology\label{fig:plotCurves-ideoln}}
+\end{figure}
+
+\code{predictOMatic} might fail, \code{plotCurves} might fail. These
+fail when the regression model being estimated has some unusual characteristic,
+something I did not plan for.
+
+In which case I'd fall back to the two step procedure. 
+\begin{enumerate}
+\item make a ``newdata'' data frame that has one row for each hypothetical
+case for which I want to make a prediction, and
+\item run predict (as shown in Figure \ref{fig:LogitWConfInt}) and then
+fiddle around with the fit and se.fit values to manufacture the confidence
+intervals.
+\end{enumerate}
+Because making the newdata object can be frustrating, I created a
+function called \code{newdata} in \code{rockchalk}.
+
+\section{Put party into the logistic regression}
+
+In 2003, I include this section only because I thought Figure \ref{cap:DandR}
+was really neat. I believe this shows that the effect of ideology
+is easier to spot if you contrast Democrats and Republicans. Now,
+in 2018, I have a better way to estimate the model and make the plot. 
+
+But I think it is somewhat unfair to students if I give you the awesome
+result we have at the current time without admitting that I blundered
+about while I was finding the better way. So I'll include the old
+demonstration, then the new way. 
+
+\subsection*{The 2003 way I included party id in the model}
+
+The party variable was recoded into two ``dummy'' variables, ``repub''
+id 1 for people who are in the Republican party, 0 for others, and
+``democ'', represents membership in the Democratic party.
+
+<<echo=TRUE>>=
+#start adding variables 
+bushideoglm2 <- glm(bushvote ~ ideoln + repub + democ, family=binomial, data=nes2002) 
+summary(bushideoglm2)
+@
+
+To estimate the impact of ideology for Democrats and Republicans,
+I went through an inconvenient process of making up 3 separate new
+data objects, and pulling predictions for each one. Today, I'd make
+one newdata object here, but I have to live with the silliness of
+the past here:
+
+<<622,echo=T>>=
+lnth <- length(nes2002$ideoln) 
+newdfD1 <-data.frame(ideoln=seq(1,7), repub=0, democ=1)
+newdfD1
+predvalsD1 <- predict(bushideoglm2, newdata=newdfD1, type="response")
+newdfR1 <-data.frame(ideoln=seq(1,7), repub=1, democ=0)
+newdfR1
+predvalsR1 <- predict(bushideoglm2, newdata=newdfR1, type="response")
+newdfI1 <-data.frame(ideoln=seq(1,7), repub=0, democ=0)
+predvalsI1 <- predict(bushideoglm2, newdata=newdfI1, type="response")
+@
+
+\begin{figure}
+\caption{Democrats and Republicans\label{cap:DandR}}
+
+<<623,fig=T,echo=T>>=
+plot(seq(1,7), predvalsD1, type="n", ylim=c(0,1), xlim=c(0,8), xlab="ideoln: ideology", ylab="Vote (Bush=1, Gore=0)") 
+text(seq(1,7), predvalsR1, labels=rep("r",7))
+text(seq(1,7), predvalsD1, labels=rep("d",7))
+text(seq(1,7), predvalsI1, labels=rep("i",7))
+lines(seq(1,7), predvalsR1, type="c")
+lines(seq(1,7), predvalsD1, type="c")
+lines(seq(1,7), predvalsI1, type="c")
+@
+\end{figure}
+
+
+\subsection*{Making a better party \& ideology model}
+
+There was no reason to use the dummies repub and democ. I have a factor
+variable partyid and I might as well use it. The additive model is:
+
+<<ideol200, echo=TRUE>>=
+bushideoglm3 <- glm(bushvote ~ ideoln + partyid, family=binomial, data=nes2002) 
+summary(bushideoglm3)
+@
+
+<<ideol210>>=
+predictOMatic(bushideoglm3, predVals = list(ideoln=1:7, partyid = c("I", "D", "R")))
+@
+
+\begin{figure}
+\caption{plotCurves for ideology with moderator party identification}
+
+<<ideol220, fig=T>>=
+plotCurves(bushideoglm3, plotx=ideoln, modx=partyid, ylim = c(0, 1.3),
+            xlab = "Ideology(numeric)", ylab = "Vote(Bush=1, Gore=0)")
+@
+\end{figure}
+
+
+\subsection*{Should it be treated as an interaction model?}
+
+We assumed party id was an additive element, but perhaps it is interactive. 
+
+There was no reason to use the dummies repub and democ. I have a factor
+variable partyid and I might as well use it. The additive model is:
+
+<<ideol240, echo=TRUE>>=
+bushideoglm4 <- glm(bushvote ~ ideoln * partyid, family=binomial, data=nes2002) 
+summary(bushideoglm4)
+@
+
+\begin{figure}[p]
+\caption{plotCurves for ideology with interaction\label{fig:ideologyinteraction1}}
+
+<<ideol250, fig=T>>=
+plotCurves(bushideoglm4, plotx=ideoln, modx=partyid, ylim = c(0, 1.3), xlab = "Ideology(numeric)", ylab = "Vote(Bush=1, Gore=0)")
+@
+\end{figure}
+
+
+\subsection*{Note the problem of working in the S-shaped predictions}
+
+One problem I have not emphasized much in class is that all glm have
+an inherent ``interaction'' effect, even if we don't estimate models
+with interaction terms. In logistic regression, that's easy to see
+because the S-shaped curve bends everything. Party ID is important,
+so much so that it appears that ideology has not much effect on Republicans
+or Democrats in Figure \ref{fig:ideologyinteraction1}. 
+
+<<ideol260>>=
+predictOMatic(bushideoglm3, predVals = list(ideoln=1:7, partyid = c("I", "D", "R")), type = "link")
+@
+
+\begin{figure}[p]
+\caption{plotCurves in the linear predictor space to better inspect interactions}
+
+<<ideol300, fig=T>>=
+plotCurves(bushideoglm4, plotx=ideoln, modx=partyid,
+            xlab="Ideology(numeric)", ylab="Linear predictor: XB",
+            type="link", plotPoints=FALSE, ylim = c(-4,4))
+@
+\end{figure}
+
+
+\section{The Bush Thermometer variable is interesting. }
+
+This is introduced because it is \emph{as close to a numeric variable
+as we can get} in this data. I believe it is actually an ordinal variable
+masquerading as a number, but we'll treat it as a number, just for
+practice.
+
+The variable in question is
+\begin{itemize}
+\item V023010: Where on that thermometer would you rate George W. Bush?
+(on a scale from 0 to 100) 
+\end{itemize}
+That one does not need to be recoded. Its histogram is displayed in
+Figure \ref{fig:HistBushTherm}.
+
+\begin{figure}
+
+\caption{Histogram of the Bush feeling thermometer\label{fig:HistBushTherm}}
+
+<<bushtherm, fig=T>>=
+hist(nes2002$V023010, prob=T, xlab = "Bush Feeling Thermometer", breaks = seq(0, 100, by = 5), main="")
+@
+\end{figure}
+
+The OLS estimates for the model including only the Bush feeling thermometer
+are as follows:
+
+<<olsthermoreg,echo=T>>=
+olsthermo1 <- lm(bushvote ~ V023010, data=nes2002) 
+summary(olsthermo1)
+@
+
+The results from logistic estimates from glm are as follows (see Figure
+\ref{cap:LogisticAndOLSglmthermo1}).
+
+<<6122,echo=T>>=
+glmthermo1 <- glm(bushvote ~ V023010, data=nes2002, family=binomial) 
+summary(glmthermo1) 
+@
+
+A presentable table for these models is provided in Table \ref{tab:ThermoOutreg},
+which also includes the probit model for comparison.
+
+<<6122,echo=F>>=
+glmthermo2 <- glm(bushvote ~ V023010, data=nes2002, family=binomial(link=probit))
+@
+
+\begin{table}
+
+\caption{Bush Thermometer Models\label{tab:ThermoOutreg}}
+
+<<6123, results=tex>>=
+outreg(list("OLS" = olsthermo1, "Logistic" = glmthermo1, "Probit" = glmthermo2), tight=FALSE)
+@
+
+\end{table}
+
+Figure \ref{cap:LogisticAndOLSglmthermo1} illustrates how, in 2003,
+I plotted the relationship between the respondent's ``thermometer
+scale score'' for Pres Bush and the vote. The OLS and Logistic regression
+lines are superimposed on the plot.
+
+\begin{figure}
+\caption{Thermometer model: Logistic and OLS Predicted Probabilities\label{cap:LogisticAndOLSglmthermo1}}
+
+<<6124,fig=T>>=
+nd <- data.frame(V023010 =seq(0,100))
+nd$glmpred1 <- predict(glmthermo1, newdata=nd, type="response")
+nd$olspred1 <- predict(olsthermo1, newdata=nd)
+plot(nes2002$V023010, nes2002$bushvote, ylim=c(-0.2,1.2), xlim=c(0,100), xlab="Bush Thermometer", ylab="Predicted Probability of Bush Vote")
+lines(glmpred1 ~ V023010, data = nd, lty = 1)
+lines(olspred1 ~ V023010, data = nd, lty = 2)
+legend("left", legend = c("OLS", "Logistic"), lty = c(2,1))
+@
+\end{figure}
+
+
+\section{The ``Full Model''??}
+
+Consider a ``full'' (garbage can?) model. The full model includes
+the Bush thermometer variable(V0234010), ideology (V023027), the 2
+party variables,  education (V023131), and the state of the economy
+(V023027).
+
+<<66,echo=T>>=
+bushideolrm5 <- glm(bushvote ~ V023010+ ideoln + repub + democ + V023027+ V023131, data=nes2002, family=binomial(link=logit), model=TRUE)
+summary(bushideolrm5)
+@
+
+Outreg summarizes that as:
+
+<<results=tex>>=
+outreg(bushideolrm5, tight=F)
+@
+
+\section{What about using factors as predictors?\protect\footnote{This is the Ian Ostrander memorial section}}
+
+
+\subsection{Education}
+
+I expected that education, V023131, would not have an effect, and
+only after carelessly throwing it into the model did I remember that
+it should be treated as a factor variable. 
+
+If we treat it as an unordered factor variable, we can get estimates
+of one parameter for each of the 6 different levels.
+
+<<811,echo=T>>=
+nes2002$educFactor <- as.factor(nes2002$V023131)
+bushideolrm6 <- glm(bushvote ~ V023010+ V023022+ repub+democ+ V023027+ educFactor, data=nes2002, family=binomial(link=logit))
+summary(bushideolrm6)
+@
+
+What does this show? Should we conclude that education plays a role,
+or not? A couple of categories ``seem to matter'', but what is the
+bottom line? 
+
+If we state the null hypothesis that ``all education coefficients
+are 0'' and let the alternative be ``at least one of the education
+coefficients is not 0,'' then we should conduct a Likelihood Ratio
+test comparing the two models. The built-in function drop1 will do
+all of the work:
+
+<<812,echo=T>>=
+drop1(bushideolrm6,test="Chisq")
+@
+
+Note that the 'drop1' groups together all of the levels of the factor
+variable and it addresses the question ``does this variable make
+a difference \emph{at all}.'' In other words, it is conducting the
+Likelihood Ratio test that you really want if you are deciding whether
+education plays a role in predicting voting. This test says that it
+does.
+
+The effect is not linear, as is clearly indicated by the predicted
+values.
+
+<<821,echo=T,fig=T>>=
+termplot(bushideolrm6,terms="educFactor")
+@
+
+This indicates that ``education matters,'' and so the first model
+that was estimated, the one that assumed the effect of education was
+a linear 1-2-3 step sequence, is probably wrong. Compare the ``residual
+deviance'' values of the two models. What do you see? We can formally
+test that conclusion, however. Conduct a likelihood ratio test, comparing
+the ``full'' model that uses the factor coding of education with
+the ``reduced'' model which assumes that the different levels have
+the same effects. Note how ironic it is that the restricted model
+in this comparison is the one I called the full model in a previous
+section.
+
+<<echo=T>>=
+anova(bushideolrm6, bushideolrm5, test="Chisq")
+@
+
+\subsection{Ideology}
+
+I found myself wondering if the ideology variable should also be given
+the ``factor'' consideration. The effect data is as follows.
+
+<<822,echo=T>>=
+nes2002$ideolFactor <- as.factor(nes2002$V023022)
+bushideolrm7 <- glm(bushvote ~ V023010 + ideolFactor + repub + democ + V023027 + educFactor, data=nes2002,family=binomial(link=logit))
+@
+
+A formal test that compares the ``factor coding'' against the ``linear
+coding'' is as follows:
+
+<<echo=T>>=
+anova(bushideolrm7, bushideolrm6, test="Chisq")
+@The difference in the predictive power of the two models is not statistically
+significant, so we probably ought to go ahead and use the ``linear
+coding''. 
+
+Would you stop with that conclusion? You'd wonder why the lowest level
+of ideology appears to have such a strange spike. Look back at the
+descriptive table for the ideology variable. Notice that there are
+12 respondents, only 12, who have the lowest score, which is 1. The
+anova test indicates that the aberrant estimate for that group is
+not ``statistically out of line,'' at least not far enough out of
+line to make us think we need to worry about treating ideology as
+a factor.
+
+\section{Compare Logit and Probit links}
+
+\subsection{Estimating a Probit model: glm with binomial(probit)}
+
+With R's glm, the distinction between logit and probit is found in
+the ``link'' function, the transformation that is applied to the
+left hand side to go from ``probability'' into the scale of the
+linear predictor. The Logistic model was estimated with the command
+
+\begin{Sinput}
+bushideoglm1 <- glm(bushvote~V023022,family=binomial,data=nes2002) 
+\end{Sinput}
+
+To fit a probit model, one in which the random error is normal, we
+make only one small change in the command.
+
+<<echo=T>>=
+bushideoProbit1 <- glm(bushvote~V023022,family=binomial(link=probit),data=nes2002) 
+summary(bushideoProbit1)
+@
+
+\subsection{OLS, Logit and Probit Side by Side}
+
+\subsubsection*{Ideology as the only predictor.}
+
+<<results=tex>>=
+outreg(list(ols1, bushideoglm1, bushideoProbit1), tight=T, showAIC=T, modelLabels=c("OLS","Logit","Probit"))
+@
+
+\subsubsection*{The Full Model fitted with all three methods}
+
+Compare the OLS, Logit, and Probit fits to the larger model.
+
+<<99,echo=T>>=
+bushideoProbit5 <- glm(bushvote ~ V023010 + V023022 + repub + democ + V023027 + V023131, data=nes2002, family=binomial(link=probit), model=T)
+summary(bushideoProbit5)
+@
+
+<<100,echo=T, include=F>>=
+ols5 <- lm(bushvote ~ V023010 + V023022 + repub + democ + V023027 + V023131, data=nes2002)
+summary(bushideoProbit5)
+@
+
+Outreg summarizes that as:
+
+<<results=tex>>=
+outreg(list(ols5,bushideolrm5,bushideoProbit5), tight=T, showAIC=T, modelLabels=c("OLS","Logit","Probit"))
+@
+
+The ratio of the logit to the probit estimates depends on the assumed
+value of standard deviation of the error term (as that term arises
+in the CDF interpretation of the logit and probit models). That standard
+deviation cannot be estimated, it has to be set by the user to some
+arbitrary value, and all of the coefficients adjust in response (as
+in $\hat{\beta}=b/s.d.(e_{i})$). I extracted the estimated coefficients
+from the 2 models and then calculated the ratio of the logit to the
+probit estimates. I expected that the ratios would be almost exactly
+the same, and that made me suspect I had done something incorrectly.
+But I don't see the mistake.
+
+<<110>>=
+logitcoef <- coef(bushideolrm5)
+probitcoef <- coef(bushideoProbit5)
+cbind(logitcoef, probitcoef, ratio=logitcoef/probitcoef)
+@
+
+Lets compare the ratio of b/se(b) and the p values to see what the
+differences might be:
+
+<<120>>=
+options(digits=3)
+logitsummary <- summary(bushideolrm5)
+probitsummary <- summary(bushideoProbit5)
+zcompare <- cbind(logitsummary$coefficients[, c(3,4)], probitsummary$coefficients[, c(3,4)])
+zcompare <- as.data.frame(zcompare)
+colnames(zcompare) <- c("logit-z","logit-p", "probit-z", "probit-p")
+zcompare$ratioz <- zcompare[ ,1] / zcompare[ ,3]
+zcompare
+@
+
+In practice, I have never fitted a model for dichotomous data for
+which I felt that the choice of the logit or probit link made a substantial
+difference. The differences here in the estimated ratios of $\hat{\beta}/se(\hat{\beta})$
+are not trivial, but they also are not so great as to make us change
+our conclusions. 
+
+Finally, lets get the predicted values from the models and plot them
+against each other.
+
+<<130, fig=T, height=6, width=6>>=
+logitpred <- predict(bushideolrm5, type="response")
+probitpred <- predict(bushideoProbit5, type="response")
+plot(logitpred, probitpred, xlab="Predicted Probabilities from Logit Model", ylab="Predicted Probabilties from Probit Model", main="Scatterplot of Predictions from Logit and Probit")
+pmod1 <- lm(probitpred ~ logitpred)
+summary(pmod1)
+abline(pmod1, col="red", lwd=2)
+legend("topleft", legend=c("OLS regression"), col="red", lwd=2)
+@
+
+\bibliographystyle{apalike2}
+\phantomsection\addcontentsline{toc}{section}{\refname}\bibliography{theme/R}
+
+
+\section*{Replication Information\label{sec:Session-Info}}
+
+Please leave this next code chunk if you are producing a guide document. 
+
+<<session, echo=F>>=
+sessionInfo()
+if(!is.null(warnings())){
+    print("Warnings:")
+    warnings()}
+@
+
+<<opts20, include=F>>=
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+@
+\end{document}

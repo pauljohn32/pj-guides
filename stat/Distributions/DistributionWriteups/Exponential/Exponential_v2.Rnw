@@ -1,0 +1,256 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Exponential//}}
+\makeatother
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+options(SweaveHooks=list(fig=function() par(ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=10)
+@
+
+
+\title{Exponential Distribution}
+
+
+\author{Linsey Moddelmog and Paul Johnson}
+
+
+\date{June 10, 2013}
+
+\maketitle
+
+\section{Introduction to the Exponential Distribution}
+
+The Exponential distribution is often used as a model for durations.
+It is related to the Poisson distribution in that it can be used to
+measure the time between successes from the Poisson process. Because
+the exponential represents time intervals, it is a continuous, not
+discrete, probability distribution. In many real life examples, the
+assumption that events will occur at a constant rate of time is untenable.
+For example, the rate of incoming phone calls differs according to
+the time of day. ``But if we focus on a time interval during which
+the rate is roughly constant, such as from 2 to 4 PM during work days,
+the exponential distribution can be used as a good approximate model
+for the time until the next phone call arrives. Similar caveats apply
+to the following examples which yield approximately exponentially
+distributed variables:
+
+{*} the time until you have your next car accident; 
+
+{*} the time until a radioactive particle decays, or the time between
+beeps of a Geiger counter; 
+
+{*} the number of dice rolls needed until you roll a six 11 times
+in a row; 
+
+{*} the time until a large meteor strike causes a mass extinction
+event.
+
+Exponential variables can also be used to model situations where certain
+events occur with a constant probability per unit distance:
+
+{*} the distance between mutations on a DNA strand; 
+
+{*} the distance between roadkill on a given street;''%
+\footnote{http://en.wikipedia.org/wiki/Exponential\_distribution%
+} 
+
+
+\section{Mathematical Definition}
+
+The exponential density function is:
+
+\[
+f(x)=\lambda e^{(-\lambda x)}
+\]
+
+
+where $x\geq0$. The parameter $\lambda$ determines the ``rate''
+at which events occur.
+
+The cumulative distribution, the probability that a randomly drawn
+value will be smaller than $k$, is particularly easy to calculate
+in this example. The cumulative distribution is
+\[
+F(k)=\int_{0}^{k}\lambda e^{-\lambda x}
+\]
+
+
+\[
+=-e^{-\lambda x}\mid_{0}^{k}
+\]
+
+
+\[
+=1-e^{-\lambda k}
+\]
+
+
+
+\section{Moments}
+
+The expected value of $x$ for an exponential distribution is
+\[
+E(x)=\frac{1}{\lambda}
+\]
+
+
+The variance is
+\[
+Var(x)=\sigma^{2}=\frac{1}{\lambda^{2}}
+\]
+
+
+The skewness is
+\[
+Skewness(x)=2
+\]
+
+
+The kurtosis excess is
+\begin{eqnarray*}
+ & Kurtosis(x)= & 6
+\end{eqnarray*}
+
+
+
+\section{Illustrations}
+
+The graphs in Figure \ref{cap:Exponential-Density-for} show how the
+shape of the distribution changes as the rate of change, $\lambda$,
+increase.
+
+\begin{figure}
+\caption{Exponential Density for Various Rates\label{cap:Exponential-Density-for}}
+
+
+<<fig=T, echo=F,height=9,width=6.5>>=
+upper <- 80
+xvals <- seq(0,upper,by=0.02)
+par(mfrow = c(3,3))
+yvals1 <- dexp(xvals, rate=0.01)
+plot (xvals, yvals1, type="l", main="Rate=0.01",xlab="x",ylab="probability")
+yvals2 <- dexp(xvals, rate=0.05)
+plot (xvals, yvals2, type="l", main="Rate=0.05",xlab="x",ylab="probability")
+yvals3 <- dexp(xvals, rate=0.1)
+plot (xvals, yvals3, type="l", main="Rate=0.1",xlab="x",ylab="probability")
+upper <- 20
+xvals <- seq(0,upper,by=0.2)
+yvals4 <- dexp(xvals, rate=0.2)
+plot (xvals, yvals4, type="l", main="Rate=0.2", xlab="x", ylab="probability")
+yvals5 <- dexp(xvals, rate=.5)
+plot (xvals, yvals5, type="l", main="Rate=.5", xlab="x", ylab="probability")
+yvals6 <- dexp(xvals, rate=1)
+plot (xvals, yvals6, type="l", main="Rate=1", xlab="x", ylab="probability")
+upper <- 5
+xvals <- seq(0,upper,by=0.005)
+yvals7 <- dexp(xvals, rate=5)
+plot (xvals, yvals7, type="l", main="Rate=5", xlab="x", ylab="probability")
+yvals8 <- dexp(xvals, rate=10)
+plot (xvals, yvals8, type="l", main="Rate=10", xlab="x", ylab="probability")
+yvals9 <- dexp(xvals, rate=20)
+plot (xvals, yvals9, type="l", main="Rate=20", xlab="x", ylab="probability")
+@
+\end{figure}
+
+\end{document}

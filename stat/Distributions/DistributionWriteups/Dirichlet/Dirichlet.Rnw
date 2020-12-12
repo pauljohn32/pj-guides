@@ -1,0 +1,393 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Dirichlet//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+options(SweaveHooks=list(fig=function() par(ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=10)
+@
+
+
+\title{The Dirichlet Family}
+
+
+\author{Matt Beverlin and Paul Johnson}
+
+\maketitle
+
+\section{Introduction}
+
+The Dirichlet distribution is a multivariate distribution, meaning
+that a single outcome is actually a vector of numbers. The elements
+in this vector are are all between 0 and 1. A particular observation
+from a Dirichlet distribution would look like this
+\[
+(0.2,0.3,0.5)
+\]
+\\
+for a case describing a three dimensional outcome, or a $3-tuple$
+for short. 
+
+The three numbers in this vector represent the probabilities of three
+different mutually exclusive events. Because the elements are probabilities,
+they sum to one.
+
+The Dirichlet distribution gives a formula which tells how likely
+we are to observe a particular $3-tuple$. 
+
+Any logically meaningful combination of the elements in the vector
+can occur. Logically meaningful means that each element must be $0.0$
+or greater and that all of the numbers must sum to $1$. 
+
+For example, suppose we are considering a situation in which a randomly
+drawn person has black, red/blonde, or brown hair. Speaking for myself
+as an individual, I would guess that the probabilities would be like
+this:
+\[
+(0.15,\,0.2,\,0.65)
+\]
+\\
+You, on the other hand, might have the opinion that the probabilities
+are like this: 
+\[
+(0.1,\,0.15,\,0.75)
+\]
+\\
+And your friend Bob says the probabilities are like this:
+
+\[
+(0.33,\,0.33,\,0.34)
+\]
+\\
+If we wanted to go through and find out what everybody thinks, we
+would accumulate a lot of these vectors, and the only thing they seem
+to have in common is that they all add up to 1.0.
+
+We would like to have a probability model that tells us how likely
+each vector of beliefs is to appear in a sample. That is what Dirichlet
+is for. Dirichlet describes a wealth of possible distributions of
+opinion. It can be as simple as the statement that ``all belief vectors
+are equally likely to occur''. It need not place equal weight on
+all probability assignments, however. It has parameters which can
+lead you to expect that the most likely combination is mine and that
+other combinations with high weight on blondes are less likely.
+
+Here is a point of caution. We are setting up a model that gives ``probabilities
+about probabilities.'' That's confusing. There is inevitable confusion
+over various possible uses of the ``letter p''. Because the Dirichlet
+describes a vector of probabilities, the letter $p$ is used to refer
+to the observed outcome. Possible values are labeled as $p=(p_{1},p_{2},...,p_{L})$.
+Then we are going to want to calculate the probability of observing
+that L-tuple. If you use the letter $P$ for probabilities, then you
+end up with silly-looking notation like $P(p)$. Who can stand that?
+It might be better if we used some other letter, such as $x_{i}$
+or $y_{i}$, and think of the vectors in the same way we would think
+about the outcomes in any other kind of probability model. But we
+are not doing that, because doing so would cloud the fact that we
+really are discussing probabilities.
+
+
+\section{Mathematical Description}
+
+The Dirichlet Family generalizes the Beta family to a vector $p=(p_{0,}p_{1,...}p_{L})$
+in which ${\displaystyle {\textstyle \sum_{i=0}^{L}}}p_{i}=1$ and
+the \{$p_{i}\}$ are non-negative. Remember that $p$ describes the
+outcome variable, the $L-tuple$, the one for which we want to calculate
+probability.
+
+The shape of the probability model is determined by $L$ shape parameters,
+$(\alpha_{1},\alpha_{2},...,\alpha_{L})$. These shape parameters
+are used to ``tune'' the distribution, to make certain $L-tuples$
+more likely than others. As the figures presented below will illustrate,
+the large values of $\alpha_{i}$ correspond to actions which make
+outcome $i$ ``more likely''.
+
+Let the sum of the shape parameters be $\alpha=\sum_{l=0}^{L}\alpha_{l}$.
+The density function takes the form:
+
+\[
+f_{P}(p)=\frac{\Gamma(\alpha)}{\Gamma(\alpha_{0})\Gamma(\alpha_{L})}p_{0}^{\alpha_{0-1}}\times...\times p_{\Gamma}^{\alpha_{L-1}}
+\]
+
+
+where 
+\[
+\{p_{i}\}\geq0;\,\,\sum_{i=1}^{L}p_{i}=1
+\]
+
+
+and
+\[
+\alpha\geq0;
+\]
+\[
+\sum_{i=0}^{L}\alpha_{i}=\alpha
+\]
+\\
+Recall that the Gamma function $\Gamma(k)$ is a continuous variant
+of the factorial function. For integers, $\Gamma(k)=(k-1)!$ The Gamma
+function is described and illustrated in more depth in the discussion
+of the Gamma probability model.
+
+
+\section{Dirichlet is useful in Bayesian analysis}
+
+In Bayesian analysis, one needs probability models to summarize his/her
+beliefs about the world. Suppose you asked me the following. ``We
+are going to survey people and ask them what fraction of the population
+has black, red/blonde, and brown hair. What do you expect will be
+the distribution of outcomes?'' In response, I realize it is nonsense
+for me to simply give a univariate prediction, such as ``the average
+proportion for brown will be 0.33.'' Not only must I specify probabilities
+for the other hair colors, I also have to be more modes in my view
+of the world. If I say the probabilities are 
+\[
+(0.2,0.15,0.65)
+\]
+\\
+I should not act as though I think those probabilities are exactly
+right. This vector may represent my belief about the most likely combination,
+but it does not summarize the entirety of my view of the world. Instead,
+I should have some picture in my mind of how all other possible $3-tuples$
+might will fit together into a mosaic. I have an idea of what the
+most likely 3-tuple is, and I also am pretty sure that 
+\[
+(0.05,0.90,0.05)
+\]
+\\
+will almost never occur. But I don't think it is impossible.
+
+The Beta distribution is a way that we summarize the distribution
+of one variable on the $0$ to $1$ continuum. If two or more variables
+on $[0,1]$ are being considered, then the Dirichlet is simply the
+multivariate generalization of the Beta. 
+
+
+\section{Means, Variance, and Covariances}
+
+Consider a set of Dirichlet ``shape'' parameters $(\alpha_{1},\alpha_{2},\alpha_{3},...,\alpha_{L}$),
+the sum of which is $\alpha$($\alpha=\sum\alpha_{j})$. The expected
+value of any individual component is
+
+\[
+E(p_{j})=\frac{\alpha_{j}}{\alpha_{1}+\alpha_{2}+\cdots+\alpha_{L}}=\frac{\alpha_{j}}{\alpha}
+\]
+
+
+The variance is
+
+\[
+V(p_{j})=\frac{\alpha_{j}(\alpha-\alpha_{j})}{\alpha^{2}(\alpha+1)}
+\]
+
+
+and the covariance between two values is:
+
+\[
+C(p_{i}p_{j})=-\frac{\alpha_{i}\alpha_{j}}{\alpha^{2}(\alpha+1)}
+\]
+\\
+Please observe that Covariance is very much in the nature of the beast
+with this distribution. Since $\sum p_{j}=1$, any change in any one
+of the values must change at least one of the others.
+
+
+\section{Graphic Representation}
+
+Return again to the 3-tuple which gives the probability of black,
+red/blonde, and brown hair. If we specify the probability of black
+($p_{1}$) and red/blonde ($p_{2}$), then the probability of brown
+is not open to question because the three probabilities must sum to
+one. 
+\[
+p_{3}=1-p_{1}-p_{2}
+\]
+
+
+Furthermore, we know that the probability of observing $p_{1}+p_{2}>1$
+is equal to 0. It is impossible!
+
+With that in mind, we have created some illustrations of a 3-tuple
+under the Dirichlet distribution in an effort to help the reader make
+a mental picture. The third element of the probability vector, $p_{3}$
+, is implicit in these graphs because we show only the probability
+of observing $(p_{1},p_{2})$.
+
+In the package ``gtools'' the function ddirchlet gives the probability
+of observing any 3-tuple, given a set of shape parameters. The following
+R code will create the range of possible 3-tuples as inputs, and it
+calculates the probability of observing each one.
+
+<<1,echo=T,eval=F>>=
+library (gtools)
+
+N <- 100       
+y1 <-seq(0.001, 0.999, length.out=N)
+y2 <-seq(0.001, 0.999, length.out=N)   
+z <- matrix (0,N,N) 
+
+myz <-function(a1,a2,a3){
+   z <- matrix (NA,N,N)
+   for (i in 1:N) {   
+
+       for (j in 1:N) {
+         ddirchprob <- ddirichlet( c(y1[i],y2[j],1-y1[i]-y2[j]), c(a1,a2,a3))
+         z[i,j] <- ifelse (y1[i]+y2[j]<1.02, ddirchprob, NA)
+   }
+} 
+z
+}
+
+z1 <-myz(1,1,1)
+persp(y1,y2,z1, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability", ticktype="detailed")
+@
+
+If the shape parameters for all dimensions are identical, say $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,1,1)$
+or $(2,2,2)$, then all feasible 3-tuples are equally likely. Any
+triplet of the form $(p_{1},p_{2},1-p_{1}-p_{2})$ will be equally
+possible. A figure which shows that all feasible outcomes are equally
+likely is presented in Figure \ref{cap:The-Dirichlet-Density}. 
+
+\begin{figure}
+<<2,echo=F,eval=T,fig=T,results=H,height=7,width=7>>=
+<<1>>
+@
+
+\caption{The Dirichlet Density (1,1,1)\label{cap:The-Dirichlet-Density}}
+\end{figure}
+
+
+On the other hand, suppose that there is decidedly less weight on
+the first element, and more is placed on the other two, as in $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,3,3)$.
+That probability density is shown in Figure \ref{cap:Gammas1} 
+
+\begin{figure}
+<<fig=T,echo=F,results=HIDE,height=7,width=7>>=
+z2 <- myz(1,3,3)
+
+persp(y1,y2,z2, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability", ticktype="detailed" )
+@
+
+\caption{Dirichlet (1,3,3)\label{cap:Gammas1}}
+\end{figure}
+
+
+\begin{figure}
+<<fig=T,echo=F,results=HIDE,height=7,width=7>>=
+z2 <- myz(1,6,3)
+
+persp(y1,y2,z2, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability", ticktype="detailed")
+@
+
+\caption{Dirichlet (1,6,3)\label{cap:Dirichlet-(1,4,10)}}
+\end{figure}
+
+
+Suppose that we hike up the shape parameter on the second dimension,
+so that we have $(\alpha_{1},\alpha_{2},\alpha_{3})=(1,6,3)$. That
+probability density is shown in Figure \ref{cap:Dirichlet-(1,4,10)}.
+
+Once can continue in this vein forever, of course (and, please believe
+we have :)). 
+\end{document}

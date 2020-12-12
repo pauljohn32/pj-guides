@@ -1,0 +1,2116 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/MultipleRegression//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{wasysym}
+\usepackage{graphicx}
+\usepackage{setspace}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+\usetheme{Antibes}
+
+%%\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=5,width=7.5}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Multiple Regression]{Multiple Predictors in OLS Regression, Lecture 1 }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2015]{2015}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Graphical Reminder}
+
+
+\lyxframeend{}\lyxframe{The Theoretical model}
+\begin{itemize}
+\item An output variable is created as the weighted sum of several ``predictors''
+and a random error term
+\item Formally
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\ldots+e_{i}
+\end{equation}
+
+\item where
+
+\begin{itemize}
+\item $i$ is a ``row'' of data, the same model applies for each one,
+so $i\in\{1,\ldots,N\}$
+\item $\beta_{0},$ $\beta_{1}$, $\beta_{2}$ are real-valued constants.
+Usually, I use the letter $p$ for the number of variables, here $p=3$.
+\item $e_{i}$ is drawn from a distribution for which $E[e_{i}]=0$ and
+has constant variance $Var[e_{i}]=\sigma_{e}^{2}$
+\item None of the error terms are correlated with each other, $Cov(e_{i},e_{j})=0$
+and they are uncorrelated with the predictors, $Cov(x_{i},e_{i})=0$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Picture this in 3d}
+
+\vspace{0.3cm}
+
+
+\begin{center}
+\includegraphics[width=9cm]{0_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_multReg1.pdf}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Or this}
+
+\begin{center}
+\includegraphics[width=9cm]{1_home_pauljohn_SVN_SVN-guides_stat_Regression_MultipleRegression_importfigs_multReg2.pdf}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Visualization is always a challenge}
+\begin{itemize}
+\item Difficult to visualize more dimensions
+\item In the rockchalk package, I have functions like plotSlopes, plotCurves,
+and plotPlane that are intended to help with that, but we never overcome
+the problem that we can't visualize 4 or more dimensions
+\end{itemize}
+
+\lyxframeend{}\section{Multiple Regression}
+
+
+\lyxframeend{}\lyxframe{[containsverbatim]OLS with Many Predictors}
+\begin{itemize}
+\item Theory? Just add more predictors. 
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+\beta_{3}X3_{i}+\beta_{4}X4_{i}+\beta_{5}X5_{i}+\beta_{6}X6_{i}+\beta_{7}X7_{i}+e_{i}
+\]
+ $E[e_{i}]=0,$ $E[e_{i}^{2}]=\sigma_{e}^{2}$.
+\item Goal? Estimates $\widehat{\beta}=[\widehat{\beta_{0}},\widehat{\beta_{1}},\widehat{\beta_{2}},\widehat{\beta_{3}},\ldots,].$ 
+\item Calculate predicted values:
+\[
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}+\hat{\beta}_{4}X4_{i}+\hat{\beta}_{5}X5_{i}+\hat{\beta}_{6}X6_{i}+\hat{\beta}_{7}X7_{i}
+\]
+
+\item OLS Minimizes the unweighted Sum of Squared residuals
+\end{itemize}
+\begin{eqnarray}
+\min_{\hat{\beta}}S(\widehat{\beta_{0}},\widehat{\beta_{1}},\widehat{\beta_{2}})=\sum_{i=1}^{N}(y_{i}-\widehat{y_{i}})^{2}\label{eqb}
+\end{eqnarray}
+
+
+\[
+=\sum_{i=1}^{N}(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}X1_{i}-\widehat{\beta_{2}}X2_{i}-\ldots)^{2}
+\]
+
+
+
+\lyxframeend{}\lyxframe{OLS Estimate Certain to Exist}
+\begin{itemize}
+\item Use Calculus, obtain ``first order condition'', solve for $\hat{\beta_{j}}$
+\item Without matrix algebra, this is tedious to write out with ``scalar
+math''. 
+
+
+\begin{tabular}{c}
+\tabularnewline
+$\hat{\beta}_{1}=\frac{\left(\sum(x1_{i}-\overline{x1})(y_{i}-\bar{y})\right)\left(\sum(x2_{i}-\overline{x2})^{2}\right)-\left(\sum(x2_{i}-\overline{x2})(y_{i}-\bar{y})\right)\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2}\right)}{\left(\sum(x1_{i}-\overline{x1})^{2}\right)\left(\sum(x2{}_{i}-\overline{x2})^{2}\right)-\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})\right)^{2}}$\tabularnewline[1cm]
+$\widehat{Var(\hat{\beta}_{1})}=\frac{\widehat{\sigma_{e}^{2}}}{\sum(x1_{i}-\overline{x1})^{2}(1-r_{x1,x2})}=\frac{MSE}{(N-1)Var[x1](1-r_{x1,x2})}$\tabularnewline[1cm]
+\end{tabular}
+
+\item The square root of the estimated variance is the standard error of
+$\hat{\beta}_{1}$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The formula for $\hat{\beta}_{2}$ is a mirror image}
+
+\begin{tabular}{c}
+$\hat{\beta}_{2}=\frac{\left(\sum(x2_{i}-\overline{x2})(y_{i}-\bar{y})\right)\left(\sum(x1{}_{i}-\overline{x1})^{2}\right)-\left(\sum(x1{}_{i}-\overline{x1})(y_{i}-\bar{y})\right)\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2}\right)}{\left(\sum(x1_{i}-\overline{x1})^{2}\right)\left(\sum(x2{}_{i}-\overline{x2})^{2}\right)-\left(\sum(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})\right)^{2}}$\tabularnewline[1cm]
+$\widehat{Var(\hat{\beta}_{2})}=\frac{\widehat{\sigma_{e}^{2}}}{\sum(x2_{i}-\overline{x2})^{2}(1-r_{x1,x2})}=\frac{MSE}{(N-1)Var[x2](1-r_{x1,x2})}$\tabularnewline[1cm]
+$\hat{\beta}_{0}=\bar{y}-\hat{\beta}_{1}\overline{x1}-\hat{\beta}_{2}\overline{x2}$\tabularnewline
+\end{tabular}
+\begin{itemize}
+\item Matrix algebra would lead to more compact statement
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Gauss Markov Theorem: OLS is Best Linear Unbiased Estimator (BLUE)}
+\begin{itemize}
+\item IF
+
+\begin{itemize}
+\item you fit the ``right'' model, $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\ldots+e_{i}$ 
+\item and the error term assumptions are satisfied, namely
+
+\begin{itemize}
+\item $E[e_{i}]=0$, $Var[e_{i}]=E[e_{i}^{2}]=\sigma_{e}^{2}$, $Cov(e_{i},e_{j})=Cov(xj_{i},e_{i})=0$
+\end{itemize}
+\end{itemize}
+\item THEN The OLS Estimates $\hat{\beta}_{j}$ ($j=0,1,2,...,p$) are 
+
+\begin{enumerate}
+\item unbiased, $E[\hat{\beta}_{j}]=\beta_{j}$
+\item consistent: as N grows, the expected value of the gap between $\hat{\beta}_{j}$
+and $\beta_{j}$ shrinks
+\item efficient: lower variance than any other linear estimator
+\end{enumerate}
+\item $\hat{\beta}_{j}/std.err(\hat{\beta}_{j})$ is distributed as a $t$
+statistic
+\end{itemize}
+
+\lyxframeend{}\lyxframe{JobPerformance example dataset}
+
+Look in my guides/stat/DataSets folder.
+\begin{itemize}
+\item Variables (converted to lower case)
+\end{itemize}
+\begin{singlespace}
+\noindent age = employee age;
+
+\noindent tenure = years on the job;
+
+\noindent female = gender (0 = male, 1 = female);
+
+\noindent wbeing = psychological well-being
+
+\noindent satis = job satisfaction
+
+\noindent jobperf = job performance;
+
+\noindent turnover = turnover intentions (0 = no, 1 = yes);
+
+\noindent iq = iq score;
+\end{singlespace}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{One Predictor: wbeing $\sim$ satis}
+
+<<job10, include=F,echo=F>>=
+library(rockchalk)
+dat <- read.table("/home/pauljohn/ps/SVN-guides/stat/DataSets/JobPerformance/jobperformance.txt", header=T, sep="\t")
+colnames(dat) <- tolower(colnames(dat)) 
+mod1 <- lm(wbeing ~ satis, data=dat)
+summary(mod1)
+@
+
+\begin{Sinput}
+summary(mod1 <- lm(wbeing ~ satis, data=dat))
+\end{Sinput}
+\def\Sweavesize{\scriptsize}
+\input{plots/t-job10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{wbeing $\sim$ satis + jobperf + tenure + age}
+
+<<job20, include=F,echo=T, eval=F>>=
+mod2 <- lm(wbeing ~ satis + jobperf + tenure + age, data=dat)
+summary(mod2)
+@
+
+<<job21, include=F,echo=F>>=
+<<job20>>
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-job21.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Make a Regression Table}
+
+<<job30, include=F,echo=F, results=tex>>=
+outreg(list(mod1,mod2), modelLabels=c("One Predictor","Multiple Predictors"), tight=F, showAIC=F)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-job30.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Differences with Multiple Predictors}
+\begin{itemize}
+\item More rows of estimates \smiley{}. More t statistics, more interpretation
+\item Var-Covar matrix takes on new emphasis
+\item $\hat{\beta}_{j}$ can ``bounce'' when other variables are added
+(multicollinearity)
+\item $R_{adjusted}^{2}$ now takes on some meaning (will explain next lecture)
+\item $F$ test takes on new meaning
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Let's Stop And Do Some T-Tests}
+\begin{itemize}
+\item Step 1. State the model: $wbeing_{i}=\beta_{0}+\beta_{1}satis+\beta_{2}jobperf+\beta_{3}tenure+\beta_{4}age+e_{i}$
+\item Step 2. Choose one variable, state $H_{0}:\beta_{j}=?$, alt. hypo
+$H_{A}:\beta_{j}\neq?$
+\item Step 3. Sketch t distribution for $\nu=480$ degrees of freedom. Are
+we doing two-tailed test?
+\item Step 4. Calculate
+\[
+\hat{t_{j}}=\frac{\hat{\beta}_{j}-?}{std.err.(\hat{\beta}_{j})}
+\]
+
+\item Step 5. If $\hat{t}_{j}$ is in the extreme parts of the tails (according
+to your sketch in step 3), reject $H_{0}$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Construct the Confidence Interval for one slope in isolation}
+\begin{itemize}
+\item Recall CI for a regression coefficient is $\hat{\beta}_{j}\pm t_{\alpha}\times std.err(\hat{\beta}_{j})$
+\item $t_{\alpha}$ is the ``target value'' of the t statistic that you
+would use when conducting a hypothesis test (depends on $\nu$, usually
+1.65, 1.98, 2.2)
+\item If $\hat{t}_{j}$ leads us to reject $H_{0}$, we know the CI will
+not overlap with the null hypo value $?$
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals}
+
+<<>>=
+confint(mod2)
+@
+
+Which means that 1) the probability that the true $\beta_{j}$ is
+in that interval is 0.95, or 2) if we repeated this experiment, the
+probability that an estimate from a sample will fall in that interval
+is 0.95. 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Var-Covar Matrix Shows Interdependence Among All Estimators}
+
+<<vcov10, include=F>>=
+round(vcov(mod2), 3)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-vcov10.tex}
+\begin{itemize}
+\item We use these values to conduct the ``fancy t-test'' (see below).
+\item The square root of the main diagonal is the standard error column
+from the regression output.
+\end{itemize}
+<<vcov15, include=F>>=
+round(sqrt(diag(vcov(mod2))), 3)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-vcov15.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{New Issues in Multiple Regression}
+
+
+\lyxframeend{}\subsection{Need Matrix Algebra}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Design Matrix Has Many Columns}
+\begin{itemize}
+\item In R, run a multiple regression, something large like
+
+
+\begin{lstlisting}
+m1 <-lm(y ~ X1 + X2 + X3 + X4 + X5 + X6 + X7, data = dat) 
+\end{lstlisting}
+
+
+\item Then run model.matrix(m1). That's the ``design matrix'', the numeric
+representation of all variables.
+\item Result shows that ``the intercept'' is really a column of 1's, the
+same for each case, and other predictors 
+\begin{equation}
+X=\left[\begin{array}{cccccccc}
+intercept & X1 & X2 & X3 & X4 & X5 & X6 & X7\\
+1 & 19 & 1 & 0.1 & 1 & 0 & 22 & 155\\
+1 & 22 & 2 & 1.1 & 0 & 1 & 42 & 199\\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots\\
+1 & 8 & 4 & 0.2 & 1 & 1 & 77 & 77
+\end{array}\right]
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Use Matrix Algebra}
+\begin{itemize}
+\item Theoretical model
+\begin{equation}
+y=X\beta+e
+\end{equation}
+
+
+\begin{itemize}
+\item $y$ is an ($N\times1$) column, $X$ is an ($N\times p)$ (where
+$p=7+1)$) rectangular matrix, $e$ is ($N\times1$).
+\end{itemize}
+\item I moved the matrix stuff into Appendix 2.
+\item Results. OLS leads to a symbolic solution:
+\[
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}\,(X^{T}X)^{-1}
+\end{equation}
+
+\item Computers don't use these formulas for actual calculations, they are
+unstable in digital computing
+\end{itemize}
+
+\lyxframeend{}\lyxframe{[containsverbatim]What's important in the formula?}
+\begin{itemize}
+\item The matrix expression
+
+
+\[
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+
+
+\item $(X^{T}X)$ is the ``sum of squares and cross-products'' matrix,
+similar to variance of x in one-predictor model
+\item In the predicted value formula $\hat{y}=X\hat{\beta}$, replace $\hat{\beta}$.
+\end{itemize}
+\begin{equation}
+\hat{y}=X(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\begin{itemize}
+\item The matrix $H=X(X^{T}X)^{-1}X^{T}$ is size $N\times N$. It serves
+as a weighting matrix that translates the outcome $y$ into the predicted
+values.
+
+\begin{itemize}
+\item $H$ is called the ``hat matrix''. See why? $\hat{y}=H\, y$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\subsection{Visualization}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plotting Multiple Regressions in 2 Dimensions}
+\begin{itemize}
+\item Predicted value plots require we set values for \emph{all predictors},
+even the ones that are not in the illustration. 
+\item In the R framework, the newdata object in a predict statement must
+include values for all of the predictors in the model
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Example: Income and Sex in Chilean Survey}
+
+<<chile60a, eval=F, echo=T, include=F, results=tex>>=
+library(car)
+Chile$income <- Chile$income/1000000
+chmod3 <- lm(statusquo ~ income + sex, data = Chile)
+outreg(chmod3, tight = FALSE)
+@
+
+<<chile60b, echo=F, include=F, results=tex>>=
+<<chile60a>>
+@
+
+\input{plots/t-chile60b}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The R commands for that were}
+
+\input{plots/t-chile60a}
+
+If you don't use \LaTeX{}, consider getting the newer testing version
+of rockchalk and running 
+
+\begin{lstlisting}
+outreg(chmod3, tight = FALSE, type = "html")
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Look what predictOMatic does}
+
+Adjust each predictor, one at a time, keeping the others fixed at
+exemplar values.
+
+<<chile60.1>>=
+predictOMatic(chmod3, predVals = "margins")
+@
+
+Read ?predictOMatic. Many customizations are built in. Adjust the
+divider algorithm
+
+<<chile60.2>>=
+predictOMatic(chmod3, predVals = "margins", divider = "std.dev")
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Try R's Termplot for Inspecting Regressions}
+\begin{itemize}
+\item termplot() will cycle through the variables.
+\item You run 
+
+
+\begin{lstlisting}
+termplot(mod1, se = TRUE, partial.resid = TRUE)
+\end{lstlisting}
+
+
+
+to see all of them. 
+
+\item termplot will interactively show one predictor at a time
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Termplot: Depict the Income Effect}
+
+<<chile70, include=F, echo=T, fig=T>>=
+termplot(chmod3, se = TRUE, partial.resid = TRUE, terms = "income", xlab = "Income (1,000,000s pesos)")
+@
+
+\includegraphics[width=10cm]{plots/t-chile70}
+
+\input{plots/t-chile70}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Why is the Vertical Axis called "partial"?}
+\begin{itemize}
+\item There is a Fully worked out derivation in Appendix C
+\item ``Partial for income'': What's left to predict'' after removing
+the effect of other variables? 
+\item Termplot sets all variables at their numerical average.
+\item partial.resid = TRUE plots the ``partial residuals'' (removed part
+explained by other variables)
+\item se = TRUE prints the ``pointwise standard errors'' (uncertainty
+after using other variables)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{rockchalk::plotSlopes}
+\begin{itemize}
+\item Choose one numeric predictor for the X-axis.
+\item The modx argument allows different lines for example values of another
+predictor (a ``moderator'').
+\item See 3D in plotPlane and addLines. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotSlopes for the Chilean regression}
+
+<<chile75, fig=T, include=F, echo=T>>=
+plotSlopes(chmod3, plotx = "income")
+@
+
+\includegraphics[width=10cm]{plots/t-chile75}
+
+\input{plots/t-chile75.tex}
+
+The default sets the sex variable at the mode, not the mean
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotSlopes with separate lines for the Sexes}
+
+<<chile80, include=F, fig = T, echo=T>>=
+plotSlopes(chmod3, plotx = "income", modx = "sex")
+@
+
+\includegraphics[width=10cm]{plots/t-chile80}
+\input{plots/t-chile80.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{If you want to draws those line-by-line, some work is required}
+
+<<chile61, include=F, echo=T, eval=F>>=
+mycols <- c("blue", "red")
+plot(statusquo ~ income, data = Chile, xlab = "Income (1,000,000s pesos)", ylab = "Status Quo Support", col = mycols[Chile$sex], cex = 0.7 )
+incomeSeq <- seq(min(Chile$income, na.rm = TRUE), 
+                 max(Chile$income, na.rm = TRUE), length.out = 5)
+newdat <- expand.grid(income = incomeSeq, sex = levels(Chile$sex))
+newdat$pred <- predict(chmod3, newdata = newdat)
+by(newdat, newdat$sex, function(datsub) lines(pred ~ income, dat =  datsub, col = mycols[datsub$sex]))
+legend("topleft", levels(newdat$sex), col = mycols, lty = 1, bg = "white")
+@
+
+\input{plots/t-chile61.tex}
+
+Most R users will have to work through this process at one time or
+another.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Difficulty of teaching that sequence $\rightarrow$ rockchalk package}
+
+<<chile61a, fig=T, echo=F, include=F>>=
+<<chile61>>
+@
+
+\includegraphics[width=9cm]{plots/t-chile61a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence intervals for predicted values}
+
+<<chile81, include=F, fig=T, echo=T>>=
+plotSlopes(chmod3, plotx = "income", modx = "sex", interval = "confidence")
+@
+
+\includegraphics[width=10cm]{plots/t-chile81}
+\input{plots/t-chile81.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotPlane with mod2 (well being)}
+
+Recall: mod2 <- lm(wbeing \textasciitilde{} satis + jobperf + tenure
++ age, data=dat)
+
+\input{plots/t-pp10.tex}
+
+<<pp10, fig=T, include=F>>=
+plotPlane(mod2, plotx1 = "satis", plotx2 = "jobperf", drawArrows = TRUE, alwd = 0.45, alength = 0.08)
+@
+\includegraphics[width=12cm]{plots/t-pp10}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Multicollinearity}
+
+
+\lyxframeend{}\lyxframe{Multicollinearity: Its a Problem}
+\begin{itemize}
+\item Regression works great, as long as the predictors are truly ``separate''
+from (``orthogonal to'') each other.
+\item If predictors co-vary, difficult to separate their impacts.
+\item $Var(\hat{\beta}_{j})$ is ``inflated''
+\item The Usual problem: people want to put in too many similar variables.
+
+\begin{itemize}
+\item do you hate eating salad because it has ``lettuce'', or ``spinach'',
+or ``leafy greens'', or ``vegetables'', or ``no meat'', or...
+\end{itemize}
+\item Several lectures on this coming up
+\end{itemize}
+
+\lyxframeend{}\section{Hypothesis Testing}
+
+
+\lyxframeend{}\lyxframe{Overview}
+\begin{itemize}
+\item T test still works one-variable-at-a-time.
+\item New tests
+
+\begin{itemize}
+\item The Wald test: compare 2 coefficients (fancy t-test)
+\item The F test: compare nested models
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\subsection{The Fancy t-test}
+
+
+\lyxframeend{}\lyxframe{Wald (\emph{Fancy t}) test}
+\begin{itemize}
+\item t test of the hypothesis that 2 coefficients are statistically significantly
+different (Nicknamed fancy t-test).
+\item In $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}+\hat{\beta}_{3}x3_{i}$,
+are the effects of $x2$ and $x3$ are exactly the same?
+
+\begin{itemize}
+\item Ex: does a dollar spent in community college equal a dollar spent
+at Harvard University
+\end{itemize}
+\item The null hypothesis: $H_{0}:\beta_{2}=\beta_{3}$, same as $H_{0}:\beta_{2}-\beta_{3}=0$.
+\item Numerator in $\hat{t}$ obvious, denominator will require some effort
+\end{itemize}
+\[
+\hat{t}=\frac{\hat{\beta}_{2}-\hat{\beta_{3}}}{std.err.(\hat{\beta}_{2}-\hat{\beta_{3}})}
+\]
+
+
+
+\lyxframeend{}\lyxframe{Denominaor}
+\begin{itemize}
+\item std.err. = square root of estimated variance
+\begin{equation}
+std.err.(\hat{\beta}_{2}-\hat{\beta_{3}})=\sqrt{\widehat{Var(\hat{\beta}_{2}-\hat{\beta_{3}})}}
+\end{equation}
+
+\item Fill in the blanks 
+\begin{equation}
+Var(\hat{\beta}_{2}-\hat{\beta}_{3})=Var(\hat{\beta}_{2})+Var(\hat{\beta}_{3})-2Cov(\hat{\beta}_{2},\hat{\beta}_{3})
+\end{equation}
+
+\item Recall the rule 
+\begin{equation}
+Var(k_{1}W+k_{2}Z)=k_{1}^{2}Var(W)+k_{2}^{2}Var(Z)+2k_{1}k_{2}\cdot Cov(W,Z)
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Great Paper: Will make you feel smarter}
+\begin{quote}%{}
+Gelman, Andrew and Hal Stern. November 1, 2006\emph{.} The Difference
+Between \textquotedblleft{}Significant\textquotedblright{} and \textquotedblleft{}Not
+Significant\textquotedblright{} is not Itself Statistically Significant.
+\emph{ The American Statistician}. v, 60(4): 328-331. doi:10.1198/000313006X152649. \end{quote}%{}
+\begin{itemize}
+\item Compare 2 coefficients, say
+
+\begin{itemize}
+\item $\hat{\beta}_{2}=1.1$ with $std.err.(\hat{\beta}_{2})=0.6.$ 
+\item $\hat{\beta}_{5}=1.2$ with $std.err(\hat{\beta}_{5})=0.5$
+\end{itemize}
+
+By the usual reasoning, $\mbox{\ensuremath{\hat{\beta}}}_{2}$ is
+not statistically significant, but $\hat{\beta}_{5}$ is. 
+
+
+Gelman \& Stern point out this fallacy:
+\begin{quote}%{}
+Therefore, the effect of variable $x5_{i}$ is larger than the effect
+of $x2_{i}$. 
+\end{quote}%{}
+\item It is a fallacy because we we did not test that hypothesis! (Implicitly
+assumed $\beta_{2}$ different from $\beta_{5}$)
+\item Can conduct ``fancy'' t test to see!
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Test H0:$\beta_{j}=\beta_{k}$}
+\begin{itemize}
+\item Idea: do two variables have ``the same effect'' on the output?
+\item Null hypothesis
+\[
+H_{0}:\beta_{j}=\beta_{k}
+\]
+
+
+
+same as
+
+\end{itemize}
+\[
+H_{0}:\,\beta_{j}-\beta_{k}=0
+\]
+
+
+\[
+\hat{t}=\frac{\widehat{\beta_{j}-\beta_{k}}}{std.err.(\widehat{\beta_{j}-\beta_{k}})}\,
+\]
+
+\begin{itemize}
+\item It is easy to see $\widehat{\beta_{j}-\beta_{k}}$, is the actually
+the difference of the two estimates, $\widehat{\beta_{j}}-\widehat{\beta_{k}}$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{And the answer will be:}
+\begin{itemize}
+\item Use this test statistic
+\end{itemize}
+\[
+\hat{t}=\frac{\hat{\beta}_{j}-\hat{\beta}_{k}}{\sqrt{\widehat{Var(\hat{\beta}_{j})}+\widehat{Var(\hat{\beta}_{k})}-2Cov(\hat{\beta}_{j},\hat{\beta}_{k})}}
+\]
+
+\begin{itemize}
+\item Estimates for denominator obtained from the var/covar matrix.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Gelman/Stern Effect In our Example}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item Easy to ``eyeball'' estimates and think ``this effect is bigger
+than that''
+\item However, difference may not be ``statistically significantly greater
+than 0''. 
+\item Example: Is ``age'' effect bigger than ``tenure'' effect?
+\end{itemize}
+
+\column{8cm}
+
+
+<<job33, include=F,echo=F, results=tex>>=
+outreg(list(mod2), modelLabels=c("Satisfaction"), tight=F, showAIC=F)
+@
+
+
+\input{plots/t-job33}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Satisfaction Regression}
+\begin{itemize}
+\item Variance-Covariance matrix 
+\end{itemize}
+<<job50, include=F,echo=F>>=
+round(vcov(mod2),5)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-job50.tex} 
+
+\[
+t=\frac{0.02088-0.03391}{\sqrt{(3.099521\times10^{-04}+1.035459\times10^{-04}-2(-8.893854\times10^{-05}))}}
+\]
+
+
+\begin{equation}
+=\frac{-0.01303}{\sqrt{0.0005913751}}=-0.5358126
+\end{equation}
+
+\begin{itemize}
+\item tenure effect may be statistically significantly greater than 0
+\item but its effect is not statistically significantly greater than that
+of age.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\subsection{F Test}
+
+
+\lyxframeend{}\lyxframe{F test}
+\begin{itemize}
+\item \textbf{Nested Models: }
+
+\begin{itemize}
+\item A ``larger model'' entirely contains a ``smaller model''. 
+\item Smaller model results by setting some coefficients to 0
+\end{itemize}
+\item Same: You want to ``drop a bunch of variables'': Is the smaller
+model ``as good'' 
+\item Why is this better than conducting several t tests?
+
+\begin{itemize}
+\item Possible to find examples where we can't reject $H_{0}:\beta_{j}=0$
+for several variables, but $F$ test may reject idea tha thtey all
+are equal to 0.
+\item Recall problem of ``weak power'' in a t test.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{F test for groups of parameters}
+\begin{itemize}
+\item Test a block of coefficients: are all equal to 0?
+\item Suppose 3 ``efficacy'' predictors (x's), 3 ``narcissism'' predictors
+(z's) in the Full Model
+\end{itemize}
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+\beta_{4}z1_{i}+\beta_{5}z2_{i}+\beta_{6}z3_{i}+e_{i}
+\]
+
+\begin{itemize}
+\item Wonder, is it possible that all 3 narcissism predictors have $0$
+effect? 
+\item Would a reduced model be as good?
+\end{itemize}
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}
+\]
+
+\begin{itemize}
+\item Principle of ``parsimony'' prefers models with fewer unknowns
+\end{itemize}
+
+\lyxframeend{}\lyxframe{F Test for Subsets of Regressors}
+\begin{enumerate}
+\item ``Full'' or ``unrestricted'' model: all coefficients included. 
+
+\begin{enumerate}
+\item Error sum of squares $ESS_{U}$
+\end{enumerate}
+\item ``Restricted'' model, some coefficients excluded. Meaning we assumed
+some coefficients equal 0. 
+
+\begin{enumerate}
+\item Error sum of squares for the restricted model $ESS_{R}$
+\end{enumerate}
+\item Compare the two models to find out if the restriction makes a difference.\end{enumerate}
+\begin{description}
+\item [{Caution:}] 1) The models must be estimated on the SAME data and
+2) they must be nested (one results from deleting terms from other)
+\end{description}
+
+\lyxframeend{}\lyxframe{F test}
+\begin{itemize}
+\item The F statistic is
+
+
+\[
+F(q,N-k-1)=\frac{(ESS_{R}-ESS_{UR})/q}{ESS_{UR}/N-k-1}
+\]
+
+\begin{itemize}
+\item $N$ be the sample size. 
+\item $k$ be the number of independent variables used in the full model. 
+\item $q$ be the number of variables that are excluded from the restricted
+model. 
+\end{itemize}
+\end{itemize}
+Use F table, q degrees of freedom for the numerator and N-k-1 for
+the denominator. If the number you get is bigger than that, reject
+the null.
+
+
+\lyxframeend{}\lyxframe{F Test in Regression Output is Different}
+\begin{itemize}
+\item In default output, the F reported tests the Null hypothesis: \textit{all
+slope coefficients are 0.}
+\item With $k$ predictors, null hypothesis 
+\[
+H_{0}:\beta_{1}=\beta_{2}=\ldots=\beta_{k}=0
+\]
+
+\item Some interpret this as a significance test on $R^{2}$. Is estimated
+$R^{2}$ significantly greater than $0$?
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Review}
+\begin{itemize}
+\item Full, Unrestricted Model (all Variables Included):
+\end{itemize}
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+...+\beta_{k-q}X(k-q)_{i}+b{}_{k-q+1}X(k-q+1)_{i}+...+\beta_{k}Xk_{i}+e{}_{i}
+\]
+
+\begin{itemize}
+\item Restricted Model removes q coefficients (sets them at 0). 
+\[
+y_{i}=\beta_{0}+\beta_{1}X1_{i}+\beta_{2}X2_{i}+...+\beta_{k-q}X(k-q)_{i}+e_{i}
+\]
+
+\item If the full model ``fits better'', it will have smaller Error Sum
+of Squares. 
+\item F examines Null that $\beta_{k-q+1}=\beta_{k-q+2}\ldots=\beta_{k}-0$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Can Get Same from $R^{2}$}
+\begin{itemize}
+\item Using R-squares
+\end{itemize}
+\begin{equation}
+F(q,N-k-1)=\frac{(R_{UR}^{2}-R_{R}^{2})/q}{(1-R_{UR}^{2})/N-k-1}=\frac{(ESS_{R}-ESS_{UR})/q}{ESS_{UR}/N-k-1}
+\end{equation}
+
+\begin{itemize}
+\item Sometimes thought of as a way of answering: Is the improvement from
+$R_{R}^{2}$ to $R_{UR}^{2}$ great enough to justify the number of
+coefficients being estimated?
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{I need to work out more examples here}
+\begin{itemize}
+\item I wrote more examples in lecture notes from the R course.
+
+
+\url{http://pj.freefaculty.org/guides/Rcourse/regression-glm-2}
+
+\item Example with coefficients from a categorical predictor below
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Be aware of the danger of fluctuating N }
+\begin{itemize}
+\item ``Nested models'' assumption requires same data used in 2 regressions.
+\item ``Listwise Deletion'' may cause N to accidentally differ, R will
+throw an error.
+\item I proceed as follows
+
+\begin{enumerate}
+\item Fit the ``big'' model
+
+
+\begin{lstlisting}
+m1 <- lm(y ~ x1 + x2 + x3 + z1 + z2, data = dat)
+\end{lstlisting}
+
+
+\item Fit the small model on the data subset from the big one
+
+
+\begin{lstlisting}
+m2 <- lm(y ~ x1 + x2 + x3, data = model.frame(m1))
+\end{lstlisting}
+
+
+\item Then use the anova function to conduct the test
+
+
+\begin{lstlisting}
+anova(m2, m1, test = F)
+\end{lstlisting}
+
+
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Regression and Categorical Predictors}
+
+
+\lyxframeend{}\lyxframe{R: Model Matrix vs Design Matrix}
+\begin{itemize}
+\item The ``data frame'' has numeric and factor (categorical) variables. 
+\item Software converts factor variables to numeric columns for use in regression.\end{itemize}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+
+
+\begin{tabular}{|c|c|}
+\hline 
+factor &
+numeric contrast\tabularnewline
+\hline 
+sex &
+sexMale\tabularnewline
+\hline 
+``Male'' &
+1\tabularnewline
+\hline 
+``Female'' &
+0\tabularnewline
+\hline 
+``Female'' &
+0\tabularnewline
+\hline 
+``Male'' &
+1\tabularnewline
+\hline 
+\end{tabular}
+
+
+\column{7cm}
+
+
+Call ``sexMale'' 
+\begin{itemize}
+\item a ``dummy variable'', or 
+\item an ``indicator variable'', or 
+\item a ``contrast variable.''
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Multi-valued Categorical Predictor}
+\begin{itemize}
+\item 4 category religion variable
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+relig &
+religChristian &
+religJewish &
+religMuslim &
+Intercept\tabularnewline
+\hline 
+``Christian'' &
+1 &
+0 &
+0 &
+1\tabularnewline
+\hline 
+``Jewish'' &
+0 &
+1 &
+0 &
+1\tabularnewline
+\hline 
+``Muslim'' &
+0 &
+0 &
+1 &
+1\tabularnewline
+\hline 
+``Buddhist'' &
+0 &
+0 &
+0 &
+1\tabularnewline
+\hline 
+\end{tabular}
+
+
+3 ``dummy variables'' for a 4 category variable 
+
+
+Along with the intercept
+
+
+Coefficient estimates for religChristian, religJewish, religMuslem
+indicate difference of each religion from Buddhist.
+\begin{itemize}
+\item Various ways exist to re-do the columns of 0's and 1's, the default
+in R is ``Treatment Contrasts''
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Ex: Model Frame and Design Matrix}
+\begin{itemize}
+\item Lets create an example with these variables\end{itemize}
+\begin{description}
+\item [{xnum1}] a numeric predictor
+\item [{xcat2}] a factor variable \{''Female'', ``Male''\}
+\item [{z}] a factor variable \{''A'', ``B'', ``C'', ``D''\}
+\end{description}
+<<rdesmatrix,include=F,echo=T>>=
+set.seed(123123)
+dat <- data.frame(xnum1 = rnorm(100), xcat2 = factor(sample(c("Female", "Male"), 100, replace = TRUE)),
+z = factor(sample(c("A","B","C","D"), 100, replace = TRUE)), y = rnorm(100))
+mod1mm <- model.matrix(y ~ xnum1 + xcat2 + z, data = dat)
+dat$y <- mod1mm %*% c(0.1, 0.45, -0.1, 0.2, 0.35, -0.45) + 0.8 *rnorm(100)
+mod1 <- lm(y ~ xnum1 + xcat2 + z, data = dat)
+mod1df <- model.frame(mod1)
+@
+
+<<summarize10, echo=F>>=
+summarizeNumerics(dat)
+summarizeFactors(dat)
+@
+\begin{itemize}
+\item The top of the data frame
+\end{itemize}
+<<modframe1, echo=T>>=
+head(dat, 15)
+@
+\begin{itemize}
+\item Behind the scenes, software creates the numeric ``design matrix''. 
+\end{itemize}
+<<modmatr1, echo=T>>=
+mod1mm <- model.matrix(mod1)
+head(mod1mm, 15)
+@
+\begin{itemize}
+\item The default method creates ``treatment contrasts'' (dummy ``indicator''
+variables)
+\end{itemize}
+<<WR20>>=
+contrasts(dat$z)
+@
+\begin{itemize}
+\item And the estimated coefficients are
+\end{itemize}
+\def\Sweavesize{\scriptsize} 
+
+<<WR40, echo=F>>=
+summary(mod1)
+@
+
+Understand those as estimates of this model:
+
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}xnum1_{i}+\beta_{2}xcat2Male_{i}+\beta_{3}zB_{i}+\beta_{4}zC_{i}+\beta_{5}zD_{i}+e_{i}
+\end{equation}
+
+\begin{itemize}
+\item $A$ is the ``baseline'' group, it is ``in'' the intercept. 
+\item The coefficient $\hat{\beta}_{1}$ is the slope as $\hat{y}_{i}$
+depends on the numeric predictor
+\item The coefficient $\hat{\beta}_{2}$ is the difference predicted for
+Males (compared against females)
+\item The coefficients $\hat{\beta}_{3},$$\hat{\beta}_{4}$, and $\hat{\beta}_{5}$
+are ``intercept shifters'', how B, C, and D are different from A.
+\end{itemize}
+The plotSlopes function in rockchalk can make a drawing. 
+
+<<WR50, fig=T, include=F>>=
+require(rockchalk)
+plotSlopes(mod1, plotx="xnum1", modx="z")
+@
+
+\includegraphics[width=8cm]{plots/t-WR50.pdf}
+
+Parallel Lines. Slopes for $A$, $B$, $C$, and $D$ are same.
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Now Come back to the F test}
+\begin{itemize}
+\item The religion factor leads us to estimate 3 coefficients. 
+\item We can formally reject the null hypothesis that all 3 religion dummy
+variables have no effect
+\item $H_{o}:\beta_{3}=\beta_{4}=\beta_{5}=0$
+\item You can retrieve the error sum of squares manually from the regression,
+i.e., residuals(mod1)\textasciicircum{}2, but you don't need to
+\item R offers 2 more convenient ways.
+
+\begin{enumerate}
+\item fit the R and UR models and then use the anova() function to compare
+the two
+\item use the drop1() function, which automatically conducts the F test
+for each variable ``group''
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The anova() function}
+
+<<anova1>>=
+mod2 <- lm(y ~ xnum1 + xcat2, data = dat)
+anova(mod2, mod1, test = "F")
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The drop1 function}
+
+<<drop1>>=
+drop1(mod1, test = "F")
+@
+
+Puzzle: compare this to conclusion of a t-test
+
+\end{frame}
+
+
+\lyxframeend{}\section{Appendix: Derivation without Matrices}
+
+
+\lyxframeend{}\lyxframe{OLS with Just Three Predictors}
+\begin{itemize}
+\item First Order Conditions: Calculate partial derivative for each parameter,
+set them equal to 0 (finding the ``bottom of the bowl'' ). 
+\end{itemize}
+\begin{equation}
+\begin{array}{ccc}
+\frac{\partial S}{\partial\beta_{0}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i}) & =0\\
+\frac{\partial S}{\partial\beta_{1}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i})x1_{i} & =0\\
+\frac{\partial S}{\partial\beta_{2}}= & -2\sum(y_{i}-\widehat{\beta_{0}}-\widehat{\beta_{1}}x1_{i}-\widehat{\beta_{2}}x2_{i})x2_{i} & =0
+\end{array}
+\end{equation}
+
+
+These imply the three ``normal equations'' (one for each estimated
+parameter):
+
+\begin{equation}
+\begin{array}{cc}
+\sum y_{i}= & N\widehat{\beta_{0}}+(\sum x1_{i})\widehat{\beta_{1}}+(\sum X2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x1_{i}= & (\sum x1_{i})\widehat{\beta_{0}}+(\sum x1_{i}^{2})\widehat{\beta_{1}}+(\sum x1_{i}x2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x2_{i}= & (\sum x2_{i})\widehat{\beta_{0}}+(\sum x1_{i}x2_{i})\widehat{\beta_{1}}+(\sum x2_{i}^{2})\widehat{\beta_{2}}
+\end{array}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{``Scalar Math'' Gets Tedious}
+\begin{itemize}
+\item def. Scalar : a ``number''
+\item As long as you do ordinary 'scalar' math, you get one equation per
+parameter
+\item Summation signs flying around everywhere
+\item Estimate a regression with 10 variables, write out 10 equations? (ugh...)
+\end{itemize}
+
+\lyxframeend{}\section{Appendix: Matrices}
+
+
+\lyxframeend{}\lyxframe{Why Bother with Matrix Algebra?}
+\begin{itemize}
+\item All treatments at ``the next level of statistics'' are presented
+in matrix algebra.
+\item You can't really read the literature unless you invest some effort
+to learn this
+\item Stats in math or economics would require matrices
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Terms}
+\begin{itemize}
+\item a vector: always a column thing, referred to as $N.of\, rows\,\times1\, column$
+\item a matrix: vectors glued together, side by side, $N.of\, rows\,\times N\, of\, columns$
+\item transpose: turns a column into a row
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Matrix View}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+dep. var &
+indep var &
+slopes &
+predicted values\tabularnewline
+\hline 
+$y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]$ &
+$X=\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]$ &
+$\hat{\beta}=\left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right]$ &
+$\hat{y}=\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline 
+residuals &
+predicted values\tabularnewline
+\hline 
+$\hat{e}=y-\hat{y}=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]-\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]$ &
+$\hat{y}=\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]=X\hat{\beta}$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Matrix View of Multiple Regression}
+\begin{itemize}
+\item Assume:
+\end{itemize}
+\[
+Y=X\beta+e
+\]
+ 
+\begin{itemize}
+\item With 2 predictors, that's short for:
+\end{itemize}
+\[
+\begin{array}{cccccc}
+\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\ldots\\
+y_{N}
+\end{array}\right] & = & \left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & \ldots & \ldots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+\beta_{0}\\
+\beta_{1}\\
+\beta_{2}
+\end{array}\right] & + & \left[\begin{array}{c}
+e_{1}\\
+e_{2}\\
+\ldots\\
+e_{n}
+\end{array}\right]\end{array}
+\]
+
+
+
+\lyxframeend{}\lyxframe{[allowframebreaks]$X\beta$ is Matrix Multiplication}
+\begin{itemize}
+\item X is rectangular, $\beta$ is a column. We multiply to create $X\beta$
+like so:
+\begin{equation}
+\left[\begin{array}{cccccccc}
+1 & 19 & 1 & 0.1 & 1 & 0 & 22 & 3\\
+1 & 22 & 2 & 1.1 & 0 & 1 & 42 & 1\\
+1 & 17\\
+\vdots & \vdots
+\end{array}\right]\left[\begin{array}{c}
+\ensuremath{\beta_{0}}\\
+\ensuremath{\beta_{1}}\\
+\ensuremath{\beta_{2}}\\
+\ensuremath{\beta_{3}}\\
+\ensuremath{\beta_{4}}\\
+\ensuremath{\beta_{5}}\\
+\ensuremath{\beta_{6}}\\
+\ensuremath{\beta_{7}}
+\end{array}\right]
+\end{equation}
+
+\item Matrix by Vector Multiplication: multiply and add add across each
+row separately.
+
+
+\begin{equation}
+\mathrm{Row1}:\,1\cdot\beta_{0}+\beta_{1}\cdot19+\beta_{2}\cdot1+\beta_{3}\cdot0.1+\beta_{4}\cdot1+\beta_{5}\cdot0+\beta_{6}\cdot22+\beta_{7}\cdot3
+\end{equation}
+
+
+\item Do that for each row, and so the result from 
+\begin{equation}
+X\beta
+\end{equation}
+
+
+
+will be a column of $N$ numbers, one for each row.
+\[
+X\beta=\left[\begin{array}{c}
+some\, number_{1}\\
+some\, number_{2}\\
+some\, number_{3}\\
+some\, number_{4}\\
+\ldots\\
+some\, number_{N}
+\end{array}\right]
+\]
+
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Brief Matrix Multiplication}
+\begin{itemize}
+\item In my course web guide collection, there are longer introductions
+to matrix algebra
+\item A row vector is a transposed column
+\item Multiply vectors (a row vector times a column vector). Sometimes called
+an ``inner product''. 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=af+bg+ch+di+ej
+\]
+
+\item $[1\times5]\cdot[5\times1]$ yields a $[1\times1]$ result, just a
+single number (a ``scalar'')
+\item One of the most common uses will calculate ``sum of squares''
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+a\\
+b\\
+c\\
+d\\
+e
+\end{array}\right]=a^{2}+b^{2}+c^{2}+d^{2}+e^{2}
+\]
+
+\item Note: Vectors must ``conform'' to allow multiplication (same \#
+elements)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Brief Matrix Multiplication}
+\begin{itemize}
+\item Multiply a matrix times a vector 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=\left[\begin{array}{c}
+af+bg+ch+di+ej\\
+rf+sg+th+ui+vj
+\end{array}\right]
+\]
+
+\item Treat matrix as two rows, then conduct multiplication separately for
+each one.
+\item $[2\times5]\cdot[5\times1]$ yields a $[2\times1]$ result
+\item Example: $\hat{y}=Xb$
+\end{itemize}
+\[
+\begin{array}{cccccc}
+\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\ldots\\
+\hat{y}_{N}
+\end{array}\right] & = & \left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+1 & \ldots & \ldots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right] & = & \left[\begin{array}{c}
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{1}+\hat{\beta}_{2}x2_{1}\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{2}+\hat{\beta}_{2}x2_{2}\\
+\ldots\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{N}+\hat{\beta}_{2}x2_{N}
+\end{array}\right]\end{array}
+\]
+
+
+
+\lyxframeend{}\lyxframe{Brief Matrix Multiplication}
+\begin{itemize}
+\item Multiply a matrix times a matrix 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{cc}
+f & k\\
+g & l\\
+h & m\\
+i & n\\
+j & o
+\end{array}\right]
+\]
+
+\end{itemize}
+\[
+=\left[\begin{array}{cc}
+af+bg+ch+di+ej & ak+bl+cm+dn+eo\\
+rf+sg+th+ui+vj & rk+sl+tm+un+vo
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Break into sequences of vector multiplications, row 1 $\cdot$ column
+1, row2 $\cdot$ column 1, row 1 $\cdot$ $\cdot$ column 2, row 2
+$\cdot$ column 2.
+\item $[2\times5]\cdot[5\times2]$ yields a $[2\times2]$ result
+\end{itemize}
+
+\lyxframeend{}\lyxframe{[allowframebreaks]Transpose}
+\begin{itemize}
+\item I've been avoiding the question of where row vectors come from. 
+\item A row vector is a column vector ``on its side. It has been ``transposed''.
+\end{itemize}
+\[
+\beta^{T}=(\beta_{0},\beta_{1},\beta_{2},\ldots)
+\]
+
+\begin{itemize}
+\item A matrix transpose is ``rotated'' so the left column becomes the
+first row
+\[
+X=\left[\begin{array}{ccc}
+1 & 3 & 33\\
+1 & 2 & 62\\
+1 & 5 & 65\\
+1 & 1 & 45\\
+1 & 5 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X}\, is\,}5x3
+\]
+
+\end{itemize}
+\[
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & 1 & 1\\
+3 & 2 & 5 & 1 & 5\\
+33 & 62 & 65 & 45 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X^{T}}\,\, is\,3x5}
+\]
+
+
+
+\lyxframeend{}\lyxframe{[allowframebreaks]The Sum of Squares is $(y-\hat{y})^{T}(y-\hat{y})$ }
+\begin{itemize}
+\item $\hat{y}=X\hat{\beta}$ is the predicted value column
+\item Estimation Procedure: Choose $\hat{\beta}$ to minimize $(y-\hat{y})^{T}(y-\hat{y})$
+\end{itemize}
+\textrm{
+\begin{equation}
+(y-\hat{y})^{T}(y-\hat{y})=(y_{1}-\hat{y}_{1},y_{2}-\hat{y}_{2},y_{3}-\hat{y}_{3}\ldots,y_{N}-\hat{y}_{N})\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+}
+\begin{itemize}
+\item Which is just the matrix way of saying ``sum of squared errors''
+\begin{equation}
+(y-\hat{y})^{T}(y-\hat{y})=\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Matrix solution}
+\begin{itemize}
+\item Calculus is used to find ``first order'' conditions for the sum-of-squares
+minimizing estimates of $\beta$. 
+\item The theoretical solution is often written down like this 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+
+
+Poetry for your T-Shirts: ``\textrm{$\beta$} hat equals X-transpose
+X inverse X-transpose y''.
+
+\item $(X^{T}X)$ is the covariance matrix of the input ``design matrix''.
+It is $p\times p$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Matrix Inverse}
+\begin{itemize}
+\item $(X^{T}X)^{-1}$ is the ``inverse'' of $(X^{T}X),$ meaning.
+\item Recall ordinary math: $x^{-1}\cdot x=1$. The inverse is $\frac{1}{x}$,
+the ``reciprocal''
+\item To translate that to matrices, we need to define the idea of $1$
+in a matrix.
+\item The Identity matrix $I$ in matrix algebra is like $1$ in scalar
+math 
+\begin{equation}
+(X^{T}X)^{-1}(X^{T}X)=I,\,\, where\, I=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{True and Estimated Variance of $\hat{\beta}$}
+\begin{itemize}
+\item The ``true variance/covariance matrix'' of the estimator $\hat{\beta}$
+is given by
+\begin{equation}
+Var(\hat{\beta})=\sigma_{e}^{2}(X^{T}X)^{-1}
+\end{equation}
+
+
+\begin{itemize}
+\item Recall, that's the theoretical quantity. If your error term did have
+variance $\sigma_{e}^{2}$ then the estimates of $\hat{\beta}$ would
+fluctuate 
+\end{itemize}
+\item But we don't know $\sigma_{e}^{2}$ , we must estimate it by the Root
+Mean Squared Error from the regression. 
+\item So the estimated variance of $\hat{\beta}$ replaces the true variance
+of the error with the estimate.
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}\,(X^{T}X)^{-1}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Sum of Squares on a Matrix Level}
+\begin{itemize}
+\item $X^{T}$ means ``$X$ transpose'', or ``$X$ turned on its side''
+\begin{equation}
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]
+\end{equation}
+
+\item $X^{T}X$ is a sum of squares matrix. See?
+\end{itemize}
+\begin{eqnarray}
+X^{T}X & = & \left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]\\
+ & = & \left[\begin{array}{ccc}
+N & \sum x1_{i} & \sum x2_{i}\\
+\sum x1_{i} & \sum x1_{i}^{2} & \sum x1_{i}x2_{i}\\
+\sum x2_{i} & \sum x1_{i}x2_{i} & \sum x2_{i}^{2}
+\end{array}\right]
+\end{eqnarray}
+
+
+
+\lyxframeend{}\lyxframe{First Order Conditions are called the Normal Equations}
+\begin{itemize}
+\item The Normal Equations 
+\end{itemize}
+\[
+\begin{array}{cc}
+\sum y_{i}= & N\widehat{\beta_{0}}+(\sum x1_{i})\widehat{\beta_{1}}+(\sum X2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x1_{i}= & (\sum x1_{i})\widehat{\beta_{0}}+(\sum x1_{i}^{2})\widehat{\beta_{1}}+(\sum x1_{i}x2_{i})\widehat{\beta_{2}}\\
+\sum y_{i}x2_{i}= & (\sum x2_{i})\widehat{\beta_{0}}+(\sum x1_{i}x2_{i})\widehat{\beta_{1}}+(\sum x2_{i}^{2})\widehat{\beta_{2}}
+\end{array}
+\]
+
+\begin{itemize}
+\item can be written with matrices as:
+\end{itemize}
+\begin{equation}
+\left[\begin{array}{c}
+\sum y_{i}\\
+\sum y_{i}x1_{i}\\
+\sum y_{i}x2_{i}
+\end{array}\right]=\left[\begin{array}{ccc}
+N & \sum x1_{i} & \sum x2_{i}\\
+\sum x1_{i} & \sum x1_{i}^{2} & \sum x1_{i}x2_{i}\\
+\sum x2_{i} & \sum x1_{i}x2_{i} & \sum x2_{i}^{2}
+\end{array}\right]\left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right]
+\end{equation}
+
+\begin{itemize}
+\item Look what pops out
+\begin{equation}
+X^{T}y=(X^{T}X)\,\hat{\beta}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Almost done}
+\begin{itemize}
+\item Once you get to this point, the work is almost done. 
+\end{itemize}
+\begin{equation}
+X^{T}y=(X^{T}X)\,\hat{\beta}
+\end{equation}
+
+\begin{itemize}
+\item Need to get $\hat{\beta}$ ``all by itself''. So suppose you had
+a matrix $(X^{T}X)^{-1}$ that could work just like ``dividing''
+in ordinary math. Then
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\item $(X^{T}X)^{-1}$ is called an ``inverse'' of $X^{T}X$, and if we
+multiply the inverse of $X^{T}X$ times $(X^{T}X)^{-1}$ then we get
+the matrix equivalent of $1$, which is called $I$ (for ``identity
+matrix''). 
+\begin{equation}
+I=\left(\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]\right)
+\end{equation}
+
+
+
+Multiply ``anything'' times $I$ and you get ``anything'' back,
+unchanged. Like multiplying by $1$ in ordinary math.
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{QR Decomposition}
+\begin{itemize}
+\item Recently, I've learned that stats books teach us some unrealistic
+calculations. 
+\item We talk about $(X^{T}X),$ but actually forming that, or inverting
+it, would cause a lot of ``numerical instability'' due to roundoff
+error. 
+\item Software does not invert $X^{T}X,$ rather it decomposes $X$ and
+then uses clever algorithms (QR decomposition) to preserve numerical
+accuracy.
+\item Usually, they'll say re-write the Normal Equations as
+\end{itemize}
+\begin{equation}
+X^{T}y-(X^{T}X)\,\hat{\beta}=0
+\end{equation}
+
+\begin{itemize}
+\item or this 
+\begin{equation}
+X^{T}(y-X\hat{\beta})=0
+\end{equation}
+
+\item See \url{http://pj.freefaculty.org/guides/stat/Math/Matrix-Decompositions}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Var/Cov Matrix of $\hat{\beta}$}
+\begin{itemize}
+\item The variance/covariance matrix of $\hat{\beta}$ (if we knew the variance
+of the error) would be
+\begin{equation}
+Var(\hat{\beta})=\sigma_{e}^{2}(X^{T}X)^{-1}
+\end{equation}
+
+\item Estimate the variance of the error term as the mean square error (same
+as 1 input regression) 
+\begin{equation}
+\widehat{\sigma_{e}^{2}}=MSE=\frac{1}{N-k}(y-\hat{y})^{T}(y-\hat{y})
+\end{equation}
+ 
+\item So the estimated Variance of $\hat{\beta}$ is
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\widehat{\sigma_{e}^{2}}(X^{T}X)^{-1}
+\end{equation}
+
+\item And the square root of the diagonal elements of $\widehat{Var(\hat{\beta})}$
+are the ``standard errors'' of the $\hat{\beta}$'s.
+\end{itemize}
+
+\lyxframeend{}\section{Appendix: Digression on ``Partial Residual'' and ``Partial Predicted
+Value''}
+
+\begin{frame}[containsverbatim]
+\frametitle{Digression: Calculate Term "Partial" Residual, "Partial" Predicted Value?}
+\begin{itemize}
+\item Consider model \textrm{}
+\begin{lstlisting}
+mod <-lm(y~X1+X2+X3)
+\end{lstlisting}
+
+\item An ordinary ``residual'' is the ``observed value'' minus a ``fitted
+value''
+\end{itemize}
+\begin{equation}
+y_{i}-\hat{y}_{i}=y_{i}-\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\end{equation}
+
+\begin{itemize}
+\item The predicted value for the mean case always equal to the mean of
+$y_{i}$ 
+\begin{equation}
+\bar{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}
+\end{equation}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Digression: "term predictions"}
+\begin{itemize}
+\item How much of the prediction's quality is due to each variable? 
+\item Begin with $\hat{y}_{i,}$ 
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}
+\end{equation}
+
+\item Then add zero to that, but do it in the sneaky math way: We both add
+AND subtract \textrm{$\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}$.}
+\item Rearrange so that $\hat{y}_{i}$ is seen as a sum of the ``mean prediction''
+and ``term'' predictions
+\begin{eqnarray}
+\hat{y}_{i}= & \{\hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}\overline{X2}+\hat{\beta}_{3}\overline{X3}\}\nonumber \\
+ & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})+\hat{\beta}_{1}(X2_{i}-\overline{X2})+\hat{\beta}_{3}(X3_{i}-\overline{X3})\}
+\end{eqnarray}
+
+\item Which is:
+\end{itemize}
+\begin{eqnarray}
+\hat{y}_{i}= & \bar{y}\nonumber \\
+ & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})+\hat{\beta}_{1}(X2_{i}-\overline{X2})+\hat{\beta}_{3}(X3_{i}-\overline{X3})\}
+\end{eqnarray}
+
+\begin{itemize}
+\item We've found a way to see each predicted value as a variation about
+the observed average of $y$. 
+\item In R, predict(mod, type=''terms'') returns the last ``things''
+as separate columns:
+\end{itemize}
+\begin{equation}
+\begin{array}{cccccc}
+ & X1 &  & X2 &  & X3\\
+ & \overbrace{\hat{\beta}_{1}(X1_{i}-\overline{X1})} & , & \overbrace{\hat{\beta}_{2}(X2_{i}-\overline{X2})} & , & \overbrace{\hat{\beta}_{3}(X3_{i}-\overline{X3})}
+\end{array}
+\end{equation}
+
+\begin{itemize}
+\item These are the ``partial predicted values'' used by termplot
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Digression: And a partial residual is...}
+\begin{itemize}
+\item The ``full residual'' is the difference between the observed value
+and each partial prediction:
+\[
+residual_{i}=y_{i}-\hat{y}_{i}=y_{i}-\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\]
+
+\item An R ``partial residual'' for $X1_{j}$: remove $X1_{i}$, replace
+it with $\overline{X1}$. 
+\item A partial residual: 
+\begin{eqnarray*}
+partial\, residual(X1_{i}) & =y_{i} & -\{\hat{\beta}_{0}+\hat{\beta}_{1}X1_{i}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}\\
+ &  & +\{\hat{\beta}_{1}(X1_{i}-\overline{X1})\}\\
+ & =y_{i}-\{ & \hat{\beta}_{0}+\hat{\beta}_{1}\overline{X1}+\hat{\beta}_{2}X2_{i}+\hat{\beta}_{3}X3_{i}\}
+\end{eqnarray*}
+
+\item Like an ordinary residual, except the variable of interest is replaced
+by its mean in the calculation of the predicted value.
+\item Interpretation
+
+\begin{itemize}
+\item We have removed the effect of variation in $X1_{i}$, but accounted
+for the other variables.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+
+\lyxframeend{}\lyxframe{Problem 1}
+
+Download the PublicSpending data from: \url{http://pj.freefaculty.org/guides/stat/DataSets/PublicSpending}.
+Fit a model that predicts EX as a linear function of all of the other
+variables in the data set except STATE. That's the ``full model''
+\begin{quote}%{}
+A. Make a professionally acceptable regression table to display the
+results.
+
+B. Write a paragraph that states the null hypothesis and conducts
+a significance test for any of the parameter estimates.
+
+C. When I run that, the results indicate that the slope coefficients
+for YOUNG and GROW are not statistically different from 0. But I can't
+say for sure if YOUNG's effect is different from GROW. Conduct a fancy
+t-test to find out, write up your answer.
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{Problem 1 (cont)}
+\begin{quote}%{}
+D. Run a regression model that predicts EX as a function of YOUNG.
+Make a table, discuss the difference of the estimate of the slope
+estimate for YOUNG compared with the estimate from the full model. 
+
+E. Run R's termplot function to display the relationship for each
+independent variable separately. (If you don't use R, look for a replacement
+function in your software. If you can't find one, we have to settle
+for scatterplots of the individual variables against EX, I guess.)
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{Problem 2}
+
+Take the ``full'' model from the previous question. Conduct the
+F test to see if there is no significant effect among the variables
+GROW, OLD, and YOUNG. The F formula depends on the difference in the
+Error Sum of Squares in the full and reduced models. 
+
+R has an easy routine to do this test
+
+mod1 <- lm( --fill infull model --)
+
+mod2 <- lm(--omit the 3 variables --)
+
+anova(mod2, mod1, test=''F'')
+
+
+\lyxframeend{}\lyxframe{Problem 3}
+
+Get any dataset you like that has 1 more-or-less continuous DV and
+3 or more IV. You could take one of our example datasets from \url{http://pj.freefaculty.org/guides/stat/DataSets}
+(except for PublicSpending). Suppose the variables are called $y$,
+$x1$, $x2$, $\mbox{\ensuremath{x3}, \ensuremath{x4}}$ and so forth. 
+
+First, estimate a sea of regression models. Suppose you select any
+one variable, say $x3$, and run the regression to estimate $y_{i}=\beta_{0}+\beta_{3}x3_{i}+e_{i}$. 
+
+Then add the other variables one at a time, so estimate $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{3}x3_{i}+e_{i}$.
+$y_{i}=\beta_{0}+\beta_{2}x2_{i}+\beta_{3}x3_{i}+e_{i}$, $y_{i}=\beta_{0}+\beta_{3}x3_{i}+\beta_{4}x4_{i}+e_{i}$.
+Then estimate one model with all of the variables included. 
+\begin{enumerate}
+\item I wonder how much the slope estimates ``bounce around'' from one
+fit to the next. Concentrate on $\hat{\beta}_{3}$ in the various
+models. I guess we better look at the standard error of $\beta_{3}$
+as well.
+\item For the model with all of the variable, run R's termplot function.
+Don't forget the se and partial options, as demonstrated in my example
+above. 
+\end{enumerate}
+
+\lyxframeend{}
+\end{document}

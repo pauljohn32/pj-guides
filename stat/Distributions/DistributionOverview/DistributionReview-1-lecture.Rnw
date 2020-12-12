@@ -1,0 +1,2336 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionOverview//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{amssymb}
+\usepackage{esint}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+\setbeamercovered{transparent}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots2", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots2/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Distributions Overview}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{\today}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+This is The Lecture That Accompanies My essay, ``Distribution Overview:
+Probability by the Seat of the Pants''
+
+\tableofcontents{}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Take Away Points to Watch for}
+\begin{itemize}
+\item Key Terms: 
+
+\begin{itemize}
+\item probability distribution
+\item random variable
+\end{itemize}
+\item Characterizing Distributions
+
+\begin{itemize}
+\item Parameters are ``knobs''
+\item More-or-less universally applicable characteristics of distributions
+
+\begin{itemize}
+\item Expected Value
+\item Variance
+\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{What is Probability?}
+
+
+\lyxframeend{}\lyxframe{Probability: Outcomes and Chances}
+\begin{itemize}
+\item list a set of possible outcomes, $X=\{x_{1},x_{2},x_{3},\ldots\}$.
+A ``Sample Space'' from which observations are drawn.
+\item Specify the probability of each one.
+\begin{equation}
+p(x_{i})\geq0
+\end{equation}
+
+
+
+``Probability Mass Function'' if $X$ is a discrete set
+
+\item the sum is unity
+\begin{equation}
+\sum_{i=1}^{m}p(x_{i})=1.0
+\end{equation}
+
+\item If it does not add up to $1.0$, we can always force it by dividing
+by the sum. This ``normalizes'' it, replacing probabilities by $p(x_{i})/"sum"$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Simple Example}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Consider a discrete variable that can take on values $\{1,2,3,4,5,6\}$.
+\item A probability model must calculate the $p(x_{i})$ for each one.
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+Outcome &
+$x_{i}=$ &
+1 &
+2 &
+3\tabularnewline
+\hline 
+probability &
+$p(x_{i})$ &
+1/6 &
+1/6 &
+1/6\tabularnewline
+\hline 
+\end{tabular}
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+Outcome &
+$x_{i}=$ &
+4 &
+5 &
+6\tabularnewline
+\hline 
+probability &
+$p(x_{i})$ &
+1/6 &
+1/6 &
+1/6\tabularnewline
+\hline 
+\end{tabular}
+
+\item Here we suppose the 6 outcomes are equally likely.
+\end{itemize}
+
+\column{6cm}
+
+
+<<simple10,fig=T,include=F, width=4, height=4>>=
+x <- 1:6
+y <- rep(1/6, 6)
+barplot(y, names.arg=x, col=gray(0.85), ylim = c(0, 1), space = 0)
+title("All 6 outcomes are equally likely")
+@
+
+
+\includegraphics[width=6cm]{plots2/t-simple10}
+
+\end{columns}%{}
+
+\lyxframeend{}\lyxframe{Illustration 2: More Variety}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Stair step illustration
+\item $X=\{0,1,2,\ldots,10\}$
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+$x_{i}$ &
+0 &
+1 &
+2\tabularnewline
+\hline 
+$p(x_{i})$ &
+0.01 &
+0.05 &
+0.11\tabularnewline
+\hline 
+\end{tabular}
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+3 &
+4 &
+5 &
+6\tabularnewline
+\hline 
+0.17 &
+0.19 &
+0.17 &
+0.13\tabularnewline
+\hline 
+\end{tabular}
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline 
+7 &
+8 &
+9 &
+10\tabularnewline
+\hline 
+0.08 &
+0.05 &
+0.02 &
+0.01\tabularnewline
+\hline 
+\end{tabular}
+
+\end{itemize}
+
+\column{7cm}
+
+
+<<d10,fig=T,include=F, width=4, height=4>>=
+x <- 0:10
+y <- dpois(x, lambda=4.5)
+barplot(y, names.arg=x, col=gray(0.85), space=0)
+@
+
+
+\includegraphics[width=6cm]{plots2/t-d10}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{If X is a continuum}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item If $X$ is a subset of the real number line, $\mathbb{R}$, we can't
+list all outcomes one by one.
+\item ``Probability Density Function''(PDF) 
+
+\begin{itemize}
+\item $f(x)\geq0$ and
+\item $\int_{X}f(x)\, dx=1$
+\end{itemize}
+
+$\int_{X}f(x)\, dx$ means we are collecting the area above $X$.
+
+\end{itemize}
+
+\column{7cm}
+
+
+<<c00,fig=T,include=F>>=
+x <- seq(from=00.01, to=10, by=0.1)
+y <- dgamma(x,shape=2,scale=1) 
+plot(x, y, type="l",xlab="x",ylab="",main="")
+polygon(x=c(0,x,10),y=c(0,y,0), col=gray(0.850))
+@
+
+
+\includegraphics[width=7cm]{plots2/t-c00}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Anything Can Become a PDF (almost)}
+\begin{itemize}
+\item Take any function $f(x)$
+\item Suppose the area under $f(x)$ between $a$ and $b$ is defined (can
+be calculated).
+\item A PDF is created if we divide $f(x)/"area\, under\, f(x)"$.
+\item Partly for this reason, we have too many distributions to study (Compendium
+of distributions includes at least 150 distributions).
+\end{itemize}
+
+\lyxframeend{}\lyxframe{What Do Probability Numbers Really Mean?}
+\begin{itemize}
+\item Consider the probability of one value from a random process. AKA ``an
+observation'' or ``a variate'' or ``a sample''
+\item The chance of an orange is 0.3 at lunch. The chance of rain before
+midnight is 0.20.
+\item What does the probability number mean? (deep philosophical problem) 
+\item interpretation 1: ``long run relative frequency''. Take an infinite
+number draws. The probability of $x_{i}$ is the fraction
+\begin{equation}
+lim_{\#of\, draws\rightarrow\infty}\frac{\#observed\, x_{i}}{\#of\, draws}
+\end{equation}
+
+\item Interpretation 2: ``Bayesian'' relative likelihood interpretation.
+Probability is the ``degree of belief'' one draw will yield a particular
+result.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Additive Property}
+\begin{itemize}
+\item Dice: Playing craps? You may need to know the chance of 6 or 3 
+\item Betting on Baseball? The chance of a hit is the chance of a single
++ chance of double + chance of triple + chance of homer 
+\item We ADD together the chances when considering the chance of different
+outcomes occurring in a single draw.\end{itemize}
+\begin{theorem}%{}
+``or'' is Addition: Consider 1 ``trial''. The chance that either
+$x_{i}$ or $x_{j}$ will happen equals the sum of the chance that
+each one individually will happen.
+
+\begin{equation}
+probability(x_{i}\, or\, x_{j})=p(x_{i})+p(x_{j})
+\end{equation}
+
+\end{theorem}%{}
+
+\lyxframeend{}\lyxframe{Illustration: Addition Property with Discrete Distribution}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Chance of outcome smaller than 3 is Sum 
+\[
+\sum_{x<3}p(x)
+\]
+
+\item $p(0)+p(1)+p(2)$
+\end{itemize}
+
+\column{6cm}
+
+
+<<d20,fig=T,include=F, height=4,width=4>>=
+x <- 0:10
+y <- dpois(x, lambda=4.5)
+barplot(y, names.arg=x, col=c(rep(gray(0.70),3),rep(gray(0.95),10)), space=0)
+@
+
+
+\includegraphics[width=6cm]{plots2/t-d20}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Multiplication Property}
+
+Consider 2 independent ``trials'' or ``samples'' from a given
+probability process $x_{i}$ and $x_{j}$. 
+\begin{theorem}%{}
+``and'' is Multiplication: The chance that both $x_{i}$ and $x_{j}$
+will happen is the product
+\begin{equation}
+probability(x_{i}\, and\, x_{j})=p(x_{i})\times p(x_{j})
+\end{equation}
+
+\end{theorem}%{}
+Here the sample space includes 2-tuples, $(x_{i},x_{j})$. The notation
+for the space of all possible pairs is $X\times X$, or $X^{2}$.
+That's called a ``Cartesian product''.
+
+
+\lyxframeend{}\lyxframe{Multiplication and Sampling}
+\begin{itemize}
+\item We use the multiplication Principle ALL THE TIME in the analysis of
+samples. 
+\item We assert observations in a sample $\{y_{1},y_{2},\ldots,y_{N}\}$
+are statistically independent
+\item The probability of observing the ``whole sample'' is the product
+of the individual probabilities
+\begin{equation}
+p(y_{1},y_{2},y_{3},\ldots,y_{N})=p(y_{1})\cdot p(y_{2})\cdot p(y_{3})\cdots p(y_{N})
+\end{equation}
+
+\item We often try to decide if a probability theory is correct by figuring
+out how likely a sample is (Maximum Likelihood Analysis)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Illustration: Multiplication Property with Discrete Distribution}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Draw one score, $y_{1}$
+\item Draw another score, $y_{2}$ 
+\item What is the chance that both $y_{1}$ and $y_{2}$ are equal to $3$?
+
+
+$p(y_{1}=3)\cdot p(y_{2}=3)$
+
+\end{itemize}
+
+\column{6cm}
+
+
+<<d25,fig=T,include=F, height=2,width=4>>=
+x <- 0:10
+y <- dpois(x, lambda=4.5)
+barplot(y, names.arg=x, col=c(rep(gray(0.95),3),rep(gray(0.70),1),rep(gray(0.95),10)), space=0)
+@
+
+
+\includegraphics[width=5.5cm]{plots2/t-d25}
+
+
+\[
+\times
+\]
+
+
+
+\includegraphics[width=5.5cm]{plots2/t-d25}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Illustration: Multiplication Property with Discrete Distribution}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item What is the chance that both $y_{1}$ and $y_{2}$ are smaller than
+$3$?
+\end{itemize}
+
+\begin{eqnarray*}
+p(y_{1}<3)\cdot p(y_{2}<3)=\\
+\left(p(y_{1}=0)+p(y_{1}=1)+p(y_{1}=2)\right)\times\\
+\left(p(y_{2}=0)+p(y_{2}=1)+p(y_{2}=2)\right)
+\end{eqnarray*}
+
+
+
+\column{7cm}
+
+
+\includegraphics[width=5.5cm,height=3cm]{plots2/t-d20}
+
+
+\[
+\times
+\]
+
+
+
+\includegraphics[width=5.5cm,height=3cm]{plots2/t-d20}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Illustration: Discrete Distribution}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Chance that $y_{1}=4$ and $3\leq y_{2}<7$?
+\item Duh! $p(y_{1}=4)\times p(3\leq y_{2}<7)$
+\item Note chance of a ``slice'' is difference between cumulative values:
+
+
+$p(3\leq y_{2}<7)=p(y_{2}<7)-p(y_{2}<3)$
+
+
+So: $\mbox{\ensuremath{p(y_{1}=4)\times\left\{ (p(y_{2}<7)-p(y_{2}<3)\right\} }}$
+
+\end{itemize}
+
+\column{6cm}
+
+
+<<d30,fig=T,include=F, height=4,width=4>>=
+x <- 0:10
+y <- dpois(x, lambda=4.5)
+barplot(y, names.arg=x, col=c(rep(gray(0.95),3), rep(gray(0.70),4),rep(gray(0.95),10)), space=0)
+@
+
+
+\includegraphics[width=6cm]{plots2/t-d30}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Discrete Versus Continuous Jargon}
+\begin{itemize}
+\item Discrete distributions: PMF, $p(x_{i};some\, parameters)$ ``probability
+mass function''
+\item Continuous distributions: 
+
+\begin{itemize}
+\item PDF, $f(x;some\, parameters)$ ``probability density function''.
+\item CDF, $F(x^{u};parameters)$ ``cumulative distribution function'',
+chance that random draw will be smaller than $x^{u}$. 
+\item PDF problem: chance of one point occurring is $0$ because each point
+has ``no area above it'' problem.
+\item CDF allows us to discuss outcomes in regions between 2 points $k1$,
+$k2$
+
+
+\begin{equation}
+F(k_{2})-F(k_{1})
+\end{equation}
+
+
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Illustration: Continuous Distribution}
+
+<<c20,fig=T,include=F>>=
+x <- seq(from=0,to=1,by=0.01)
+y <- 2+exp(0.02*x)+1.2*sin(pi*(2*x))+1.8*cos(4*pi*x)
+plot(x, y, type="l",xlab="x",ylab="",main="")
+text( x[15], 0.95*y[15], expression(f(x)), pos=1 )
+xss <- seq(0.3, 0.5, by=0.01)
+yss <- 2+exp(0.02*xss)+ 1.2*sin(pi*(2*xss))+ 1.8*cos(4*pi*xss)
+polygon(x=c(xss[1], xss, xss[length(xss)] ), y=c(0, yss, 0), col=gray(0.80))
+mtext(c("0.3", "0.5"), 1, line=1, at=c(0.3, 0.5))
+@
+
+\includegraphics[width=8cm]{plots2/t-c20}
+
+Shaded area is probability that one observation will be between 0.3
+and 0.5=
+
+$\int_{0.3}^{0.5}f(x)\, dx=F(0.5)-F(0.3)$
+
+
+\lyxframeend{}\lyxframe{Illustration: Addition with a Continuous Distribution}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item The chance of an outcome between 0.3 and 0.7?
+
+
+$F(0.7)-F(0.3)$
+
+\item Area between 0.3 and 0.7= sum of area between 0.3 and 0.5 and 0.5
+and 0.7. 
+\item Obviously,
+\end{itemize}
+
+\textrm{$Pr(0.3<y_{i}<0.7)=F(0.7)-F(0.3)$=}
+
+
+\textrm{$F(0.5)-F(0.3)\,\,+\,\, F(0.7)-F(0.5)$}
+
+
+\column{7cm}
+
+
+<<c30,fig=T,include=F>>=
+x <- seq(from=0,to=1,by=0.01)
+y <- 2+exp(0.02*x)+1.2*sin(pi*(2*x))+1.8*cos(4*pi*x)
+plot(x, y, type="l",xlab="x",ylab="",main="")
+text( x[20], y[20], expression(f(x)), pos=1 )
+xss <- seq(0.3, 0.5, by=0.01)
+yss <- 2+exp(0.02*xss)+ 1.2*sin(pi*(2*xss))+ 1.8*cos(4*pi*xss)
+polygon(x=c(xss[1], xss, xss[length(xss)] ), y=c(0, yss, 0), col=gray(0.80))
+xss2 <- seq(0.5, 0.7, by=0.01)
+yss2 <- 2+exp(0.02*xss2)+ 1.2*sin(pi*(2*xss2))+ 1.8*cos(4*pi*xss2)
+polygon(x=c(xss2[1], xss2, xss2[length(xss2)] ), y=c(0, yss2, 0), col=gray(0.70))
+mtext(c("0.3", "0.5","0.7"), 1, line=1, at=c(0.3, 0.5,0.7))
+@
+
+
+\includegraphics[width=7cm]{plots2/t-c30}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\section{Characterizing Distributions}
+
+
+\lyxframeend{}\lyxframe{Distributions: Theories}
+\begin{itemize}
+\item Random variables result from a ``data generating process'' = ``stochastic
+process''
+\item Need ways to describe them.
+\item Sometimes this is called a ``population'', in the sense it is the
+thing from which observations are drawn.
+\item Predict obvious confusion, where students think ``population'' is
+population in the vernacular meaning
+\end{itemize}
+
+\lyxframeend{}\subsection{Expected Value}
+
+
+\lyxframeend{}\lyxframe{Expected Value}
+\begin{description}
+\item [{Definition:}] probability weighted sum of outcomes. $\sum probability$
+$\times$ $outcome$\end{description}
+\begin{block}
+{discrete} $E[x]=\sum_{i=1}^{m}p(x_{i})\cdot x_{i}$
+\end{block}
+This pre-supposes the outcomes are numeric, like dice or other numbered
+things. 
+
+Dice: $\frac{1}{6}1+\frac{1}{6}2+\frac{1}{6}3+\frac{1}{6}4+\frac{1}{6}5+\frac{1}{6}6$
+\begin{exampleblock}
+{continuous} $E[x]=\int_{a}^{b}\,\,\, f(x)\,\cdot\, x\,\, dx$
+
+where $x$ is defined on $(a,b)$\end{exampleblock}
+\begin{description}
+\item [{Tempting~to~say:}] expected value is the ``mean of population
+of x'' but I find that esoteric, since we don't agree on what population
+means
+\item [{Why~a~big~deal?}] Even a single observation is characterized
+by variance and expected value
+\end{description}
+
+\lyxframeend{}\lyxframe{Terminology: ``Expected''. Really?}
+\begin{itemize}
+\item Not ``single most likely outcome,'' it is not what I ``expect''
+(subjectively)
+\item Not necessarily ``in the middle of the distribution''.
+\item A sample mean is an estimate of the Expected Value.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{$E[x]$ More Obviously Meaningful Sometimes}
+\begin{exampleblock}
+{Claim}If PDF is
+
+1) symmetric and 2) unimodal, then
+
+E{[}x{]}== Mode{[}x{]} == Median{[}x{]}. \end{exampleblock}
+\begin{itemize}
+\item So, for some distributions, the Expected Value does have a visual
+``handle'' we can hold on to. 
+\item However, for just as many distributions, the number we get when calculating
+the ``expected value'' is not a number I would have ``expected''
+(subjectively speaking)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Unimodal Example: Expected Value is the Median (\&mode)}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+<<simple20,fig=T,include=F, width=4, height=4>>=
+x <- 1:6
+y <- rep(1/6, 6)
+barplot(y, names.arg=x, col=gray(0.85), ylim = c(0, 1), space = 0)
+title("Expected Value: 3.5")
+@
+
+
+\includegraphics[width=6cm]{plots2/t-simple20}
+
+
+\column{6cm}
+
+
+What's neat about that?
+\begin{itemize}
+\item Outcomes are discrete 1-6, the EV is real number 3.5
+\item ``Expected'' is the officially accepted term here, but 3.5 is not
+``expected'' subjectively
+\end{itemize}
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Counter Example: Expected Value is 1.5}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+<<simple21,fig=T,include=F, width=4, height=4>>=
+x <- 0:7
+xpois <- dpois(x, lambda = 1.5)
+plot(x, xpois, type = "h", ylim = c(0,1))
+points(x, xpois)
+title("Expected Value: 1.5")
+@
+
+
+\includegraphics[width=6cm]{plots2/t-simple21}
+
+
+\column{6cm}
+
+
+I used spikes rather than bars here, to emphasize discreteness of
+x
+\begin{itemize}
+\item Does it help you to know EV is 1.5?
+\end{itemize}
+\end{columns}%{}
+
+\lyxframeend{}\subsection{Variance}
+
+
+\lyxframeend{}\lyxframe{How much variety is possible?}
+\begin{itemize}
+\item If the probability of all outcomes is near 0, except for 1, there's
+not much variety. 
+\item If all outcomes are equally likely (uniform distribution), there's
+maximum possible variety.
+\item We need a way to summarize the ``in between'' cases. 
+\item In descriptions of samples, we used variance, $\frac{1}{N}\sum(x_{i}-\bar{x})^{2}$,
+the mean of squared deviations.
+\item To describe probability models, we take very similar approach, also
+using term Variance
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Var{[}x{]}: Variance of a Random Variable}
+\begin{description}
+\item [{Definition:}] expected value of $(x-E[x])^{2}$. Expected squared
+deviations...\end{description}
+\begin{itemize}
+\item Repeat: Variance is the expected squared deviation about the expected
+value
+\end{itemize}
+\begin{equation}
+Var[x]=\sum p(x_{i})\cdot(x_{i}-E[x])^{2}
+\end{equation}
+
+\begin{itemize}
+\item intuition: if values of $x_{i}$ are spread out ``far and wide,''
+then $Var[x]$ will be a bigger number
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Standard Deviation of a Random Variable}
+\begin{itemize}
+\item Definition: Std. Deviation of a random variable is the square root
+of its variance.
+\item The $Standard\, Deviation$ scales proportionally!
+\end{itemize}
+\begin{equation}
+Std.Dev.[k\cdot x]=k\cdot Std.Dev.[x]
+\end{equation}
+
+\begin{itemize}
+\item Thus, the ratio of the expected value and standard deviation is not
+affected by $k$.
+\begin{equation}
+\frac{E[x]}{Std.Dev.[x]}=\frac{E[k\cdot x]}{Std.Dev.[k\cdot x]}=\frac{k\cdot E[x]}{k\cdot Std.Dev.[x]}=
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Difference between Sample mean and E.V.}
+\begin{itemize}
+\item The mean (or ``average'') of a sample is an estimate of $E[x]$
+\item The ``average'' varies from sample to another
+\item But the $E[x]$ is the same, it is a characteristic of the data generating
+process. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Notation: $\mu_{x}$ ,$\bar{x}$ , $E[x]$, $\widehat{\mu_{x}}$,
+$\widehat{E[x]}$ }
+\begin{itemize}
+\item $E[x]$ sometimes referred to as ``mu'', the Greek $\mu_{x}$. It
+is a theoretical quantity, NOT an estimate from a sample 
+\item Notation for sample estimates: 
+
+\begin{itemize}
+\item $\bar{x}$ is very widely used.
+\item I'd like to call an estimate of that $\widehat{E[x]}$ or $\widehat{\mu_{x}}$,
+just to keep notation simpler
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{[allowframebreaks]Algebra of Variance: The standard deviation of
+$\bar{x}$}
+\begin{itemize}
+\item The variance of the sampling distribution shrinks as the sample size
+is increased. 
+\item There's a section below on ``Algebra of Expectations and Covariance''
+that develops the following result formally, but here it is, just
+for fun.
+\item Suppose we repeatedly draw samples of size $N$ from a random process.
+The variance of the sampling distribution of $\bar{x}$ (across repeated
+samples) is 
+\begin{equation}
+Var[\bar{x}]=\frac{1}{N}Var[x]
+\end{equation}
+
+\end{itemize}
+Here's the proof.
+\begin{itemize}
+\item Let the variance of $x$ be $Var[x]$. 
+\item The mean of $x$ is 
+\end{itemize}
+\begin{equation}
+\bar{x}=\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N}
+\end{equation}
+
+
+Apply the $Var[]$ function to both sides:
+
+\begin{equation}
+Var[\bar{x}]=Var[\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N}]
+\end{equation}
+
+
+To simplify, assume $Cov[x_{i},x_{j}]=0$, so:
+
+\begin{equation}
+Var[\bar{x}]=\frac{1}{N^{2}}Var[x_{1}]+\frac{1}{N^{2}}Var[x_{2}]+\ldots+\frac{1}{N^{2}}Var[x_{N}]
+\end{equation}
+
+
+All of the $x's$ are from the same random process, so their variances
+are all the same, $Var[x]$.
+\begin{eqnarray}
+Var[\bar{x}] & = & \frac{N}{N^{2}}Var[x]\nonumber \\
+ & = & \frac{1}{N}Var[x]
+\end{eqnarray}
+
+\begin{itemize}
+\item This is an ESSENTIAL component in the process of inferential statistics.
+We have an avenue from the observation of $x$'s variance within a
+sample to a view of $\bar{x}$'s variance across many samples. 
+\item Standard deviation of the average, known as the ``Standard error
+of the mean of x'', 
+\begin{equation}
+Std.Err(\bar{x})=Std.Dev[\bar{x}]=\frac{1}{\sqrt{N}}Std.Dev.[x]
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\section{Algebra of Expected Values and Variances}
+
+
+\lyxframeend{}\lyxframe{[allowframebreaks]Algebra of Expected Values}
+
+Proportional Scaling. If $x$ is re-scaled $k\times x$, the Expected
+Value of $k\, x$ is easy to calculate. Multiply $k$ times the original
+$E[x]$
+\begin{itemize}
+\item $E[k\cdot x]=k\cdot E[x]$, where $k$ is a ``constant''
+\end{itemize}
+So, for example, if I said the expected value of variable $fish$
+is 10. Some GRA re-scales the fish variable by dividing by 10. The
+new variable $newfish=0.1\times fish$, the expected value of $newfish$
+is 1.
+\begin{itemize}
+\item Now consider 2 random variables. $x1$ and $x2$. \end{itemize}
+\begin{enumerate}
+\item Additivity. The expected value of a sum is the sum of the expected
+values
+
+\begin{itemize}
+\item $E[x1+x2]=E[x1]+E[x2]$
+\end{itemize}
+\item Linearity. Combine the Scaling and Additivity\end{enumerate}
+\begin{itemize}
+\item $E[k_{1}x1+k_{2}x2]=k_{1}E[x1]+k_{2}E[x2]$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{New Term: Covariance}
+\begin{itemize}
+\item Covariance: How much do 2 random variables ``go together''
+\item Are they both above their expected values at the same time? Or both
+below?
+\item The expected value of the product $(x1-E[x1])\times(x2-E[x2])$
+\item Write it out
+\begin{equation}
+Cov[x1,x2]=E[(x1-E[x1])\cdot(x2-E[x2])]
+\end{equation}
+
+\item Use of discrete variables, we can write down a sum.
+\end{itemize}
+\begin{equation}
+Cov[x1,x2]=\sum p(x1_{i},x2_{i})\cdot(x1_{i}-E[x1])(x2_{i}-E[x2])
+\end{equation}
+
+\begin{itemize}
+\item I wrote a little R script to help visualize covariance. It should
+be in this folder, ``distro-covar-1.R''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{[allowframebreaks, containsverbatim]Algebra of Variance}
+\begin{itemize}
+\item Important fact 1: The variance of $(k\cdot x)$ is $k^{2}$ times
+the variance of $x$.
+\end{itemize}
+\begin{equation}
+Var[k\cdot x]=k^{2}\cdot Var[x]
+\end{equation}
+
+\begin{itemize}
+\item Interesting Tidbit: The variance of $x$ is equal to the expected
+value of x-squared ($E[x^{2}]$ ) minus the square of the expected
+value of x ( $(E[x])^{2}$ ) 
+\begin{equation}
+Var[x]=E[x^{2}]-(E[x])^{2}
+\end{equation}
+\end{itemize}
+\begin{proof}%{}
+$Var[x]=E[(x-E[x])^{2}]=E[x^{2}-2E[x]\cdot x+(E[x])^{2}]$
+
+\[
+=E[x^{2}]-(E[x])^{2}
+\]
+
+
+We'll see many applications of this basic idea later on
+\end{proof}%{}
+
+\lyxframeend{}\lyxframe{Variance of a Sum}
+\begin{itemize}
+\item Add two random variables, $x1$ and $x2$, their variance combines
+2 variances plus 2 times their covariance:
+\end{itemize}
+\begin{equation}
+Var[x1+x2]=Var[x1]+Var[x2]+2Cov[x1,x2]
+\end{equation}
+
+\begin{itemize}
+\item If $x1$ and $x2$ have weights, we can carry them through 
+\begin{equation}
+Var[k_{1}x1+k_{2}x2]=k_{1}^{2}Var[x1]+k_{2}^{2}Var[x2]+2k_{1}k_{2}Cov[x1,x2]
+\end{equation}
+
+\item $2k_{1}k_{2}Cov[x1,x2]$ is a hassle that we run into all the time. 
+\item We'd like some reason, any reason, to assume it away, so we can simplify
+that:
+\begin{equation}
+Var[k_{1}x1+k_{2}x2]=k_{1}^{2}Var[x1]+k_{2}^{2}Var[x2]
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\section{Example Distributions}
+
+
+\lyxframeend{}\subsection{Exponential}
+
+
+\lyxframeend{}\lyxframe{Exponential Distribution}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Time that one must wait before an ``event'' occurs if the chance
+of an event depends only on the amount of time that passes. 
+\item If the probability of an ``event'' is $\lambda\cdot\Delta t$ (for
+$\Delta t$ shrinking to $0$), then the time waited before an event
+is exponentially distributed. 
+\end{itemize}
+
+\column{7cm}
+
+
+<<a10,fig=T, include=F, echo=T, height=5, width=5>>=
+rate <- 1
+upper <- 10 
+xvals <- seq(0,upper,by=0.02)
+yvals1 <- dexp(xvals, rate=rate)
+plot (xvals, yvals1, type="l", main="", xlab="x",ylab="probability")
+text(.7*max(xvals), .7*max(yvals1), label=bquote(f(x)==exp(-x)))
+@
+
+
+\includegraphics[width=7cm]{plots2/t-a10}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Probability Density Function}
+
+\begin{equation}
+f(x;\lambda)=\lambda e^{(-\lambda x)},\, where\, x\geq0\label{eq:Exponential1}
+\end{equation}
+
+
+$\lambda$, which is called the ``rate'' parameter. 
+
+Some books use the reciprocal of $\lambda,$ so the density would
+be
+\[
+f(x;\mu)=\frac{1}{\mu}e^{-x/\mu}
+\]
+
+\begin{itemize}
+\item Other notations: 
+
+\begin{itemize}
+\item $f_{\lambda}(x)$. 
+\item $f(x)$ parameters are implicit.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{More}
+
+If $\lambda$ is very small, the decline in the value of $f(x;\lambda)$
+is very gradual. 
+
+<<a11, fig=T, include=F, echo=T>>=
+
+rate <- 2
+upper <- 10
+xvals <- seq(0,upper,by=0.02)
+yvals1 <- dexp(xvals, rate=rate)
+plot (xvals, yvals1, type="l", xlab="x",ylab="probability")
+
+rate <- 1
+upper <- 10
+xvals <- seq(0,upper,by=0.02)
+yvals1 <- dexp(xvals, rate=rate)
+lines(xvals, yvals1, lty=2)
+
+rate <- 0.2
+upper <- 10
+xvals <- seq(0,upper,by=0.02)
+yvals1 <- dexp(xvals, rate=rate)
+lines(xvals, yvals1, lty=3)
+
+legend("topright", legend=as.expression(c(bquote(lambda == 2.0), bquote(lambda == 1.0),  bquote(lambda == 0.2))), lty=c(1,2,3))
+@
+
+
+\includegraphics[width=10cm]{plots2/t-a11}
+
+
+\lyxframeend{}\lyxframe{Cumulative Distribution Function}
+
+\[
+F(k;\lambda)=\int_{0}^{k}\lambda e^{-\lambda x}dx
+\]
+
+
+\[
+=-e^{-\lambda x}\mid_{0}^{k}
+\]
+
+
+\begin{equation}
+=1-e^{-\lambda k}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+\begin{equation}
+E[x]=\frac{1}{\lambda}
+\end{equation}
+\\
+
+
+\begin{equation}
+Var[x]=\frac{1}{\lambda^{2}}
+\end{equation}
+
+
+
+\lyxframeend{}\subsection{Normal}
+
+
+\lyxframeend{}\lyxframe{Normal Distribution}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item PDF:
+\end{itemize}
+
+\begin{equation}
+f(x;\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}\, e^{-\left(\frac{(x-\mu)^{2}}{2\sigma^{2}}\right)}
+\end{equation}
+The normalizing constant, $1/\sqrt{2\pi\sigma^{2}}$. 
+\begin{itemize}
+\item Essence of it is $exp(-x^{2})$.
+\item Uni-modal and symmetric.
+\end{itemize}
+
+\column{7cm}
+
+
+<<a20,fig=T,include=F,height=4>>=
+x <- seq(from=-3,to=3,by=0.1)
+y <- exp(-0.5*x^2)
+plot(x, y, type="l",xlab="x",ylab="",main="")
+text( 2, 0.75*max(y), label=expression(exp(-x^2)))
+abline(v=0,lty=4)
+@
+
+
+\includegraphics[width=7cm]{plots2/t-a20}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Change $\mu$}
+\begin{itemize}
+\item $\mu$ shifts normal left and right
+\end{itemize}
+<<n10, echo=F, fig=T, include=F>>=
+mu <- c(3,-5, 6)
+sigma <- 5
+x <- seq(from=mu[1]-3*sigma,to=mu[1]+3*sigma,by=0.2)
+y1 <- dnorm(x, mean=mu[1], sd=sigma, log=F)
+plot(x, y1, type="l", main="", xlab="x",ylab="probability of x", xlim=c(-20,20), ylim=c(0,.12))
+x2 <- seq(from=mu[2]-3*sigma,to=mu[2]+3*sigma,by=0.2)
+y2 <- dnorm(x2, mean=mu[2], sd=sigma, log=F)
+lines(x2,y2, lty=2)
+x3 <- seq(from=mu[3]-3*sigma,to=mu[3]+3*sigma,by=0.2)
+y3 <- dnorm(x3, mean=mu[3], sd=sigma, log=F)
+lines(x3,y3, lty=3)
+abline(v = c(mu[1], mu[2],mu[3]), lty = c(1,2,3), lwd = 0.3, col = "gray70")
+legend("topright", legend = as.expression(c(bquote(mu == .(mu[1])), bquote(mu == .(mu[2])), bquote(mu == .(mu[3])))), lty=c(1,2,3) )
+@
+
+\includegraphics[width=8cm]{plots2/t-n10}
+
+
+\lyxframeend{}\lyxframe{Change $\mu$ and/or $\sigma^{2}$}
+\begin{itemize}
+\item $\sigma^{2}$ shrinks and stretches it, leaving center ``same''. 
+\item adjust both
+\end{itemize}
+<<n20, echo=T, fig=T, include=F>>=
+m1 = 10
+sd1 = 20
+x <- seq(m1 - 3 * sd1, m1 + 3 * sd1, length = 200)
+prob1 <- dnorm(x, m = m1, sd = sd1)
+plot(x, prob1, ylab = "Probability Density", main = "", 
+      type = "l", ylim = c(0, max(prob1) * 1.3))
+m2 = -4
+sd2 = 15
+prob2 <- dnorm(x, m = m2, sd = sd2)
+lines(x, prob2, lty = 2)
+legend("topright", legend = c(paste("mu=", m1, 
+      "sigma=", sd1), paste("mu=", m2, "sigma=", 
+      sd2)), lty = 1:2)
+abline(h = seq(0, max(prob1), length.out = 5), 
+      lty = 5, lwd = 0.3, col = "gray70")
+abline(v = c(m1, m2), lty = 5, lwd = 0.3, col = "gray70")
+@
+
+
+\includegraphics[width=8cm]{plots2/t-n20}
+
+
+\lyxframeend{}\lyxframe{Normal: Most Well-Investigated Distribution}
+
+\begin{center}
+\includegraphics[width=7cm,height=7cm]{importfigs/Normal-2009}
+\end{center}
+
+
+\lyxframeend{}\lyxframe{Surprise! Go Looking for Moments, Look what Pops Out.}
+
+Suppose $x_{i}\sim N(\mu,\sigma^{2})$. Then
+\begin{itemize}
+\item $E[x_{i}]=\mu$ (The expected value of $x_{i}$ is the parameter $\mu$)
+\item $Var[x_{i}]=\sigma^{2}$ (The variance of $x_{i}$ is the parameter
+$\sigma^{2}$)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{$N(0,1)$ is called the ``Standard'' Normal}
+\begin{itemize}
+\item Recall $Z$ statistic.
+\begin{equation}
+Z_{i}=\frac{x_{i}-\mu}{\sigma}\label{eq:Zstatistic}
+\end{equation}
+\\
+ $Z_{i}\sim N(0,1$).
+\item Recover $x_{i}$ from $Z_{i}$
+\begin{equation}
+x_{i}=\mu+Z_{i}\sigma.\label{eq:XfromZ}
+\end{equation}
+
+\item Standard Normal Tables in all stat books (used to be...)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{CDF not simplify-able (sp?)}
+
+Bummer: The CDF does not boil down to some easy formula: 
+
+\begin{equation}
+F(k;\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}\int_{-\infty}^{k}e^{-\frac{1}{2\sigma^{2}}(x-\mu)^{2}}
+\end{equation}
+\\
+Numerical integration required to calculate the chance of outcome
+above or below a particular point. 
+
+
+\lyxframeend{}\lyxframe{Symbol $\hat{\mu}$ (mu hat): an estimate of $\mu$ }
+\begin{itemize}
+\item Symbol consistency: $\hat{\mu}$ is the estimate of $\mu$.
+\item The maximum likelihood estimate of $\mu$ is the sample average (commonly
+called $\bar{x}$):
+\begin{equation}
+\hat{\mu}=\frac{1}{N}\sum_{i=1}^{N}x_{i}.
+\end{equation}
+\\
+T\textrm{he maximum likelihood estimate of $\sigma^{2}$ is 
+\begin{equation}
+\widehat{\sigma^{2}}=\frac{\sum_{i=1}^{N}(x_{i}-\hat{\mu)}^{2}}{N}.
+\end{equation}
+}
+\end{itemize}
+That ML estimator is biased. But this is not: 
+\begin{equation}
+\widehat{\sigma^{2}}=\frac{\sum_{i=1}^{N}(x_{i}-\hat{\mu})^{2}}{N-1}.
+\end{equation}
+\\
+
+
+
+\lyxframeend{}\subsection{Gamma}
+
+
+\lyxframeend{}\lyxframe{Gamma Distribution}
+
+May be either ``ski-slope'' shaped or it may be single-peaked, with
+a more-or-less exaggerated tail on the right.
+
+<<Gamma1,include=F, fig=T,echo=T>>=
+xvals <- seq(0,10,length.out=1000)
+gam1 <- dgamma(xvals, shape=1, scale=1)
+gam2 <- dgamma(xvals, shape=2, scale= 1)
+plot(xvals, gam1, type="l", xlab="x",ylab="Gamma probability density",  ylim=c(0,1))
+lines(xvals, gam2, lty=2)
+text(.4, .7, "shape=1, scale=1", pos=4, col=1)
+text(3, .2, "shape=2, scale=1", pos=4, col=1)
+@
+
+\begin{center}
+\includegraphics[width=10cm]{plots2/t-Gamma1}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Probability Density Function}
+\begin{itemize}
+\item $Gamma(\alpha,\beta)$ has parameters: shape ($\alpha$) and scale
+$(\beta)$. 
+\item The PDF is 
+\begin{equation}
+f(x)=\frac{1}{\Gamma(\alpha)\beta^{\alpha}}x^{\alpha-1}e^{-x/\beta},where\, x\geq0,\mbox{\ensuremath{\alpha}>0,\ensuremath{\beta}>0}.\label{eq:GammaPDF}
+\end{equation}
+The symbol $\Gamma(\alpha)$ is a normalizing constant. It is known
+as the gamma function. It can be thought of as an extension of the
+factorial function to the real number line. For integers, $\Gamma(\alpha)=(\alpha-1)!$
+\item Ignoring the constant part, the kernel of the distribution is 
+\begin{equation}
+x^{\alpha-1}e^{-x/\beta}=\frac{x^{\alpha-1}}{e^{x/\beta}}
+\end{equation}
+
+\item So the PDF boils down to ``how fast does the numerator grow in comparison
+to the denominator?''
+\item The denominator will always win out in the end, causing the density
+to shrink to 0 as $x\rightarrow\infty$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Why is $\alpha$ the ``Shape'' Parameter?}
+\begin{itemize}
+\item If $\alpha=1$, this just reproduces the exponential (since $x^{0}=1$). 
+\item If $\alpha>1,$ the shape changes. Its a single-peaked function with
+a mode in the interior of the domain. That is why $\alpha$ is called
+a ``shape'' parameter. 
+\end{itemize}
+<<Gamma2,include=F, fig=T,echo=T>>=
+x <- seq(0,10,length.out=1000)
+alpha <- c(1,2.5, 5)
+y1 <- x^(alpha[1]-1)*exp(-x)
+y2 <- x^(alpha[2]-1)*exp(-x)
+y3 <- x^(alpha[3]-1)*exp(-x)
+plot(x, y1, type="l", xlab="x", ylab=expression(paste(x^{alpha-1}*e^{-x})),  ylim=c(0,6))
+lines(x, y2, lty=2)
+lines(x, y3, lty=3)
+legend("topright",legend=c(expression(paste(alpha==1)),expression(paste(alpha==2.5)),expression(paste(alpha==5))), lty=c(1,2,3))
+@
+
+\includegraphics[width=8cm]{plots2/t-Gamma2}
+
+
+\lyxframeend{}\lyxframe{Cumulative Distribution Function}
+
+This integral has no ``simplified'' representation:
+
+\begin{equation}
+F(k;\alpha,\beta)=\int_{0}^{k}\frac{1}{\Gamma(\alpha)\beta^{\alpha}}x^{\alpha-1}e^{-x/\beta}dx.
+\end{equation}
+\\
+Numerical approximation required. 
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+If $x_{i}\sim Gamma(\alpha,\beta)$,
+
+\begin{equation}
+E[x_{i}]=\alpha\cdot\beta\label{eq:GammaEx}
+\end{equation}
+\\
+Unlike the Normal, $E[x_{i}]$ depends on both parameters.
+\begin{itemize}
+\item The variance is more sensitive to the scale parameter.
+\end{itemize}
+\begin{equation}
+Var[x_{i}]=\alpha\cdot\beta^{2}\label{eq:GammaVar}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{There's a Mode if...}
+\begin{itemize}
+\item If $\alpha>1$, then the distribution is single-peaked
+\item And the mode is 
+\begin{equation}
+mode=\beta(\alpha-1)
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Links to other distributions}
+\begin{itemize}
+\item The $\chi^{2}(\nu)$ distribution (which is discussed below) has the
+same PDF as $Gamma(\frac{\nu}{2},2)$. 
+\item If $\alpha=1$, the gamma simplifies into an exponential distribution
+(\ref{eq:Exponential1}). 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Important Properties}
+\begin{itemize}
+\item Additivity property. The sum of observations from gamma distributions
+with various $\alpha_{i}$, but the same scale ($\beta$), is distributed
+as $Gamma(\alpha_{1}+\ldots+\alpha_{n},\beta)$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{$Gamma(\alpha,\beta)$ is frequently used in ``mixture models''.}
+
+Sometimes we need to add non-negative ``noise'' that has $E[e_{i}]=1$. 
+
+Consider $e_{i}\sim Gamma(\alpha,\,1/\alpha)$ 
+\begin{equation}
+E[x]=\alpha\cdot\frac{1}{\alpha}=1.
+\end{equation}
+But the variance is flexible.
+\begin{equation}
+Var[x]=\alpha(\frac{1}{\alpha})^{2}=\frac{1}{\alpha}.
+\end{equation}
+
+
+<<Gamma20,include=F, fig=T,echo=T>>=
+xvals <- seq(0,10,length.out=1000)
+gam1 <- dgamma(xvals, shape=2, scale=1/2)
+gam2 <- dgamma(xvals, shape=10, scale= 1/10)
+gam3 <- dgamma(xvals, shape=50, scale= 1/50)
+plot(xvals, gam1, type="l", xlab="x",ylab="Gamma probability density",  ylim=c(0,2))
+lines(xvals, gam2, lty=2)
+lines(xvals, gam3, lty=3)
+legend("topright", legend=c("alpha=2","alpha=10","alpha=50"),lty=c(1,2,3))
+@
+
+\begin{center}
+\includegraphics[width=8cm]{plots2/t-Gamma20}
+\par\end{center}
+
+
+\lyxframeend{}\subsection{Beta}
+
+
+\lyxframeend{}\lyxframe{Beta Distribution}
+
+$x_{i}\sim Beta(\alpha,\beta)$ $x_{i}\, is\, in\,[0.1]$. Note various
+PDFs
+
+<<Beta10,fig=T,include=F,echo=T, height=4>>=
+x <- seq(0,1,by=.005)
+b1 <- c(3, 0.7, 1.2)
+b2 <- c(5.6, 0.58, 0.2)
+pbeta1 <- dbeta(x, b1[1],b2[1])
+pbeta2 <- dbeta(x, b1[2],b2[2])
+pbeta3 <- dbeta(x, b1[3],b2[3])
+plot(x, pbeta1, type="n", xlab="x",ylab="Probability Density",ylim=c(0,4))
+lines(x,pbeta1, lty=1)
+lines(x,pbeta2, lty=2)
+lines(x,pbeta3, lty=3)
+legend(0.55, 3.5, legend=c("Beta(3,5.6)","Beta(0.7, 0.58)","Beta(1.2,0.2)"),lty=1:3)
+@
+
+\includegraphics[width=8cm]{plots2/t-Beta10}
+
+
+\lyxframeend{}\lyxframe{Probability Density Function}
+\begin{itemize}
+\item The standard $Beta$'s pdf is defined on $[0,1]$:
+\begin{equation}
+f(x;\alpha,\beta)=\frac{1}{B(\alpha,\beta)}x^{\alpha-1}(1-x)^{\beta-1}\label{eq:BetaDensity}
+\end{equation}
+
+\item and the normalizing constant is called the beta function
+\[
+B(\alpha,\beta)=\int_{0}^{1}t^{\alpha-1}(1-t)^{\beta-1}dt
+\]
+
+\item To get a grasp on this, ignore the constant, focus on $x^{\alpha-1}(1-x)^{\beta-1}$
+\item Think of $\alpha$ as the ``emphasis on 1'' and $\beta$ as the
+``emphasis on $0$''. 
+
+\begin{itemize}
+\item $\alpha$ bigger than $\beta$ means ``big outcomes more likely''
+\item $\beta$ bigger than $\alpha$ means ``small outcomes more likely''
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Calculate some examples $x^{\alpha-1}(1-x)^{\beta-1}$}
+
+\begin{tabular}{|c|c|c|}
+\hline 
+\begin{minipage}[t]{3.5cm}%
+$\alpha=1,$$\beta=1$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+1\tabularnewline
+\hline 
+0.5 &
+1\tabularnewline
+\hline 
+0.75 &
+1\tabularnewline
+\hline 
+\end{tabular}
+
+all equally likely%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+$\alpha=0.5,$$\beta=1$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+2.0\tabularnewline
+\hline 
+0.5 &
+1.41\tabularnewline
+\hline 
+0.75 &
+1.15\tabularnewline
+\hline 
+\end{tabular}
+
+prob. declining left to right%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+$\alpha=2,$$\beta=2$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+0.18\tabularnewline
+\hline 
+0.5 &
+0.25\tabularnewline
+\hline 
+0.75 &
+0.187\tabularnewline
+\hline 
+\end{tabular}
+
+mode at 0.5%
+\end{minipage}\tabularnewline
+\hline 
+\begin{minipage}[t]{3.5cm}%
+$\alpha=2,$$\beta=1$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+0.25\tabularnewline
+\hline 
+0.5 &
+0.5\tabularnewline
+\hline 
+0.75 &
+0.75\tabularnewline
+\hline 
+\end{tabular}
+
+big outcomes more likely%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+$\alpha=2,$$\beta=3$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+0.14\tabularnewline
+\hline 
+0.5 &
+0.125\tabularnewline
+\hline 
+0.75 &
+0.047\tabularnewline
+\hline 
+\end{tabular}
+
+small outcomes more likely%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+$\alpha=4,$$\beta=2$
+
+\begin{tabular}{|c|c|}
+\hline 
+$x$ &
+$f(x)$\tabularnewline
+\hline 
+\hline 
+0.25 &
+0.012\tabularnewline
+\hline 
+0.5 &
+0.065\tabularnewline
+\hline 
+0.75 &
+0.105\tabularnewline
+\hline 
+\end{tabular}
+
+%
+\end{minipage}\tabularnewline
+\hline 
+\end{tabular}
+
+
+\lyxframeend{}\lyxframe{Inter-Linkages}
+\begin{itemize}
+\item fraction formed by two gamma variables that have the same scale parameter,
+$x_{1}/(x_{1}+x_{2})$, is distributed as a beta variable.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Cumulative Distribution Function}
+
+The chance that a draw from a beta density is less than $k$ is
+
+\begin{equation}
+F(k;\alpha,\beta)=\frac{1}{B(\alpha,\beta)}\int_{0}^{k}x^{\alpha-1}(1-x)^{\beta-1}dx\label{eq:BetaCDF}
+\end{equation}
+\\
+
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+If $x_{i}\sim Beta(\alpha,\beta),$then:
+
+\begin{equation}
+E[x]=\mu=\frac{\alpha}{\alpha+\beta}\label{eq:BetaMean}
+\end{equation}
+\begin{equation}
+Var[x]=\frac{\alpha\beta}{(\alpha+\beta)^{2}(\alpha+\beta+1)}\label{eq:BetaVariance}
+\end{equation}
+
+
+If $\alpha>1$and $\beta>1$, the mode of the $Beta$ distribution
+is 
+\begin{equation}
+mode=\gamma=\frac{\alpha-1}{\alpha+\beta-2}\label{eq:BetaMode}
+\end{equation}
+
+
+
+\lyxframeend{}\subsection{$\chi^{2}$ (Chi-Squared)}
+
+
+\lyxframeend{}\lyxframe{Chi-Squared}
+
+The Chi-Squared may be referred to as $\chi^{2}(\nu)$ or $\chi_{\nu}^{2}$
+. 
+
+The Chi-Squared distribution is used to describe the ``sum of squared
+mistakes'' or ``mismatches'' between expectation and observation. 
+
+<<ChiSquare1,echo=T, fig=T, include=F>>=
+xvals <- seq(0,30,length.out=1000)
+chisquare1 <- dchisq(xvals, df=5)
+chisquare2 <- dchisq(xvals, df=10)
+chisquare3 <- dchisq(xvals, df=20)
+plot(xvals, chisquare1, type="l", xlab=expression(chi^2), ylab="probability density",  ylim=c(0,0.4), main="")
+lines(xvals, chisquare2, lty=2)
+lines(xvals, chisquare3, lty=3)
+legend("topright",legend=(c(expression(nu==5), expression(nu==10),expression(nu==20))),lty=1:3)
+@
+
+\begin{center}
+\includegraphics[width=8cm]{plots2/t-ChiSquare1}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Probability Density Function}
+
+Recall, the pdf of a Chi-square distribution is identical to a gamma
+distribution with shape parameter $\nu/2$ and scale $2$ (\ref{eq:GammaPDF}).
+Thus Chi-square's probability density function is
+\begin{equation}
+f(x)=\frac{1}{\Gamma(\frac{\nu}{2})(2)^{\frac{\nu}{2}}}x^{\frac{\nu}{2}-1}e^{-x/2},\, x\geq0,\,\nu>0.
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Surprise: sum of squared random variables follows a Chi-square distribution. }
+
+Draw a collection of $\nu$ observations from a standard normal distribution,
+\begin{equation}
+Z_{i}\sim N(0,1),\, for\, i=1,2,\ldots,\nu.
+\end{equation}
+\\
+Square each one, and add them together. The result is distributed
+as a $\chi^{2}(\nu)$. That is to say
+\begin{equation}
+Z_{1}^{2}+\ldots+Z_{\nu}^{2}\sim\chi^{2}(v).
+\end{equation}
+\\
+When it is used in this context, the parameter that represents sample
+size, $\nu$, is often called ``degrees of freedom.''
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+Since the $\chi^{2}(\nu)$ is the same as $Gamma(\frac{\nu}{2},2)$,
+\begin{equation}
+E[x]=\nu
+\end{equation}
+
+
+\begin{equation}
+Var[x]=2\nu
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Chi-Square in Model Comparison Test}
+\begin{itemize}
+\item Many statistical procedures can result in a estimate that is distributed
+as $\chi^{2}(\nu)$. 
+
+\begin{itemize}
+\item The mis-match between the saturated model and the fitted generalized
+linear model, for example, is distributed as a $\chi^{2}$. 
+\end{itemize}
+\item The top 5\% under the pdf of $\chi^{2}(50)$ is drawn. The shaded
+area on the right--values greater than 67.50--represents the top 5\%
+of possible draws from $\chi^{2}(50)$.
+\end{itemize}
+<<ChiSquare20,echo=T, fig=T, include=F>>=
+xvals <- seq(0,80,length.out=1000)
+chisquare <- dchisq(xvals, df=50)
+plot(xvals, chisquare, type="l", xlab=expression(chi^2), ylab="probability density",  ylim=c(0,0.10), main="")
+critVal <- qchisq(0.05, df=50, lower.tail=F)
+chiAtCrit <- dchisq(critVal, df=50)
+lines(c(critVal,critVal), c(0, chiAtCrit), lty=4)
+abline(h=0, lwd=0.5)
+mtext(expression(hat(k)), side=1, line=1, at=critVal)
+xvals <- seq(critVal, 80, length.out=50)
+polygon( x=c(xvals, xvals[50], sort(xvals,decreasing=T), critVal), 
+      y=c(dchisq(xvals,df=50), 0, rep(0,50), 0), col=gray(.90)) 
+text(74, 0.018, expression(area == 1-F(hat(k))))
+@
+
+\includegraphics[width=8cm]{plots2/t-ChiSquare20}
+
+
+\lyxframeend{}\subsection{t}
+
+
+\lyxframeend{}\lyxframe{Student's t distribution}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item symmetric and uni-modal. 
+\item one parameter, $\nu$, known as ``degrees of freedom'' (df). 
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item Similar to Normal(0,1)
+\item Statisticians say that t has ``fatter tails'' the normal.
+\end{itemize}
+\end{topcolumns}%{}
+<<t05,fig=T,include=F,echo=T>>=
+x <- seq(-4,4, length.out=1000)
+px1 <- dt(x, df=1)
+px2 <- dt(x, df=5)
+px3 <- dt(x, df=20)
+px4 <- dt(x, df=100)
+plot(x, px1, xlab="t",ylab="probability density of t",type="l", ylim=c(0,0.5))
+lines(x,px2, lty=2)
+lines(x,px3, lty=3)
+lines(x,px4, lty=4)
+legend("topright",legend=c("df=1","df=5", "df=20", "df=100"),lty=1:4)
+@
+
+\includegraphics[width=8cm]{plots2/t-t05}
+
+
+\lyxframeend{}\lyxframe{Probability Density Function}
+
+The probability density of the t distribution is
+
+\begin{equation}
+f(x;\nu)=\frac{\Gamma(\frac{\nu+1}{2})}{\sqrt{\nu\pi}\Gamma(\frac{\nu}{2})}\left(1+\frac{x^{2}}{\nu}\right)^{-(\frac{v+1}{2})}.
+\end{equation}
+
+\begin{itemize}
+\item Sorry, I got no intuition from that!
+\item Its center point--expected value, median, and mode--is $0.$ 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{t is a Workhorse in hypothesis testing }
+\begin{itemize}
+\item The end result will concern a parameter $\theta$.
+\end{itemize}
+\[
+\frac{\hat{\theta}-E[\theta]}{standard\, error(\hat{\theta})}\sim t(\nu).
+\]
+
+\begin{itemize}
+\item Z stat intuition: If we only knew the standard deviation of the mean,
+we could calculate a thing-like-a-$Z$-statistic. 
+\[
+\frac{estimated\, mean-null\, hypothesis}{standard\, deviation\, of\, mean}.
+\]
+
+\item A standard normal variable could be created if we knew the true variance,
+as in
+\[
+\frac{\widehat{E[x]}-E[x]}{\sqrt{Var[x]/N}}\sim N(0,1)
+\]
+
+\item t is a work-around for problem that $Var[x]$ is unknown.
+\item Replace $Var[x]$ by estimate $\widehat{Var[x]},$ and so $\sqrt{\widehat{Var[x]}}=\widehat{StdDev[x]}$
+\end{itemize}
+\[
+"t\, ratio"=\frac{\widehat{E[x]}-E[x]}{\sqrt{N}\widehat{StdDev[x]}}.
+\]
+
+
+
+\lyxframeend{}\lyxframe{$t\rightarrow$ Normal(0,1) as $\nu\rightarrow\infty$}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+When a sample is large, then the t ratio and the standard normal (\ref{eq:Zstatistic})
+are not noticeably different. 
+
+
+\column{8cm}
+
+
+<<t10,fig=T,include=F,echo=T, height=5>>=
+x <- seq(0,4, length.out=200)
+y <- matrix(0, ncol=5, nrow=200)
+y[,1] <- dt(x, df=1)
+y[,2] <- dt(x, df=2)
+y[,3] <- dt(x, df=5)
+y[,4] <- dt(x, df=20)
+y[,5] <- dt(x, df=1000)
+matplot(x,y,  type="l",ylab="probability density", col="black")
+lines(x, dnorm(x),lty=2, lwd=3)
+text(0, 0.225, expression(t(nu==1)),pos=4)
+text(-0.2, 0.33, expression(t(nu==2)),pos=4)
+text(1.0, 0.25, pos=4, expression(t(nu==1000)))
+text(1.05, 0.23, pos=4, "N(0,1)")
+legend("topright",legend=c(expression(nu==1),expression(nu==2),expression(nu==5),expression(nu==20),expression(nu==1000),"N(0,1)"),lty=c(1:5,2), lwd=c(1,1,1,1,1,3))
+@
+
+
+\includegraphics[width=8cm]{plots2/t-t10}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{t is Often Interpreted as a Two Tailed Distribution}
+
+Unlike the $\chi^{2}$ distribution, where we look only on the right
+tail of the distribution for evidence of unusual cases, the $t$ distribution
+has critical regions both tails.
+
+<<t30,echo=T, fig=T, include=F>>=
+mint <- -4; maxt <- 4
+x <- seq(mint,maxt,length.out=1000)
+myt <- dt(x, df=50)
+plot(x, myt, type="l", xlab="t", ylab="probability density",  ylim=c(0,0.40), main="")
+abline(h=0, lwd=0.5)
+critValH <- qt(0.025, df=50, lower.tail=F)
+statAtCritH <- dt(critVal, df=50)
+lines(c(critValH,critValH), c(0, statAtCritH), lty=4)
+xvals <- seq(critValH, maxt, length.out=50)
+polygon( x=c(xvals, xvals[50], sort(xvals,decreasing=T), critValH), 
+      y=c(dt(xvals,df=50), 0, rep(0,50), 0), col=gray(.90)) 
+##Stupidly repeat same code for lower side
+critValL <- qt(0.025, df=50, lower.tail=T)
+statAtCritL <- dt(critVal, df=50)
+lines(c(critValL,critValL), c(0, statAtCritL), lty=4)
+xvals <- seq(mint, critValL,  length.out=50)
+polygon( x=c(xvals, xvals[50], mint), 
+      y=c(dt(xvals,df=50), 0, 0), col=gray(.90)) 
+@
+
+\includegraphics[width=10cm]{plots2/t-t30}
+
+
+\lyxframeend{}\lyxframe{Moments}
+\begin{itemize}
+\item Supposing $\nu\geq1$, the expected value, median, and mode of a t
+distribution are all 0. 
+\item The variance of a t distribution is
+\begin{equation}
+Var[x]=\frac{\nu}{\nu-2}
+\end{equation}
+
+\item Note: as $\nu\rightarrow\infty$, $Var[x]\rightarrow1.0$, consistent
+with the claim that the t density converges to $N(0,1)$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Comments}
+
+The t distribution a work horse in everyday statistics.
+
+Many estimators boil down to a comparison of an estimate and its standard
+error. 
+
+``t ratio'' commonly refers to any Normally distributed estimator,
+$\hat{\theta}$, against its standard error.
+
+\begin{equation}
+\frac{\hat{\theta}}{std.error(\hat{\theta})}
+\end{equation}
+
+
+(More on hypothesis testing later...)
+
+
+\lyxframeend{}\subsection{F}
+
+
+\lyxframeend{}\lyxframe{The F distribution}
+
+The $F(\nu_{1},\nu_{2})$ distribution (``F'' is for Fisher) describes
+a variable on $[0,\infty)$. It depends on 2 parameters, $\nu_{1}$
+and $\nu_{2}$. 
+
+<<F20, echo=F, fig=T, include=F,height=4, width=7>>=
+nu1 <- c(25,100,200)
+nu2 <- c(25,50,100,200)
+x <- seq(0.2, 5, length = 200)
+dF11 <- df(x, nu1[1], nu2[1])
+dF22 <- df(x, nu1[1], nu2[2])
+dF23 <- df(x, nu1[2], nu2[3])
+dF31 <- df(x, nu1[2], nu2[4])
+dF33 <- df(x, nu1[3], nu2[3])
+plot(x, dF11, ylab = "Probability Density", main = "", 
+      type = "l", ylim=c(0,1.5))
+lines(x, dF22, lty = 2)
+lines(x, dF23, lty = 3)
+lines(x, dF31, lty = 4)
+lines(x, dF33, lty = 5)
+legend("topright", legend = 
+c(expression(paste(nu[1]==25,",", nu[2]==25)),
+expression(paste(nu[1]==25,",", nu[2]==50)),
+expression(paste(nu[1]==100,",", nu[2]==100)),
+expression(paste(nu[1]==100,",", nu[2]==200)),
+expression(paste(nu[1]==200, ",", nu[2]==100))), lty=1:6)
+@
+
+
+\includegraphics[width=10cm]{plots2/t-F20}
+
+
+\lyxframeend{}\lyxframe{PDF is difficult to comprehend.}
+
+\begin{equation}
+f(x;\nu_{1},\nu_{2})=\frac{\Gamma\left(\frac{\nu_{1}+\nu_{2}}{2}\right)}{\Gamma(\frac{\nu_{1}}{2})\Gamma(\frac{\nu_{2}}{2})}\nu_{1}^{\nu_{1}/2}\nu_{2}^{\nu_{2}/2}x^{\frac{\nu1}{2}-1}\left(\nu_{2}+\nu_{1}x\right)^{-(\nu_{1}+\nu_{2})/2}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{``Tell Me A Story'' Instead}
+\begin{itemize}
+\item $Z_{1}^{2}+Z_{2}^{2}+Z_{\nu_{1}}^{2}$ is distributed as a $\chi^{2}(\nu_{1}$). 
+\item Compare against a second set of observations, $Z_{1}^{2}+Z_{2}^{2}+Z_{\nu_{2}}^{2}\sim\chi^{2}(\nu_{2})$
+. 
+\item So far as I know, there is no method to compare the difference of
+two $\chi^{2}$ statistics, but it is possible to compare their ratio.
+\item The test statistic we want to understand is thus a ratio of ``mean
+squares'':
+\begin{equation}
+\frac{Sample\,1:\,\,\,(Z_{1}^{2}+Z_{2}^{2}+\ldots+Z_{\nu_{1}}^{2})/\nu_{1}}{Sample\,2:\,\,\,(Z_{1}^{2}+Z_{2}^{2}+\ldots+Z_{\nu_{2}}^{2})/\nu_{2}}\, is\, distributed\, as\, F(\nu_{1},\nu_{2}).
+\end{equation}
+\\
+The pdf of $F(\nu_{1},\nu_{2})$ represents the diversity we would
+observe if we repeatedly drew $\nu_{1}$ and $\nu_{2}$ observations
+and then formed this ratio of mean squares. 
+\item If $\nu_{1}=1$, then the density of $F$ is the same as that of squared
+$t$ variable. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Intriguing: pdf of F Collapses Around 1 as Sample Size Increases}
+
+<<F10, echo=F, fig=T, include=F,height=4, width=7>>=
+nu1 <- c(1,25,100,1000)
+x <- seq(0.1,6, length = 200)
+dF11 <- df(x, nu1[1], nu1[1])
+dF22 <- df(x, nu1[2], nu1[2])
+dF33 <- df(x, nu1[3], nu1[3])
+dF44 <- df(x, nu1[4], nu1[4])
+plot(x, dF11, ylab = "Probability Density", main = "", 
+      type = "l", ylim=c(0,1.5))
+lines(x, dF22, lty = 2)
+lines(x, dF33, lty = 3)
+lines(x, dF44, lty = 4)
+abline(h=0, lwd=0.3, col=gray(.9))
+legend("topright", legend = 
+c(expression(paste(nu[1]==1,",", nu[2]==1)),
+expression(paste(nu[1]==25,",", nu[2]==25)),
+expression(paste(nu[1]==100,",", nu[2]==100)),
+expression(paste(nu[1]==1000,",", nu[2]==1000))), lty=1:4)
+@
+
+
+\includegraphics[width=8cm]{plots2/t-F10}
+
+
+\lyxframeend{}\subsection{Binomial}
+
+
+\lyxframeend{}\lyxframe{Binomial Distribution}
+
+$B(N,\pi)$ the number of ``events'' (or ``successes'', or ``wins'',
+etc.) when there are $N$ ``trials'' and the chance of a success
+on each trial is fixed at $\pi$. 
+
+<<Binomial10,fig=T,include=F, height=4, width=6.5>>=
+par(mfcol=c(1,2))
+x <- 0:10
+y <- dbinom(x, p=0.66, size=10)
+plot(x,y, type="h", lty=4, xlab="10 Flips with a Biased Coin", ylab="Chance of Observing x Heads")
+points(x,y,pch=16)
+ y <- c(y[1],y)
+x <- c(-1, x)
+plot(x+0.5,y, type="s", lty=4, xlab="10 Flips with a Biased Coin", ylab="Chance of Observing x Heads")
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=10cm]{plots2/t-Binomial10}
+
+
+\lyxframeend{}\lyxframe{Probability Mass Function}
+
+\begin{equation}
+Prob(k|N,\pi)=\frac{N!}{(N-k)!k!}\pi^{k}(1-\pi)^{N-k}
+\end{equation}
+
+\begin{enumerate}
+\item If there are $N$ independent trials, and how likely we are to get
+$k$ successes. The chance that the first $k$ trials will succeed,
+and the rest will fail, is 
+\begin{eqnarray*}
+\pi\times\pi\times\{k\, times\}\times(1-\pi)\times(1-\pi)\times\{N-k\, times\}\\
+=\pi^{k}(1-\pi)^{N-k}
+\end{eqnarray*}
+
+\item $\frac{N!}{(N-k)!k!}$ is the number of ways to re-arrange $N$ things
+so that $k$ are successes and $N-k$ are not. 
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Example}
+\begin{itemize}
+\item Consider 437 women having babies, the chance of having a boy baby
+is 0.63. 
+\item The chance of $k$ boys is:
+\end{itemize}
+\begin{equation}
+Prob(k|437,0.63)=\frac{437!}{(437-k)!k!}(0.63)^{k}(1-0.63)^{437-k}
+\end{equation}
+
+\begin{itemize}
+\item The probability of 300 boys:
+\end{itemize}
+\begin{equation}
+Prob(300|437,0.63)=0.000112
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Binomial is Intriguingly Normal if $N$ is large}
+
+<<Binomial20, fig=T,echo=T, include=F>>=
+N <- 437; p<- 0.63; x1 <- max(0, N*p-4*sqrt(p*(1-p)*N)); x2 <- min(N*p+4*sqrt(p*(1-p)*N),N)
+x <- as.integer(x1): as.integer(x2+1)
+pseq <- dbinom(x, N, p)
+plot(x, pseq, type="h", xlab="k", ylab=paste("Prob(k, N=",N,", p=", p,")"))
+points(x, pseq, pch=18,cex=0.5)
+@
+
+\includegraphics[width=10cm]{plots2/t-Binomial20}
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+The expected value is:
+
+\begin{equation}
+E[x]=\pi\cdot N\label{eq:BinomialExpectedValue}
+\end{equation}
+\\
+and the variance is
+
+\begin{equation}
+Var[x]=\pi(1-\pi)N\label{eq:BinomialVariance}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Derivation: Based on ``Sum of Bernoulli Trials'' Interpretation}
+
+For instance, an observed sample is $N$ ``Bernoulli trials'', $\{x_{1},x_{2},\ldots,x_{N}\}$,
+such as
+
+\begin{equation}
+0,1,1,0,1,1,0,0\ldots,1,0
+\end{equation}
+The number of successes is the sum of those trials
+\begin{equation}
+x_{1}+x_{2}+x_{3}+\ldots+x_{N-1}+x_{N}
+\end{equation}
+
+
+Each $x_{i}$ is a ``Bernoulli trial, and obviously 
+\begin{equation}
+E[x_{1}]=\pi\cdot1+(1-\pi)\cdot0=\pi
+\end{equation}
+So the Binomial expected value 
+
+\begin{eqnarray}
+E[x_{1}+x_{2}+\ldots x_{N}] & = & E[x_{1}]+E[x_{2}]+\ldots+E[x_{n}]\nonumber \\
+ & = & \pi+\pi+\ldots+\pi\nonumber \\
+ & = & N\cdot\pi
+\end{eqnarray}
+
+
+
+\lyxframeend{}\lyxframe{Variance}
+
+Consider one Bernoulli trial, $x_{1}$, in isolation. Its variance
+is
+\begin{eqnarray}
+Var[x_{1}] & = & \pi(1-E[x_{1}])^{2}+(1-\pi)(0-E[x_{1}])^{2}\nonumber \\
+ & = & \pi(1-\pi)^{2}-(1-\pi)(-\pi)^{2}\nonumber \\
+ & = & \pi(1-2\pi+\pi^{2})+\pi^{2}-\pi^{3}\nonumber \\
+ & = & \pi-2\pi^{2}+\pi^{3}+\pi^{2}-\pi^{3}\nonumber \\
+ & = & \pi-\pi^{2}=\pi(1-\pi)
+\end{eqnarray}
+Treat Binomial as sum of $N$ independent trials (so Covariance=0).
+Thus, the law for calculating the variance of a sum of terms applies.
+\begin{eqnarray}
+Var[x_{1}+x_{2}+\ldots x_{N}] & = & Var[x_{1}]+Var[x_{2}]+\ldots+Var[x_{N}]\nonumber \\
+ & = & \pi(1-\pi)+\pi(1-\pi)+\ldots+\pi(1-\pi)\nonumber \\
+ & = & \pi(1-\pi)N
+\end{eqnarray}
+
+
+
+\lyxframeend{}\lyxframe{How Does This Arise in Regression?}
+\begin{itemize}
+\item Consider groups of test subjects. 
+\item Dependent variable is number of 'successes' out of $N_{j}$ respondents
+in group $j$. 
+\item Suppose $Binomial(N_{j},\pi_{j})$. $N_{j}$ is known (because of
+design), we need to predict $\pi_{j}$ as a function of parameters
+and independent variables. 
+\end{itemize}
+
+\lyxframeend{}\subsection{Poisson}
+
+
+\lyxframeend{}\lyxframe{Poisson Distribution: Event Count Model}
+
+The Poisson is a discrete distribution, most commonly for ``event
+counts'' on $0,1,\ldots,\infty$. 
+
+Poisson represents a process characterized as:
+\begin{itemize}
+\item The chance of one event during the passage of time $\Delta t$ is
+approximately $\lambda\cdot\Delta t$ (and, as $\Delta t$ shrinks
+to $0$, $\lambda\Delta t$ approximates the chance of an event more
+and more closely). 
+\item The chance of a second event in a particular chunk of time is vanishingly
+small.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{PMF}
+\begin{itemize}
+\item One parameter, $\lambda$.
+\end{itemize}
+\begin{equation}
+f(x;\lambda)=e^{-\lambda}\frac{\lambda^{x}}{x!},\, where\, x\geq0,\lambda>0\label{eq:PoissonPMF}
+\end{equation}
+
+\begin{itemize}
+\item The term $e^{-\lambda}$ (same as $1/e^{\lambda})$ is a normalizing
+constant. 
+\item The kernel of this probability model is simply
+\end{itemize}
+\begin{equation}
+\frac{\lambda^{x}}{x!}\label{eq:PoissonKernel}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Any Sequence Can Be the Backbone of a PMF }
+\begin{itemize}
+\item Recall that ``any integrable function'' can be backbone for a PDF?
+\item For discrete models, ``any convergent sequence'' can be the backbone
+of a PMF. That is, if $S=\sum p(x_{i})$ exists, then the PMF can
+be $\frac{1}{S}p(x_{i})$
+\item Poisson example
+
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline 
+$ $ &
+ &
+ &
+ &
+ &
+ &
+ &
+ &
+ &
+\,\tabularnewline
+\hline 
+x &
+ &
+0 &
+1 &
+2 &
+3 &
+4 &
+5 &
+$\ldots$ &
+$\infty$\tabularnewline
+\hline 
+$\lambda^{x}/x!$ &
+ &
+1 &
+$\lambda^{1}$ &
+$\lambda^{2}/2!$ &
+$\lambda^{3}/3!$ &
+$\lambda^{4}/4!$ &
+$\lambda^{5}/5!$ &
+ &
+$\lambda^{\infty}/\infty!$\tabularnewline
+\hline 
+\end{tabular}
+
+
+The sum of the items in the second row is
+\begin{equation}
+exp(\lambda)=1+\lambda+\lambda^{2}/2!+\lambda^{3}/3!+\lambda^{4}/4!+\lambda^{5}/5!+\ldots+\lambda^{\infty}/\infty!\label{eq:infsum}
+\end{equation}
+
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Shape of the PMF}
+\begin{itemize}
+\item If $\lambda<1$, then the most likely outcome is always $0$ and higher
+values are progressively less likely. 
+\item If $\lambda>1$, the mode shifts into the interior.
+\end{itemize}
+<<Pois50,fig=T,include=F,echo=T, width=6.5>>=
+x <- 0:10
+y <- dpois(x, lambda=1.3)
+par(mfcol=c(1,2))
+plot(x,y, type="h", lty=4, xlab=expression(x ~~ group("(",lambda==1.3,")")) , ylab="Probability")
+points(x,y, pch=16)
+y <- dpois(x, lambda=4.0)
+plot(x,y, type="h", lty=4, xlab=expression(x ~~ group("(",lambda==4.0,")")) , ylab="Probability")
+points(x,y, pch=16)
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=8cm]{plots2/t-Pois50}
+
+
+\lyxframeend{}\lyxframe{Moments}
+
+The expected value is equal to its variance, and both of them are
+equal to $\lambda$. 
+\[
+E(x)=\lambda
+\]
+ 
+\[
+Var(x)=\lambda
+\]
+
+
+
+\lyxframeend{}\lyxframe{How Does this Arise in Regression?}
+\begin{itemize}
+\item Think about a set of observed counts, $y_{1},y_{2},\ldots,y_{N}$. 
+\item Build a model that treats each as a draw from its own ``customized''
+Poisson distribution.
+\end{itemize}
+\begin{equation}
+f(y_{i};\lambda_{i})=e^{-\lambda_{i}}\frac{\lambda^{y_{i}}}{y_{i}!}\label{eq:PoissonPMF-1}
+\end{equation}
+
+\begin{itemize}
+\item Build a ``predictive model'' that depends on parameters $\beta_{j}$
+and independent variables:
+\item 
+\begin{equation}
+\lambda_{i}=exp(\beta_{0}+\beta_{1}z_{i})
+\end{equation}
+Try to estimate the parameters $\beta_{0}$ and $\beta_{1}$ 
+\end{itemize}
+
+\lyxframeend{}
+
+\include{1_home_pauljohn_SVN_SVN-guides_stat_Distributio___rview_DistributionReview-1-lecture-problems}
+\end{document}

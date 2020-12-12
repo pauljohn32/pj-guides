@@ -1,0 +1,105 @@
+---
+title: "Discussion on 2D plots & Tables"
+author: "Paul E. Johnson"
+date: '2015-01-28'
+output: ioslides_presentation
+---
+
+## This accompanies ScatterBoxBarPlots lecture
+
+I'm testing out a slide-making framework R Markdown. 
+
+In case you want to see how this is done, review the file "ScatterBoxBarPlots-1-discussion.Rmd"
+
+That Rmd file gets converted to "ScatterBoxBarPlots-1-discussion.md" and that thing in turn
+gets turned into HTML or PDF output
+
+I'm not a fan of this yet, but I'm trying.
+
+# Scatterplots
+
+## Statistics in the News
+
+- New England Patriots accused of deflating balls so that their team is more able to handle them.
+
+- Warren Sharp's blog, "The New England Patriots Prevention of Fumbles is Nearly Impossible" http://www.sharpfootballanalysis.com/blog/2015
+
+## Here's a peculiar scatterplot
+<img src="importfigs/Fumble-Chart-1.png" width="700" alt="Fumbles">
+
+## Critique that(?!)
+
+- The line is ridiculous
+
+- I'd like to see a Histogram
+
+- What distribution should we expect if everybody plays with the same balls?
+
+## Replies Appear!
+
+- Gregory J. Matthews and Michael Lopez, "Why Those Statistics About the Patriots' Fumbles Are Mostly Junk", http://regressing.deadspin.com/why-those-statistics-about-the-patriots-fumbles-are-mos-1681805710
+
+- Problem has something to do with whether we calculate plays/fumbles or fumbles/play (maybe)
+
+## A qq plot appears in Mattews and Lopez!
+
+<img src="importfigs/Matthews-Lopez-1.png" width="500" alt="Fumbles 1">
+
+## Change from fumble/play to play/fumble
+
+<img src="importfigs/Matthews-Lopez-2.png" width="500" alt="Fumbles 2">
+
+## And a Barplot
+
+<img src="importfigs/Matthews-Lopez-3.png" width="600" alt="Fumbles 3">
+
+# Cross Tabulation Tables
+
+## rockchalk development 1.8.90
+
+```{r pctable1}
+library(rockchalk)
+dat <- data.frame(x1 = sample(c("A", "B", "C"), size = 200, replace = TRUE),
+                  y1 = sample(c("Denver", "Kansas City", "St. Louis"), size = 200, replace = TRUE))
+t1 <- pctable(y1 ~ x1, data = dat)
+```
+
+## That produced "defaults"
+
+- I (almost always) want column percents
+- Includes missings in display by default, unlike R table. To undo that, include EXCLUDE = NA as an argument.
+- This adds marginal totals, they come in handy
+- I'm printing the raw count and percent in each cell (different from my past idea)
+
+## Variations
+```{r pctable2}
+summary(t1, rowpct = TRUE, colpct = FALSE)
+```
+
+## Having both is admittedly frustrating
+```{r pctable3}
+summary(t1, rowpct = TRUE, colpct = TRUE)
+```
+
+## Features
+
+- rounded = TRUE is "privacy protection"
+
+- Arguments intended for table will be passed through
+
+## Can make fancy tables that can go into documents
+
+- The tables package by Duncan Murdoch provides some convenience features that we can ride.
+- For people that use LaTeX, the example demonstrates.
+
+## html output
+```{r include=FALSE}
+library(tables)
+```
+
+## Can make fancy tables that can go into documents
+
+```{r pctable4, results='asis'}
+html(as.tabular(summary(t1)))
+```
+

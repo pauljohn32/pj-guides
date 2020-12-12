@@ -1,0 +1,528 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage[active]{srcltx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+% (ERT) argument for the TOC
+\AtBeginDocument{%
+  \let\origtableofcontents=\tableofcontents
+  \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+  \def\gobbletableofcontents#1{\origtableofcontents}
+}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+%  \usetheme{KU}
+\usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+# unlink("plots", recursive=T)
+if (!dir.exists("plots")) dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+\title[Descriptive]{Regression Overview }
+\author{Paul E. Johnson\inst{1}}
+\institute[K.U.]{\inst{1}Departments of Political Science and Psychology (by courtesy),
+University of Kansas}
+\date[2011]{\today}
+
+\makebeamertitle
+\begin{frame}
+
+\frametitle{The Big Overview}
+\begin{itemize}
+\item Regression Examples
+\item Trouble
+\item Various data types
+\item Various relationships between input and output
+\end{itemize}
+\end{frame}
+
+\section{Regression}
+\begin{frame}{What is Regression?}
+
+\begin{itemize}
+\item definition: predicting outcomes using a formula
+\item Predicted value of $y$, called $\hat{y}$ (``y hat'') 
+
+\begin{equation}
+\widehat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}
+\end{equation}
+
+depends on a predictor variables $x1_{i}$ with two estimated parameters,
+$\hat{\beta}_{0}$ $\hat{\beta}_{1}$
+\item The data ``comes from'' a \emph{data-generating process} in which
+``true'' ``unknown'' values of $\beta_{0}$ and $\beta_{1}$ exist.
+We estimate with $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$.
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim]
+\frametitle{Example: The Temperature Across Oregon}
+
+<<oregon0,echo=T,include=F>>=
+dat <- read.table("~/GIT/pj-guides/stat/DataSets/OregonTemps/ortann.csv", header=T, sep=",")
+mod1 <- lm (tann ~ elevation, data=dat)
+summary(mod1)
+library(foreign)
+##write.dta(dat,file="ortann.dta")
+@
+
+<<oregon10,fig=T,include=F,echo=T>>=
+plot(tann ~ elevation, data=dat, xlab="Elevation above sea level", ylab="Annual Average Temperature",main="")
+@
+\includegraphics[width=10cm]{plots/t-oregon10}
+
+You get a ruler, draw a line.
+
+\end{frame}
+\begin{frame}{Choose your best line}
+
+\begin{itemize}
+\item We might disagree about the ``best line'': find objective criteria
+\item Afterwords, summarize our uncertainty
+\item Jargon to come: ``standard errors'' -- ``hypothesis test'' --
+``confidence intervals''
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{The Ordinary Least Squares Estimate}
+\begin{itemize}
+\item OLS invented by Gauss more than 200 years ago
+\item The predicted value, AKA ``line of best fit'' is
+\begin{equation}
+\widehat{temperature_{i}}=11.69-0.0032\cdot elevation_{i}
+\end{equation}
+\item At sea level, the predicted temperature is 11.69
+\item For each additional foot of elevation, temperature declines by $-0.0032$.
+\item Maybe we'd re-scale, discuss 1000s of feet in elevation, so the effect
+would become -3.2 per 1000 feet.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot That}
+
+<<oregon20,fig=T,include=F,echo=T>>=
+plot(tann ~ elevation, data=dat, xlab="Elevation above sea level", ylab="Annual Average Temperature",main="")
+abline(mod1)
+@
+
+\includegraphics[width=10cm]{plots/t-oregon20}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{What looks "about right?"}
+\begin{itemize}
+\item The data cloud appears to be evenly dispersed above and below the
+line
+\item We'll show you how to do that later in the semester
+\item Additional diagnostics can be done
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{We'll make nice looking tables}
+
+<<results=tex, echo=F>>=
+library(rockchalk)
+dat$elevper1000 <- dat$elevation/1000
+mod2 <- lm (tann ~ elevper1000, data = dat)
+outreg(mod2, tight=F, varLabels = list(elevper1000="elevation (1000s feet)"))
+@
+
+\end{frame}
+
+\section{Troublesome Examples}
+
+\begin{frame}
+\frametitle{Trouble 1: Outlying observations}
+
+<<outl10,fig=T,include=F,echo=T>>=
+x<- rnorm(300, m=50, s=10)
+y <- 5+ 5*x + 18*rnorm(300, m=0, s=1)
+x[301:320] <- 30 + rnorm(20, m=0, s=4)
+y[301:320] <- 400 + rnorm(20, m=0, s=6)
+plot(y~x, xlab="X", ylab="Y", main="")
+mod1 <- lm(y~x)
+summary(mod1)
+@
+
+\includegraphics[width=11cm]{plots/t-outl10}
+
+\end{frame}
+\begin{frame}{Checklist}
+
+\begin{columns}[t]
+
+
+\column{5cm}
+\begin{itemize}
+\item Fit the line to the data ``as is''
+\item Data is not ``symmetrically dispersed'' above and below
+\item ``Ill-fitting cases'' should be investigated
+\item Later we diagnose ``influential'' points.
+\end{itemize}
+
+\column{7cm}
+
+<<outl20,fig=T,include=F,echo=T>>=
+plot(y~x, type="n", xlab="X", ylab="Y", main="")
+points(x,y, col=gray(.80))
+abline(mod1)
+@
+
+\includegraphics[width=6cm]{plots/t-outl20}
+\end{columns}
+
+\end{frame}
+\begin{frame}
+\frametitle{Trouble 2: Nonlinearity}
+
+<<UN10,fig=T,include=F,echo=T>>=
+library(carData)
+data(UN)
+plot(infantMortality ~ ppgdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="")
+unmod <- lm(infantMortality ~ ppgdp, data=UN)
+@
+
+\includegraphics[width=11cm]{plots/t-UN10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Linear Model Fits Worse than Last Year's Skinny Jeans}
+
+<<UN20,fig=T,include=F,echo=T>>=
+plot(infantMortality ~ ppgdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="")
+abline(unmod)
+@
+
+\includegraphics[width=11cm]{plots/t-UN20}
+
+\end{frame}
+\begin{frame}{Two Modeling Strategies}
+
+\begin{itemize}
+\item Transform the data to fit a straight line, or
+\item Transform the line to fit the curved data
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Transform The Data: Log both variables}
+
+<<UN40,fig=T,include=F,echo=T>>=
+lppgdp <- log(UN$ppgdp)
+lim <- log(UN$infantMortality)
+plot(lim ~ lppgdp, xlab="Log of Gross Domestic Product (UN)", ylab="Log of Infant Mortality (per 1000 births)", main="")
+@
+
+\includegraphics[width=11cm]{plots/t-UN40}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fit Linear model to the logged data}
+
+<<UN50,fig=T,include=F,echo=T>>=
+lppgdp <- log(UN$ppgdp)
+lim <- log(UN$infantMortality)
+plot(lim ~ lppgdp, xlab="Log of Gross Domestic Product (UN)", ylab="Log of Infant Mortality (per 1000 births)", main="")
+unmod2 <- lm(lim ~ lppgdp, data=UN)
+abline(unmod2)
+@
+
+\includegraphics[width=11cm]{plots/t-UN50}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Bend the line into the data!}
+
+<<UN70,fig=T,include=F,echo=T>>=
+lppgdp <- log(UN$ppgdp)
+lim <- log(UN$infantMortality)
+UN <- na.omit(UN)
+nmod2 <- nls(infantMortality  ~  A + B/(ppgdp^C), data=UN, start=list(A=10,B=21,C=1/10), control=nls.control(warnOnly=TRUE))
+plot(infantMortality ~ ppgdp, data=UN, xlab="Gross Domestic Product (UN)", ylab="Infant Mortality (per 1000 births)", main="", type="n")
+points(UN$ppgdp, UN$infantMortality, col=gray(.7))
+summary(nmod2)
+rppgdp <- range(UN$ppgdp)
+ppgdp2 <- seq(rppgdp[1],rppgdp[2],length=100)
+p2 <- predict(nmod2, newdata=data.frame(ppgdp=ppgdp2))
+lines(ppgdp2, p2)
+@
+
+\includegraphics[width=11cm]{plots/t-UN70}
+
+\end{frame}
+\begin{frame}{The Magic Trick is called Nonlinear Least Squares}
+
+\begin{itemize}
+\item Assume the ``true relationship'' is some formula
+\item Adjust the coefficient estimates to make the bending curve as close
+to the data.
+\item Fitted model I end up with is like this
+\end{itemize}
+\[
+\widehat{inf.mortality_{i}}=-90.23+336.6\cdot(\frac{1}{x_{i}^{\frac{1}{8}}})
+\]
+
+\end{frame}
+\begin{frame}
+\frametitle{Another Example: Public Spending in 1960}
+
+<<PE10,fig=T,include=F,echo=T>>=
+dat <- read.table("~/GIT/pj-guides/stat/DataSets/PublicSpending/publicspending.txt", header=T)
+plot(EX  ~  YOUNG, data=dat, xlab="Percentage of Population 5-19 Years", ylab="Public Expenditures (Per Capita, 1960)")
+pemod <- lm(EX ~ YOUNG, data=dat)
+@
+
+\includegraphics[width=11cm]{plots/t-PE10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Public Expenditures: Maybe the Straight Line is OK}
+
+<<PE20,fig=T,include=F,echo=T>>=
+plot(EX  ~  YOUNG, data=dat, xlab="Percentage of Population 5-19 Years",ylab="Public Expenditures (Per Capita, 1960)")
+abline(pemod)
+@
+
+\includegraphics[width=11cm]{plots/t-PE20}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Metropolitan Population Effect: Linear?}
+
+<<PE40,fig=T,include=F,echo=T>>=
+plot(EX  ~  MET, data=dat, xlab="Metropolitan Population (%)",ylab="Public Expenditures (Per Capita, 1960)")
+pemod2 <- lm(EX ~ MET, data=dat)
+abline(pemod2)
+@
+
+\includegraphics[width=11cm]{plots/t-PE40}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Metropolitan Squared Makes Me Smile}
+
+<<PE42,fig=T,include=F,echo=T>>=
+plot(EX  ~  MET, data=dat, xlab="Metropolitan Population (%)",ylab="Public Expenditures (Per Capita, 1960)")
+pemod3 <- lm(EX ~ poly(MET,2), data=dat)
+rmet <- range(dat$MET)
+smet <- seq( rmet[1], rmet[2], length.out=100)
+polypred <- predict(pemod3, newdata=data.frame(MET=smet))
+lines(smet, polypred)
+@
+
+\includegraphics[width=11cm]{plots/t-PE42}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Trouble 3: Non-numeric predictors}
+
+Categorical variables 
+\begin{itemize}
+\item ``religious identification'' \{cath, prot, musl, jewi, hind, budi\}
+\item Gender \{male, female\}
+\item Subjective scales \{none, some, lots, plenty\}
+\item We have ways to put those into regression models, usually by assigning
+them numerical scores and then interpreting them \emph{VERY CAREFULLY}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{West in the State Expenditures data}
+
+<<PE71,fig=T,include=F,echo=T>>=
+dat$fWEST <- factor(dat$WEST, labels=c("East","West")) 
+pemod4 <- lm(EX ~ fWEST, data=dat)
+termplot(pemod4, terms=c("fWEST"), partial.resid=T, xlab="Region (categorical)",ylab="Public Expenditures (Per Capita, 1960)")
+@
+
+West coded 0=''no'' 1=''yes''. West coded as categorical variable
+(a.k.a ``factor'' in R, ``class'' in SAS)
+
+\includegraphics[width=10cm]{plots/t-PE71}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Trouble 4: Categorical Output}
+\begin{itemize}
+\item This will be the very last topic we discuss in this semester.
+\item The output variable is a dichotomy 
+
+\begin{itemize}
+\item ``yes'' versus ``no'', ``true'' versus ``false'', ``success''
+versus ``failure'' 
+\end{itemize}
+\item These are called ``logistic regression models'' (most common type)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Categorical Output}
+
+<<LOGIT10,fig=T,include=F,echo=T>>=
+x <- runif(500, -10,100)
+y <- -0.8 + 0.079 * x
+prob <- 1/(1+ exp(-y))
+yobs <- rbinom(500, p=prob, size=1)
+yobsf <- factor(yobs, labels=c("No","Yes"))
+plot(x, as.numeric(yobsf)-1, xlab="Socio Economic Status", ylab="Will Vote for Republican", axes=F, ylim=c(-0.3,1.3))
+axis(1)
+axis(2, at=c(0,1), labels=c("No","Yes"))
+@
+
+\includegraphics[width=11cm]{plots/t-LOGIT10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I'll Try to Sell You This S-shaped Probability Model}
+
+<<LOGIT20,fig=T,include=F,echo=T>>=
+plot(x,yobs, xlab="Socio Economic Status", ylab="Will Vote for Republican", axes=F, ylim=c(-0.3,1.3), col="gray80")
+axis(1)
+axis(2, at=c(0,0.5,1), labels=c("No","0.5","Yes"))
+rx <- range(x)
+seqx <- seq(rx[1],rx[2], length.out=100)
+pry <- 1/(1+exp(0.8 - 0.079*seqx))
+lines(seqx, pry)
+@
+
+\includegraphics[width=11cm]{plots/t-LOGIT20}
+
+\end{frame}
+
+\section*{Conclusion }
+\begin{frame}{The Big Picture}
+
+\begin{itemize}
+\item Wrestle back and forth between the data and the relationship you believe
+exists
+\item We are always trying to formulate predicted values and then re-evaluate
+the model that created them. 
+\item Models explored in this case are a ``first layer'' of regression. 
+\item After this, you'd want to study
+
+\begin{itemize}
+\item categorical variables
+\item random-effects models (Hierarchical models)
+\item latent variable models (SEM)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section*{Appendix}
+\begin{frame}{rockchalk package}
+
+\begin{itemize}
+\item Started developing that in 2010 for this class
+\item Includes essays ``rockchalk'' ``RStyle'' that I hope you might
+look at.
+\item Many graphing tools included, please run examples for plotSlopes and
+plotCurves and plotPlane
+\end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Basic 3-D plotting}
+
+<<PE72, fig=T, include=F, echo=T, height=6, width=8>>=
+mod3 <- lm(EX  ~  ECAB + poly(MET,2)+YOUNG, data=dat)
+plotPlane(mod3, plotx1="MET", plotx2="ECAB")
+@
+
+\includegraphics[width=8cm]{plots/t-PE72}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Here's the table that goes with that, incidentally}
+
+<<results=tex, echo=F>>=
+outreg(mod3, tight=F)
+@
+
+\end{frame}
+\end{document}

@@ -1,0 +1,1728 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Negative Binomial
+\end_layout
+
+\begin_layout Author
+Paul Johnson and Andrea Vieux
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Negative Binomial is discrete probability distribution, one that can
+ be used for counts or other integer-valued variables.
+ It gives probabilities for integer values from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $\infty$
+\end_inset
+
+.
+ It is sometimes also known as the Pascal distribution or as Polya's distributio
+n.
+\end_layout
+
+\begin_layout Standard
+The Negative Binomial is best thought of as a variant of a Binomial distribution.
+ The reader will recall that a 
+\emph on
+Bernoulli trial
+\emph default
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+coin flip
+\begin_inset Quotes erd
+\end_inset
+
+ experiment, one that returns 
+\begin_inset Quotes eld
+\end_inset
+
+yes
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+no
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+failure
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+success.
+\begin_inset Quotes erd
+\end_inset
+
+ The Binomial distribution describes the number of 
+\begin_inset Quotes eld
+\end_inset
+
+successes
+\begin_inset Quotes erd
+\end_inset
+
+ out of a given number of 
+\begin_inset Quotes eld
+\end_inset
+
+Bernoulli trials
+\begin_inset Quotes erd
+\end_inset
+
+.
+ As such, its values are defined from 
+\begin_inset Formula $0$
+\end_inset
+
+ up to the number of trials.
+ 
+\end_layout
+
+\begin_layout Standard
+The Negative Binomial describes the same sequence of Bernoulli trials that
+ is described by the Binomial distribution.
+ The difference is 
+\begin_inset Quotes eld
+\end_inset
+
+what
+\begin_inset Quotes erd
+\end_inset
+
+ is being described.
+ Whereas Bernoulli tracks the number of successes, the Negative Binomial
+ represents the number of failures that occurs at the beginning of the sequence
+ as we wait for a given number of successes to be achieved.
+ 
+\end_layout
+
+\begin_layout Standard
+The most frequent use of the Negative Binomial model has nothing to do with
+ the property that it describes the chances of a string of failures.
+ Rather, it is used to describe distributions that represent counts of events.
+ It is a replacement for the commonly used Poisson distribution, which is
+ often considered the default distribution for integer-valued count data.
+ The Poisson has the property that its expected value equals its variance,
+ a property that is not found in some empirically observed distributions.
+ The Negative Binomial has a higher variance.
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+Recall that the Binomial distribution gives the probability of observing
+ 
+\begin_inset Formula $r$
+\end_inset
+
+ successes out ot 
+\begin_inset Formula $N$
+\end_inset
+
+ trials when the probability of observing a success is fixed at 
+\begin_inset Formula $p$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+B(r|N)=\left(\begin{array}{c}
+N\\
+r
+\end{array}\right)p^{r}(1-p)^{N-r}=\frac{N!}{r!(N-r)!}p^{r}(1-p)^{N-r}\label{eq:Binomial}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The symbol 
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+r
+\end{array}\right)$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+binomial coefficient
+\begin_inset Quotes erd
+\end_inset
+
+ (from intermediate algebra) and it is spoken out loud as 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N$
+\end_inset
+
+ choose 
+\begin_inset Formula $r$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, meaning the number of ways one can choose subsets of 
+\begin_inset Formula $r$
+\end_inset
+
+ from a larger set of 
+\begin_inset Formula $N$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+N\\
+r
+\end{array}\right)=\frac{N!}{N!(N-r)!}\label{eq:BinCoef}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Thinking of one particular sequence the 
+\begin_inset Formula $N$
+\end_inset
+
+ Bernoulli trials, one that has 
+\begin_inset Formula $r$
+\end_inset
+
+ successes, we can easily calculate the probabilities.
+ The chance of observing one particular sequence, 
+\begin_inset Formula $S,S,F,S,F,\ldots S$
+\end_inset
+
+, will be 
+\begin_inset Formula $p\cdot p\cdot(1-p)\cdot p\cdot(1-p)\ldots p$
+\end_inset
+
+.
+ Regrouping indicates the probability of that particular sequence is 
+\begin_inset Formula $p^{r}(1-p)^{N-r}$
+\end_inset
+
+ .
+ That is the probability of one particular sequence that has 
+\begin_inset Formula $r$
+\end_inset
+
+ successes.
+ Put together the chances of all such sequences, of which there are 
+\begin_inset Formula $\left(\begin{array}{c}
+N\\
+r
+\end{array}\right)$
+\end_inset
+
+, and the formula in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Binomial"
+
+\end_inset
+
+ should be clearly understood.
+\end_layout
+
+\begin_layout Standard
+The Negative Binomial is defined with reference to the Binomial.
+ The R help page for the rbinom function describes it as 
+\begin_inset Quotes eld
+\end_inset
+
+the number of failures which occur in a sequence of Bernoulli trials before
+ a target number of successes is reached
+\begin_inset Quotes erd
+\end_inset
+
+ (R documentation).
+ 
+\end_layout
+
+\begin_layout Standard
+We found the description on the Math World web site (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://mathworld.wolfram.com/NegativeBinomialDistribution.html
+\end_layout
+
+\end_inset
+
+) to have more intuitive appeal.
+ The Negative Binomial Distribution gives 
+\begin_inset Quotes eld
+\end_inset
+
+the probability of r-1 successes and x failures in x+r-1 trials, and success
+ on the (x+r) th trial.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Take the first part of the definition, 
+\begin_inset Formula $(r-1)$
+\end_inset
+
+ successes out of 
+\begin_inset Formula $(x+r-1)$
+\end_inset
+
+ trials.
+ By the Binomial distribution, that is
+\begin_inset Formula 
+\begin{equation}
+Prob(r-1\mid x+r-1)=\frac{(x+r-1)!}{(r-1)!(x)!}p^{r-1}(1-p)^{x}\label{eq:Binr-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The probability of observing a success on the last trial, the 
+\begin_inset Formula $(x+r)$
+\end_inset
+
+th trial, is 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ So, by the multiplication rule of probabilities, we multiply the previous
+ equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Binr-1"
+
+\end_inset
+
+ by 
+\begin_inset Formula $p$
+\end_inset
+
+ to obtain 
+\begin_inset Formula 
+\begin{equation}
+NB(x\mid r,p)=\frac{(x+r-1)!}{(r-1)!(x)!}p^{r}(1-p)^{x}\label{eq:Binr-2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Or, if you prefer to write it with the binomial coefficient,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+NB(x\mid r,p)=\left(\begin{array}{c}
+x+r-1\\
+r-1
+\end{array}\right)p^{r}(1-p)^{x}\label{eq:Binr-3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Central Tendency and Dispersion
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $x$
+\end_inset
+
+ has a Negative Binomial distribution, then 
+\begin_inset Formula $x$
+\end_inset
+
+ can take on integer values ranging from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $\infty$
+\end_inset
+
+.
+ The upper limit is infinity because we are letting the process run until
+ there are exactly 
+\begin_inset Formula $(r-1)$
+\end_inset
+
+ failures and then we conduct one additional experiment on which we obtain
+ success.
+\end_layout
+
+\begin_layout Standard
+The expected value and variance are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[x]=\frac{r(1-p)}{p}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(x)=\frac{r(1-p)}{p^{2}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and the skewness and kurtosis are
+\begin_inset Formula 
+\[
+Skewness(x)=\frac{2-p}{\sqrt{(1-p)r}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Kurtosis(x)=\frac{p^{2}-6p+6}{r(1-p)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These are worth considering because of their dependence on 
+\begin_inset Formula $r$
+\end_inset
+
+.
+ As one would expect, the expected number of successes is increasing in
+ the number of observed failures.
+ However, the important effects of 
+\begin_inset Formula $r$
+\end_inset
+
+ are seen in the variance and skewness.
+ As 
+\begin_inset Formula $r$
+\end_inset
+
+ increases, the variance increases.
+ But the skewness shrinks.
+ Hence, for small values of 
+\begin_inset Formula $r$
+\end_inset
+
+, we should expect to see a very skewed distribution, whereas for higher
+ values of 
+\begin_inset Formula $r$
+\end_inset
+
+, the distribution should be more symmetrical.
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+The following code is for Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Negative-Binomial"
+
+\end_inset
+
+, which displays example distributions as a function of a target number
+ of successes and probabilities for successes on individual trials.
+ Recall that the probabilities indicate the chances of observing a given
+ number of failures after observing a given number of successes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ANegBi,eval=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+drawBinom <- function (S, p){
+\end_layout
+
+\begin_layout Plain Layout
+
+  x<- seq(0,200)
+\end_layout
+
+\begin_layout Plain Layout
+
+  xprob <- dnbinom(x,size=S,prob=p)
+\end_layout
+
+\begin_layout Plain Layout
+
+  mytitle <- paste("x",S,p)
+\end_layout
+
+\begin_layout Plain Layout
+
+  plot(x, xprob,type="s",main=mytitle,xlab=paste("number of failures before
+ ",S,"successes"))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(3,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+sizes <- c(20,40,60)
+\end_layout
+
+\begin_layout Plain Layout
+
+pvals <- c(0.33,0.67)
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:2){
+\end_layout
+
+\begin_layout Plain Layout
+
+   for (j in 1:3){
+\end_layout
+
+\begin_layout Plain Layout
+
+     drawBinom (sizes[j], pvals[i] )
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Negative Binomial
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Negative-Binomial"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=9, width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<ANegBi>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+In the Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Negative-Binomial"
+
+\end_inset
+
+ we can see how changes in the size and probability alter the Negative Binomial
+ Distribution.
+ The size moves the graph right to left, and the probability widens or shrinks
+ the bell shape.
+ For a graph which resembles the Normal Distribution, refer to Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Negative-Binomial-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Negative Binomial 2
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Negative-Binomial-2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=T,height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x7 <- seq(0, 100)
+\end_layout
+
+\begin_layout Plain Layout
+
+xprob7 <- dnbinom(x7, size = 50, prob = 0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xprob7, type="s")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The Negative Binomial as a Mixture Distribution
+\end_layout
+
+\begin_layout Standard
+From J.
+ Scott Long's book (Citation ??):
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+The negative binomial distribution is a useful tool in the analysis of count
+ data.
+ It differs from the Poisson Distribution in that it allows for the conditional
+ variance to exceed the conditional mean.
+ The negative binomial distribution is the end result of a process which
+ begins with a Poisson distribution with mean 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ The fixed (
+\begin_inset Formula $\lambda$
+\end_inset
+
+) is replaced with a random variable that has a mean of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, but has nonzero variance.
+ With this new framework, we are representing the possibility that there
+ is unobserved heterogeneity.
+ 
+\end_layout
+
+\begin_layout Standard
+Recall the definition of the Poisson gives the probability of observing
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ events as a function of a parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+Poisson(x|\lambda)=\frac{\lambda^{x}e^{-\lambda}}{x!}\label{eq:ConditPoisson}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instead of thinking of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ as a constant, think of it as a random variable, representing the fact
+ that the average count is likely to vary across experiments (counties,
+ cities, etc).
+ If we think of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ as a variable, then the probability of observing 
+\begin_inset Formula $x$
+\end_inset
+
+ failures has to be the result of a 2 part process.
+ Part 1 chooses 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ and part 2 chooses 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ That means there are possibly many different routes through which we can
+ observe a particular value 
+\begin_inset Formula $x$
+\end_inset
+
+, since 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ can vary from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $\infty$
+\end_inset
+
+, and for each possible value of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, there is 
+\begin_inset Quotes eld
+\end_inset
+
+some chance
+\begin_inset Quotes erd
+\end_inset
+
+ of observing any positive value.
+ 
+\begin_inset Formula 
+\begin{equation}
+\int P(x|\lambda)p(\lambda)d\lambda\label{eq:mixture}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If one chooses 
+\begin_inset Quotes eld
+\end_inset
+
+just the right
+\begin_inset Quotes erd
+\end_inset
+
+ distribution for 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, then the 
+\begin_inset Quotes eld
+\end_inset
+
+mixture
+\begin_inset Quotes erd
+\end_inset
+
+ distribution will be Negative Binomial.
+\end_layout
+
+\begin_layout Standard
+Suppose we take the lucky guess that 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ has a Gamma probability distribution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(\lambda)=\frac{1}{\beta^{\alpha}\Gamma(\alpha)}\lambda^{(\alpha-1)}e^{-\lambda/\beta}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The 
+\begin_inset Quotes eld
+\end_inset
+
+shape
+\begin_inset Quotes erd
+\end_inset
+
+ parameter is 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and the scale parameter is 
+\begin_inset Formula $\beta$
+\end_inset
+
+, and the expected value is 
+\begin_inset Formula $\alpha\beta$
+\end_inset
+
+ and the variance is 
+\begin_inset Formula $\alpha\beta^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Inserting the given distributions into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mixture"
+
+\end_inset
+
+, we are able to calculate the marginal distribution of 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(x)=\int_{0}^{\infty}\frac{e^{-\lambda}\lambda^{x}}{x!}\frac{1}{\beta^{\alpha}\Gamma(\alpha)}\lambda^{(\alpha-1)}e^{-\lambda/\beta}d\lambda
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+=\frac{1}{x!\beta^{\alpha}\Gamma(\alpha)}\int_{0}^{\infty}e^{-\lambda}\lambda^{x}\lambda^{(\alpha-1)}e^{-\lambda/\beta}d\lambda
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+=\frac{1}{x!\beta^{\alpha}\Gamma(\alpha)}\int_{0}^{\infty}\lambda^{x+\alpha-1}e^{-\lambda}e^{-\lambda/\beta}d\lambda
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\frac{1}{x!\beta^{\alpha}\Gamma(\alpha)}\int_{0}^{\infty}\lambda^{x+\alpha-1}e^{-\lambda(1+1/\beta)}d\lambda\label{eq:brute4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have tried to simplify this through brute force, but have been unable
+ to do so.
+ I feel sure there is a specialized result in calculus that will help to
+ use the Gamma function, which would be adapted to this case as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Gamma(x+\alpha)=\int_{0}^{\infty}\lambda^{x+\alpha-1}e^{-\lambda}d\lambda
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+And the end result, the Negative Binomial distribution, is stated either
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\frac{\Gamma(\alpha+x)}{x!\Gamma(\alpha)}\left(\frac{1}{1+\beta}\right)^{\alpha}\left(\frac{\beta}{1+\beta}\right)^{x}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+or
+\begin_inset Formula 
+\begin{equation}
+=\frac{\Gamma(\alpha+x)}{x!\Gamma(\alpha)}\left(\frac{1}{1+\beta}\right)^{\alpha}\left(1-\frac{1}{1+\beta}\right)^{x}\label{eq:mixture6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is the form of the Negative Binomial that was discussed earlier.
+\end_layout
+
+\begin_layout Standard
+I have been unable to find the brute force method to make the jump from
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:brute4"
+
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mixture6"
+
+\end_inset
+
+, but in Gelman, Carlin, Stern, and Rubin's Bayesian Data Analysis, 2ed
+ (p.
+ 53), an alternative derivation is offered.
+ Recall Bayes's theorem
+\begin_inset Formula 
+\begin{equation}
+p(\lambda|x)=\frac{p(x|\lambda)p(\lambda)}{p(x)}\label{eq:Bayes1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Rearrange that
+\begin_inset Formula 
+\begin{equation}
+p(x)=\frac{p(x|\lambda)p(\lambda)}{p(\lambda|x)}\label{eq:Bayes2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The left hand side is our target--the marginal distribution of 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ We already know formulae for the two components in the numerator, but the
+ denominator requires a result from probability theory.
+ 
+\end_layout
+
+\begin_layout Standard
+Most statistics books--and all Bayesian statistics books--will have a result
+ about updating from a Poisson distribution.
+ If 
+\begin_inset Formula $x$
+\end_inset
+
+ is a Poisson variable with parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, and the conjugate prior for 
+\begin_inset Formula $\lambda$
+\end_inset
+
+is the Gamma distribution, 
+\begin_inset Formula $Gamma(\lambda|\alpha,\beta)$
+\end_inset
+
+ , then Bayes's theorem (expression 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Bayes1"
+
+\end_inset
+
+), leads to the conclusion that if 
+\begin_inset Formula $x$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+events
+\begin_inset Quotes erd
+\end_inset
+
+ are observed, then
+\begin_inset Formula 
+\begin{equation}
+p(\lambda|x)=Gamma(\lambda|\alpha+x,\beta+1)
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+ That is the last ingredient we need to solve expression 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Bayes2"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Gelman et al put it this way:
+\begin_inset Formula 
+\begin{equation}
+p(x)=\frac{Poisson(x|\lambda)Gamma(\lambda|\alpha,\beta)}{Gamma(\lambda|\alpha+x,1|\beta)}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Writing in the expressions obtained above,
+\begin_inset Formula 
+\begin{equation}
+p(x)=\frac{\frac{\lambda^{x}e^{-\lambda}}{x!}\cdot\frac{1}{\beta^{\alpha}\Gamma(\alpha)}\lambda^{(\alpha-1)}e^{-\lambda/\beta}}{\frac{1}{(1+\beta)^{(\alpha+x)}\Gamma(\alpha+x)}\lambda^{(\alpha+x-1)}e^{-\frac{\lambda}{(1+\beta)}}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+After cancellation and rearrangement, that simplifies to:
+\begin_inset Formula 
+\begin{equation}
+p(x)=\frac{\Gamma(\alpha+x)}{\Gamma(\alpha)x!}\cdot\frac{\beta^{\alpha}}{(1+\beta)^{\alpha+x}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Using the definition of 
+\begin_inset Formula $\Gamma(x)$
+\end_inset
+
+ and rearranging again, we find:
+\begin_inset Formula 
+\begin{equation}
+=\frac{(\alpha+x-1)!}{(\alpha-1)!x!}\cdot\left(\frac{\beta}{1+\beta}\right)^{\alpha}\left(\frac{1}{1+\beta}\right)^{x}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Recognizing that the first term on the left is the Binomial coefficient,
+ the derivation is complete.
+\end_layout
+
+\begin_layout Standard
+We choose the shape and scale parameters so that the Gamma distributed value
+ of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ will allow us to simplify
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mixture6"
+
+\end_inset
+
+.
+ It appears obvious in this expression that the role of the probability
+ of success on an individual trial is 
+\begin_inset Formula $p=\frac{1}{1+\beta}$
+\end_inset
+
+ and that 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+desired number of successes
+\begin_inset Quotes erd
+\end_inset
+
+ in the Negative Binomial.
+ That means that, if want to set the Gamma parameters equal to the proper
+ levels, we choose 
+\begin_inset Formula $\beta=(1-p)/p$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha=n$
+\end_inset
+
+ (the number of desired successes).
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $n$
+\end_inset
+
+ represents the number of successes and the number of failures is 
+\begin_inset Formula $x=N-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(x)=\frac{\Gamma(x+n)}{\Gamma(n)x!}p^{n}(1-p)^{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Another way to think of the mixture
+\end_layout
+
+\begin_layout Standard
+Instead of replacing 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ in the Poisson definition, suppose we think of multiplying it by a randomly
+ chosen value 
+\begin_inset Formula $\delta$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\delta$
+\end_inset
+
+ has an expected value of 
+\begin_inset Formula $1$
+\end_inset
+
+, then 
+\begin_inset Formula $E(\lambda\delta)=\lambda$
+\end_inset
+
+, so, 
+\begin_inset Quotes eld
+\end_inset
+
+on average,
+\begin_inset Quotes erd
+\end_inset
+
+ the original 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is reproduced.
+ However, because 
+\begin_inset Formula $\delta$
+\end_inset
+
+ might be higher or lower, then 
+\begin_inset Formula $\lambda\delta$
+\end_inset
+
+ will have random variation, and so the number of observed events will fluctuate.
+ Its average will still be 
+\begin_inset Formula $\lambda,$
+\end_inset
+
+ but it will have greater variance.
+ In such a way, one can see the Poisson in this way (replacing 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ by 
+\begin_inset Formula $\lambda\delta$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(x\mid\delta)=\frac{e^{-(\lambda\delta)}(\lambda\delta)^{x}}{x!}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is the question: how can one select a mathematically workable model
+ for 
+\begin_inset Formula $\delta$
+\end_inset
+
+ so that 
+\begin_inset Formula $E(\delta)=1$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+I've seen this done in several ways.
+ Recall that the Gamma distribution has expected value 
+\begin_inset Formula $\alpha\beta$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\alpha\beta^{2}$
+\end_inset
+
+.
+ So if we drew a variate 
+\begin_inset Formula $y$
+\end_inset
+
+ from any Gamma distribution and then divided by 
+\begin_inset Formula $\alpha\beta,$
+\end_inset
+
+ the result would be 
+\begin_inset Formula 
+\[
+x/\alpha\beta
+\]
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+and the expected value would be 
+\begin_inset Formula $E(x/\alpha\beta)=E(y)/\alpha\beta=1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+More commonly, attention is focused on a subset of possible Gamma distributions,
+ the ones for which the 
+\begin_inset Formula $\beta=1/\alpha$
+\end_inset
+
+.
+ When 
+\begin_inset Formula $\delta$
+\end_inset
+
+ follows a Gamma distribution 
+\begin_inset Formula $Gamma(\delta|\alpha,1/\alpha)$
+\end_inset
+
+, then it has an expected value of 1 and its variance is 
+\begin_inset Formula $1/\alpha$
+\end_inset
+
+.
+ As 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ tends to 0, the variance tends toward infinity.
+\end_layout
+
+\begin_layout Standard
+Think of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ as an 
+\begin_inset Quotes eld
+\end_inset
+
+attribute
+\begin_inset Quotes erd
+\end_inset
+
+ of an observation.
+ If 
+\begin_inset Formula $\delta$
+\end_inset
+
+ is a Gamma variate with mean 1 and variance 
+\begin_inset Formula $1/\alpha$
+\end_inset
+
+, then 
+\begin_inset Formula $\lambda\delta$
+\end_inset
+
+ is also a Gamma variate, with mean 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\lambda^{2}/\alpha$
+\end_inset
+
+.
+ Maybe it is just a lucky guess, but it appears to me that 
+\begin_inset Formula $\lambda\delta$
+\end_inset
+
+ would have the distribution 
+\begin_inset Formula $Gamma(\alpha,\lambda/\alpha)$
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document

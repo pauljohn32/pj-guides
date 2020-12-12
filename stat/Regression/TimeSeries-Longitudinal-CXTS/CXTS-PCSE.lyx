@@ -1,0 +1,936 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 11
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Cross Sectional Time Series: The Normal Model and Panel Corrected Standard
+ Errors
+\layout Author
+
+Paul Johnson <pauljohn@ku.edu>
+\layout Standard
+
+The Beck & Katz (APSR 1995) is extremely widely cited and in case you deal
+ with panel data, political science readers will expect you to be familiar
+ with it.
+\layout Standard
+
+The gist of the matter is this.
+ The econometric theory of GLS typically assumes you know 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ or can approximate it.
+ But the approximation procedures that have been proposed are under attack
+ in the Beck & Katz paper.
+\layout Section
+
+Correlations across units, heterogeneity across units
+\layout Standard
+
+I hasten to point out that this is not exactly relevant to the longitudinal
+ data problem because it is partly aimed at estimating correlations 
+\begin_inset Quotes eld
+\end_inset 
+
+across units
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ That's what they call the 
+\begin_inset Quotes eld
+\end_inset 
+
+contemporaneous correlation
+\begin_inset Quotes erd
+\end_inset 
+
+ problem.
+ From Beck and Katz, (p.
+ 645):
+\layout Standard
+
+
+\series bold 
+\size footnotesize 
+Panel Heteroscedasticity
+\series default 
+\size default 
+ means that the variance of the error term within a cluster is constant,
+ but it varies across clusters.
+ 
+\begin_inset Formula $E(e_{it}^{2})=E(e_{is}^{2})=\sigma_{i}^{2}$
+\end_inset 
+
+ but it varies across units: 
+\begin_inset Formula $E(e_{it}^{2})\neq E(e_{jt}^{2}),$
+\end_inset 
+
+
+\layout Standard
+
+
+\series bold 
+\size footnotesize 
+Contemporaneously Correlated Errors
+\series default 
+\size default 
+.
+ 
+\begin_inset Formula $E(e_{is}e_{js})=E(e_{it}e_{jt})=\sigma_{ij}\neq0,$
+\end_inset 
+
+ but there is no correlation across time 
+\begin_inset Formula $E(e_{is}e_{jt})=0$
+\end_inset 
+
+.
+\layout Standard
+
+So, in contrast to the standard longitudinal data problem in which the separate
+ units are uncorrelated with each other, we have in mind the additional
+ problem of shared error effects across units.
+\layout Standard
+
+To focus on the PCSE, we act as if there no autocorrelation within a unit
+ or that it has been removed by a statistical correction.
+ 
+\layout Standard
+
+Suppose there are 3 observations per unit.
+ Then the error variance matrix would look like this.
+\begin_inset Formula \[
+Var(e)=\Omega=\left[\begin{array}{cccccccccc}
+\sigma_{1}^{2} & 0 & 0 & \sigma_{12} & 0 & 0 &  & \sigma_{1N} & 0 & 0\\
+0 & \sigma_{1}^{2} & 0 & 0 & \sigma_{12} & 0 &  & 0 & \sigma_{1N} & 0\\
+0 & 0 & \sigma_{1}^{2} & 0 & 0 & \sigma_{12} &  & 0 & 0 & \sigma_{1N}\\
+\sigma_{12} & 0 & 0 & \sigma_{2}^{2} & 0 & 0 &  & \sigma_{2N} & 0 & 0\\
+0 & \sigma_{12} & 0 & 0 & \sigma_{2}^{2} & 0 &  & 0 & \sigma_{2N} & 0\\
+0 & 0 & \sigma_{12} & 0 & 0 & \sigma_{2}^{2} & \cdots & 0 & 0 & \sigma_{2N}\\
+ &  & \vdots &  &  & \vdots & \ddots\\
+\sigma_{1N} & 0 & 0 & \sigma_{2N} & 0 & 0 &  & \sigma_{N}^{2} & 0 & 0\\
+0 & \sigma_{1N} & 0 & 0 & \sigma_{2N} & 0 &  & 0 & \sigma_{N}^{2} & 0\\
+0 & 0 & \sigma_{1N} & 0 & 0 & \sigma_{2N} &  & 0 & 0 & \sigma_{N}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+When 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ is written in this way, it is assumed that, if there is autocorrelation,
+ it has already been eliminated from the data.
+ There may also be autoregressive error within each separate unit.
+ Following the econometric literature that preceded their effort, Beck and
+ Katz suppose that the autocorrelated errors follow an AR(1) pattern:
+\begin_inset Formula \[
+e_{it}=\rho e_{i,t-1}+v_{it}\]
+
+\end_inset 
+
+ 
+\newline 
+where 
+\begin_inset Formula $v_{it}$
+\end_inset 
+
+ are nice, well behaved Normal error terms with mean 0 and fixed variance.
+\layout Standard
+
+This AR(1) pattern is not the primary focus of the analysis.
+ It is
+\begin_inset Quotes eld
+\end_inset 
+
+purged
+\begin_inset Quotes erd
+\end_inset 
+
+ in a first stage of analysis in the usual econometric way, resulting in
+ observations that are correlated as described in 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ above.
+\layout Section
+
+Big, Complicated FGLS mess
+\layout Standard
+
+Parks's FGLS (Feasible Generalized Least Squares) is one way that was proposed
+ to deal with CXTS data.
+ One estimates with OLS, then uses the residuals to calculate autocorrelation
+ and heteroskedasticity, then estimate again with GLS.
+ The procedure may be repeated many times, until the estimates of the b's
+ converge to a fixed number.
+\layout Standard
+
+When there is autoregression to be considered, it adds another layer.
+ Park's method is one way of attacking this problem with CSTS data.
+\layout Standard
+
+1.
+ estimate by OLS
+\layout Standard
+
+2.
+ Use residuals to estimate AR(1) models.
+\layout Standard
+
+3.
+ Use AR(1) models to adjust data and estimate again.
+ (see standard stats books under corrections for AR(1), such as Prais-Winsten
+ estimators).
+\layout Standard
+
+4.
+ Use residuals to estimate cross-correlation across units (spatial autocorrelati
+on)
+\layout Standard
+
+5.
+ Use results from 4 to fill in more values of 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ and estimate model with GLS again.
+\layout Section
+
+FGLS dangers
+\layout Standard
+
+The multi-stage Parks method has dangers.
+ Beck and Katz have 2 major arguments.
+\layout Standard
+
+1.
+ The estimates of the 
+\begin_inset Formula $b$
+\end_inset 
+
+'s are more inefficient (higher variance) than OLS, and
+\layout Standard
+
+2.
+ The estimates of the variances of the 
+\begin_inset Formula $b$
+\end_inset 
+
+'s from the last stage GLS are biased downwards.
+ This happens because the estimate of 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ is never exactly equal to 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The basic argument is that the process of repeatedly estimating 
+\begin_inset Formula $b$
+\end_inset 
+
+and 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ can 
+\begin_inset Quotes eld
+\end_inset 
+
+compound
+\begin_inset Quotes erd
+\end_inset 
+
+ inaccuracy in the standard error of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ estimates.
+ The estimates of the standard errors don't take into account uncertainty
+ of the 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ estimates, but rather just take the estimates and plug them in!
+\layout Section
+
+Beck and Katz recommend
+\layout Enumerate
+
+Use OLS to estimate the 
+\begin_inset Formula $b$
+\end_inset 
+
+'s, but 
+\layout Enumerate
+
+correct the estimates of the standard errors of the b's--use 
+\begin_inset Quotes eld
+\end_inset 
+
+panel corrected standard errors.
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\layout Enumerate
+
+If you suspect there is AR in the errors, they say it should be corrected
+ by one of the simple AR(1) adjustments, such as the Prais-Winsten estimator.
+ After that correction is applied, the errors should follow the pattern
+ assumed in 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ and the PCSE can be calculated from the residuals.
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\series bold 
+panel corrected standard errors
+\series default 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ are a 
+\begin_inset Quotes eld
+\end_inset 
+
+robust
+\begin_inset Quotes erd
+\end_inset 
+
+ estimate in the sense of White-Huber.
+\layout Standard
+
+Monte Carlo studies by B&K support the claim that OLS estimators have lower
+ variance than the Parks estimates, and that the Parks estimates lead to
+ false t statistics because the Variance of 
+\begin_inset Formula $b$
+\end_inset 
+
+ is underestimated.
+ 
+\layout Standard
+
+If we assume the AR coefficient 
+\begin_inset Formula $\rho_{i}$
+\end_inset 
+
+ is the same for all countries, then we are only estimating one coefficient.
+ We should not give in to the temptation to estimate 
+\begin_inset Formula $\rho_{i}$
+\end_inset 
+
+ separately for each unit because doing to cause us to fit 
+\begin_inset Formula $N$
+\end_inset 
+
+ different coefficients, and the accumulated uncertainty about those estimates
+ can be large.
+\layout Standard
+
+Beck and Kats contend that in practice the 
+\begin_inset Formula $\rho$
+\end_inset 
+
+ should be the same for all units.
+ They also have Monte Carlo estimates to claim that, even if 
+\begin_inset Formula $\rho$
+\end_inset 
+
+ is not the same across all countries, it doesn't do much harm to assume
+ that it is in order to make these calculations.
+\layout Section
+
+The Panel Corrected Standard Error
+\layout Standard
+
+Why not just use the Huber-White formula to calculate a robust standard
+ error? 
+\layout Standard
+
+That throws away information! It ignores the fact that we assume there is
+ a common variance structure within a cluster and that the intercorrelation
+ across units follows a very specific pattern--equal covariance between
+ any 2 units for any particular time.
+ 
+\layout Standard
+
+So Beck and Katz propose an estimator that it pools information across clusters
+ to estimate the error variances.
+ The Beck & Katz panel corrected standard error is calculated in the following
+ way.
+ 
+\layout Standard
+
+Organize the residuals from the fitted model according to cluster, so that
+ the residuals from the clusters are 
+\begin_inset Formula $\hat{e}_{1},$
+\end_inset 
+
+ 
+\begin_inset Formula $\hat{e}_{2}$
+\end_inset 
+
+, ...
+ , 
+\begin_inset Formula $\hat{e}_{N}$
+\end_inset 
+
+.
+ These are vectors with 
+\begin_inset Formula $T$
+\end_inset 
+
+ elements each, and they can be grouped together as a 
+\begin_inset Formula $T\times N$
+\end_inset 
+
+ matrix (the 
+\begin_inset Formula $\hat{e}_{i}$
+\end_inset 
+
+ are columns):
+\begin_inset Formula \[
+E=\left[\begin{array}{ccccc}
+\hat{e}_{1} & \hat{e}_{2} & \cdots & \hat{e}_{N-1} & \hat{e}_{N}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+The panel corrected variance/covariance matrix of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is
+\begin_inset Formula \[
+PCSEVar(\hat{b})=(X'X)^{-1}X'\left(\hat{\Omega}\right)X(X'X)^{-1}\]
+
+\end_inset 
+
+
+\newline 
+Note that is a 
+\begin_inset Quotes eld
+\end_inset 
+
+sandwich estimator
+\begin_inset Quotes erd
+\end_inset 
+
+ in the style of the Huber-White robust estimator.
+ The only difference is that 
+\begin_inset Formula $\hat{\Omega}$
+\end_inset 
+
+ is estimated differently.
+\layout Standard
+
+The only thing about all of this that is in the slightest bit complicated
+ in calculating 
+\begin_inset Formula $\hat{\Omega}$
+\end_inset 
+
+ is the use of the 
+\begin_inset Quotes eld
+\end_inset 
+
+Kronecker product
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Beck and Katz use the standard symbol for this 
+\begin_inset Formula $\otimes$
+\end_inset 
+
+.
+ On p.
+ 646 they write:.
+ 
+\begin_inset Formula \begin{equation}
+\hat{\Omega}=\frac{(E'E)}{T}\otimes I\label{eq:OmegaHatKron}\end{equation}
+
+\end_inset 
+
+ 
+\newline 
+The Kronecker product is defined in many matrix algebra books as well as
+ in my CXTS#1 handout.
+ Multiply a chosen term in the matrix on the left with the matrix on the
+ right, and place the result into the matrix on the left in place of the
+ chosen element.
+\layout Standard
+
+To get an idea what these terms mean, consider a couple of details.
+ The estimate of the variance of the error term for cluster 1 is
+\layout Standard
+
+
+\begin_inset Formula \[
+\hat{\sigma}_{1}^{2}=\frac{1}{T}\{\hat{e}_{11}^{2}+\hat{e}_{12}^{2}+\cdots+\hat{e}_{1T}^{2}\}\]
+
+\end_inset 
+
+
+\newline 
+In other words, it is the mean squared error for unit 1.
+ For each individual unit, the variance of its error term is estimated as
+ the MSE of its residuals.
+\layout Standard
+
+In the PCSE, this estimate is assumed to apply for all time points for cluster
+ 1.
+ In contrast, the White-Huber robust estimator would not take account of
+ that information.
+ In the White-Huber robust estimator, each observation would be treated
+ as a separate thing.
+ Where the PCSE would lead to the estimates for cluster 1 that look like
+ this:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\hat{V}_{1}^{PCSE}=\left[\begin{array}{ccc}
+\hat{\sigma}_{1}^{2} & 0 & 0\\
+0 & \hat{\sigma}_{1}^{2} & 0\\
+0 & 0 & \hat{\sigma}_{1}^{2}\end{array}\right]\label{eq:VPCSE}\end{equation}
+
+\end_inset 
+
+
+\newline 
+the White-Huber estimator would have the squared residuals along the diagonal.
+\layout Standard
+
+
+\begin_inset Formula \[
+\hat{V}_{1}^{hc0}=\left[\begin{array}{ccc}
+\hat{e}_{11}^{2} & 0 & 0\\
+0 & \hat{e}_{12}^{2} & 0\\
+0 & 0 & \hat{e}_{13}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+The estimates in the diagonal of the PCSE are more precise because they
+ average together several observations-worth of error terms to estimate
+ the error variance.
+ The White-Huber approach does not take advantage of this pooling because
+ it does not take clustering into account.
+\layout Standard
+
+The covariance across units in 
+\begin_inset Formula $\hat{\Omega}$
+\end_inset 
+
+ is estimated by taking the residuals from the two units and calculating
+ their cross product.
+ For example, consider a cross correlation, say between units 5 and 9:
+\layout Standard
+
+
+\begin_inset Formula \[
+\sigma_{59}=\frac{1}{T}\{\hat{e}_{51}\hat{e}_{91}+\hat{e}_{52}\hat{e}_{92}+\cdots+\hat{e}_{5T}\hat{e}_{9T}\}\]
+
+\end_inset 
+
+This is combining the residuals across all time points because a central
+ assumption in the model is that the 
+\begin_inset Quotes eld
+\end_inset 
+
+contemporaneous correlation across units
+\begin_inset Quotes erd
+\end_inset 
+
+ follows a fixed pattern.
+ This approach works on the premise that the intercorrelation between units
+ is the same for all time points, so it just averages the covariances across
+ all time points.
+\layout Section
+
+You can calculate the PCSE for yourself.
+ Easily.
+\layout Standard
+
+I recently had occasion to calculate the PCSE for a regression model in
+ R and was startled by how simple it is to calculate.
+ If you examine footnote 15 of the original Beck and Katz paper, you find
+ it is really quite simple.
+ Here's some R code.
+ The pound sign indicates comments:
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# testmodel is a fitted ols equation
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+#get the long column of residuals:
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+resids <- residuals(testmodel)
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# E is the T x N matrix of residuals, T observations for each STATE (my
+ grouping variable)
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+E <- as.matrix(unstack(resids, form=resids~STATE))
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# 
+\begin_inset Formula $\Sigma=(1/T)(E'E)$
+\end_inset 
+
+ an NxN is empirical covariance matrix,
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+SIGMA <- (1/nrow(E))*(t(E) %*% E)
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# 
+\begin_inset Formula $\hat{\Omega}$
+\end_inset 
+
+ is the matrix (NT x NT) of estimated error correlations
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+OMEGA <- SIGMA %x% diag(x=1, nrow=nrow(E), ncol=nrow(E)) 
+\layout Quote
+
+# %x% is the R notation for the Kronecker product 
+\begin_inset Formula $\otimes$
+\end_inset 
+
+.
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# Next, grab "model" data
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+X <- model.matrix(testmodel) 
+\layout Quote
+
+# We always seem to need 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset 
+
+
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+XPRIMEXINV <- solve(t(X) %*% X) 
+\layout Quote
+
+
+\series bold 
+\size footnotesize 
+# PSCECOV(b) = 
+\begin_inset Formula $(X'X)^{-1}X'\,\hat{\Omega}\, X(X'X)^{-1}$
+\end_inset 
+
+
+\layout Quote
+\noindent 
+
+\series bold 
+\size footnotesize 
+PCSECOVB <-XPRIMEXINV %*% (t(X) %*% OMEGA %*% X ) %*% XPRIMEXINV 
+\layout Quote
+
+# The standard errors are 
+\begin_inset Formula $\sqrt{diag(PCSECOV(\hat{b})}$
+\end_inset 
+
+
+\layout Quote
+
+PCSEB <- sqrt(diag(PCSECOVB))
+\layout Quote
+
+# Here's a column of t statistics
+\layout Quote
+
+coef(testmodel)/PCSEB
+\layout Standard
+
+An R printout showing these calculations and comparing them against the
+ uncorrected standard errors is found in the file PSCEExample.txt
+\layout Section
+
+Different from robust estimates as found in GEE?
+\layout Standard
+
+It is widely agreed that after a model is fitted, one should be conscious
+ of violations in the assumptions when calculating standard errors and doing
+ significance tests.
+ If you use an approach like GEE, most programs will report both an 
+\begin_inset Quotes eld
+\end_inset 
+
+model based
+\begin_inset Quotes erd
+\end_inset 
+
+ standard error, one that uses the assumption that the covariance of the
+ observations is specified correctly, and a 
+\begin_inset Quotes eld
+\end_inset 
+
+robust
+\begin_inset Quotes erd
+\end_inset 
+
+ standard error.
+\layout Standard
+
+The robust standard errors used in GEE are not exactly the same as the ones
+ used in PCSE because GEE (and longitudinal models generally) assume the
+ units do not influence each other.
+ But the robust estimator for GEE is extremely similar to the PCSE because
+ both are 
+\begin_inset Quotes eld
+\end_inset 
+
+information sandwich
+\begin_inset Quotes erd
+\end_inset 
+
+ estimators.
+\layout Standard
+
+Liang and Zeger (1986) pioneered the quasi-likelihood/GEE approach to longitudin
+al data analysis.
+ Their robust estimator of the variance/covariance matrix of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is stated on their p.
+ 15.
+ If one puts the Normally distributed error term of B&K into that framework,
+ then the Z&L expression simplifies radically (because 
+\begin_inset Formula $\theta_{ij}=\eta_{ij}$
+\end_inset 
+
+, so
+\begin_inset Formula $\Delta_{i}=I$
+\end_inset 
+
+).
+ The simplified version of the robust standard error for Normally distributed
+ dependent variables is stated in Dobson, 2002, p.
+ 200
+\begin_inset Formula \[
+robustVar(\hat{b})=\left(X'\hat{\Omega}^{-1}X\right)^{-1}X'\Omega^{-1}\left(\widehat{Var(e)}\right)\Omega^{-1}X\left(X'\hat{\Omega}^{-1}X\right)^{-1}\]
+
+\end_inset 
+
+ The information matrix is 
+\begin_inset Formula $(X'\Omega^{-1}X)$
+\end_inset 
+
+.
+ Notice how this really is an information sandwich.
+ 
+\layout Standard
+
+
+\begin_inset Formula $(X'X)$
+\end_inset 
+
+ is a 
+\begin_inset Formula $p\times p$
+\end_inset 
+
+ matrix, where 
+\begin_inset Formula $p$
+\end_inset 
+
+ is the number of columns of 
+\begin_inset Formula $X.$
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula $(X'\Omega^{-1}X)$
+\end_inset 
+
+ is also a 
+\begin_inset Formula $p\times p$
+\end_inset 
+
+ matrix.
+\layout Standard
+
+The observed residuals from the regression are used to calculate the middle
+ element.
+ It can be viewed as a sum across clusters
+\layout Standard
+
+
+\begin_inset Formula \[
+robustVar(\hat{b})=\left(X'\hat{\Omega}^{-1}X\right)^{-1}\left(\sum_{i=1}^{N}X_{i}'\hat{V}_{i}^{-1}\,\hat{e}_{i}\hat{e}_{i}'\,\hat{V}_{i}^{-1}X_{i}\right)\left(X'\hat{\Omega}^{-1}X\right)^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+The middle part appears as a sum because we are 
+\begin_inset Quotes eld
+\end_inset 
+
+assuming away
+\begin_inset Quotes erd
+\end_inset 
+
+ the contemporaneous correlations across units.
+ 
+\layout Standard
+
+Focus on the middle part, say, for cluster 1:
+\layout Standard
+
+
+\begin_inset Formula \[
+X_{1}'\hat{V}_{1}^{-1}\,\hat{e}_{1}\hat{e}_{1}'\,\hat{V}_{1}^{-1}X_{1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=X_{1}'\hat{V}_{1}^{-1}\,\left[\begin{array}{c}
+\hat{e}_{11}\\
+\hat{e}_{12}\\
+\hat{e}_{13}\end{array}\right]\left[\begin{array}{ccc}
+\hat{e}_{11} & \hat{e}_{12} & \hat{e}_{13}\end{array}\right]\,\hat{V}_{1}^{-1}X_{1}\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=X_{1}'\hat{V}_{1}^{-1}\,\left[\begin{array}{ccc}
+\hat{e}_{11}^{2} & \hat{e}_{11}\hat{e}_{12} & \hat{e}_{11}\hat{e}_{13}\\
+\hat{e}_{11}\hat{e}_{12} & \hat{e}_{12}^{2} & \hat{e}_{12}\hat{e}_{13}\\
+\hat{e}_{11}\hat{e}_{13} & \hat{e}_{12}\hat{e}_{13} & \hat{e}_{13}^{2}\end{array}\right]\,\hat{V}_{1}^{-1}X_{1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+In a sense, the GEE robust SE is both more and less robust than the PCSE,
+ at the same time.
+ It is more robust in two senses.
+ First, it does not assume that the variance of the error term is the same
+ for all time points.
+ Second, it allows the error term correlations within a cluster to take
+ on any observed value.
+ Unlike the PCSE, it does not set all of those diagonal elements to a constant
+ 
+\begin_inset Formula $\hat{\sigma}_{1}$
+\end_inset 
+
+ and restrict the off diagonal elements to 0, as does the PCSE in expression
+ 
+\begin_inset LatexCommand \ref{eq:VPCSE}
+
+\end_inset 
+
+.
+\layout Standard
+
+On the other hand, the GEE SE sets all covariances across units to 0, but
+ the PCSE estimates them.
+ So there's a sense in which the GEE is less general.
+\the_end

@@ -1,0 +1,1046 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\master ScatterBoxBarPlots-1-lecture.lyx
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch notrun
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+inverted 0
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.85}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Practice Problems
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Problems}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Better learn to make some scatterplots.
+ I used to have a bunch of scatterplot exercises.
+ Where did they go? Oh, well.
+ Lets try this.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+First, make some data that is easy to understand.
+ Create 5 observations for x and y
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- c( 3, 5, 7, 9, 11)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- c( 1, 8, 3, 5, 7)
+\end_layout
+
+\begin_layout Plain Layout
+
+z <- c( "M","F","F","M","F")
+\end_layout
+
+\begin_layout Plain Layout
+
+z <- factor(z, levels=c("M","F"), labels=c("Male","Female"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then put that into a data frame called dat and remove the stray variables
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(myx=x, myy=y, myz=z)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(x,y,z)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that you get the same plot result, whether you use the x, y format
+ for the plot command.
+ This uses the raw format, and if you want documentation on it, you should
+ run ?plot.default because that's where plot sends the data to get the work
+ done.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x=dat$myx, y=dat$myy)
+\end_layout
+
+\begin_layout Plain Layout
+
+## which you could abbreviate to
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(dat$myx, dat$myy)
+\end_layout
+
+\begin_layout Plain Layout
+
+## because R does "positional matching" automatically
+\end_layout
+
+\begin_layout Plain Layout
+
+## Or try this more elegant way
+\end_layout
+
+\begin_layout Plain Layout
+
+with(dat, plot(myx, myy))
+\end_layout
+
+\begin_layout Plain Layout
+
+## which saves you the trouble of repeatedly typing dat$
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Or use the 
+\begin_inset Quotes eld
+\end_inset
+
+formula
+\begin_inset Quotes erd
+\end_inset
+
+ format, which I prefer:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(myy ~ myx, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When you use the formula interface, the plot command sends the work to the
+ function plot.formula, for which there is a help page.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Better make some box plots.
+ I better make some exercises on that.
+ But I don't have much in mind right now.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Oh, here.
+ In R, try this.
+ This creates a numeric variable xn, and a categorical (or 
+\begin_inset Quotes eld
+\end_inset
+
+factor
+\begin_inset Quotes erd
+\end_inset
+
+) variable that represents the same thing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+xf <- gl(4,250, labels=c("A","B","C","D"))
+\end_layout
+
+\begin_layout Plain Layout
+
+xn <- as.numeric(xf)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- rnorm(1000, m = xn, s=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xf, y, main="x is a factor variable")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xn, y, main="x is a categorical variable")
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explain why the 2 plots differ!
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Make some cross tabulation tables.
+ For some reason, I have never really understood how to use the xtabs function
+ in R, but I get by with table from base R and the CrossTable function from
+ the gmodels package.
+ Oh, also vital are some functions from the memisc package.
+ The memisc package can be used to create the table in the ordinary R format,
+ and then it can produce the publication quality latex table as well.
+ That's written up in Stuff Worth Knowing, there's a chapter on crosstabs.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- c("M","M","M","F","M","F","F")
+\end_layout
+
+\begin_layout Plain Layout
+
+xf <- factor(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- c("Y","N","Y","Y","Y","Y","Y")
+\end_layout
+
+\begin_layout Plain Layout
+
+yf <- factor(y)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x,xf,y,yf)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(x,y,xf,yf)
+\end_layout
+
+\begin_layout Plain Layout
+
+t1 <- with(dat, table(xf, yf))
+\end_layout
+
+\begin_layout Plain Layout
+
+t1
+\end_layout
+
+\begin_layout Plain Layout
+
+t2 <- with(dat, prop.table( t1, 2))
+\end_layout
+
+\begin_layout Plain Layout
+
+t2
+\end_layout
+
+\begin_layout Plain Layout
+
+library(gmodels)
+\end_layout
+
+\begin_layout Plain Layout
+
+with(dat, CrossTable(xf, yf))
+\end_layout
+
+\begin_layout Plain Layout
+
+library(memisc)
+\end_layout
+
+\begin_layout Plain Layout
+
+mytable <- genTable(percent(yf) ~ xf, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+mytable
+\end_layout
+
+\begin_layout Plain Layout
+
+toLatex(mytable)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Try to make a barplot.
+ I suppose it would be good to try to make a barplot of t2 in the previous
+ exercise.
+ Practice up by doing these exercises.
+ Remember that barplot does not 
+\begin_inset Quotes eld
+\end_inset
+
+digest
+\begin_inset Quotes erd
+\end_inset
+
+ the data for you.
+ It is necessary to run a table-making command first, and then the barplot
+ function wants that.
+ For example
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(100) 
+\end_layout
+
+\begin_layout Plain Layout
+
+xc1 <- cut(x, c(-1000, -1.5, 0, .6, 2,100), labels=c("none","some","occasional","o
+ften","abundant")) 
+\end_layout
+
+\begin_layout Plain Layout
+
+xt1 <- table(xc1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xt1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+cut is a handy way to 
+\begin_inset Quotes eld
+\end_inset
+
+create
+\begin_inset Quotes erd
+\end_inset
+
+ a categorical variable by dividing a numeric variable into ranges.
+ 
+\end_layout
+
+\begin_layout Standard
+After that, try this additional code (we still need x and xc1 from previous
+ in the workspace)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 0.5*x + rnorm(100) 
+\end_layout
+
+\begin_layout Plain Layout
+
+yc1 <- cut(y, c(-1000, -1, 1.1, 1.7, 2.3, 100), labels=c("frozen","cold","chilly","
+warm","boiling"))   
+\end_layout
+
+\begin_layout Plain Layout
+
+xyt1 <- prop.table(table(yc1,xc1), 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xyt1, ylab="Proportions Of Respondents") 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Who likes stacked barplots? Not me, usually.
+ So try:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xyt1, beside=T, ylab="Proportions")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Does that plot make you feel as though your head is chopped off?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xyt1, beside=T, ylim=c(0,0.85))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Need a legend.
+ We did not specify colors with our barplot, so that means the barplot colors
+ are coming from the default color assignment function, which I believe
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+gray.colors
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Lets see if this works: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xyt1, beside=T, ylim=c(0,.85))
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=levels(yc1), fill=gray.colors(5))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We could avoid the guessing game of 
+\begin_inset Quotes eld
+\end_inset
+
+what were those colors
+\begin_inset Quotes erd
+\end_inset
+
+ if we assigned colors explicitly in our code.
+ That's not difficult.
+ Try, for example, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycolors <- rainbow(5)
+\end_layout
+
+\begin_layout Plain Layout
+
+barplot(xyt1, beside=T, ylim=c(0,.85), col=mycolors)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=levels(yc1), fill=mycolors)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I would never use those rainbow colors, but it is good to know we could
+ make a barplot for the school children if we needed to.
+\end_layout
+
+\begin_layout Standard
+There are many options that can be brought to bear to customize the appearance
+ of a barplot.
+ I urge you to try my R WorkingExamples called barplot.R and barbplot-2.R.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

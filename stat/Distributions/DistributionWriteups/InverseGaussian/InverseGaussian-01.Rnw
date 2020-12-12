@@ -1,0 +1,506 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/InverseGaussian//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Inverse Gaussian Distribution}
+
+
+\author{Paul E. Johnson <pauljohn@ku.edu>}
+
+\maketitle
+The Inverse Gaussian distribution is an exponential distribution.
+It is one of the distributions implemented in R's Generalized Linear
+Model routines. To my surprise, there are whole books dedicated to
+this distribution (V. Seshadri, The Inverse Gaussian Distribution:
+A Case Study in Exponential Families, Oxford University Press, 1994;
+R. S. Chhikara and J. L. Folks, The Inverse Gaussian Distribution:
+Theory, Methodology, and Applications, New York: Dekker, 1989).
+
+Articles on insurance problems and the stock market often claim that
+observations follow an Inverse Gaussian distribution. It has one mode
+in the interior of the range of possible values and it is skewed to
+the right, sometimes with an extremely long tail. The fact that extremely
+large outcomes can occur even when almost all outcomes are small is
+a distinguishing characteristic. 
+
+
+\section{Mathematical Description}
+
+There are Inverse Gaussian distributions in several R packages. Run 
+
+<<eval=F,echo=T>>=
+help.search("inverse gaussian")
+
+@
+\begin{lyxcode}
+
+\end{lyxcode}
+to see for yourself. 
+
+In VGAM, the documentation for inv.gaussianff matches the information
+in in the package statmod's documentation on dinvgauss. So let's follow
+that approach. The distribution of $x_{i}$ is described by two characteristics,
+a mean $\mu>0$ and precision $\lambda>0$ . The probability density
+function is
+
+\[
+p(x;\mu,\lambda)=\sqrt{\frac{\lambda}{2\pi x^{3}}}\, e^{\frac{-\lambda(x-\mu)^{2}}{2\mu^{2}x}},\,0<x<\infty
+\]
+
+
+If you would like to take $\lambda$ out of the square root, you can
+put this down as
+
+\[
+p(x;\mu,\lambda)=\frac{\lambda^{2}}{\sqrt{2\pi x^{3}}}\, e^{\frac{-(\sqrt{\lambda}(x-\mu))^{2}}{2\mu^{2}x}},\,0<x<\infty
+\]
+The expected value is $\mu$ and the variance of this version of the
+inverse Gaussian distribution is
+\[
+Var(x)=\frac{\mu^{3}}{\lambda}
+\]
+
+
+The skewness and kurtosis are, respectively,
+\[
+\begin{array}{cc}
+3\sqrt{\frac{\mu}{\lambda}} & and\,\,\frac{15\mu}{\lambda}\end{array}
+\]
+
+
+In all honesty, I have no intuition whatsoever about what the appearance
+of this probability model might be. It does not have a kernel smaller
+than the density itself, so we can't just throw away part on the grounds
+that it is a normalizing constant or a factor of proportionality.
+
+And to make matters worse, the variance depends on the mean.
+
+Tidbit: If $\mu=1$ this is called the Wald distribution.
+
+
+\section{Illustrations}
+
+The probability density function of a Inverse Gaussian distribution
+with $\mu=1$ and $\lambda=2$ is shown in Figure \ref{cap:IG-Distribution}.
+The R code which produces that figure is:
+\begin{lyxcode}
+<<1,echo=T,eval=F>>=
+library(statmod)
+mu <- 1
+lambda <- 2
+xrange<- seq(from=0.0,to=2*mu+5/lambda,by=0.02)
+mainlabel<- expression(paste("IG(",mu,",",lambda,")",sep=""))
+xprob <- dinvgauss(xrange, mu = mu, lambda = lambda)
+plot(xrange, xprob, type = "l", main = mainlabel, xlab = "possible values of x", ylab = "probability of x")
+
+@
+
+\begin{figure}
+\caption{Inverse Gaussian Distribution\label{cap:IG-Distribution}}
+
+
+<<fig=T,echo=F>>=
+<<1>>
+@
+\end{figure}
+
+\end{lyxcode}
+How would one describe Figure \ref{cap:IG-Distribution}?  
+\begin{enumerate}
+\item Single-peaked
+\item Not symmetric-- tail to the right
+\end{enumerate}
+How does this distribution change in appearance if $\mu$ and $\lambda$
+are changed? 
+
+Let's do some experimentation. The following R code creates an array
+of figures with 4 rows and 3 columns with various values of $\mu$
+and $\lambda$ that is displayed in Figure \ref{cap:Variety-of-Inverse}.
+
+<<2,echo=T,eval=F>>=
+par(mfrow=c(4,3))
+for (i in 1:4){
+    for (j in 1:3) {
+        mu <- 3*i
+        lambda <- 20*j
+        xrange <- seq(from = 0.0, to = 3*mu, by = 0.02)
+        mainlabel<- paste("IG(",mu,",",lambda,")", sep = "")
+        xprob <- dinvgauss(xrange, mu = mu, lambda = lambda)
+        plot(xrange, xprob, type = "l", main = mainlabel, xlab = "possible values of x", ylab = "probability of x")
+    }
+}
+@
+
+\begin{figure}
+\caption{Variety of Inverse Gaussian\label{cap:Variety-of-Inverse}}
+
+
+<<fig=T,echo=F,height=9, width=6.5>>=
+<<2>>
+@
+\end{figure}
+
+
+I had a very hard time believing that these calculations were correct.
+The graph shows almost no impact of changing parameters.
+
+The mistake I had made was assuming that the Inverse Gamma's tail
+will be cut off in a way that makes a nice picture. It turns out that,
+when the $\lambda$ is small, then there can be extremely huge values
+observed. I found that by plotting histograms of random samples from
+various parameter settings. 
+
+For example, if we draw 1000 observations from Inverse Gamma with
+$\mu=12$ and $\lambda=2$, look what happens in Figure \ref{cap:Inverse-Gamma-12,2}:
+
+\begin{figure}
+\caption{\label{cap:Inverse-Gamma-12,2}Sample from Inverse Gaussian with $\mu=12$
+and $\lambda=2$ }
+
+
+<<fig=T,echo=F>>=
+set.seed(124123)
+
+mu <- 12
+xlo <- rinvgauss(1000,mu=mu,lambda=2)  
+plot(density(xlo),main=paste("Density plot, N=1000,mu=",mu,"lambda=2"))
+text(240,0.10,paste("maximum observed x =",round(max(xlo),2)))
+abline(v=mu,lty=2,col=3)
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Random Sample From Various Inverse Gaussians}
+
+
+<<fig=T,echo=F,height=9, width=6.5>>=
+xmed <- rinvgauss(1000,mu=mu,lambda=5)
+xhi <- rinvgauss(1000,mu=mu, lambda=20)
+
+par(mfcol=c(3,1))
+
+hist(xlo, breaks = 100, freq = TRUE, xlim = c(0,max(xlo)), main = paste("mu=", mu, "lambda=2"))
+abline(v = mu, lty = 2, col = 3)
+hist(xmed, breaks = 100, freq = TRUE, xlim = c(0, max(xlo)), main = paste("mu=", mu, "lambda=5"))
+abline(v = mu, lty = 2, col = 3)
+hist(xhi, breaks = 100, freq = TRUE, xlim = c(0,max(xlo)), main = paste("mu=", mu, "lambda=20"))
+abline(v = mu, lty = 2, col = 3)
+@
+\end{figure}
+
+
+Can you describe this variety in a nutshell? 
+
+Sometimes the IG has a very long tail, stretching far to the right,
+and it makes the expected value a very poor description of the modal
+observation.
+
+Probably the best illustration I have found for this model is presented
+in Figure \ref{cap:More-Inverse-Gaussian}.
+
+\begin{figure}
+\caption{More Inverse Gaussian Distributions\label{cap:More-Inverse-Gaussian}}
+
+
+<<3,echo=F,fig=T,height=9>>=
+par(mfrow=c(2,1))
+
+mu <- c(2,10)
+for (i in 1:2){
+  xmax <- 2*mu[i]
+
+  xrange <- seq(from = 0.0, to = xmax, by = 0.02)
+  mainlabel<- paste("IG(",mu[i],", various lambda)", sep="")
+  xprob <- dinvgauss(xrange, mu = mu[i], lambda = lambda)
+  plot(1:2, 1:2, main = mainlabel, xlab="possible values of x",  ylab = "probability of x", type = "n", ylim = c(0,1.0-0.2*i), xlim = c(0,xmax))
+
+  lambda <- vector()
+  lambda <- c(1,10,50,100)
+  for (j in 1:4) {
+    lines(xrange, dinvgauss(xrange, mu[i], lambda[j]), col = j, lty = j)
+   }
+   legend(xmax-0.8*mu[i], 0.5, paste("lambda=",lambda), lty = 1:4, col = 1:4)
+}
+@
+\end{figure}
+
+
+In the Webpages for the old classic program Dataplot (http://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/igpdf.htm)
+I found this interesting comment. That page uses the parameter gamma
+in place of lambda, otherwise the formula is the same. It says, ``The
+inverse Gaussian distribution is symmetric and moderate tailed for
+small gamma. It is highly skewed and long tailed for large gamma.
+It approaches normality as gamma approaches zero.'' I can't find
+any evidence in favor of this characterization in Figure \ref{cap:Shrinking-lambda}.
+The opposite is more likely true, making me suspect that in the Dataplot
+author's mind, the parameter gamma ($\gamma$) might have at one time
+been $1/\lambda$. This leads me to caution studentst that if you
+want to be confident about one of these results, it is not sufficient
+to just take the word of a randomly chosen Web site.
+
+To see the effect of tuning $\lambda$ up and down, consider figure
+\ref{cap:Shrinking-lambda}. This shows pretty clearly that if you
+think of $\lambda$as a precision parameter and you have high precision,
+then the observations are likely to be tightly clustered and symmetric
+about the mean. When you lose precision, as $\lambda$ gets smaller,
+then the strong long tail to the right emerges.
+
+\begin{figure}
+\caption{Shrinking lambda\label{cap:Shrinking-lambda}}
+
+
+<<6,fig=T, echo = FALSE>>=
+par(mfrow=c(3,2))
+
+lambda <- c(50,10,5,1,0.5,00.001)
+
+#myrange <- c(10,10,5,5,1,1)
+
+myrange <- c(2,2,2,2,1,1)
+
+for ( i in 1:6){
+  mu=1
+  xrange<-seq(from=0.0,to=myrange[i],by=0.02)
+  mainlabel<- paste("IG(",mu,",",lambda[i],")",sep="")
+  xprob <- dinvgauss(xrange, mu=mu, lambda=lambda[i])
+  plot(xrange, xprob, type="l", main=mainlabel, xlab="possible values of x", ylab="probability of x")
+}
+@
+\end{figure}
+
+
+
+\section{Why do people want to use this distribution?}
+
+We want a distribution that can ``reach up high'' and admit some
+extreme values.
+
+It is pretty easy to estimate $\mu$ and $\lambda$ by maximum likelihood. 
+
+An alternative distribution with this general shape is the three parameter
+Weibull distribution, which is more difficult to estimate (W.E. Bardsley,
+``Note on the Use of the Inverse Gaussian Distribution for Wind Energy
+Applications,'' Journal of Applied Meteorology, 19(9): 1126-1130).
+
+
+\section{Would you rather have Gamma or Inverse-Gaussian?}
+
+The Gamma and the Inverse-Gaussian share the property that they are
+possibly skewed to the right. If you choose the correct parameter
+values, you can make them practically indistinguisable. 
+
+\begin{figure}
+\caption{Gamma or Inverse Gaussian?}
+
+
+<<fig=T>>=
+xvals <- seq(0,20, length.out=200)
+
+gam <- dgamma(xvals, shape=2, scale=1)
+
+igaus <- dinvgauss(xvals,mu=2,lambda=5)
+
+plot(xvals,gam,type="l",lty=1,main="")
+
+lines(xvals,igaus,lty=2)
+
+legend(6,.2,c("gamma(sh=2,sc=1)","inv gauss(mu=2,lambda=5)"),lty=1:2,)
+
+@
+\end{figure}
+
+
+However, there is a VERY WEIRD scaling property here. In order for
+the Inverse Gaussian to produce some extreme large values, it must
+have higher probability for large values. How can you make sense out
+of this strange result in Figure 
+
+\begin{figure}
+\caption{Compare Gamma and Inverse Gaussian }
+
+
+<<fig=T>>=
+par(mfcol=c(3,1))
+
+for (i in 1:3){
+    minx <- 20 + 50 * (i-1)
+    xvals <- seq(minx,300, length.out=1000)
+    gam <- dgamma(xvals, shape = 2, scale = 1)
+    igaus <- dinvgauss(xvals, mu = 2, lambda = 5)
+    plot(xvals,gam, type="l", lty = 1, main="")
+    lines(xvals, igaus, lty = 2)
+    legend(150, 0.7*max(gam), c("gamma(sh=2,sc=1)", "inv gauss(mu=2,lambda=5)"), lty = 1:2,)
+}
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Compare Samples: Gamma and Inverse Gaussian }
+
+
+<<fig=T,echo=F>>=
+par(mfcol=c(2,1))
+gam <- rgamma(500, shape=2, scale=1)
+igaus <- rinvgauss(500,mu=2,lambda=4)
+hist(gam, main="Gamma,sh=2,sc=1")
+hist(igaus,main="Inv Gaus, mu=2,lambda=4")
+summary(gam)
+var(gam)
+summary(igaus)
+var(igaus)
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Compare Samples: Gamma and Inverse Gaussian }
+
+
+<<15,fig=T, echo=F>>=
+par(mfcol=c(2,1))
+gam <- rgamma(1000, shape=2, scale=2)
+igaus <- rinvgauss(1000, mu=4, lambda=8)
+hist(gam, main="Gamma, sh=2, sc=2")
+hist(igaus, main="Inv Gauss, mu=4, lambda=8")
+summary(gam)
+var(gam)
+summary(igaus)
+var(igaus)
+@
+\end{figure}
+
+
+\begin{figure}
+\caption{Compare Samples: Gamma and Inverse Gaussian }
+
+
+<<16,fig=T,echo=F>>=
+par(mfcol=c(2,1))
+gam <- rgamma(1000, shape=3, scale=4)
+igaus <- rinvgauss(1000,mu=12,lambda=34)
+hist(gam,breaks=100,main="Gamma, sh=3,sc=4")
+hist(igaus,breaks=100,main="Inv Gauss, mu=12,lambda=34")
+summary(gam)
+var(gam)
+summary(igaus)
+var(igaus)
+@
+\end{figure}
+
+\end{document}

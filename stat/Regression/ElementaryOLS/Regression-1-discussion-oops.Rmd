@@ -1,0 +1,80 @@
+---
+title: "Elementary Regression Discussion"
+author: "Paul E. Johnson"
+date: '2015-02-25'
+output:
+  ioslides_presentation:
+    widescreen: true
+---
+
+
+## Today I'm mostly interested in output
+
+- tables into papers
+
+- graphs into papers
+
+## Tables {.allowframebreaks}
+
+- Suppose you have correlations
+
+```{r include=F}
+library(datasets)
+data(swiss)
+```
+
+```{r corr1}
+X <- cor(swiss[ , 1:5])
+X
+```
+- write.table can make a simple text file.
+
+- the table "as is" may not be optimal
+```{r}
+X2 <- round(X, 2)
+X2
+write.table(X2, file = "Cor.csv", sep = ",")
+list.files()
+```
+
+
+## I want something nicer: xtable
+
+```{r xtab1}
+library(xtable)
+XT <- xtable(X2)
+print(XT, file = "cor.html", type = "html")
+browseURL("cor.html")
+print(XT, file = "cor2.html", type = "html",
+     html.table.attributes = getOption("xtable.html.table.attributes",
+                                         "border=0"))
+
+browseURL("cor2.html")
+
+```
+
+
+## I want something more nicer
+
+```{r }
+library(tables)
+XTT <- as.tabular(X2)
+html(XTT, file = "cor3.html")
+browseURL("cor3.html")
+```
+
+## Figures
+
+- please get used to this idea
+
+- write your plot commands
+
+- best if you write on the "right sized" display device
+
+- then
+
+    - initiate a device file
+    - rerun your plot commands
+    - dev.off()
+
+## I have plenty of examples around

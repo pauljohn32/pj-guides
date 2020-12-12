@@ -1,0 +1,304 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/Pareto//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Pareto Distribution}
+
+\maketitle
+
+
+
+\author{James W. Stoutenborough <jstout@ku.edu> and Paul Johnson <pauljohn@ku.edu>}
+
+
+\date{June 10, 2013}
+
+
+\section{Introduction}
+
+The Pareto distribution is a probability model for continuous variables.
+It looks like a ``ski slope.'' The Pareto distribution is commonly
+used with socio-economic and other naturally occuring quantities that
+are distributed in a ``ski slope'' manner with very long right tails.
+The long right tails describe inequality, the possibility of a few
+extremely large outcomes. The distribution appears to be primarily
+used in the business and economics fields, but also within political
+science. (For example, Jones and Baumgartner's The Politics of Attention
+(2005) considers the possibility the policy changes are distributed
+as a Pareto distribution). The Pareto distribution works best in situations
+when we want to understand the long right tails. The discrete counterpart
+of the Pareto distribution is Zipf's law, which is sometimes refered
+to as the ``zeta distribution.''
+
+
+\section{Mathematical Definition}
+
+The Pareto's density function has 2 primary parameters, shape and
+location (known as scale in some treatments). 
+
+The location parameter sets the position of the ``left edge'' of
+the probability density. The only outcomes that can be observed are
+greater than the value of the location parameter. It is required that
+$location>0$.
+
+The shape parameter determines the steepness of the ``ski slope.'' 
+
+If $x_{i}$ is Pareto distributed, the probability density function
+is:
+
+\begin{eqnarray}
+f(x_{i})=\left\{ \begin{array}{ccc}
+0 & \leq & location\\
+\left(\frac{shape}{location}\right)\left(\frac{location}{x_{i}}\right)^{(zhape+1)} & > & location
+\end{array}\right.
+\end{eqnarray}
+
+
+It is sometimes rearranged like so:
+
+\begin{eqnarray}
+f(x_{i})=\left\{ \begin{array}{ccc}
+0 & \leq & location\\
+\frac{shape\cdot location^{shape}}{x_{i}^{(shape+1)}} & > & location
+\end{array}\right.
+\end{eqnarray}
+
+
+In order to have finite moments, the Pareto must have a shape that
+is greater than 2 (see variance below). Anything less than or equal
+to 2 results in a variance that is undefined.
+
+
+\section{Illustrations}
+
+The probability density function of the Pareto distribution changes
+when one puts in different values of the parameters. Consider the
+following R code, which can be used to create the illustration of
+a Pareto density function with location and scale equal to 1 in Figure
+\ref{cap:Pareto1}. 
+
+<<Pareto1,echo=T,eval=F>>=
+library(VGAM)
+
+xvals <- seq(0.1,10,len=1000)
+
+plot(xvals, dpareto(xvals, location=1, shape=1), type="l", xlab="possible values of x", ylab="probability of x", main="Pareto Probability Density")
+
+text(2, .6, "shape=1, location=1", pos=4, col=1)
+
+@
+
+\begin{figure}
+<<fig=T,echo=F,results=H>>=
+<<Pareto1>>
+
+@
+
+\caption{Pareto Density Function\label{cap:Pareto1}}
+\end{figure}
+
+
+In order to illustrate the impact of changing the shape parameter,
+let's set the location parameter equal to 1. Examples of Pareto density
+function for several values of the shape parameter (with a fixed location)
+are found in Figure \ref{cap:Pareto2}. The effect of changing the
+shape parameter is seen in the height of the distribution. 
+
+<<Pareto2,echo=F,eval=F>>=
+leftedge <- 1
+xvals2 <- seq(leftedge,20,len=1000)
+y1 <- dpareto(xvals2, location = leftedge, shape = 1.1)
+y2 <- dpareto(xvals2, location = leftedge, shape = 7.5)
+y3 <- dpareto(xvals2, location = leftedge, shape = 15)
+plot(xvals2, y1, type = "l", xlab = "possible values of x", ylab = "probability of x", ylim = c(0,2))
+lines(xvals2, y2, lty = 2, col = 2)
+lines(xvals2, y3, lty = 3, col = 4)
+legend("topright",c("shape=1.1","shape=7.5","shape=15"), lty=1:3, col = c(1,2,4))
+@
+
+\begin{figure}
+<<fig=T,echo=F,height=6, width=6>>=
+<<Pareto2>>
+@
+
+\caption{Pareto Density with Various Shapes\label{cap:Pareto2}}
+\end{figure}
+
+
+We can explore the effect of changing the location parameter by repeating
+the previous exercise, fixing the shape at 1 and varying the location.
+Consider Figure \ref{cap:Pareto3}, which results from this code:
+
+<<Pareto3,echo=T,eval=F>>=
+leftedge <- c(1,3,5)
+x1 <- seq(leftedge[1],20,len=1000)
+y1 <- dpareto(x1, location = leftedge[1], shape = 1)
+x2 <- seq(leftedge[2], 20, len = 1000)
+y2 <- dpareto(x2, location = leftedge[2], shape = 1)
+x3 <- seq(leftedge[3], 20, len = 1000)
+y3 <- dpareto(x3, location = leftedge[3], shape = 1)
+plot(x1, y1, type="l", xlab = "possible values of x", ylab = "probability of x", ylim = c(0,1))
+lines(x2, y2, lty = 2, col=2)
+lines(x3, y3, lty = 3, col=4)
+legend("topright", c("location=1","location=3","location=5"), lty=1:3, col=c(1,2,4))
+@
+
+As illustrated in Figure \ref{cap:Pareto3}, the location represents
+the left boundary for the Pareto distribution. Changes in the location
+simply shift this boundary to the left or right (recall that the model
+requires $location>0$). This Figure demonstrates that the appearance
+of the distribution changes when the location parameter changes, even
+if shape is kept fixed.
+
+\begin{figure}
+<<fig=T,echo=F,height=6, width=6>>=
+<<Pareto3>>
+@
+
+\caption{Pareto Density with Various Locations\label{cap:Pareto3}}
+\end{figure}
+
+
+
+\section{Expected Value, Variance, and the role of the parameters}
+
+The Pareto probability distribution has these interesting properties:
+
+\begin{center}
+$E\left(x_{i}\right)=\frac{shape\cdot location}{shape-1}\left.\left.\left.\right.\right.\right.\,\;1<shape$ 
+\par\end{center}
+
+If the shape is less than or equal to 1, the expected value of a Pareto
+is infinite, or undefined.
+
+\begin{center}
+$Var\left(x_{i}\right)=\frac{shape\cdot(location)^{2}}{\left(shape-1\right)^{2}\left(shape-2\right)}\;2<shape$
+\par\end{center}
+
+If the shape is less than or equal to 2, the variance of a Pareto
+is infinite, or undefined.
+
+\[
+Std.Dev(x)=\frac{shape\cdot location}{\left(shape-1\right)\sqrt{shape-2}}\left.\left.\left.\right.\right.\right.\,\;2<shape
+\]
+
+
+With a Pareto distribution, the mode is always equal to the value
+of the $location$ parameter. The height of the density function at
+the mode is equal to the $shape$ parameter divided by the $location$.
+\[
+max\, f(x_{i})=\frac{shape}{location}
+\]
+
+
+If $x_{i}$ has the probability density function $Pareto\left(shape,location\right)$,
+then $y_{i}=\frac{1}{x_{i}}$ has the density function $f\left(y_{i}\right)=(shape\cdot location)^{shape}y_{i}^{(shape-1)}$.
+This distribution is called the power function distribution. Its moments
+are simply the negative moments of the Pareto distribution.%
+\footnote{http://www.xycoon.com/par\_relationships1.htm%
+}
+\end{document}

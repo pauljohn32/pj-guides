@@ -1,0 +1,484 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/Welcome//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{url}
+\ifx\hypersetup\undefined
+  \AtBeginDocument{%
+    \hypersetup{unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=false}
+  }
+\else
+  \hypersetup{unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=false}
+\fi
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{\texorpdfstring%
+  {L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+  {LyX}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+\usepackage{simpsons}
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+%  \usetheme{KU}
+\usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 4.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Welcome }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{2015}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Orientation}
+
+
+\lyxframeend{}\lyxframe{PSYC650/790 POLS 706}
+
+\textbf{\Large{}What is this Course?}{\Large \par}
+\begin{itemize}
+\item Regression: ``standard'' first graduate course in stat ``modeling''
+
+\begin{itemize}
+\item What's regression: prediction of a dependent variable from a formula
+you create!
+\end{itemize}
+\item Prerequisites: statistics and college algebra
+\item Calculus not ``required'', but will help in understanding
+\item Determination, computer savvy required
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Online material in 2 Locations}
+\begin{itemize}
+\item KU Blackboard
+\item My Dreamhost account: 
+
+\begin{itemize}
+\item Course Homepage: \url{http://pj.freefaculty.org/stat}
+\item Lectures, etc \url{http://pj.freefaculty.org/guides}
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Partially Flipped}
+\begin{itemize}
+\item On Wednesdays, I'll generally ask you to watch a video online, then
+we'll discuss that for 30 minutes or so, after which a lab session
+will occur.
+\item Will schedule 1 or 2 other lab sessions during the week to address
+same/similar material.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Exercises,Homeworks and Tests}
+\begin{itemize}
+\item We will have graded homework assignments (probably 5 of them). You
+must hand them in \emph{on paper.}
+\item Expect some glitches, we constantly try to keep this interesting by
+swapping in new data sets
+\item I like this idea for exams. 
+
+\begin{enumerate}
+\item Create a ``take home'' exam based on student-specific data sets
+\item Ask students (on their own) to prepare tables and graphs 
+\item During the ``in class'' portion of the test, ask for 
+
+\begin{enumerate}
+\item 25\% of the tables and graphs
+\item explanations and analysis of those tables
+\end{enumerate}
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Homework vs Tests}
+\begin{itemize}
+\item Worried about the tests? Please go look at the old ones. They are
+available in the Blackboard website. Look under the Course Documents.
+\item We are trying to make the homeworks ``representative'' of the tests--not
+more difficult, but not easier. This is difficult. You should look
+at the old tests to see what kinds of questions I tend to ask. 
+\end{itemize}
+
+\lyxframeend{}\section{Regression}
+
+
+\lyxframeend{}\lyxframe{Where does Regression fit into the long term plan of study?}
+\begin{itemize}
+\item Most of the things you would publish are taught in courses that are
+1 or 2 steps downstream from here. 
+
+\begin{itemize}
+\item [\Maggie]Undergrad ``baby stats'' 
+\item [\Lisa]You Are Here: Regression is the analytical foundation of everything
+that follows
+\item [\Bart]Courses on regression diagnostics \& applications, generalized
+linear models, 
+\item [\Homer] repeated measures(aka longitudinal), hierarchical models,
+time series, structural equation models 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{My Slogans}
+\begin{itemize}
+\item Scholars work at one level ``below'' their level of understanding. 
+\item You'll understand this class when you take the next stats class.
+\item Work on small example problems that isolate particular elements.
+\item Study math and computers wherever possible.
+\item Write down what you learn, you are likely to forget it.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{I'm just warning you...}
+\begin{itemize}
+\item <+-> I expect you to work hard, all the time.
+\item <+-> Graduate school is supposed to be a full time job. I spent 60hrs
+per week on school as a student. You should too.
+\item <+->I'm hypocritical. I am usually behind schedule, but expect you
+to be on time, on schedule.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{What About Software?}
+
+\begin{frame}[containsverbatim]
+\frametitle{Software}
+\begin{itemize}
+\item For statistics, I use R. 
+\item ``rockchalk'' package for R I prepared for this class
+
+
+\begin{lstlisting}
+install.packages("rockchalk", dep = TRUE, repos="http://rweb.quant.ku.edu/cran")
+\end{lstlisting}
+
+
+\item I don't insist you use R, but you probably should try it. 
+\item I can give you some help if you use SAS. If you use Stata, I can sit
+with you and read the manual.
+\item Everybody needs a good programmer's file editor that can interact
+with R (Emacs, RStudio, or Notepad++ are leading contenders). 
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Why Prefer R?}
+\begin{itemize}
+\item Free 
+\item Open Source
+\item Extensible
+\item Plenty of Good Documentation
+
+\begin{itemize}
+\item Documents are built into R (Run ``help.start()'')
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Running R}
+\begin{itemize}
+\item This is not an ``R Programming'' course. We are only teaching you
+enough to ``get by'' in the regression course.
+\item We have some elementary guides available.
+
+\begin{itemize}
+\item Summer Stat Institute R lectures \url{http://crmda.ku.edu/summer-institute}
+\item Paul Johnson's R Web resource \url{http://pj.freefaculty.org/R}
+\item Basic R Steps \url{http://pj.freefaculty.org/guides/Rcourse/First-R}.
+Slides prepared for interns.
+\item KUANT Guide R writeups (more advanced) \url{http://crmda.ku.edu/kuant-guides}.
+Look for guides 20, 21, 25.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Replication is Important.}
+\begin{description}
+\item [{Don't}] ``type commands into a program'' or ``Use Pull Down
+Menus''
+\item [{DO}] Write out a ``script'' of commands that can be re-run, exactly. \end{description}
+\begin{itemize}
+\item This is true not just with R, but also SAS, SPSS, Stata, etc. 
+
+\begin{itemize}
+\item You need to know exactly what you did
+\end{itemize}
+\item Neatness counts! 
+
+\begin{itemize}
+\item Leave your code in a runable state, from top to bottom
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Creature Comforts Depend on Type of Computer}
+\begin{itemize}
+\item I push everybody to learn to use Emacs with R (see Vincent Goulet's
+website for special versions of Emacs for Windows and Macintosh)
+\item Many novices drawn to RStudio (\url{http://www.rstudio.org})
+\item Trouble setting up your Windows computer? \url{http://crmda.ku.edu/windows-admin-tips}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Document Preparation}
+\begin{itemize}
+\item I use \LaTeX{} and \LyX{} (www.lyx.org)
+\item You too can learn to use \LaTeX{}
+
+\begin{itemize}
+\item KU Grad School a \LaTeX{} template for theses/dissertations (written
+by a fine professor you know)
+
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/KU-thesis}
+
+\item latex tip sheet \url{http://pj.freefaculty.org/latex}
+\end{itemize}
+\item Word is frustrating, but you can learn to use it. Learn to use the
+equation editor and shortcut keys. And Style Sheets.
+\item rockchalk has R functions to make regression tables, in 2014 (for
+the first time) in a format that Libre Office and MS Word can import.
+\end{itemize}
+
+\lyxframeend{}\section{Class Management}
+
+
+\lyxframeend{}\lyxframe{This Class is Large}
+\begin{itemize}
+\item Assignments have to be turned in on time.
+\item I have to be more scripted, more ``mapped out''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{I upload everything to }
+
+\begin{center}
+\url{http://pj.freefaculty.org/guides}
+\par\end{center}
+\begin{itemize}
+\item Its a mirror of my working folder. 
+
+\begin{itemize}
+\item stat
+\item Computing-HOWTO
+\end{itemize}
+\item The online content includes everything, all the files I use to make
+the lectures.
+\item Material is ``Sweaved'': The document runs the statistical analysis
+runs, weaves the results 
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Different types of files}
+\begin{itemize}
+\item Browse a folder: \textbf{http://pj.freefaculty.org/guides/stat/Regression/Overview}. 
+\end{itemize}
+\begin{lstlisting}[basicstyle={\scriptsize},tabsize=3]
+Regression-Overview-Lecture.lyx (I edit that) 
+Regression-Overview-Lecture.pdf (Results you see)
+Regression-Overview-Lecture.Rnw (The Noweb file, an intermediate stage document)
+Regression-Overview-Lecture.R (R code extracted from lecture)
+plots: 	 folder of output files from R (not just plots, also statistical output)
+\end{lstlisting}
+
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Other Material}
+\begin{itemize}
+\item http://pj.freefaculty.org/R: Rtips, Working Examples\end{itemize}
+\begin{description}
+\item [{Limited~Use~of~Blackboard}]~\end{description}
+\begin{itemize}
+\item Use Blackboard for Announcements, Assignments, Readings. 
+\item Why? Uploading and revising material in Blackboard is too tedious,
+frustrating, awful, and difficult.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{FAQ}
+\begin{itemize}
+\item Why don't you number out your lectures 1, 2, 3, etc, in a single folder
+\item I tried that, but got sick of re-numbering everything all the time
+\item The guide folder is topical, I do have a ``lecture map'' on the
+homepage (http://pj.freefaculty.org/stat).
+\end{itemize}
+
+\lyxframeend{}\section{Worked Example}
+
+\begin{frame}[containsverbatim]
+\frametitle{Data Analysis Proceeds in Stages}
+\begin{enumerate}
+\item Read in the Data
+\item Summarize it
+\item Estimate with it
+\item Prepare results
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Step 1. Read in the data}
+
+<<example1, include=F, echo=F>>=
+dat <- read.table("/home/pauljohn/SVN/SVN-guides/stat/DataSets/AcademicSalary/academicsalary.txt", header = TRUE, sep = "\t")
+@
+\begin{itemize}
+\item Create a directory structure where the project will live
+\item Copy the data file into that directory
+
+\begin{itemize}
+\item Through whatever means, copy this file \url{http://pj.freefaculty.org/guides/stat/DataSets/AcademicSalary/academicsalary.txt}.
+\end{itemize}
+\item Create an R file and write some commands that bring in the data.
+\end{itemize}
+\begin{Sinput}
+dat <- read.table("academicsalary.txt", header = TRUE, sep = "\t")
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Get descriptives}
+
+<<example10,include=F,echo=T, eval=F>>=
+## Could use R's summary function, but 
+## rockchalk summarize is my favorite
+library(rockchalk)
+summarize(dat)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-example10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{summarize output}
+
+\def\Sweavesize{\scriptsize} 
+<<example11, echo=F, include=F>>=
+<<example10>>
+@
+\input{plots/t-example11.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Then we look for relationships}
+\begin{itemize}
+\item Regression analysis is THE bedrock on which many advanced research
+methods rest.
+\item I have written an Overview of regression in a separate set of slides,
+so lets go look at them
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

@@ -1,0 +1,1183 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/MultipleRegression//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots3", recursive=T)
+dir.create("plots3", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots3/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[(Mostly QQ and Leverage Plots)]{Graphical Diagnosis}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date{.}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Did You Fit the ``Right'' Model?}
+
+You assumed
+\begin{enumerate}
+\item Linearity: $y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+e_{i}$
+\item Assumptions about Error term $e_{i}$. Either:
+
+
+\begin{tabular}{|c|c|c|}
+\hline 
+$e_{i}$ is $Normal(0,\sigma_{e}^{2})$  &
+or this: &
+\begin{minipage}[t]{0.5\columnwidth}%
+\begin{enumerate}
+\item Unbiased errors: $E[e_{i}]=0$
+\item Homoskedasticity: $E[e_{i}^{2}]=\sigma_{e}^{2}$\end{enumerate}
+%
+\end{minipage}\tabularnewline
+\hline 
+\end{tabular}
+
+\item No ``autocorrelation'' between error terms, $E[e_{i}\cdot e_{j}]=0$
+for all $i$ and $j$
+\item No correlation between $x's$ and the error term, $E[xj_{i}\cdot e_{i}]$
+for variables $j$ and cases $i$
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{The Rest of This Course Is Diagnostics and Remedies}
+\begin{itemize}
+\item Decide how inappropriate the results from the linear model and OLS
+might be
+\item If inappropriate, 3 major options
+
+\begin{enumerate}
+\item Choose a different formula for $y_{i}$ or $e_{i}$ (or both)
+
+\begin{itemize}
+\item nonlinear model for $y_{i}$
+\item Weighted Least Squares (WLS) or Generalized Least Squares (GLS)
+\end{itemize}
+\item Keep the same formula and estimate in a different way
+
+\begin{itemize}
+\item robust regression
+\end{itemize}
+\item Keep the same estimates but apply a post hoc correction (e.g., robust
+``heteroskedasticity consistent'' standard errors for parameter
+estimates)
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Start Simple: Scatterplot}
+
+\begin{frame}
+\frametitle{Scatterplot: Two Numeric Variables}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<cars10,fig=T, echo=F, include=F,height=6,width=6>>=
+plot(dist ~ speed, data=cars, main="Stopping Distance of Cars in the 1920s", xlab="Speed (mph)", ylab="Stopping Distance (feet)")
+@
+
+
+\includegraphics[width=6cm]{plots3/t-cars10}
+
+
+\column{5cm}
+\begin{itemize}
+\item If there is only one predictor, the best diagnostic might be the simple
+scatterplot.
+\item Look for 
+
+\begin{itemize}
+\item linearity
+\item homoskedasticity
+\end{itemize}
+\item This is R's ``cars'' data set, a set commonly used for illustrations
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Superimpose a Regression Line}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<cars20,fig=T, echo=F, include=F,height=6,width=6>>=
+plot(dist ~ speed, data=cars, main="Stopping Distance of Cars in the 1920s", xlab="Speed (mph)", ylab="Stopping Distance (feet)")
+mod20 <- lm(dist~speed, data=cars)
+abline(mod20)
+@
+
+
+\includegraphics[width=6cm]{plots3/t-cars20}
+
+
+\column{5cm}
+\begin{itemize}
+\item Straight line may be OK
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Superimpose a Loess Line}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<cars30,fig=T, echo=F, include=F,height=6,width=6>>=
+plot(dist ~ speed, data=cars, main="Stopping Distance of Cars in the 1920s", xlab="Speed (mph)", ylab="Stopping Distance (feet)")
+mod20lo <- loess(dist~speed, data=cars, span=2/3, degree=1, family="symmetric", eval=50)
+mod20lopred <- predict(mod20lo)
+lines(mod20lopred ~ cars$speed, lty=2, lwd=2, col="red")
+abline(mod20, col="black", lwd=1.5, lty=1)
+legend("topleft", legend=c("OLS","loess"), col=c("black", "red"), lty=c(1,2), lwd=c(1.5,2)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-cars30}
+
+
+\column{5cm}
+\begin{itemize}
+\item Loess: locally weighted error sum of squares regression
+\item Fits a regression model individually for each point in data!
+\item Puts less weight on ``far away'' observations
+\item Predicted values are a ``connect the dots'' line, smoothed graphically
+to look pleasant.
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot residuals against X}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<cars40,fig=T, echo=F, include=F,height=6,width=6>>=
+cars$mod20res <- resid(mod20)
+plot(mod20res ~ speed, data=cars, main="Residuals for Stopping Distance", xlab="Speed (mph)", ylab="Stopping Residuals")
+mod20reslo <- loess(mod20res~speed, data=cars, span=2/3, degree=1, family="symmetric", eval=50)
+mod20reslopred <- predict(mod20reslo)
+lines(mod20reslopred ~ cars$speed, lty=2, lwd=2, col="red")
+abline(h=0, lty=4, lwd=3, col=gray(.60)) 
+legend("topleft", legend=c("loess fit to residuals"), col=c( "red"), lty=c(4), lwd=c(3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-cars40}
+
+
+\column{5cm}
+\begin{itemize}
+\item Loess: locally weighted error sum of squares regression
+\item Evaluate subjectively (!) or (?)
+\item Hints about how model might be redesigned to fit the data more accurately
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\section{Standard Diagnostic Plots}
+
+\begin{frame}[containsverbatim]
+\frametitle{The R Diagnostic Plot Series}
+\begin{itemize}
+\item In R, one can fit a model and then ask for the standard diagnostic
+plot:
+
+
+\begin{Sinput}
+mod1 <- lm(output ~ x1 +x2+x3+x4+x5, data=dat)
+plot(mod1)
+\end{Sinput}
+
+\item plot is a ``generic function'', does lots of different things, depending
+on what you give it.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+
+<<cars100,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(mod20)
+@
+
+\includegraphics[width=12cm]{plots3/t-cars100}
+
+The 2x2 diagnostic plot matrix for the cars regression
+
+\end{frame}
+
+
+\lyxframeend{}\section{Decipher Each Type Of Plot}
+
+
+\lyxframeend{}\subsection{Top Left: Residual Plot}
+
+\begin{frame}
+\frametitle{Residuals with Loess Line}
+
+<<cars100A,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(mod20, which=1)
+@
+
+\includegraphics[width=10cm]{plots3/t-cars100A}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Top Right: Q-Q plot}
+
+\begin{frame}
+\frametitle{QQ plot}
+
+<<cars100B,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(mod20, which=2)
+@
+
+\includegraphics[width=10cm]{plots3/t-cars100B}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{QQ plot }
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Standardized (or ``Studentized'') residuals
+\item Standardization intended to put residuals onto scale of their true
+variance (at a particular value of $x_{i}$)
+\item Proceed with assumption that these residuals are drawn from $N(0,1)$
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots3/t-cars100B}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{QQ Compare Residuals against Normal(0,1) CDF }
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Recall Normal CDF tells us how likely each value is ``theoretically''
+supposed to be.
+\item QQ plot matches theoretical distribution with observed distribution
+\item If all points are exactly on the line, then the observed distribution
+matches N(0,1)
+\item If points deviate above or below the line, we suspect error is not
+normal
+\end{itemize}
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{plots3/t-cars100B}
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\subsection{Bottom Left: Scale-Location Plot}
+
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{Scale-Location}
+
+<<cars100C,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(mod20, which=3)
+@
+
+\includegraphics[width=9cm]{plots3/t-cars100C}
+
+Should be a homogeneous cloud, that is not taller on one side than
+the other
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Bottom-Right: Leverage, Cook's Distance}
+
+\begin{frame}
+\frametitle{Review One At a Time}
+
+<<cars100E,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(mod20, which=5)
+@
+
+\includegraphics[width=9cm]{plots3/t-cars100E}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Leverage: Outlier Diagnostics}
+\begin{itemize}
+\item Leverage: Case-by-case estimate of a case's potential for influence
+on predicted values (not just its own predicted value, but predictions
+for other cases). 
+\item Recall predicted values are $\hat{y}=\{\hat{y}_{1},\hat{y}_{2},\ldots\hat{y}_{N}\}$
+\item It can be shown that the predicted value can be calculated as a linear
+combination of the observations $y_{i}$ like so:
+\end{itemize}
+\[
+\hat{y}_{j}=h_{j1}y_{1}+h_{j2}y_{2}+h_{j3}y_{3}+h_{j4}y_{4}+\ldots+h_{j(N-1)}y_{j(N-1)}+h_{jN}y_{jN}
+\]
+
+
+(The prediction for the $j'th$ case is a weighted sum of all observed
+$y_{i}$).
+\begin{itemize}
+\item The coefficients $h_{ji}$ are from a thing called the ``hat matrix''
+\item Intuition: In a perfect world, no observation exerts a ``huge influence''
+on the predictions, the $h_{ji}$ weights are all roughly the same
+(and will average out to $1/N$).
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Cook's Distance}
+\begin{itemize}
+\item Cook's Distance. I interpret this as a weighted summary one case's
+impact on slope coefficient estimates.
+
+\begin{itemize}
+\item Fit the model with all of the cases, get the regression slopes in
+a vector $\hat{\beta}=(\hat{\beta}_{0},\hat{\beta}_{1},\ldots,\hat{\beta}_{k})$.
+\item Exclude a ``row'' (case) $j$, estimate the regression, and calculate
+the ``leave $j$ out estimates'', $\hat{\beta}_{j}=(\hat{\beta}_{0j},\hat{\beta}_{1j},\ldots,\hat{\beta}_{kj})$. 
+\item Square the differences between $\hat{\beta}$ and $\hat{\beta}_{j}$
+and add them up, inserting a weighting formula that Cook proposed.
+\item The end result is interpreted as a ``change in the predicted value
+for all cases caused by case $j$''
+\end{itemize}
+\item Will study more later when we do ``regression diagnostics''
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Repeat with more Predictors}
+
+
+\lyxframeend{}\subsection{Multiple Regression Fitted}
+
+\begin{frame}[containsverbatim]
+\frametitle{Occupational Prestige Data from John Fox's "car" package}
+
+<<prestige10, echo=T, include=F>>=
+library(car)
+Prestige$income <- Prestige$income/10
+presmod1 <- lm(prestige ~ income + education + women + type, data=Prestige)
+@
+
+\input{plots3/t-prestige10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{My Professionally Acceptable Regression Table}
+
+\input{plots3/t-prestige100}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Termplot }
+
+<<prestige100,fig=T, echo=F, include=F, height=6, width=9, results=tex>>=
+library(rockchalk)
+<<prestige10>>
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(presmod1)
+outreg(presmod1, tight=F)
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{I'd usually run Termplot}
+
+Termplot is Multiple Regression Equivalent of Scatterplot
+
+\begin{Sinput}
+termplot(presmod1, se=T, partial=T)
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot(presmod1, se=T, partial.resid=T)}
+
+Education Termplot:
+
+<<pres40A,fig=T,include=F>>=
+termplot(presmod1, se=T, partial=T, terms=c("education"))
+@
+
+\includegraphics[width=6cm]{plots3/t-pres40A}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot(presmod1, se=T, partial.resid=T)}
+
+Income Termplot:
+
+<<pres40B,fig=T,include=F>>=
+termplot(presmod1, se=T, partial=T, terms=c("income"))
+@
+
+\includegraphics[width=8cm]{plots3/t-pres40B}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot(presmod1, se=T, partial.resid=T)}
+
+Women (percentage of members in field) Termplot:
+
+<<pres40C,fig=T,include=F>>=
+termplot(presmod1, se=T, partial=T, terms=c("women"))
+@
+
+\includegraphics[width=8cm]{plots3/t-pres40C}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot(presmod1, se=T, partial.resid=T)}
+
+type Termplot:
+
+<<pres40D,fig=T,include=F>>=
+termplot(presmod1, se=T, partial=T, terms=c("type"))
+@
+
+\includegraphics[width=8cm]{plots3/t-pres40D}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Diagnostic Plots}
+
+\begin{frame}[plain]
+\frametitle{Plot Diagnostics}
+\includegraphics[width=12cm]{plots3/t-prestige100}
+\end{frame}
+
+\begin{frame}
+\frametitle{Diagnostic Plot 1}
+
+<<prestpl1,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(presmod1, which=1)
+@
+
+\includegraphics[width=9cm]{plots3/t-prestpl1}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Diagnostic Plot 2}
+
+<<prestpl2,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(presmod1, which=2)
+@
+
+\includegraphics[width=9cm]{plots3/t-prestpl2}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Diagnostic Plot 3}
+
+<<prestpl3,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(presmod1, which=3)
+@
+
+\includegraphics[width=9cm]{plots3/t-prestpl3}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Diagnostic Plot 4}
+
+<<prestpl4,fig=T, echo=F, include=F, height=6, width=9>>=
+plot(presmod1, which=5)
+@
+
+\includegraphics[width=9cm]{plots3/t-prestpl4}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Stress Test These Diagnostics}
+
+
+\lyxframeend{}\lyxframe{Experience Required To Interpret Plots}
+\begin{itemize}
+\item Usually (for me), a plot will 
+
+\begin{itemize}
+\item reveal a ``really bad, obvious'' problem 
+\item look ``not grossly wrong.''
+\end{itemize}
+\item Only way I can think of to ``get some practice'' is to make up data
+with flaws and then study the diagnostic plots.
+\item So I worked out a couple of experiments to illustrate visual effect
+of
+
+\begin{itemize}
+\item nonlinearity
+\item outliers
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\subsection{Bad Nonlinearity}
+
+\begin{frame}[containsverbatim]
+\frametitle{Demo with Manufactured Quadratic Relationship}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<bad10,fig=T, echo=F, include=F,height=6,width=6>>=
+x <- runif(200, min=0, max=100)
+x <- x[order(x)]
+y <- 3 + 13.4 * x - .15 * x^2 + rnorm(200,m=0, s=22)
+modf <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 13.4*x[i] - 0.15*x[i]^2 + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modf, col="red", lty=2,lwd=2)
+curve(3 + 13.4 * x - .15 * x * x, add=T, lty=1, col="black", lwd=3)
+legend("bottomleft", legend=c("OLS Linear Fit","True Nonlinear Curve"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-bad10}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is a parabola (quadratic equation)
+\[
+y_{i}=3+13.4\mbox{\ensuremath{x_{1}-0.15x_{i}^{2}}\ensuremath{+e_{i}}}
+\]
+
+\item And the error term is drawn from $N(\mu_{e}=0,\sigma_{e}^{2}=22^{2})$
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{The Manufactured Quadratic Data}
+
+<<bad40,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modf)
+@
+
+\includegraphics[width=12cm]{plots3/t-bad40}
+
+The 2x2 diagnostic plot matrix for the manufactured quadratic data
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Add Some ``Outliers''}
+
+\begin{frame}[containsverbatim]
+\frametitle{Demo with Manufactured Outliers}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<bado10,fig=T, echo=F, include=F,height=6,width=6>>=
+x <- runif(200, min=0, max=100)
+x <- x[order(x)]
+fresherror <- rnorm(200,m=0, s=22)
+badcases <- sample(1:200, 10)
+badcases <- badcases[order(badcases)]
+error <- fresherror
+for(i in badcases) error[i] <- fresherror[i] * 4
+y <- 3 + 1.4 * x + error
+modo <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 1.4*x[i] + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modo, col="red", lty=2,lwd=2)
+curve(3 + 1.4 * x, add=T, lty=1, col="black", lwd=3)
+legend("bottomleft", legend=c("OLS Linear Fit","True Line"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-bado10}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is a straight line
+\[
+y_{i}=3+1.4\mbox{\ensuremath{x_{1}}\ensuremath{+e_{i}}}
+\]
+
+\item And the error term $e_{i}\sim N(\mu_{e}=0,\sigma_{e}^{2}=22^{2})$
+\item 10 Randomly Drawn Cases have magnified error $e_{i}=4\times e_{i}$
+\item The 10 ``bad cases'' are:
+
+
+<<bado11, include=F, echo=F>>=
+badcases
+@
+
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots3/t-bado11}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Regression Table (just for the record)}
+<<bado12, echo=F, include=F, results=tex>>=
+outreg(modo, tight=F)
+@
+\input{plots3/t-bado12}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{R Plot for lm With The 4$\times$ Manufactured Outlier Data}
+
+<<bado20,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modo)
+@
+
+\includegraphics[width=12cm]{plots3/t-bado20}
+
+10 errors magnified by factor of 4
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Concern: Leverage Plot Doesn't Notice Effect of Outliers}
+
+<<bado22,fig=T, echo=F, include=F, height=6, width=6>>=
+plot(modo, which=5)
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item I expected points would be in the extreme \textquotedbl{}bad Cook's
+distance\textquotedbl{} area
+\item I'm going to torture this until it \textquotedbl{}works\textquotedbl{}
+(should I say \textquotedbl{}breaks\textquotedbl{}?)
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots3/t-bado22}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{First Retry: Magnify the Outliers x 10}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<bado30,fig=T, echo=F, include=F,height=6,width=6>>=
+error <- fresherror
+for(i in badcases) error[i] <- fresherror[i] * 10
+y <- 3 + 1.4 * x + error
+modo <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 1.4*x[i] + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modo, col="red", lty=2,lwd=2)
+curve(3 + 1.4 * x, add=T, lty=1, col="black", lwd=3)
+legend("topleft", legend=c("OLS Linear Fit","True Line"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-bado30}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is a straight line
+\[
+y_{i}=3+1.4\mbox{\ensuremath{x_{1}}\ensuremath{+e_{i}}}
+\]
+
+\item And the error term $e_{i}\sim N(\mu_{e}=0,\sigma_{e}^{2}=22^{2})$
+\item 10 Randomly Drawn Cases have magnified error $e_{i}=10\times e_{i}$
+\item The 10 ``bad cases'' are:
+
+
+<<bado31, include=F, echo=F>>=
+badcases
+@
+
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots3/t-bado31}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Regression Table (just for the record)}
+<<bado32, echo=F, include=F, results=tex>>=
+outreg(modo, tight=F)
+@
+\input{plots3/t-bado32}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{Manufactured Outliers Magnified x 10}
+
+<<bado40,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modo)
+@
+
+\includegraphics[width=12cm]{plots3/t-bado40}
+
+10 magnified errors: Still nothing in the Leverage Plot
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Cluster and Magnify the Outliers x 10}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<bado60,fig=T, echo=F, include=F,height=6,width=6>>=
+error <- fresherror
+poserr <- which(fresherror > 0)
+badcases <- poserr[ (length(poserr)-10):length(poserr)]
+for(i in badcases) error[i] <- fresherror[i] * 10
+y <- 3 + 1.4 * x + error
+modo <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 1.4*x[i] + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modo, col="red", lty=2,lwd=2)
+curve(3 + 1.4 * x, add=T, lty=1, col="black", lwd=3)
+legend("topleft", legend=c("OLS Linear Fit","True Line"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-bado60}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is a straight line
+\[
+y_{i}=3+1.4\mbox{\ensuremath{x_{1}}\ensuremath{+e_{i}}}
+\]
+
+\item And the error term $e_{i}\sim N(\mu_{e}=0,\sigma_{e}^{2}=22^{2})$
+\item 10 ``rightmost'' positive errors: $e_{i}=10\times e_{i}$
+\item The 10 ``bad cases'' are:
+
+
+<<bado61, include=F, echo=F>>=
+badcases
+@
+
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots3/t-bado61}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Regression Table (just for the record)}
+<<bado62, echo=F, include=F, results=tex>>=
+outreg(modo, tight=F)
+@
+\input{plots3/t-bado62}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{R Plot: 10 "Rightmost Positive" Magnified Errors}
+
+<<bado70,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modo)
+@
+
+\includegraphics[width=12cm]{plots3/t-bado70}
+
+10 magnified positive errors clustered on right. Still nothing in
+Leverage!
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Am Becoming Angry}
+\begin{itemize}
+\item Had believed leverage plot would isolate the outliers after they were
+magnified (it did not)
+\item Had believed leverage plot would isolate the outliers after they were
+clustered (it did not)
+\item Drop back to simplest test: create just one outlier
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Insert One Outlier On High Right Side}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<bado100,fig=T, echo=F, include=F,height=6,width=6>>=
+error <- fresherror
+poserr <- which(fresherror > 0)
+badcases <- poserr[length(poserr)]
+for(i in badcases) error[i] <- fresherror[i] * 10
+y <- 3 + 1.4 * x + error
+modo <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 1.4*x[i] + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modo, col="red", lty=2,lwd=2)
+curve(3 + 1.4 * x, add=T, lty=1, col="black", lwd=3)
+legend("topleft", legend=c("OLS Linear Fit","True Line"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-bado100}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is a straight line
+\[
+y_{i}=3+1.4\mbox{\ensuremath{x_{1}}\ensuremath{+e_{i}}}
+\]
+
+\item And the error term $e_{i}\sim N(\mu_{e}=0,\sigma_{e}^{2}=22^{2})$
+\item 1 ``rightmost'' positive errors: $e_{i}=10\times e_{i}$
+\item The ``bad case'' is:
+
+
+<<bado101, include=F, echo=F>>=
+badcases
+@
+
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\input{plots3/t-bado101}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Regression Table (just for the record)}
+<<bado102, echo=F, include=F, results=tex>>=
+outreg(modo, tight=F)
+@
+\input{plots3/t-bado102}
+\end{frame}
+
+\begin{frame}[plain]
+\frametitle{Just One Bad Outlier}
+
+<<bado110,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modo)
+@
+
+\includegraphics[width=12cm]{plots3/t-bado110}
+
+1 super magnified positive error on right
+
+\end{frame}
+
+<<bado112,fig=T, echo=F, include=F, height=6, width=6>>=
+plot(modo, which=5)
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{Leverage Plot Finally Spots an Outlier}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item If there's just one extreme case, procedure spots it
+\item Conclusion: mechanical application of ``spot one outlier'' method
+not ``powerful'' with multiple outliers
+\item Appears outliers can \textquotedbl{}hide in plain sight\textquotedbl{}
+if there are enough of them
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots3/t-bado112}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\subsection{Heteroskedasticity}
+
+\begin{frame}[containsverbatim]
+\frametitle{Error Term Variance Proportional to $x{_i}^2$}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<badh10,fig=T, echo=F, include=F,height=6,width=6>>=
+x <- runif(200, min=0, max=100)
+x <- x[order(x)]
+xsquare <- x*x
+error <- rnorm(200, m=0, s=0.5*xsquare)
+y <- 3 + 1.4 * x - .15 * x^2 + error
+modh <- lm(y~x)
+fakeeqn <- expression(paste(y[i]== 3 + 1.4*x[i] + e[i]))
+plot(x,y, xlab="Fake x", ylab="Fake y", main=fakeeqn)
+abline(modh, col="red", lty=2,lwd=2)
+curve(3 + 1.4 * x, add=T, lty=1, col="black", lwd=3)
+legend("bottomleft", legend=c("OLS Linear Fit","True Linear Equation"), col=c( "red", "black"), lty=c(2,1), lwd=c(2,3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-badh10}
+
+
+\column{5cm}
+\begin{itemize}
+\item The ``true model'' is 
+\[
+y_{i}=3+1.4x_{i}+e_{i}
+\]
+
+\item And the error term is drawn from $N(\mu_{e}=0,\sigma_{e}^{2}=0.5\times x_{i}^{2})$
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Regression Table (just for the record)}
+<<badh12, echo=F, include=F, results=tex>>=
+outreg(modh, tight=F)
+@
+\input{plots3/t-badh12}
+
+\begin{itemize}
+\item Will work on heteroskedasticity later
+\item Causes high variance in estimates of $\hat{\beta}_{1}$ and $std.err.(\hat{\beta}_{1})$
+is lower than it should be
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Loess / Residual Plot for Manufactured Data}
+\begin{topcolumns}%{}
+
+
+\column{7cm}
+
+
+<<badh20,fig=T, echo=F, include=F,height=6,width=6>>=
+modhres <- resid(modh)
+plot(modhres ~ x, main=fakeeqn, xlab="fake x", ylab="Residuals")
+modhreslo <- loess(modhres~x, span=2/3, degree=1, family="symmetric", eval=50)
+modhreslopred <- predict(modhreslo)
+lines(modhreslopred ~ x, lty=2, lwd=2, col="red")
+abline(h=0, lty=4, lwd=3, col=gray(.60)) 
+legend("topleft", legend=c("loess fit to residuals"), col=c( "red"), lty=c(4), lwd=c(3)) 
+@
+
+
+\includegraphics[width=6cm]{plots3/t-badh20}
+
+
+\column{5cm}
+\begin{itemize}
+\item dispersion is greater on the right when plotting against $x$
+\item will see ``flip flop'' when plotting against predicted value
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}
+
+\begin{frame}[plain]
+\frametitle{The Manufactured Heteroskedastic Data}
+
+<<badh40,fig=T, echo=F, include=F, height=6, width=9>>=
+par(mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+plot(modh)
+@
+
+\includegraphics[width=12cm]{plots3/t-badh40}
+
+The 2x2 diagnostic plot matrix for the manufactured heterodskedasticity
+
+\end{frame}
+
+\include{1_home_pauljohn_SVN_SVN-guides_stat_Regression____egression-MultipleInputs-lecture-3-problems}
+
+
+\lyxframeend{}
+\end{document}

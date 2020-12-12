@@ -1,0 +1,767 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/ElementaryOLS//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% For Sweavel
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots3", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots3/t,split=T,ae=F,height=5,width=6}
+\def\Sweavesize{\scriptsize} 
+
+<<Roptions, echo=F>>=
+options(width=90, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(4.1, 4.1, 1, 2.1) 
+##pjmar <- par("mar")
+##par(mar=pjmar, ps=11)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=11)
+@
+
+
+\lyxframeend{}\lyxframe{Elementary Regression Example}
+\begin{itemize}
+\item This one focuses on the use of a dichotmous predictor, public or private
+schools
+\item Along the way, it runs into some data importation/coding problems.
+\item You can see the README here, along with the data
+
+
+\url{http://pj.freefaculty.org/guides/stat/DataSets/USNewsCollege}
+
+\end{itemize}
+
+\lyxframeend{}\section{US News College Ratings Data}
+
+
+\lyxframeend{}\lyxframe{Get Data For Regression}
+
+This data is provided as ``raw'' numbers, with no variable names. 
+
+<<echo=T>>=
+if (file.exists("USNewsCollege.rds")){
+  dat <- readRDS("USNewsCollege.rds")
+}else{
+ dat <- read.table(url("http://pj.freefaculty.org/guides/stat/DataSets/USNewsCollege/USNewsCollege.csv"), header = FALSE, sep=",")
+mynames <- c("fice", "name", "state", "private", "avemath", "aveverb", "avecomb", "aveact", "fstmath", "trdmath", "fstverb", "trdverb", "fstact", "trdact", "numapps", "numacc", "numenr", "pctten", "pctquart", "numfull", "numpart", "instate", "outstate", "rmbrdcst", "roomcst", "brdcst", "addfees", "bookcst", "prsnl","pctphd", "pctterm", "stdtofac", "pctdonat", "instcst", "gradrate")
+  colnames(dat) <- mynames
+  saveRDS(dat, file = "USNewsCollege.rds")
+}
+@
+
+
+\lyxframeend{}\lyxframe{README says...}
+\begin{quotation}%{}
+Data are from the 1995 U.S. News report on American colleges and universities.
+They include demographic information on tuition, room \& board costs,
+SAT or ACT scores, application/acceptance rates, student/faculty ratio,
+graduation rate, and more. The dataset is used for the 1995 Data Analysis
+Exposition, sponsored by the Statistical Graphics Section of the American
+Statistical Association.
+\end{quotation}%{}
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{What Do We Have?}
+
+<<usn10, echo=T>>=
+str(dat)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{So Many Variables, so Little Time}
+
+What does summarize report?
+
+\def\Sweavesize{\tiny}
+
+<<usn20, echo=T>>=
+library(rockchalk)
+summarize(dat)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Create a factor variable "schtype"}
+\begin{itemize}
+\item Recode private from numeric 1-2 to a new factor variable called ``schtype'':
+\end{itemize}
+<<usn21, echo=T>>=
+dat$schtype <- factor(dat$private, levels = c("1","2"), labels = c("public","private"))
+## Proofread
+table(dat$schtype, dat$private, exclude = NULL)
+levels(dat$schtype)
+@
+\begin{itemize}
+\item Keep the numeric variables gradrate, instcst, stdtofac, aveact, instate,
+outstate
+\end{itemize}
+<<usn22, echo=T>>=
+dat <- dat[ , c("gradrate", "instcst", "stdtofac", "aveact", "instate", "outstate", "schtype")]
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Subset Public and Private For Comparison}
+
+<<usn25, fig=T, include=F, echo=T, width=7, height=4>>=
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+par(mfcol = c(1,2))
+hist(datpublic$gradrate, prob = TRUE, breaks = 50, main = "Public Graduation Rates", xlab = "Graduation Rates")
+hist(datprivate$gradrate, prob = TRUE, breaks = 50, main = "Private Graduate Rates", xlab = "Graduation Rates")
+@
+
+\includegraphics[width=10cm]{plots3/t-usn25.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Subset Public and Private For Comparison}
+\begin{itemize}
+\item How did he do that?
+\end{itemize}
+\input{plots3/t-usn25.tex}
+\begin{itemize}
+\item Note levels(dat\$schtype){[}1{]} == ``public''. I prefer to choose
+by levels(dat\$schtype){[}1{]}, rather than ``private'', seems less
+typo-prone
+\item I explicitly create subsets, and named separately for clarity. You'll
+find a lot of different ways to do this
+
+\begin{itemize}
+\item ~
+\end{itemize}
+
+\begin{lstlisting}
+lapply(levels(dat$schtype), function(x) hist(dat$gradrate[dat$schtype == x], prob = TRUE, breaks = 50, main= paste(x, "Graduation Rates"), xlab = "Graduation Rates"))
+\end{lstlisting}
+
+\begin{itemize}
+\item ~
+\end{itemize}
+
+\begin{lstlisting}
+hist(dat[dat$schtype == levels(dat$schtype)[1], "gradrate"], prob = TRUE, breaks = 50, main="Public Graduation Rates", xlab = "Graduation Rates")
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Should we correct the data for private schools?}
+
+Obvious data entry error: Some graduation rates are over 100.
+
+Lets trim them out of the data, and re-create the public/private subsets
+
+<<usn26, fig=T, include=F, echo=T, width=7, height=4>>=
+dat <- dat[ dat$gradrate <= 100, ]
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+par(mfcol=c(1,2))
+hist(datpublic$gradrate, prob = TRUE, breaks = 50, main = "Public Graduation Rates")
+hist(datprivate$gradrate, prob = TRUE, breaks = 50, main = "Private Graduate Rates")
+@
+
+\input{plots3/t-usn26.tex}
+
+\includegraphics[width=10cm]{plots3/t-usn26.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Grab Some Summary Stats I Might Need Later}
+
+summary(dat) would be a nice start, but the output hard to manage.
+So Build own summary:
+
+<<usn30, echo=T>>=
+summarize(datpublic)
+summarize(datprivate)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Describe the variable schtype}
+
+<<usn31, echo=T>>=
+(t1 <- table(dat$schtype))
+prop.table(t1)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Conduct T-test on Graduation Rate Difference}
+\begin{itemize}
+\item The default t.test in R will use ``Welch corrected'' estimate of
+the standard error
+\end{itemize}
+<<usn35a, echo=T>>=
+t.test(gradrate ~ schtype, data = dat)
+@
+\begin{itemize}
+\item But it used to assume the variances in the 2 groups are equal
+\end{itemize}
+<<usn35b, echo=T>>=
+t.test(gradrate ~ schtype, data = dat, var.equal = TRUE)
+@
+\begin{itemize}
+\item Keep an eye on this latter set of estimates, compare to the lm output.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Regress Graduate Rates on the Dichotomy "schtype"}
+
+<<echo=T>>=
+mod1 <- lm (gradrate ~ schtype, data = dat)
+summary(mod1)
+@
+
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Check "model.matrix" To See What R Did to "schtype"}
+
+<<echo=T>>=
+head(model.matrix(mod1))
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Table}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+<<echo=F, results=tex>>=
+library(rockchalk)
+outreg(mod1, tight=TRUE, showAIC=F)
+@
+
+
+\column{6cm}
+\begin{itemize}
+\item Estimated Intercept
+\item Estimated Slope
+\item Standard Error of Intercept Estimate (estimated standard deviation
+of intercept estimator)
+\item Standard Error of Slope Estimate (estimated standard deviation of
+slope estimator)
+\end{itemize}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Hypothesis Test for Slope}
+\begin{itemize}
+\item Theory: $gradrate_{i}=c_{0}+c_{1}"contrast\, for\, private"+u_{i}$
+
+
+$c_{0}$ and $c_{1}$ are real-valued constants, $E[u_{i}]=0$, $Var[u_{i}]=E[u_{i}^{2}]=\sigma_{u}^{2}$. 
+
+\item The Null Hypothesis: $H_{0}:c_{1}=0$
+\item $\hat{c}_{1}$ is approximately Normal, So create T test:
+\item The critical value of t is:
+\begin{lstlisting}
+> qt( c(0.025, 0.975), df=90)
+[1] -1.986675  1.986675
+\end{lstlisting}
+
+\item Conclusion: ``The estimate $\hat{c}_{1}$ is statistically significantly
+different from 0.''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals for Intercept and Slope}
+
+<<>>=
+confint(mod1)
+@
+
+Supposing the model's theory is correct, we believe 
+\begin{itemize}
+\item the estimated slope $\hat{c}_{1}$ would be between 0.0079 and 0.125
+in 95\% of repeated samples from same process
+\item the probability that the true slope $c_{1}$ is in that range is 0.95.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw Predicted Values}
+
+We can force R to plot schtype as if it were a numeric variable
+
+<<usn60, fig=T, include=F>>=
+dat$schnum <- as.numeric(dat$schtype) - 1
+plot(gradrate ~ schnum, data = dat, xlab = "Private or Public?", ylab = "Graduation Rate")
+abline(mod1)
+@
+
+\includegraphics[width=8cm]{plots3/t-usn60.pdf}
+
+But is that a meaningful line?
+
+\input{plots3/t-usn60.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The termplot Draws Predicted Values}
+
+<<usn65, fig=T, include=F>>=
+termplot(mod1, terms = c("schtype"), partial = TRUE, se = TRUE)
+@
+
+\includegraphics[width=8cm]{plots3/t-usn65.pdf}
+
+\input{plots3/t-usn65.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Perhaps a Box Plot is a Better Way to Look at this}
+
+plot notices ``schtype'' is a factor and it creates a boxplot.
+
+<<usn70, fig=T, include=F>>=
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab = "Graduation Rate")
+abline(mod1)
+@
+
+But ``abline(mod1)'' draws a line in the wrong place
+
+\includegraphics[width=8cm]{plots3/t-usn70.pdf}
+
+\input{plots3/t-usn70.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{A word about Predicted Values}
+
+With only two ``levels'' of private, there are only two unique predicted
+values. The predict function will run, and apply to each row of data,
+but it just generates the same thing over and over.
+
+Run this to see whats going on.
+
+<<>>=
+bp1 <- predict(mod1, interval = "confidence")
+head(bp1)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Word about Predicted Values}
+
+So we could just create a new small data set and get predictions for
+it.
+
+<<usn71, include=F>>=
+newdf <- data.frame(schtype = factor(c("public", "private"), levels = c("public", "private")))
+gradratehat <- predict(mod1, interval = "conf", newdata = newdf)
+newdf <- cbind(gradratehat, newdf)
+newdf
+@
+
+\input{plots3/t-usn71.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{But The Predicted Value Lines Still Look Stupid, IMHO}
+
+<<usn75, fig=T, include=F>>=
+#newdf <- data.frame(schtype = levels(dat$schtype))
+#newdf$schtype <- relevel(newdf$schtype, "public") ###WOW:  problem required this
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab = "Graduation Rate", ylim = range(dat$gradrate, na.rm = TRUE))
+gradratehat <- predict(mod1, interval="conf", newdata=newdf)
+lines(gradratehat[ , 1] ~ schtype, data = newdf, col = "black", lty = 1)
+lines(gradratehat[ , 2] ~ schtype, data = newdf, col = "red", lty = 4)
+lines(gradratehat[ , 3] ~ schtype, data = newdf, col = "red", lty = 4)
+@
+
+\includegraphics[width=8cm]{plots3/t-usn75.pdf}
+
+\input{plots3/t-usn75.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Maybe A boxplot with the Predicted Values Marked In?}
+
+<<usn80, fig=T, include=F>>=
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab = "Graduation Rate", ylim = range(dat$gradrate, na.rm = TRUE)) 
+points(gradratehat[ , 1] ~ as.numeric(schtype), data = newdf, pch = "x", col = "red", cex = 1)
+
+arrows(x0 = as.numeric(newdf$schtype), y0 = gradratehat[ , 2],x1=as.numeric(newdf$schtype),  y1 = gradratehat[ , 3], col = "green", angle = 90, code = 3)
+
+text( c(30,25) ~ c( 1.5, 1.5), pos = 1, adj = 2, label = c("x: Predicted Value", "Green brackets 95% CI"), cex = 0.8, col = c("red", "green"))
+@
+
+\includegraphics[width=8cm]{plots3/t-usn80.pdf}
+
+Boxes center on the median, not the mean (predicted values), thus
+a little mismatch.
+
+This whole exercise is just making me feel stupider and stupider
+
+\input{plots3/t-usn80.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{That Considered Just One Categorical Predictor}
+\begin{itemize}
+\item This lecture is about one-predictor regressions, so I can't get too
+fancy
+\item But I'd like to explore the idea that we might find a different relationship
+between 2 variables when we compare the public and private school
+datasets
+\item When we later turn to multiple regression, we'll see different==better
+ways to do this, but this is not a bad start.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Consider Instructional Spending}
+
+<<usn100, fig=T, include=F>>=
+plot(gradrate ~ instcst, data=dat)
+@
+
+\includegraphics[width=8cm]{plots3/t-usn100.pdf}
+
+\input{plots3/t-usn100.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Consider Instructional Spending as a Predictor of gradrate}
+
+<<usn110, fig=T, include=F>>=
+mod2 <- lm(gradrate ~ instcst, data = dat)
+summary(mod2)
+@
+
+\input{plots3/t-usn110.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Problem 1 Obvious}
+
+<<usn115, fig=T, include=F>>=
+plotSlopes(mod2, plotx = "instcst", interval = "confidence")
+@
+
+\includegraphics[width=8cm]{plots3/t-usn115.pdf}
+
+\input{plots3/t-usn115.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Few Big Spenders Just Don't Fit}
+\begin{itemize}
+\item In a real study, I wouldn't throw out those cases without a lot more
+checking
+\item I'd consider making a model that ``bends'' through the data
+\item Right now, however, lets just focus on the schools for which the data
+has instcst < 25000.
+\end{itemize}
+<<usn130, fig=T, include=F>>=
+mod3 <- lm(gradrate ~ instcst, data = dat, subset = instcst < 25000)
+plotSlopes(mod3, plotx = "instcst", interval = "confidence")
+@
+
+\input{plots3/t-usn130.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Fitted when Instructional Spending < \$25,000}
+
+\includegraphics[width=8cm]{plots3/t-usn130.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Table}
+\begin{columns}%{}
+
+
+\column{6cm}
+
+
+<<echo=F, results=tex>>=
+library(rockchalk)
+outreg(mod3, tight = TRUE, showAIC = FALSE)
+@
+
+
+\column{6cm}
+
+
+Identify
+\begin{itemize}
+\item Estimated Intercept \& Slope
+\item Estimated Standard Errors
+\item Estimate of error term's standard deviation)
+\end{itemize}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Rescale instcst to 1000s of dollars}
+\begin{itemize}
+\item Because the instcst variable is in dollars, the coefficients are very
+small
+\item To make them more readable, lets rescale instcst
+\item From now on, instcstP1000 = instcst / 1000
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Fitted Model for Instructional Spending}
+
+<<usn160, include=F>>=
+dat$instcstP1000 <- dat$instcst/1000
+mod3 <- lm(gradrate ~ instcstP1000, data = dat, subset = instcstP1000 < 25)
+@
+
+\input{plots3/t-usn160.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Results with instcstP1000}
+\begin{columns}%{}
+
+
+\column{3cm}
+
+
+<<usn161, echo=F, include = F, results=tex>>=
+outreg(mod3, tight=TRUE, showAIC=FALSE)
+
+@
+
+\input{plots3/t-usn161}
+
+\column{8cm}
+
+<<usn162, fig=T, include=F>>=
+plotSlopes(mod3, plotx="instcstP1000", interval = "confidence")
+@
+
+\includegraphics[width=7cm]{plots3/t-usn162.pdf}
+
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Hypothesis Test for Slope}
+\begin{itemize}
+\item Theory: $gradrate_{i}=\beta_{0}+\beta_{1}instcst+e_{i}$
+
+
+$\beta_{0}$ and $\beta_{1}$ are real-valued constants, $E[e_{i}]=0$,
+$Var[e_{i}]=E[e_{i}^{2}]=\sigma_{e}^{2}$. 
+
+\item The Null Hypothesis: $H_{0}:\beta_{1}=0$
+\item $\hat{\beta}_{1}$ is approximately Normal, So create T test:
+\item The critical value of t is:
+\begin{lstlisting}
+> qt( c(0.025, 0.975), df=90)
+[1] -1.986675  1.986675
+\end{lstlisting}
+
+\item Conclusion: ``The estimate $\hat{\beta}_{1}$ is statistically significantly
+different from 0.''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals for Intercept and Slope}
+
+<<>>=
+confint(mod3)
+@
+
+Supposing the model's theory is correct, we believe 
+\begin{itemize}
+\item We believe the true value of $\beta_{1}$ between ``lwr'' and ``upr''
+with probability 0.95
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Should we Subset the Data?}
+\begin{itemize}
+\item Previous estimate pooled Public and Private Institutions
+\item If the relationships are different for the two types of schools, we
+have biased estimates of the effects
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals for Intercept and Slope}
+
+<<subset10, echo=T, include=F, fig=T, height = 5, width = 9>>=
+dat <- dat[dat$instcstP1000 < 25, ]
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+par(mfrow=c(1,2))
+plot(gradrate ~ instcstP1000, data = datpublic, main = "Public", xlab = "Instructional Cost/1000", ylab = "Graduation Rate")
+plot(gradrate ~ instcstP1000, data = datprivate, main = "Private", xlab = "Instructional Cost/1000", ylab = "Graduation Rate")
+@
+
+\includegraphics[width=10cm]{plots3/t-subset10.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Superimpose and Color Code the 2 Types}
+
+<<usn150, fig=T, include=F>>=
+plot(gradrate ~ instcstP1000, data = dat, col = schtype, xlab = "Instructional Cost/1000", ylab = "Graduation Rate", pch = c("o","+")[dat$schtype])
+legend("topleft", legend = levels(dat$schtype), col = c(1,2), pch = c("o","+"))
+@
+
+\includegraphics[width=8cm]{plots3/t-usn150.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Fit separate regressions, and superimpose the predicted values}
+
+<<usn170, fig=T, include=F>>=
+plot(gradrate ~ instcstP1000, data = dat, subset = instcstP1000 < 25, pch = c("o","+")[schtype], col = schtype)
+m3byPrivate <- by(dat, dat$schtype, function(subdat){m1 <- lm(gradrate ~ instcstP1000, data = subdat)})
+abline(m3byPrivate[[1]], col = 1); abline(m3byPrivate[[2]], col = 2)
+legend("topleft", legend = levels(dat$schtype), col = c(1,2),  pch = c("o", "+"), lty=c(1,1))
+@
+
+\includegraphics[width=8cm]{plots3/t-usn170.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Look at the Fits, Side by Side}
+
+<<usn175, echo=F, results=tex>>=
+outreg(list("Public" = m3byPrivate[[1]], "Private" =  m3byPrivate[[2]]),  tight=TRUE, showAIC=F)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Look forward to Multiple Regression}
+\begin{itemize}
+\item This is not satisfactory.
+
+\begin{itemize}
+\item We have no rigorous way to say the intercept and slope for the 2 school
+types are ``statistically significantly different'' from each other.
+\end{itemize}
+\item But don't you wish you could say ``the slopes are the same'', but
+``the intercepts are different''?
+\item Those comparisons will have to wait, because they require the ``multiple''
+in ``multiple regression''.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

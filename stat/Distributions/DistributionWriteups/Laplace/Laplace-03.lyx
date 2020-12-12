@@ -1,0 +1,1003 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Laplace Distribution
+\end_layout
+
+\begin_layout Author
+Raminta Stockute and Paul Johnson
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+This is a continuous probability distribution.
+ It is named after a French mathematician.
+ Wikipedia points out that it is also known as a double exponential distribution
+, because it reminds one of an exponential distribution 
+\begin_inset Quotes eld
+\end_inset
+
+spliced together back-to-back.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The most outstandanding characteristics of this distribution are that it
+ is unimodal and symmetric.
+\end_layout
+
+\begin_layout Section
+Mathematical definition
+\end_layout
+
+\begin_layout Standard
+This distribution is characterized by location 
+\begin_inset Formula $\theta$
+\end_inset
+
+ (any real number) and scale 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ (has to be greater than a 0) parameters.
+ 
+\end_layout
+
+\begin_layout Standard
+The probability density function of 
+\begin_inset Formula $Laplace(\theta,\lambda)$
+\end_inset
+
+ is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(x|\theta,\lambda)=\frac{1}{2\lambda}exp\left(-\frac{|x-\theta|}{\lambda}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The cumulative density function looks even more impressive, yet rather easy
+ to integrate because of the absolute value in the formula:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F(x|\theta,\lambda)=\frac{1}{2}exp\left(-\frac{|x-\theta|}{\lambda}\right),when\left(x\leq\theta\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F(x|\theta,\lambda)=1-\frac{1}{2}exp\left(-\frac{|\theta-x|}{\lambda}\right),when\left(x>\theta\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The exponential distribution's probability density is defined for 
+\begin_inset Formula $x>0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Exponential(\lambda):\,\, f(x|\lambda)=\frac{1}{\lambda}exp(-x/\lambda),\, x>0
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Unlike the exponential, the Laplace is defined 
+\begin_inset Formula $-\infty<x<\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\theta=0,$
+\end_inset
+
+ then the probability density function for Laplace on 
+\begin_inset Formula $x>0$
+\end_inset
+
+ is equal to 1/2 of the probability of the exponential.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Laplace-and-Exponential"
+
+\end_inset
+
+, we illustrate this fact by plotting the probability density of the Laplace
+ on 
+\begin_inset Formula $(-15,15)$
+\end_inset
+
+ side-by-side with an exponential distribution, and then in the figure below,
+ one can observe that if the exponential is divided by half, then it is
+ equal to the Laplace.
+ The R code which generates the figure is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LaplaceMulti, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(2, 2)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq(-15, 15, by = 0.05) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace1 <- dlaplace(x1, location = 0, scale = 1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x1, mylaplace1, type = "l", xlab = "x", ylab = "P(x)", 
+\end_layout
+
+\begin_layout Plain Layout
+
+main="Laplace, location=0, scale=1")
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(0, 15, by = 0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+myexp1 <- dexp(x2, rate = 1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x2, myexp1, type = "l", xlab = "x", ylab = "P(x)", main = "Exponential,
+ rate=1")
+\end_layout
+
+\begin_layout Plain Layout
+
+myexp2 <- 0.5*dexp(x1,rate=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x1, myexp2, type = "l", xlab = "x", ylab = "0.5*P(x)", main = "0.5*Exponentia
+l PDF") 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chunk7, echo=T, results=HIDE>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(VGAM)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement b
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Laplace and Exponential 
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Laplace-and-Exponential"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<LaplaceMulti>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Moments
+\end_layout
+
+\begin_layout Standard
+The expected value of a Laplace distribution is
+\begin_inset Formula 
+\[
+E(x)=\theta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As in the case of other symmetrical distributions, such as the Normal and
+ the logistic distributions, Laplace's location is the same as its mean,
+ median, and mode.
+ 
+\end_layout
+
+\begin_layout Standard
+The variance is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(x)=2\lambda^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+From the Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Laplace-Distribution"
+
+\end_inset
+
+, we see that the scale parameter determines the width of the distribution.
+ From Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Impact-of-location"
+
+\end_inset
+
+, it is apparent that changing the location simply shifts the probability
+ density curve to the right or to the left.
+\end_layout
+
+\begin_layout Standard
+The Laplace can be compared against the Normal distribution.
+ Recall that a Normal distribution 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+ has an expected value of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and a variance equal to 
+\begin_inset Formula $\sigma^{2}.$
+\end_inset
+
+ Suppose we fix the mean of a Normal to equal the mean of a Laplace distribution
+, and then also match the variances of the two.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "LaplaceNormal"
+
+\end_inset
+
+, we compare 
+\begin_inset Formula $N(4,8)$
+\end_inset
+
+ and 
+\begin_inset Formula $L(4,2)$
+\end_inset
+
+, both of which have variance equal to 8.
+ The distributions appear to be quite similar, except that Laplace has higher
+ spike and slightly thicker tails .
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chunk7, echo=T, results=HIDE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(VGAM)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Laplace Density Function
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Laplace-Distribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LaplacePDF,echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-4,12, by=0.05) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace1 <- dlaplace(x, location=4, scale=2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace2 <- dlaplace(x, location=4, scale=4) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace3 <- dlaplace(x, location=4, scale=8)
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylaplace1,mylaplace2, mylaplace3), type="l", xlab="x",
+ ylab="P(x)",main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("Laplace(4,2)","Laplace(4,4)","Laplace(4,8)"),lty=1:3,
+ col=1:3) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+I
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Impact-of-location"
+
+\end_inset
+
+mpact of location change on Laplace Density Function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace1 <- dlaplace(x1, location=-2, scale=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace2 <- dlaplace(x1, location=2, scale=1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x1, mylaplace2, type = "n", xlab = "x", ylab = "P(x)", main = "Laplace,
+ scale=1")
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace3 <- dlaplace(x1, location = 5, scale = 1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace4 <- dlaplace(x1, location = 10, scale = 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x1, mylaplace1, lty = 1, col = 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x1, mylaplace2, lty = 2, col = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x1, mylaplace3, lty = 3, col = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x1, mylaplace4, lty = 4, col = 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft",c("location=-2", "location=2", "location=5", "location=10"),
+ lty=1:4, col=1:4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Laplace and Normal Densities
+\begin_inset CommandInset label
+LatexCommand label
+name "LaplaceNormal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<LaplacePDF2,echo=F, fig=T,height=9,width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-8,16, by = 0.05) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace1 <- dlaplace(x, location = 4, scale = 2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydnorm <- dnorm(x, mean = 4, sd = sqrt(8)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylaplace1, mydnorm), type = "l", xlab = "x", ylab = "P(x)",
+ main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("Laplace(4,2)", "Normal(4,8)"), lty=1:2, col=1:2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(8, 20, by = 0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+mylaplace1 <- dlaplace(x, location = 4, scale = 2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+mydnorm <- dnorm(x, mean = 4, sd = sqrt(8)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylaplace1, mydnorm), type = "l", xlab = "x", ylab = "P(x)",
+ main = "Expanded view, x>8",)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("Laplace(4,2)","Normal(4,8)"), lty = 1:2, col = 1:2)
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+If we have real-valued observations, the errors can be distributed either
+ in normal or in Laplace.
+ Let is take gene expression data as an example.
+ A distribution of gene expression errors tends to be in Laplace form.
+ Better yet, if the distribution is a bit asymmetric, there is an Asymmetric
+ Laplace to allow for this asymmetry.
+ 
+\end_layout
+
+\end_body
+\end_document

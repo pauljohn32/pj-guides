@@ -1,0 +1,2906 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+
+\usepackage{Sweavel}
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+GLM #2 (version 2)
+\begin_inset Newline newline
+\end_inset
+
+Residuals and analysis of fit
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Terms
+\end_layout
+
+\begin_layout Description
+canonical
+\begin_inset space ~
+\end_inset
+
+exponential
+\begin_inset space ~
+\end_inset
+
+distribution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(y_{i}|\theta_{i},\phi)=exp\left\{ \frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi}+h(y_{i},\phi)\right\} \label{eq:expfamily1}
+\end{equation}
+
+\end_inset
+
+ This is the probability of observing a particular outcome, 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, given parameters 
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Description
+linear
+\begin_inset space ~
+\end_inset
+
+predictor 
+\begin_inset Formula $\eta_{i}=X_{i}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+link
+\begin_inset space ~
+\end_inset
+
+function 
+\begin_inset Formula $\eta_{i}=g(\mu_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+inverse
+\begin_inset space ~
+\end_inset
+
+link
+\begin_inset space ~
+\end_inset
+
+function 
+\begin_inset Formula $\mu_{i}=g^{-1}(\eta_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+q
+\begin_inset space ~
+\end_inset
+
+function 
+\begin_inset Formula $\theta_{i}=q(\mu_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Variance
+\begin_inset space ~
+\end_inset
+
+function 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset
+
+ such that 
+\begin_inset Formula $Var(y_{i})=\phi V(\mu_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Sample R output
+\end_layout
+
+\begin_layout Standard
+Here is an example of a generalized linear model fitted with R.
+ This predicts the number of 
+\begin_inset Quotes eld
+\end_inset
+
+wasted ballots
+\begin_inset Quotes erd
+\end_inset
+
+ in Georgia counties as a function of the urban/rural classification of
+ the county, the percent African American, and the type of voting equiptment
+ that is used.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<0,eval=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(faraway) 
+\end_layout
+
+\begin_layout Plain Layout
+
+gavote$undercount <- gavote$ballots - gavote$votes 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<1,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+myPois1<- glm(undercount ~ rural+perAA+equip, family=poisson, data=gavote)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(myPois1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Deviance
+\end_layout
+
+\begin_layout Standard
+Notice that output from glm models indicating 
+\begin_inset Quotes eld
+\end_inset
+
+deviance
+\begin_inset Quotes erd
+\end_inset
+
+? 
+\end_layout
+
+\begin_layout Subsection
+Saturated model
+\end_layout
+
+\begin_layout Standard
+In the GLM literature, a benchmark for 
+\begin_inset Quotes eld
+\end_inset
+
+good fitting
+\begin_inset Quotes erd
+\end_inset
+
+ models is established by the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+saturated
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+saturated model
+\begin_inset Quotes erd
+\end_inset
+
+ allows the author to choose a predicted value 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ for each observation.
+ In most cases, the saturated model will fit perfectly, and 
+\begin_inset Formula $-2lnLikelihood(saturated\,model)=0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Deviance is a comparison of the saturated and fitted models
+\end_layout
+
+\begin_layout Standard
+The deviance is defined as the gap between the saturated model and the final
+ fitted model.
+ You can write that down as
+\begin_inset Formula 
+\[
+scaled\,model\,deviance=-2ln\left[\frac{L(fitted)}{L(saturated)}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+which is the same as the difference in 
+\begin_inset Formula $-2lnL$
+\end_inset
+
+ of the two models.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+scaled\,model\,deviance=2lnL(saturated\,model)-2lnL(fitted\,model)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This HAS THE APPEARANCE of a likelihood ratio test and one is tempted to
+ treat it as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ approximation.
+ But it isn't, as I labor to explain below.
+\end_layout
+
+\begin_layout Subsection
+Details on calculating scaled deviance, 
+\begin_inset Formula $D_{M}^{scaled}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose that 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is known.
+ Observe, the log likelihood for the fitted GLM is 
+\begin_inset Formula 
+\begin{equation}
+l(\hat{\theta},\phi|y)=\sum_{i=1}^{N}\frac{y_{i}\hat{\theta}_{i}-c(\hat{\theta}_{i})}{\phi}+h(y_{i},\phi)\label{eq:lnLThetahat}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and the log likelihood for the saturated model is
+\begin_inset Formula 
+\begin{equation}
+l(\check{\theta},\phi|y)=\sum_{i=1}^{N}\frac{y_{i}\breve{\theta}_{i}-c(\breve{\theta}_{i})}{\phi}+h(y_{i},\phi)\label{eq:lnLSaturated}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Note that when we subtract one from the other in order to calculate 
+\begin_inset Formula $D_{M}^{scaled}=2l(\hat{\theta}_{i})-2l(\breve{\theta}_{i})$
+\end_inset
+
+, the 
+\begin_inset Formula $h$
+\end_inset
+
+ terms cancel themselves out.
+ 
+\begin_inset Formula 
+\begin{equation}
+D_{M}^{scaled}=2\sum_{i=1}^{N}\frac{y_{i}(\hat{\theta}-\breve{\theta})-c(\hat{\theta}_{i})+c(\breve{\theta}_{i})}{\phi}\label{eq:DMScaled3}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+Its 
+\begin_inset Quotes eld
+\end_inset
+
+scaled
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that the dispersion parameter is used in the denominator.
+\end_layout
+
+\begin_layout Subsection
+About unscaled deviance
+\end_layout
+
+\begin_layout Standard
+Some books which discuss deviance are not referring to the scaled deviance,
+ rather a version that ignores 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ The unscaled Deviance depends only on the numerator in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:DMScaled3"
+
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+D_{M}=2\cdot\sum_{i=1}^{N}y_{i}(\hat{\theta}-\breve{\theta})-c(\hat{\theta}_{i})+c(\breve{\theta}_{i})\label{eq:Deviance}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and so the scaled deviance is just
+\begin_inset Formula 
+\begin{equation}
+D_{M}^{scaled}=\frac{D_{M}}{\phi}\label{eq:DMScaled3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Venables and Ripley observe, and I have to agree, that it is sometimes confusing
+ that some authors use the same term, 
+\begin_inset Quotes eld
+\end_inset
+
+residual deviance
+\begin_inset Quotes erd
+\end_inset
+
+ for 
+\begin_inset Formula $D_{M}$
+\end_inset
+
+ and 
+\begin_inset Formula $D_{M}^{scaled}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In all fairness, however, there are many distributions for which 
+\begin_inset Formula $\phi=1$
+\end_inset
+
+.
+ If you are working with one of those distributions, as was common in early
+ GLM research, then deviance and scaled deviance are the same thing (in
+ Dobson, for example, there is no dispersion parameter for this reason).
+ The parameter 
+\begin_inset Formula $\phi=1$
+\end_inset
+
+ in the Poisson and Binomial distributions.
+\end_layout
+
+\begin_layout Standard
+The output from PROC GENMOD in SAS, as illustrated in Myers, Montgomery,
+ and Vining, presents both the deviance and scaled deviance.
+ R presents just scaled deviance.
+\end_layout
+
+\begin_layout Section
+Hypothesis tests
+\end_layout
+
+\begin_layout Standard
+The two most widely used hypothesis tests are the Wald Chi-Square statistic
+ and the Likelihood Ratio Test.
+ The Wald Chi-Square test has some known flaws that should cause people
+ to be cautious about it in some models (especially clearly in a binomial/logist
+ic model).
+\end_layout
+
+\begin_layout Subsection
+Likelihood ratio test
+\end_layout
+
+\begin_layout Standard
+This is a test for 2 nested models.
+ There is a 
+\begin_inset Quotes eld
+\end_inset
+
+full fitted
+\begin_inset Quotes erd
+\end_inset
+
+ model and a 
+\begin_inset Quotes eld
+\end_inset
+
+small model
+\begin_inset Quotes erd
+\end_inset
+
+ that omits some variables.
+ The likelihood ratio test indicates if the small model's fit is significantly
+ worse than the big one.
+ 
+\begin_inset Formula 
+\[
+-2ln\left[\frac{L(small\,model)}{L(full\,model)}\right]\sim\chi_{f-s}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's the same as the difference in -2 times the log of the likelihood
+ of the 2 models.
+ 
+\begin_inset Formula 
+\[
+-2lnL(small\,model)+2lnL(full\,model)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The full model has 
+\begin_inset Formula $f$
+\end_inset
+
+ variables and the subset has 
+\begin_inset Formula $s$
+\end_inset
+
+ variables and so the test value is compared against a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ with 
+\begin_inset Formula $f-s$
+\end_inset
+
+ degrees of freedom.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Compare 2 deviances of nested models: you have a likelihood ratio test
+\end_layout
+
+\begin_layout Standard
+R does not report the likelihood values or 
+\begin_inset Formula $-2lnL$
+\end_inset
+
+, but it reports deviance.
+ Suppose the larger model has deviance
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+deviance_{full}=2lnL(saturated\,model)-2lnL(full\,model)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and the deviance of the model with some parameters omitted is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+deviance_{small}=2lnL(saturated\,model)-2lnL(small\,model)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Subtract the two deviances, and you will see a log likelihood test pop out.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+deviance_{small}-deviance_{full}=2LnL(full\,model)-2lnL(small\,model)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $L(saturated)$
+\end_inset
+
+ terms will cancel out.
+ So if you look at the difference of 2 deviances, you are actually calculating
+ the LLR.
+\end_layout
+
+\begin_layout Subsubsection
+Analysis of variance in R.
+\end_layout
+
+\begin_layout Standard
+In R, one can ask for the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+model chisquare
+\begin_inset Quotes erd
+\end_inset
+
+ with the commands anova and drop1 (or Anova from the car package) will
+ provide an LRT for the individual variables.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+anova(myPois1,test="Chisq")
+\end_layout
+
+\begin_layout Plain Layout
+
+drop1(myPois1, test="Chisq")
+\end_layout
+
+\begin_layout Plain Layout
+
+library(car)
+\end_layout
+
+\begin_layout Plain Layout
+
+Anova(myPois1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can also estimate the small model and use anova to compare the difference.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+myPois2<- glm(undercount ~ equip, family=poisson, data=gavote)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(myPois2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+anova(myPois2, myPois1,  test="Chisq")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Asymptotic 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Comparison of this value from your models against the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+distribution is an asymptotic approximation.
+ It would hold exactly if the sample size were infinite.
+ 
+\end_layout
+
+\begin_layout Standard
+The term 
+\begin_inset Quotes eld
+\end_inset
+
+model chi-square
+\begin_inset Quotes erd
+\end_inset
+
+ is a colloquialism to refer to the likelihood ratio test that compares
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+null
+\begin_inset Quotes erd
+\end_inset
+
+ model--one that fits only the intercept, and the full fitted model.
+ It is so commonly used that sometimes articles report it simply as 
+\begin_inset Formula $-2LLR$
+\end_inset
+
+ and the reader is supposed to know that it is a particular likelihood ratio
+ test.
+\end_layout
+
+\begin_layout Subsubsection
+Caution about 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ likelihood ratio tests when 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is estimated.
+\end_layout
+
+\begin_layout Standard
+In a Poisson regression, the parameter 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is not estimated.
+ But in a Gamma regression, it is.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is estimated (through whatever consistent estimator one prefers), then
+ the problem of interpreting the scaled deviance is raised.
+ If the scaled deviance was not distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ when 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is known, then how in the world could you proceed as though 
+\begin_inset Formula $D_{M}/\hat{\phi}$
+\end_inset
+
+ is 
+\begin_inset Formula $\chi_{N-p}^{2}$
+\end_inset
+
+? See Venables and Ripley (p.
+ 187).
+\end_layout
+
+\begin_layout Standard
+As in OLS modeling, Venables and Ripley suggest that the significance of
+ the impact of the omission of 
+\begin_inset Formula $k$
+\end_inset
+
+ parameters from a model that begins with 
+\begin_inset Formula $p$
+\end_inset
+
+ parameters is given by an approximate 
+\begin_inset Formula $F$
+\end_inset
+
+ test.
+ Recall 
+\begin_inset Formula $N$
+\end_inset
+
+ is the sample size.
+ 
+\begin_inset Formula 
+\begin{equation}
+\frac{D_{restricted}-D_{full}}{\hat{\phi}(p-k)}\sim F_{p-k,N-k}\label{eq:llrPhiEstimated}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+Of course, 
+\begin_inset Formula $(p-k)$
+\end_inset
+
+ is the number of omitted variables in the restricted model.
+ V&R caution about the use of this statistic, but I am a bit frustrated
+ that they don't explain precisely how one should be cautious.
+\end_layout
+
+\begin_layout Standard
+The anova and drop1 commands in R have an option to use an F test.
+\end_layout
+
+\begin_layout Subsection
+The Wald Test
+\end_layout
+
+\begin_layout Subsubsection
+Estimated Variance of 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Supposing that 
+\begin_inset Formula $\phi_{i}=\phi$
+\end_inset
+
+ for all observations, the weighted least squares estimate of 
+\begin_inset Formula $b$
+\end_inset
+
+ has variance-covariance matrix:
+\begin_inset Formula 
+\[
+V(\hat{b})=\phi^{2}\cdot(X'WX)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The matrix of weights is based on the estimates at the maximum likelihood
+ estimate:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+W=\left[\begin{array}{ccccc}
+\frac{1}{\phi V(\mu_{1})[g'(\mu_{1})]^{2}} & 0 & 0 & 0 & 0\\
+0 & \frac{1}{\phi V(\mu_{2})[g'(\mu_{2})]^{2}} & 0 & 0 & 0\\
+\vdots &  & \ddots &  & \vdots\\
+0 & 0 & 0 & \frac{1}{\phi V(\mu_{N-1})[g'(\mu_{N-1})]^{2}} & 0\\
+0 & 0 & 0 & 0 & \frac{1}{\phi V(\mu_{N})[g'(\mu_{N})]^{2}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that 
+\begin_inset Formula $g'(\mu_{i})=d\eta_{i}/d\mu_{i}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The different kinds of GLM have different values for 
+\begin_inset Formula $\phi$
+\end_inset
+
+, 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset
+
+ and 
+\begin_inset Formula $g'(\mu_{k})$
+\end_inset
+
+.
+ In a Normal model with an identity link, for example, the 
+\begin_inset Formula $V(\mu_{i})=1$
+\end_inset
+
+ and 
+\begin_inset Formula $g'(\mu_{i})=1,$
+\end_inset
+
+so the variance of the observations is all that remains, and if we assume
+ that is fixed (as we do in OLS), then the 
+\begin_inset Formula $W$
+\end_inset
+
+ matrix plays no role in estimation whatsoever.
+ 
+\end_layout
+
+\begin_layout Standard
+As usual, the standard errors 
+\begin_inset Formula $s.e.(b_{k})$
+\end_inset
+
+ are the square roots of the diagonal elements of 
+\begin_inset Formula $V(\hat{b})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Wald 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test for several coefficients
+\end_layout
+
+\begin_layout Standard
+Consider two null hypotheses: 
+\begin_inset Formula $H_{0}:b_{1}=K_{1},b_{2}=K_{2}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+W=\left[b_{1}-K_{1},b_{2}-K_{2}\right]\left[\begin{array}{cc}
+Var(\hat{b}_{1}) & Cov(\hat{b}_{1},\hat{b}_{2})\\
+Cov(\hat{b}_{1},\hat{b}_{2}) & Var(\hat{b}_{2})
+\end{array}\right]^{-1}\left[\begin{array}{c}
+b_{1}-K_{1}\\
+b_{2}-K_{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As the sample size goes to infinite, this is distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+critical value
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+p-values
+\begin_inset Quotes erd
+\end_inset
+
+ can be calculated approximately for samples.
+\end_layout
+
+\begin_layout Subsubsection
+Wald Test for a single coefficient looks like a 
+\begin_inset Formula $t^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Null hypothesis: 
+\begin_inset Formula $H_{o}:b_{k}=K$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When only a single coefficient is being tested, the above reduces to a much
+ simpler thing:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+W=\left[b_{k}-K\right]\left[Var(\hat{b}_{k})\right]^{-1}\left[b_{k}-K\right]=\frac{(\hat{b}_{k}-K)^{2}}{Var(\hat{b}_{k})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you replace 
+\begin_inset Formula $Var(\hat{b}_{k})$
+\end_inset
+
+ by the squared standard error, 
+\begin_inset Formula $s.e.(\hat{b}_{k})^{2}$
+\end_inset
+
+, then the Wald statistic looks like a squared t test from an ordinary regressio
+n
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+W=\left(\frac{\hat{b}_{k}-K}{s.e.(\hat{b}_{k})}\right)^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If the sample size were infinite, then that value would be distributed as
+ a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\frac{\hat{b}_{k}-K}{s.e.(\hat{b}_{k})}\right)^{2}\sim approximately\,\chi^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ is the square of the 
+\begin_inset Formula $Normal$
+\end_inset
+
+ distribution.
+ Because of that fact, when we are considering a single variable, it is
+ equivalent to take the square root and the result is treated as a standardized
+ Normal variable.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\hat{b}_{k}-K}{s.e.(\hat{b}_{k})}\sim approximately\,Normal(0,1)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, you sometimes see it reported as a 
+\begin_inset Formula $t$
+\end_inset
+
+ statistic.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Is that a t or a z statistic?
+\end_layout
+
+\begin_layout Standard
+On 2006-02-05, I learned something new in the r-help list! For the Poisson
+ and Binomial models, the parameter 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is assumed to be 1.0.
+ That means the standard error does not depend on any unknowns that are
+ estimated.
+ In such a situation, the glm's summary command reports the significance
+ tests as 
+\begin_inset Formula $z$
+\end_inset
+
+ statistics.
+ It does that because 
+\begin_inset Formula $z$
+\end_inset
+
+ is the right test for a model in which the standard error is 
+\series bold
+known.
+\end_layout
+
+\begin_layout Standard
+On the other hand, in models that estimate 
+\begin_inset Formula $\phi$
+\end_inset
+
+, then standard error is not known, but rather depends on estimate from
+ the data.
+ So the proper test is a 
+\begin_inset Formula $t$
+\end_inset
+
+ test.
+ It is a slight wrinkle, and many programs get this wrong.
+ Some always call the reported value a 
+\begin_inset Formula $z$
+\end_inset
+
+ or a 
+\begin_inset Formula $t$
+\end_inset
+
+ for all GLM.
+\end_layout
+
+\begin_layout Standard
+Either way, we are still talking about an asymptotic approximation, however.
+ And the asymptotic 
+\begin_inset Formula $t$
+\end_inset
+
+ is hardly different from the asymptotic 
+\begin_inset Formula $z$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Warning about the Wald test: Hauck/Donner effect.
+\end_layout
+
+\begin_layout Standard
+Sometimes, a binomial GLM will return estimates with a (deceptively subtle)
+ warning about fitted probabilities being 0 or 1.
+ That happens if you have "complete separation" or something close to it.
+\end_layout
+
+\begin_layout Standard
+Complete separation is the problem in which the 0 and 1 dependent variable
+ separates itself so that it appears the inputs perfectly predict outcomes.
+ Suppose the data separates itself, as in this crude drawing:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1,1,1,
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1,1,1,1,
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1,1,1,1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Y
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0,0,0,0,0,0,0,
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note, in the middle, the Y's are separated.
+ The predicted probabilities ought to be 0 for the left set of data and
+ 1 for the other.
+ 
+\end_layout
+
+\begin_layout Standard
+Here the slope in the middle is infinite, cannot be estimated.
+\end_layout
+
+\begin_layout Standard
+This can happen if you "dummy up" your variables so that a small population
+ segment is represented by a category (or combination of categories) such
+ as "Chinese-speaking Caucasian one-legged males who live in Dubuque, Iowa".
+ Observations like that may have homogeneous Y's, all 0's or all 1's in
+ your data.
+ Then logistic regression breaks.
+\end_layout
+
+\begin_layout Standard
+If you have truly complete separation or something close to it, then logit
+ estimation fails.
+ You probably should seriously rethink your data or your model.
+ Other times, you just get a warning, and that's where judgment and prudence
+ come into play.
+\end_layout
+
+\begin_layout Standard
+This problem is related to a problem with test statitics in Logistic regression
+ known as the Hauck-Donner effect.
+ It gets surprisingly little treatment in the textbooks.
+ I don't think I've ever seen it mentioned in an econometrics-style text.
+ It is in 
+\emph on
+Modern Applied Statistics with S/R
+\emph default
+ by Venables and Ripley, but that treatment is somewhat brief.
+ You will find this discussed in many statistically-oriented email lists,
+ especially r-help, but also others.
+ Here's an email post from Brian Ripley in the late 1990s that is more conversat
+ional:
+\end_layout
+
+\begin_layout Standard
+http://www.math.yorku.ca/Who/Faculty/Monette/S-news/0049.html
+\end_layout
+
+\begin_layout Standard
+I'd paraphrase the problem this way.
+ Consider the ratio of the parameter estimate to the standard error as the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+test statistic
+\begin_inset Quotes erd
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\frac{\hat{b}}{s.e.(\hat{b})}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Right now, I don't want to quibble right now about whether that's Normally
+ or t distributed.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ is huge, say nearly infinite, because of complete (or nearly complete separatio
+n) then the standard error is likely also to be massively huge, and the
+ resulting test statistic can be small.
+ Hauck and Donner showed that "Wald's test statistic decreased to zero as
+ the distance between the parameter estimate and null value increases." Ironicall
+y, then, as your Null gets more and more wrong, the Wald stat gets smaller
+ and smaller and you are less and able to reject a wrong Null.
+\end_layout
+
+\begin_layout Standard
+Hence Ripley's point in the email cited above, which says that, paradoxically,
+ if the value of 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ is either near zero or very far away from zero, the test statistic can
+ be small.
+\end_layout
+
+\begin_layout Standard
+The practical advice, then, is to run the model with all of the variables,
+ and then run again with the questionable one removed, and conduct a likelihood
+ ratio test.
+ In the past, I had expected that such a test would reach the same conclusion
+ as the Wald test.
+ I think most people expect it will lead to the same conclusion.
+ But Hauck & Donner show it is wrong to think that.
+ 
+\end_layout
+
+\begin_layout Standard
+While browsing in Jstor for the Hauck-Donner article (1977) I found a few
+ others you could also get.
+ I kept all of these in a folder in case you want to see them.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Wald's Test as Applied to Hypotheses in Logit Analysis,
+\begin_inset Quotes erd
+\end_inset
+
+ Walter W.
+ Hauck, Jr.; Allan Donner 
+\emph on
+Journal of the American Statistical Association
+\emph default
+ Vol.
+ 72, No.
+ 360 (Dec., 1977), pp.
+ 851-853
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+A Reminder of the Fallibility of the Wald Statistic,
+\begin_inset Quotes erd
+\end_inset
+
+ Thomas R.
+ Fears; Jacques Benichou; Mitchell H.
+ Gail 
+\emph on
+The American Statistician
+\emph default
+ Vol.
+ 50, No.
+ 3 (Aug., 1996), pp.
+ 226-227
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Understanding Wald's Test for Exponential Families,
+\begin_inset Quotes erd
+\end_inset
+
+ Nathan Mantel 
+\emph on
+The American Statistician
+\emph default
+ Vol.
+ 41, No.
+ 2 (May, 1987), pp.
+ 147-148
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+On the Use of Wald's Test in Exponential Families,
+\begin_inset Quotes erd
+\end_inset
+
+ Michael Vaeth 
+\emph on
+International Statistical Review / Revue Internationale de Statistique
+\emph default
+ Vol.
+ 53, No.
+ 2 (Aug., 1985), pp.
+ 199-214
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Judging Inference Adequacy in Logistic Regression,
+\begin_inset Quotes erd
+\end_inset
+
+ Dennis E.
+ Jennings 
+\emph on
+Journal of the American Statistical Association
+\emph default
+ Vol.
+ 81, No.
+ 394 (Jun., 1986), pp.
+ 471-476
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+A Note on Confidence Bands for the Logistic Response Curve,
+\begin_inset Quotes erd
+\end_inset
+
+ Walter W.
+ Hauck 
+\emph on
+The American Statistician
+\emph default
+ Vol.
+ 37, No.
+ 2 (May, 1983), pp.
+ 158-160
+\end_layout
+
+\begin_layout Standard
+I found at least one political science article that cites Hauck-Donner:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Issue Voting in Gubernatorial Elections: Abortion and Post-Webster Politics
+\begin_inset Quotes erd
+\end_inset
+
+ Elizabeth Adell Cook; Ted G.
+ Jelen; Clyde Wilcox 
+\emph on
+The Journal of Politics
+\emph default
+ Vol.
+ 56, No.
+ 1 (Feb., 1994), pp.
+ 187-199 
+\end_layout
+
+\begin_layout Section
+Residuals
+\end_layout
+
+\begin_layout Standard
+We want a way to spot cases that don't fit a model.
+ Residuals can do that, but there are many different kinds of residuals
+ for GLMs.
+\end_layout
+
+\begin_layout Standard
+If you were coming to this from an OLS perspective, you would expect that
+ the residual would be 
+\begin_inset Formula $y_{i}-\hat{y}_{i}$
+\end_inset
+
+.
+ In the GLM framework, you are tempted to replace 
+\begin_inset Formula $\hat{y}_{i}$
+\end_inset
+
+ with 
+\begin_inset Formula $\hat{\mu}_{i}$
+\end_inset
+
+.
+ However, that's not correct because 
+\begin_inset Formula $\hat{\mu}_{i}$
+\end_inset
+
+ is a prediction about the mean, while 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is an observed value.
+ Think of a logit model, where the 
+\begin_inset Quotes eld
+\end_inset
+
+predicted probability
+\begin_inset Quotes erd
+\end_inset
+
+ is the 
+\begin_inset Formula $\hat{\mu_{i}}$
+\end_inset
+
+.
+ Is the residual equal to the difference between the observed 1 (or 0) and
+ 
+\begin_inset Formula $\hat{\mu_{i}}$
+\end_inset
+
+? 
+\end_layout
+
+\begin_layout Standard
+I don't think so.
+\end_layout
+
+\begin_layout Standard
+Nobody intelligent does.
+\end_layout
+
+\begin_layout Standard
+Several alternative residuals have been recommended.
+ Notice that if you fit a model in R, and then want the residuals, you can
+ specify 5 kinds of residuals.
+\end_layout
+
+\begin_layout Quote
+help(residuals.glm)
+\end_layout
+
+\begin_layout Quote
+Accessing Generalized Linear Model Fits
+\end_layout
+
+\begin_layout Quote
+Description:
+\end_layout
+
+\begin_layout Quote
+These functions are all 'methods' for class 'glm' or 'summary.glm' objects.
+\end_layout
+
+\begin_layout Quote
+Usage:
+\end_layout
+
+\begin_layout Quote
+## S3 method for class 'glm':      family(object, ...)
+\end_layout
+
+\begin_layout Quote
+## S3 method for class 'glm':      residuals(object, type = c("deviance",
+ "pearson", "working",  "response", "partial"), ...)
+\end_layout
+
+\begin_layout Quote
+Arguments:
+\end_layout
+
+\begin_layout Quote
+object: an object of class 'glm', typically the result of a call to    
+       'glm'.
+\end_layout
+
+\begin_layout Quote
+type: the type of residuals which should be returned.
+ The           alternatives are: '"deviance"' (default), '"pearson"',  '"working
+"', '"response"', and '"partial"'.
+\end_layout
+
+\begin_layout Standard
+I'm focusing on deviance residuals and Pearson residuals
+\end_layout
+
+\begin_layout Subsection
+Unscaled Deviance Residuals
+\end_layout
+
+\begin_layout Standard
+The (unscaled) deviance (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Deviance"
+
+\end_inset
+
+) is the source the deviance residual.
+ That is so because the 
+\begin_inset Formula $D_{M}$
+\end_inset
+
+ can be written as a sum of 
+\begin_inset Formula $N$
+\end_inset
+
+ terms, one for each observation.
+ Call an individual element in this sum 
+\begin_inset Formula $D_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+deviance residual
+\emph default
+ is defined as the square root of 
+\begin_inset Formula $D_{i}$
+\end_inset
+
+ with the special condition that its sign is the same as 
+\begin_inset Formula $(y_{i}-\hat{\mu}_{i}).$
+\end_inset
+
+ If 
+\begin_inset Formula $(y_{i}-\hat{\mu}_{i})>0$
+\end_inset
+
+, for example, we want the value to be 
+\begin_inset Formula $+\sqrt{D_{i}}$
+\end_inset
+
+).
+ Let's call this 
+\begin_inset Formula $rd_{i}$
+\end_inset
+
+.
+\begin_inset Formula 
+\[
+rd_{i}=[sign(y_{i}-\hat{\mu}_{i})]\cdot\sqrt{D_{i}}
+\]
+
+\end_inset
+
+It is easy to see that one can compare the deviances of the observations
+ in order to see which particular cases deviate from the fitted model.
+\end_layout
+
+\begin_layout Subsection
+Pearson's Residual
+\end_layout
+
+\begin_layout Standard
+Standardize the residual according to the variance function, 
+\begin_inset Formula $V(\mu)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+rp_{i}=\frac{(y_{i}-\hat{\mu}_{i})}{\sqrt{V(\hat{\mu}_{i})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In my opinion, the Pearson residual is the most intuitive and logical residual.
+ However, it is widely noted that 
+\begin_inset Formula $rp_{i}$
+\end_inset
+
+ is decidedly skewed in many GLM applications.
+ Hence, it can be misleading to use this to identify outliers.
+ It is widely recommended that, for diagnostic purposes--to spot outliers
+ or influential observations--one ought to use the deviance residuals instead.
+\end_layout
+
+\begin_layout Standard
+The Pearson residual is not completely useless, however, as we shall see
+ in a minute.
+\end_layout
+
+\begin_layout Section
+Goodness of Fit
+\end_layout
+
+\begin_layout Standard
+The goodness of fit is assessed by two different statistics, the deviance
+ and the Pearson 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic.
+ Both of these are approximate for small samples, although for very large
+ samples they are statistically equivalent.
+ There appears to be a difference of opinion among authors about which ought
+ to be used for small samples.
+ Both agree neither is great.
+\end_layout
+
+\begin_layout Subsection
+What does Deviance mean for goodness of fit?
+\end_layout
+
+\begin_layout Enumerate
+If the deviance is huge, then the model 
+\begin_inset Quotes eld
+\end_inset
+
+doesn't fit very well.
+\begin_inset Quotes erd
+\end_inset
+
+ And if deviance is small, it 
+\begin_inset Quotes eld
+\end_inset
+
+fits well.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Can we be more specific than that? Surprisingly, the answer is no! Frustratingly.
+\end_layout
+
+\begin_layout Standard
+It is a widely used 
+\begin_inset Quotes eld
+\end_inset
+
+rule of thumb
+\begin_inset Quotes erd
+\end_inset
+
+ that a model does not fit too badly if 
+\begin_inset Formula $D_{M}^{scaled}$
+\end_inset
+
+is not significantly greater than 
+\begin_inset Formula $N-p.$
+\end_inset
+
+ But people should be more cautious.
+\end_layout
+
+\begin_layout Standard
+They often claim that the deviance is asymptotically distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ variable.
+ 
+\begin_inset Formula 
+\begin{equation}
+D_{M}^{scaled}=\frac{D_{M}}{\phi}=-2ln\left(\frac{L(\hat{b})}{L(\breve{b})}\right)/\phi\sim\chi_{N-p}^{2}\label{eq:DMScaled4}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+People act as though this is a likelihood ratio test, and consider deviance
+ as an 
+\begin_inset Quotes eld
+\end_inset
+
+approximate chi-square
+\begin_inset Quotes erd
+\end_inset
+
+ variable.
+ For an example, see Myers, Montgomery and Vining (2002, p.
+ 113).
+ 
+\end_layout
+
+\begin_layout Standard
+This 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ approximation is valid only for Normally distributed variables, however,
+ and only if 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is known (not estimated from data).
+\end_layout
+
+\begin_layout Standard
+This reasoning, while widely practiced, is technically wrong.
+ David Firth's essay on GLM observes that it is not truly distributed as
+ a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ (p.
+ 68).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+These models are trivially nested, and it is tempting to conclude from sec.
+ 3.5.1 that the deviance is distributed approximately as 
+\begin_inset Formula $\phi$
+\end_inset
+
+ times a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+random variable if the fitted model holds.
+ However, standard theory leading to the 
+\begin_inset Formula $\chi_{p_{B}-p_{A}}^{2}$
+\end_inset
+
+ approximation for the null distribution of the log-likelihood ratio statistic
+ is based on the limit as 
+\begin_inset Formula $n\rightarrow\infty$
+\end_inset
+
+with 
+\begin_inset Formula $p_{A}$
+\end_inset
+
+(clarification: the rank--number of rows of data--of model A) and 
+\begin_inset Formula $p_{B}$
+\end_inset
+
+(the rank of model B) both fixed.
+ If B is the saturated model, 
+\begin_inset Formula $p_{B}=n$
+\end_inset
+
+ and so the standard theory does not apply.
+ The deviance does not, in general, have an asymptotic 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ distribution in the limit as the number of observations increases; as a
+ consequence, the distribution of the deviance may be far from 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+, even if 
+\begin_inset Formula $n$
+\end_inset
+
+ is very large.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+He goes on to argue, however, that there are cases in which the deviance
+ is something like a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ variable.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+In situations where the information content of each observation is itself
+ large, consideration of the limit as 
+\begin_inset Formula $n\rightarrow\infty$
+\end_inset
+
+may be unnecessary.
+ Such situations include Poisson models with large 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+, binomial models with large 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+, and gamma models with small 
+\begin_inset Formula $\phi$
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+(p.
+ 69) .
+\end_layout
+
+\begin_layout Standard
+Venables and Ripley observe the same problem with the use of the 
+\begin_inset Quotes eld
+\end_inset
+
+rule of thumb.
+\begin_inset Quotes erd
+\end_inset
+
+ They observe 
+\begin_inset Quotes eld
+\end_inset
+
+sufficient (if not always necessary) conditions under which 
+\begin_inset Formula $\chi^{2}/\phi\sim\chi_{N-p}^{2}$
+\end_inset
+
+ becomes approximately true are that the individual distributions for the
+ components 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ should become closer to normal form and the link effectively closer to
+ an identity link.
+ The approximation will 
+\emph on
+not
+\emph default
+ improve as the sample size N increases since the number of parameters under
+ S also increases and the usual likelihood ratio approximation argument
+ does not apply.
+ Nevertheless, (it) may sometimes be a good approximation...
+\begin_inset Quotes erd
+\end_inset
+
+ (p.
+ 187).
+\end_layout
+
+\begin_layout Subsection
+Pearson's 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As a measure of 
+\begin_inset Quotes eld
+\end_inset
+
+badness of fit
+\begin_inset Quotes erd
+\end_inset
+
+, the Pearson 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ is frequently recommended.
+ For a categorical dependent variable, this indicator is quite reminiscent
+ of the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic that is familiar from the analysis of crosstabulation tables.
+ For details, consult Dobson (p.
+ 125).
+\end_layout
+
+\begin_layout Standard
+The Pearson 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+statistic (a measure of 
+\begin_inset Quotes eld
+\end_inset
+
+badness of fit
+\begin_inset Quotes erd
+\end_inset
+
+) is calculated as a sum of squared Pearson residuals:
+\begin_inset Formula 
+\[
+Pearson's\,\chi^{2}=\sum_{i=1}^{N}rp_{i}^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+For large samples, Pearson's 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ is distributed as 
+\begin_inset Formula $\chi_{N-p}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Overdispersion
+\end_layout
+
+\begin_layout Standard
+Recall that 
+\begin_inset Formula $Var(y_{i})=\phi\cdot V(\mu_{i}).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+That is, the variance of observed 
+\begin_inset Formula $y$
+\end_inset
+
+ has 2 parts, one that is linked to the dispersion parameter and one that
+ is linked to 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+.
+ Many of the 
+\begin_inset Quotes eld
+\end_inset
+
+garden variety
+\begin_inset Quotes erd
+\end_inset
+
+ GLMs (logistic regression, Poisson count) are designed with the assumption
+ that 
+\begin_inset Formula $\phi=1$
+\end_inset
+
+.
+ That is frequently violated in practice, hence there is over-dispersion.
+\end_layout
+
+\begin_layout Standard
+Suppose you build a model around the premise that the distribution of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is Binomial or Poisson.
+ In the structure of both of these distributions, there is a definite, mathemati
+cally clear, well known linkage between the observed variance and the value
+ of the mean.
+ The distribution-specific function 
+\begin_inset Formula $V(\mu_{i}$
+\end_inset
+
+) is the relationship between the value of the mean, 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+, and the variance of observed 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Poisson: 
+\begin_inset Formula $V(\mu_{i})=\mu_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Binomial: 
+\begin_inset Formula $V(\mu_{i})=n\cdot\mu_{i}(1-\mu_{i})$
+\end_inset
+
+ [where 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ is the probability that a particular test succeeds and n is the number
+ of tests conducted with the probability 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+]
+\end_layout
+
+\begin_layout Standard
+Models based on these distributions assume that the dispersion parameter
+ 
+\begin_inset Formula $\phi=1$
+\end_inset
+
+ and the variance of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ will follow 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If that is not true in practice, then one has 
+\begin_inset Quotes eld
+\end_inset
+
+over dispersion
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+extra binomial variation
+\begin_inset Quotes erd
+\end_inset
+
+ or such (see MM&V, p.
+ 126).
+ 
+\end_layout
+
+\begin_layout Standard
+As far as I know, there are 3 things that can be done about over-dispersion.
+\end_layout
+
+\begin_layout Standard
+1.
+ Apply a correction for the standard errors of the 
+\begin_inset Formula $b's$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If over-dispersion is present, then the ML estimates of the 
+\begin_inset Formula $b$
+\end_inset
+
+'s are still asymptotically unbiased, but their variance does not match
+ the variance/covariance matrix that is provided by computer programs.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+correction
+\begin_inset Quotes erd
+\end_inset
+
+ for overdispersion is to multiply the 
+\begin_inset Formula $s.e.(\hat{b})$
+\end_inset
+
+ by an estimate of 
+\begin_inset Formula $\phi$
+\end_inset
+
+ (see Myers, Montgomery, and Vining, p.
+ 128).
+\end_layout
+
+\begin_layout Standard
+2.
+ Change the model.
+ One should revise the model to incorporate the right amount of variance.
+ In the Negative Binomial model for count data, for example, one begins
+ with a Poisson model and then incorporates a new source of randomness.
+ This is what Gary King's Generalized Event Count approach is all about.
+\end_layout
+
+\begin_layout Standard
+3.
+ Adopt a quasi-likelihood framework.
+ This is outside the scope of this handout, but, the gist is that one drops
+ most of the details of the GLM and the exponential family, instead specifying
+ only the mean and the variance of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ That means you can specify the right amount of variance for your model.
+\end_layout
+
+\begin_layout Standard
+No matter which approach you take, it is necessary to estimate 
+\begin_inset Formula $\phi.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Digression on the Normally distributed dependent variable
+\end_layout
+
+\begin_layout Standard
+You may wonder why overdispersion is not an issue in the Normal model.
+ Well, it is, really.
+ Notice for the normal
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $V(\mu_{i})=1$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(That's a statement of homoskedasticity.) As a result, 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is responsible for 
+\emph on
+all of the variance
+\emph default
+ observed in a model that uses the Normal distribution.
+ The familiar estimate from OLS, 
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+ , the 
+\begin_inset Formula $MSE$
+\end_inset
+
+ (Mean Square Error) is just an estimate of 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Estimating 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There's a comment in Venables & Ripley (p.
+ 185) that 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ are orthogonal.
+ They observe 
+\begin_inset Formula 
+\[
+E\left[\frac{\partial l(\theta,\phi|y_{i})}{\partial\theta\partial\phi}\right]=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That means that, generally speaking, the likelihood's response to changes
+ in 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is not affected by changes in 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $\phi$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta$
+\end_inset
+
+ can be estimated separately.
+ 
+\end_layout
+
+\begin_layout Standard
+And its a good thing.
+ There's pretty much controversy over how to estimate 
+\begin_inset Formula $\phi$
+\end_inset
+
+, and if that tainted estimates of the 
+\begin_inset Formula $b$
+\end_inset
+
+'s, then the whole GLM exercise would be tedious and uncertain.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Roadmap
+\end_layout
+
+\begin_layout Standard
+Now we'll compare 3 ways to estimate 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ All of these are 
+\begin_inset Quotes eld
+\end_inset
+
+moment methods.
+\begin_inset Quotes erd
+\end_inset
+
+ That means we try to match up a summary statistic from the observations
+ against a theoretically inspired quantity.
+\end_layout
+
+\begin_layout Subsection
+ML estimate of 
+\begin_inset Formula $\phi.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you use the ML approach with the standard log likelihood, you arrive
+ at:
+\begin_inset Formula 
+\[
+\hat{\phi}_{M}=\frac{\sum_{i=1}^{N}(y_{i}-\hat{\mu}_{i})^{2}}{N}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+That is a biased estimate of 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The correction for bias is to adjust the denominator
+\begin_inset Formula 
+\[
+\hat{\phi}_{M}=\frac{\sum_{i=1}^{N}(y_{i}-\hat{\mu}_{i})^{2}}{N-p}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+but that's not an ML estimator anymore.
+ So you have to check the formula details when people talk about ML estimates.
+\end_layout
+
+\begin_layout Standard
+I notice some SAS procedures use this by default, but the statistics books
+ don't recommend it.
+\end_layout
+
+\begin_layout Subsection
+Scaled deviance estimate of 
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Venables & Ripley (p.
+ 186) note that the scaled deviance is distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic with 
+\begin_inset Formula $N-p$
+\end_inset
+
+ degrees of freedom.
+\begin_inset Formula 
+\[
+\frac{D_{M}}{\phi}\sim\chi_{N-p}^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The average value of a 
+\begin_inset Formula $\chi_{N-p}^{2}$
+\end_inset
+
+ is 
+\begin_inset Formula $N-p$
+\end_inset
+
+.
+ According to V&R, the Deviance-based (they say customary) estimator for
+ 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+\hat{\phi}=\frac{D_{M}}{N-p}\label{eq:PhiDeviance}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\phi$
+\end_inset
+
+ Estimated as the average of Pearson residuals
+\end_layout
+
+\begin_layout Standard
+Average of standardized 
+\begin_inset Formula $rp_{i}$
+\end_inset
+
+ , adjusting for degrees of freedom (after estimating 
+\begin_inset Formula $p$
+\end_inset
+
+ parameters, 
+\begin_inset Formula $df=N-p$
+\end_inset
+
+).
+\begin_inset Formula 
+\begin{equation}
+\hat{\phi}=\frac{1}{N-p}\sum_{i=1}^{N}\frac{(y_{i}-\hat{\mu}_{i})^{2}}{V(\hat{\mu}_{i})}\label{eq:PhiPearson}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+What's the best way to estimate 
+\begin_inset Formula $\phi$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+V&R prefer the estimator for 
+\begin_inset Formula $\phi$
+\end_inset
+
+ that is based on Pearson's residuals.
+ They say it has better small sample properties (this is especially important
+ at least in the Binomial and Poisson cases).
+\end_layout
+
+\begin_layout Quote
+A common way to 'discover' over- or underdispersion is to notice that the
+ residual deviance is appreciably different from the residual degrees of
+ freedom...
+ This can be seriously misleading.
+ The theory is asymptotic.
+ The estimate of 
+\begin_inset Formula $\phi$
+\end_inset
+
+ used by summary.glm (if allowed to estimate the dispersion) is the (weighted)
+ sum of the squared Pearson residuals divided by the residual degrees of
+ freedom...
+ This has much less bias than the other estimator sometimes proposed, namely
+ the deviance (or sum of squared deviance residuals) divided by the residual
+ degrees of freedom (V&R, MASS 4ed, p.
+ 208 ).
+\end_layout
+
+\begin_layout Standard
+They mention that in the MASS package's glm functions, the estimate of dispersio
+n is based on the Pearson residuals.
+\end_layout
+
+\begin_layout Standard
+Myers, Montgomery and Vining report on a simulation study of estimators
+ of 
+\begin_inset Formula $\phi$
+\end_inset
+
+(p.
+ 261).
+ Their results are not completely decisive.
+ The ML results are biased (as we already knew), but they are lower in variance.
+ The Pearson and Deviance based estimates are similar, with a slight edge
+ to the Pearson results.
+\end_layout
+
+\begin_layout Section
+Other Goodness of Fit indicators
+\end_layout
+
+\begin_layout Standard
+Should you always choose the model with the highest log likelihood? Maybe
+ not.
+ 
+\end_layout
+
+\begin_layout Standard
+You should penalize your model for the number of fitted parameters, so something
+ in the nature of an 
+\begin_inset Formula $adjusted\,R^{2}$
+\end_inset
+
+ is needed.
+ In that context, you will find people using various adjustments on the
+ log likelihood.
+ That is what the AIC and BIC are all about.
+\end_layout
+
+\begin_layout Standard
+Akaike's Information Criterion (AIC).
+ In R's AIC() documentation, the formula for AIC is given as
+\begin_inset Formula 
+\[
+AIC=-2lnL+2*npar
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+This penalizes the fitted value of 
+\begin_inset Formula $=2lnL$
+\end_inset
+
+ (which is a positive value), and adds a penalty that depends on the number
+ of fitted parameters.
+\end_layout
+
+\begin_layout Standard
+Bayesian Information Criterion (BIC) replaces the value of 
+\begin_inset Formula $2$
+\end_inset
+
+ with the natural log of the sample size.
+ That means the penalty for additional coefficients is more severe and the
+ BIC is 
+\begin_inset Quotes eld
+\end_inset
+
+worse
+\begin_inset Quotes erd
+\end_inset
+
+ than the AIC.
+\begin_inset Formula 
+\[
+BIC=-2lnL+ln(N)*npar
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

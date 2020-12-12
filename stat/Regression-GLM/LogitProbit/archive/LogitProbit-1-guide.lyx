@@ -1,0 +1,3492 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass rliterate-article
+\begin_preamble
+\usepackage{latexsym}
+\usepackage{graphicx}
+
+
+%\usepackage{psfig}
+\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Logistic Regression Introduction
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Standard
+
+\lang american
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%suggested by Ihaka's note on Improving Sweave 
+\end_layout
+
+\begin_layout Plain Layout
+
+%%%tighten up text output from R
+\end_layout
+
+\begin_layout Plain Layout
+
+%shorten line length
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=false>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=60)
+\end_layout
+
+\begin_layout Plain Layout
+
+system("mkdir plots")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/logit} 
+\end_layout
+
+\begin_layout Plain Layout
+
+%%Prevent printing of + as continuation in R output
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=false>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(continue=" ") 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Times Have Changed
+\end_layout
+
+\begin_layout Standard
+Logistic regression is one of my areas of special interest.
+ I first learned of it in 1981, when the only way to estimate these models
+ was to buy a computer tape and send it to CalTech, where Richard McKelvey's
+ students would copy some Fortran programs onto the tape and then send it
+ back.
+ 
+\end_layout
+
+\begin_layout Standard
+In those days, Logistic regression was new and unfamiliar and, somewhat
+ bizarrely in my view, seen by many as an unnecessary complication in the
+ regression modeling process.
+ 
+\end_layout
+
+\begin_layout Standard
+In 1987, when I started teaching at KU, the SPSS statistical package did
+ not include procedures for logistic regression.
+ SAS offered an experimental routine called 
+\begin_inset Quotes eld
+\end_inset
+
+Logistic
+\begin_inset Quotes erd
+\end_inset
+
+ that was contributed by Frank Harrell, who has since moved on to write
+ procedures for S+/R.
+ Political scientist Doug Rivers wrote a DOS program that he called SST
+ and it was commercialized for a while, at least until LimDep, the program
+ written by William Greene (to go along with his massively successful econometri
+cs textbook) hit the market.
+ In all of these packages, logistic regression was treated as a special
+ case.
+\end_layout
+
+\begin_layout Standard
+In 1989, McCullagh and Nelder published their book 
+\emph on
+Generalized Linear Models
+\emph default
+ and the logistic regression model was recast into a family of models.
+ In the S+/R statistical packages, the generalized linear model framework
+ is adopted, and a logit model is fitted with a 
+\begin_inset Quotes eld
+\end_inset
+
+binomial distribution
+\begin_inset Quotes erd
+\end_inset
+
+ and a 
+\begin_inset Quotes eld
+\end_inset
+
+logit link
+\begin_inset Quotes erd
+\end_inset
+
+ function.
+ For example,
+\end_layout
+
+\begin_layout LyX-Code
+myLogit <- glm(y ~ x1+x2, data=whatever, family=binomial(link=logit))
+\end_layout
+
+\begin_layout Standard
+The glm procedure assumes the link is logit unless you specify otherwise,
+ so that can simply be written
+\end_layout
+
+\begin_layout LyX-Code
+myLogit <- glm(y ~ x1+x2, data=whatever, family=binomial)
+\end_layout
+
+\begin_layout Standard
+If instead you want the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+probit
+\begin_inset Quotes erd
+\end_inset
+
+ model, one simply changes the link:
+\end_layout
+
+\begin_layout LyX-Code
+myLogit <- glm(y ~ x1+x2, data=whatever, family=binomial(link=probit))
+\end_layout
+
+\begin_layout Standard
+As you might have guessed, there are many other link functions that can
+ be used.
+ I've always wondered if I could find a use for the option link=cauchit,
+ but only because I think that it is fun to say that out loud.
+ It sounds like a sneeze! I've never used link=cloglog, but it sounds fun
+ too.
+\end_layout
+
+\begin_layout Standard
+One of the main benefits of the GLM approach is that the same estimation
+ routine can be used for many different theories; it is thus mainly a benefit
+ to the people who write programs.
+ To the users--like us--perhaps we don't care so much that the programmers
+ save time or that their work is more coherent.
+ Many of us are just as happy if they have to write completely separate
+ programs for all of these models that are only slightly different.
+ 
+\end_layout
+
+\begin_layout Standard
+But the experts who develop these models are also doing the programming,
+ of course, and so we, 
+\begin_inset Quotes eld
+\end_inset
+
+the users,
+\begin_inset Quotes erd
+\end_inset
+
+ have to try to understand what they are talking about.
+ Regression for categorical dependent variables--logistic, probit, or whatever,
+ is not conceptually difficult.
+ But it is difficult in practice because there are many competing sets of
+ terminology for it.
+ It is difficult to teach because it has been developed from several different--
+and I mean completely different--schools of thought.
+ 
+\end_layout
+
+\begin_layout Section
+Funny Looking Graphs!
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:sec1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is dichotomous
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is coded 0 and 1, representing answers to a Yes or No question.
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dichplot1"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(44444)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- 25:75
+\end_layout
+
+\begin_layout Plain Layout
+
+p= 1/(1+exp(2-0.05*x))
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- rbinom(length(x), size=1, prob=p)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<a, echo=F,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y,ylim=c(-.2,1.2),xlab="Normally distributed input", ylab="dichotomous
+ output", type="n")
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,pch=16,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Plot a dichotomous Y
+\begin_inset CommandInset label
+LatexCommand label
+name "dichplot1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=TRUE,echo=F,width=6,height=5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<a>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace medskip
+\end_inset
+
+Suppose you fit a straight line through that distribution of observations.
+ Go ahead, knock yourself out! See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dichplot1"
+
+\end_inset
+
+.
+\begin_inset VSpace medskip
+\end_inset
+
+Before logistic regresion was widely known, this was the best we could do.
+ It was called a 
+\begin_inset Quotes eld
+\end_inset
+
+linear probability model
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The theory is that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}X_{i}+e_{i}\label{ols1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If 
+\begin_inset Formula $E(e_{i})=0$
+\end_inset
+
+, then the predicted value can be thought of as the probability of 
+\begin_inset Formula $y_{i}=1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Fit OLS with the Dichotomous Data
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Fit-OLS-with"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The Straight Line is Obviously wrong.
+\end_layout
+
+\begin_layout Subsection*
+OLS predicts out of range.
+\end_layout
+
+\begin_layout Standard
+As long as 
+\begin_inset Formula $b_{1}\ne0$
+\end_inset
+
+, the line representing predicted values will go above 1 and below 0.
+ This is evident if we construct a more extreme example.
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:OLS-out-of"
+
+\end_inset
+
+.
+ What do you say about the bottom left and top right?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(0,150,length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+expbx <- exp((-1)*(-10+.145*x))
+\end_layout
+
+\begin_layout Plain Layout
+
+ProbY1 <- 1/(1+expbx)
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:200){y[i] <- rbinom(1,1, ProbY1[i]) }
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+modl2 <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+@ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+OLS out of range
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:OLS-out-of"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=TRUE, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, ylim=c(-0.3,1.5),type="n");
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x,y,cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(modl2);
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(c(0,150),c(0,0),lty=c(2)); lines(c(0,150),c(1,1),lty=c(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+@ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+You could 'truncate' the predicted values at 0 and 1, I suppose...
+\end_layout
+
+\begin_layout Standard
+To prevent the OLS model from going out of bounds, one approach is to insert
+ 
+\begin_inset Quotes eld
+\end_inset
+
+kinks
+\begin_inset Quotes erd
+\end_inset
+
+ in the fitted line.
+ That will constrain the predictions so that they can't go above 0 or 1.
+ This is a constrained linear probability model.
+ 
+\end_layout
+
+\begin_layout Standard
+It has all kinds of unattractive features, including 
+\end_layout
+
+\begin_layout Enumerate
+Sharp kinks in the predicted value curve are theoretically unappealing.
+ Why would it be that the input has no effect, then a linear effect, then
+ no effect again?
+\end_layout
+
+\begin_layout Enumerate
+Does 
+\begin_inset Formula $\hat{y}_{i}=0$
+\end_inset
+
+ mean something is actually impossible? Does 
+\begin_inset Formula $\hat{y}_{i}=1$
+\end_inset
+
+ mean something is certain to happen? Sometimes a model will state that
+ a 
+\begin_inset Formula $1$
+\end_inset
+
+ is certain to happen, and yet the observation is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ Something 
+\begin_inset Quotes eld
+\end_inset
+
+impossible
+\begin_inset Quotes erd
+\end_inset
+
+ happened! Does it mean the whole model is wrong? 
+\end_layout
+
+\begin_layout Enumerate
+I don't know of an estimation method that actually tries to account for
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+kinks
+\begin_inset Quotes erd
+\end_inset
+
+ in the predicted values.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Heteroskedasticity.
+\end_layout
+
+\begin_layout Standard
+Newcomers should skip this section.
+ It is included only for completeness.
+\end_layout
+
+\begin_layout Standard
+Recall that OLS assumes the variance of the error term is the same for all
+ cases.
+ It seems obvious cannot apply in the linear probability model.
+ If 
+\begin_inset Formula $\hat{y}_{i}=0.5,$
+\end_inset
+
+ then we are very uncertain about the outcome, so it will have an error
+ with high variance.
+ On the other hand, if 
+\begin_inset Formula $\hat{y}_{i}=0.99$
+\end_inset
+
+, then we are very very confident the outcome will be 
+\begin_inset Formula $1$
+\end_inset
+
+, and the error term cannot have the same variance.
+ 
+\end_layout
+
+\begin_layout Standard
+You may recall that a vital, indispensable assumption in regression is that
+ 
+\begin_inset Formula $E(e_{i})=0$
+\end_inset
+
+ is vital.
+ For any given value of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, note that the error term has to make up the difference between 
+\begin_inset Formula $b_{0}+b_{1}\cdot X_{i}$
+\end_inset
+
+ and the true value, 1 or 0.
+ Hence the error term must be either 
+\begin_inset Formula $1-b_{0}-b_{1}\cdot X_{i}$
+\end_inset
+
+ or 
+\begin_inset Formula $+b_{0}+b_{1}\cdot X_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $P_{i}$
+\end_inset
+
+ be the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is 1.
+ That is, 
+\begin_inset Formula $P_{i}=b_{0}+b_{1}\cdot X_{i}$
+\end_inset
+
+.
+ Note this is not the predicted value from an estimated equation--it is
+ the probability from the equation with the true values of 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ inserted.
+\end_layout
+
+\begin_layout Standard
+To repeat the story in the previous paragraph, if 
+\begin_inset Formula $y_{i}=1$
+\end_inset
+
+, then the error term must be 
+\begin_inset Formula $1-P_{i}$
+\end_inset
+
+, because this amount goes from 
+\begin_inset Formula $P_{i}$
+\end_inset
+
+ up to 1.
+ Similarly, the probability that 
+\begin_inset Formula $y_{i}=0$
+\end_inset
+
+ is 
+\begin_inset Formula $(1-P_{i})$
+\end_inset
+
+.
+ And, if 
+\begin_inset Formula $y_{i}=0$
+\end_inset
+
+, that must mean the error term is 
+\begin_inset Formula $-P_{i}$
+\end_inset
+
+, because that is the amount you have to take away from 
+\begin_inset Formula $P_{i}$
+\end_inset
+
+ to get down to zero.
+ Hence, for a particular value of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, the expected value of the error term must be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[e_{i}]=(1-P_{i})P_{i}+P_{i}(1-P_{i})=0\label{eqn}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By the same logic, the variance of the error term is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c}
+E(e_{i}^{2})=(1-P_{i})P_{i}^{2}+P_{i}(1-P_{i})^{2}\\
+=P_{i}(1-P_{i})\\
+=(b_{0}+b_{1}X_{i})(1-b_{0}-b_{1}X_{i})
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can plainly see, the variance of the error term depends on 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+.
+ There is heteroskedasticity by definition.
+ You might treat this with WLS, but in small samples that not a very desirable
+ proposition.
+\end_layout
+
+\begin_layout Section
+Just One! I Just Need One S-Shaped Curve
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:logit1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Out in 
+\begin_inset Quotes eld
+\end_inset
+
+the real world,
+\begin_inset Quotes erd
+\end_inset
+
+ suppose that the probability that 
+\begin_inset Formula $y_{i}=1$
+\end_inset
+
+ changes 
+\begin_inset Quotes eld
+\end_inset
+
+smoothly
+\begin_inset Quotes erd
+\end_inset
+
+ in response to changes in 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ That implies that the relationship between 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $Prob(y_{i}=1)$
+\end_inset
+
+ should be S-shaped, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:An-S-shaped-Curve"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+An S-shaped Curve
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:An-S-shaped-Curve"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=TRUE,height=3,width=6, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+X2 <- seq(0,150,length=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+expbx <- exp((-1)*(-10+.115*X2))
+\end_layout
+
+\begin_layout Plain Layout
+
+ProbY1 <- 1/(1+expbx)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(X2,ProbY1,type="l",xlab='X',ylab='Probability(y=1)')
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here's a formula for an S-shaped curve that I've just pulled from the the
+ clear blue sky.
+ 
+\begin_inset Formula 
+\begin{equation}
+\frac{exp(b_{0}+b_{1}X_{i})}{1+exp(b_{0}+b_{1}X_{i})}=\frac{1}{1+exp(-1*(b_{0}+b_{1}X_{i}))}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+This transformation of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ gives back a very small value if 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ if 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is really small, and it gives back a value that is close to 1 if 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is really big.
+ That is called a 
+\begin_inset Quotes eld
+\end_inset
+
+logistic curve,
+\begin_inset Quotes erd
+\end_inset
+
+ it was used to create Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:An-S-shaped-Curve"
+
+\end_inset
+
+.
+ In a Logistic regression model, we think of the combined value of the inputs
+ being transformed through a function into a statement about probability.
+\end_layout
+
+\begin_layout Subsection
+Notes about this particular formula:
+\end_layout
+
+\begin_layout Standard
+Here are some highlights.
+\end_layout
+
+\begin_layout Enumerate
+The slope--change in probability resulting from a unit increase in 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ -- is 
+\begin_inset Formula $b_{1}\cdot P_{i}\cdot(1-P_{i})$
+\end_inset
+
+.
+ Hence, the effect of a unit change in 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ depends on the probability.
+ If 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is very likely to be a 1 or a 0, a change in 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ doesn't make much difference.
+\end_layout
+
+\begin_layout Enumerate
+The "odds ratio" is 
+\begin_inset Formula $\frac{P_{i}}{(1-P_{i})}$
+\end_inset
+
+.
+ It can be shown that
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\ln\left[\frac{P_{i}}{1-P_{i}}\right]=b_{0}+b_{1}\cdot X_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is to say, if you had observations on the probabilities, you could
+ transform them on the left hand side and you would have something that
+ you could estimate with OLS.
+ That is the way logistic regressions were run for a long time, using observed
+ proportions from 
+\begin_inset Quotes eld
+\end_inset
+
+grouped data
+\begin_inset Quotes erd
+\end_inset
+
+ to calculate the estimates of the probabilities.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Some people like to emphasize 
+\begin_inset Formula $exp(b_{1})$
+\end_inset
+
+.
+ In many computer programs that estimate logistic models, the exponential
+ is presented along with the coefficient estimates.
+ Here's why.
+ Note that
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\frac{P_{i}}{1-P_{i}}\right]=exp(b_{0}+b_{1}\cdot X_{i})=exp(b_{0})\cdot exp(b_{1}X_{i})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose that the input variable 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+dummy variable
+\begin_inset Quotes erd
+\end_inset
+
+ coded 0 and 1.
+ Then the 
+\begin_inset Quotes eld
+\end_inset
+
+overall effect
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $X$
+\end_inset
+
+ would be summarized by the difference between 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+exp(b_{0})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\begin_inset Formula 
+\begin{equation}
+exp(b_{0}+b_{1})=exp(b_{0})\cdot exp(b_{1})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So, in some sense, the difference in the outcome for the two values of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ boils down to 
+\begin_inset Formula $exp(b_{1})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In my experience, people tend to overemphasize 
+\begin_inset Formula $exp(b_{1})$
+\end_inset
+
+ by applying it to input variables that are not dichotomous.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Estimation
+\end_layout
+
+\begin_layout Standard
+How can the parameters 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ be estimated? 
+\end_layout
+
+\begin_layout Standard
+This is a fairly straightforward exercise in maximum likelihood.
+ What is the likelihood that we would observe a given sample of 0's and
+ 1's? Put the observations with 0's first and then the 1's.
+ The first critical assumption is that the observations are statistically
+ independent, meaning the probability of the sample equals the individual
+ probabilities multiplied together.
+ Hence,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+Likelihood\, of\, Sample=P(y_{1}=0,y_{2}=0,...,y_{m}=0,y_{m+1}=1,y_{m+2}=1,...,y_{N}=1)\\
+=P(y_{1}=0)P(y_{2}=0)\cdots P(y_{m}=0)P(y_{m+1}=1)P(y_{m+2}=1)\cdots P(y_{N}=1)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This expression is the likelihood function, L, and since the probabilities
+ depend on parameters 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ , we might as well write 
+\begin_inset Formula $L(b_{0},b_{1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Remembering that the probability that 
+\begin_inset Formula $y_{i}=0$
+\end_inset
+
+ is 
+\begin_inset Formula $1$
+\end_inset
+
+ minus the probability that 
+\begin_inset Formula $y_{i}=1$
+\end_inset
+
+, we can write 
+\begin_inset Formula 
+\begin{eqnarray}
+L(b_{0},b_{1})=(1-P(y_{1}=1))(1-P(y_{2}=1))\cdots(1-P(y_{m}=1))\nonumber \\
+\times P(y_{m+1}=1)P(y_{m+2}=1)\cdots P(y_{N}=1)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This notation can be made a little more compact.
+ It is not necessary to keep writing down the 
+\begin_inset Formula $P(y_{i}=1)$
+\end_inset
+
+ over and over again.
+ Instead, save a little time and effort by writing 
+\begin_inset Formula $P_{i}$
+\end_inset
+
+ for this.
+\end_layout
+
+\begin_layout Standard
+The Likelihood function is an impossibly complicated formula because it
+ is composed of numbers that are multiplied together.
+ The multiplication means that none of the components are separable.
+ In contrast, if we work with logarithms, then the product is convertd to
+ a sum.
+ It is mathematically identical to maximize 
+\begin_inset Formula $L$
+\end_inset
+
+ or the log of 
+\begin_inset Formula $L$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\ln L(b_{0},b_{1})=\ln(1-P_{1})+\ln(1-P_{2})+\cdots+\ln(1-P_{m})+\ln(P_{m+1})+\cdots+\ln(P_{N})
+\end{equation}
+
+\end_inset
+
+ (fill in the logistic formula 
+\begin_inset Formula $P_{i}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}$
+\end_inset
+
+ to here to get an idea of where the 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ fit in.)
+\end_layout
+
+\begin_layout Standard
+MLE, short for Maximum Likelihood Estimate, is the choice of estimators
+ 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ that maximize the log of the likelihood function.
+ This solution is also a maximizer of L.
+\end_layout
+
+\begin_layout Subsection
+Quick summary of MLE properties.
+\end_layout
+
+\begin_layout Enumerate
+NOT unbiased.
+\end_layout
+
+\begin_layout Enumerate
+MLE's are consistent, asymptotically efficient, asymptotically Normal.
+ The asymptotic normality implies that we can conduct approximate t-tests,
+ as long as we can get estimates of the standard errors of 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+There are ways to calculate asymptotic standard errors.
+ They tell you, approximately, if you had an infinite sample, what the standard
+ error of would be.
+ They are sometimes called approximate standard errors because you never
+ have an infinite sample.
+\end_layout
+
+\begin_layout Enumerate
+Maximum Likelihood Estimation allows an equivalent of the F test.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A.
+ Let 
+\begin_inset Formula $L_{0}$
+\end_inset
+
+ be the value of the likelihood function in which the "slope" coefficient
+ 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ (or other coefficients if they are in the model) is 0.
+ Hence, the 
+\begin_inset Formula $L_{0}$
+\end_inset
+
+ is the maximized likelihood when only a constant, 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+, is estimated.
+\end_layout
+
+\begin_layout Standard
+B.
+ Let 
+\begin_inset Formula $L_{max}$
+\end_inset
+
+ be the value of the likelihood function at its maximum, when all coefficients,
+ the slope and the intercept, are estimated to maximize the likelihood.
+\end_layout
+
+\begin_layout Standard
+C.
+ Let 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, (Greek 
+\begin_inset Quotes eld
+\end_inset
+
+lambda
+\begin_inset Quotes erd
+\end_inset
+
+), be the ratio of 
+\begin_inset Formula $L_{0}$
+\end_inset
+
+ to 
+\begin_inset Formula $L_{max}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\lambda\quad=\frac{L_{0}}{L_{max.}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+D.
+ It can be shown that 
+\begin_inset Formula $-2\cdot\ln(\lambda)$
+\end_inset
+
+ has a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ distribution with 
+\begin_inset Formula $k$
+\end_inset
+
+ degrees of freedom, where 
+\begin_inset Formula $k$
+\end_inset
+
+ is the number of 
+\begin_inset Quotes eld
+\end_inset
+
+slope
+\begin_inset Quotes erd
+\end_inset
+
+ coefficients you estimated (equivalently, the difference in the number
+ of coefficients estimated in calculating 
+\begin_inset Formula $L_{0}$
+\end_inset
+
+ versus 
+\begin_inset Formula $L_{max}$
+\end_inset
+
+).
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+In the next two sections, I describe two approaches to this.
+\end_layout
+
+\begin_layout Section
+GLM approach.
+\end_layout
+
+\begin_layout Standard
+The previous section is the 
+\begin_inset Quotes eld
+\end_inset
+
+heres an S shaped curve
+\begin_inset Quotes erd
+\end_inset
+
+ approach.
+ The GLM approach would probably be summarized as the 
+\begin_inset Quotes eld
+\end_inset
+
+here is a bunch of S-shaped curves
+\begin_inset Quotes erd
+\end_inset
+
+ approach.
+ The GLM approach boils down to the the following practical reasoning:
+\end_layout
+
+\begin_layout Quote
+We need an S-shaped curve.
+ Go get a mathematician who can give you a formula for an S-shaped curve.
+ But be ready.
+ Each mathematician you visit will give you a different formula for an S-shaped
+ curve, and the data will hardly ever give you a reason to prefer one over
+ another.
+\end_layout
+
+\begin_layout Standard
+The part of the formula that blends coefficients and observed inputs, 
+\begin_inset Formula $b_{0}+b_{1}X_{i}$
+\end_inset
+
+, is known as the 
+\begin_inset Quotes eld
+\end_inset
+
+linear predictor.
+\begin_inset Quotes erd
+\end_inset
+
+ It is customary to call it 
+\begin_inset Quotes eld
+\end_inset
+
+eta
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\eta_{i}=b_{0}+b_{1}X_{i}.
+\]
+
+\end_inset
+
+In ordinary least squares regression, of course, 
+\begin_inset Formula $y=b_{0}+b_{1}X_{i}+e_{i}$
+\end_inset
+
+, so 
+\begin_inset Formula $y_{i}=\eta_{i}+e_{i}$
+\end_inset
+
+.
+ So the 
+\begin_inset Quotes eld
+\end_inset
+
+linear predictor
+\begin_inset Quotes erd
+\end_inset
+
+ is the same as 
+\begin_inset Quotes eld
+\end_inset
+
+error-free value
+\begin_inset Quotes erd
+\end_inset
+
+ in OLS.
+ The predicted value is 
+\begin_inset Formula $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}X_{i}=\hat{\eta_{i}}$
+\end_inset
+
+.
+ In the Normally distributed outcome model, where we use OLS, 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ would be playing the role of 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ in 
+\begin_inset Formula $y_{i}\sim N(\mu_{i},\sigma^{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Our observations are either 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+, and the argument in the previous sections should lead you to conclude
+ that OLS is the wrong approach.
+ We need a formula that connects 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ to a probability value, the chance that we will observe a particular outcome.
+ In the Generalized Linear Model, we think of 
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+ as a 
+\begin_inset Quotes eld
+\end_inset
+
+location
+\begin_inset Quotes erd
+\end_inset
+
+ parameter of a distribution (roughly, a 
+\begin_inset Quotes eld
+\end_inset
+
+central tendency
+\begin_inset Quotes erd
+\end_inset
+
+).
+ It is causing our probability distribution of outcomes to shift, somehow.
+\end_layout
+
+\begin_layout Standard
+In the GLM, we think of the 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $1$
+\end_inset
+
+ observations as coming from a Binomial distribution.
+ Recall if there are 
+\begin_inset Formula $N$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+coin flips
+\begin_inset Quotes erd
+\end_inset
+
+ with probability 
+\begin_inset Formula $p$
+\end_inset
+
+ of 
+\begin_inset Quotes eld
+\end_inset
+
+success
+\begin_inset Quotes erd
+\end_inset
+
+, then the probability of observing a given number of successes is said
+ to follow the distribution 
+\begin_inset Formula $B(N,p)$
+\end_inset
+
+.
+ In this case, we think of gathering just one observation at a time, so
+ really we only need 
+\begin_inset Formula $B(1,p)$
+\end_inset
+
+, which, if you are precise, is a Bernoulli distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+The Logit link transforms the probabilities to give back the linear predictor:
+\begin_inset Formula 
+\[
+\eta_{i}=ln\left[\frac{Prob(y_{i}=1|x_{i},b)}{1-Prob(y_{i}=1|x_{i},b)}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which you can rearrange as 
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=1|x_{i},b)=\frac{1}{1+e^{-\eta}}=\frac{1}{1+e^{-(b_{0}+b_{1}x_{i})}}\label{eq:logistic-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From this perspective, a logistic curve is just a particular "S-shaped"
+ curve.
+ For example, the formula with 
+\begin_inset Formula $b_{0}=10$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{1}=0.115$
+\end_inset
+
+ is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:An-S-shaped-Curve"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+One can replace the logit link with other functions.
+ Any function that maps from the estimated probabilities back to the range
+ of the linear predictor will do just as well.
+\end_layout
+
+\begin_layout Standard
+In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:logit1"
+
+\end_inset
+
+, it was noted that a customized ML estimation routine can be used to estimate
+ this model.
+ One of the major elements of appeal for the GLM approach is that a single
+ algorithm, the Iteratively-Reweighted Least Squares algorithm, can be used
+ to fit all of the members of the GLM family.
+ McCullagh and Nelder proved that the estimates from their algorithm are
+ equivalent to the special-case ML approach described in the previous section.
+ 
+\end_layout
+
+\begin_layout Section
+Cumulative Probability Interpretation
+\end_layout
+
+\begin_layout Standard
+Although the GLM approach offers various links like 
+\begin_inset Quotes eld
+\end_inset
+
+logit,
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+cauchit
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+probit
+\begin_inset Quotes erd
+\end_inset
+
+, I don't think I can explain why a researcher would use one approach or
+ another.
+ They don't seem to be conceptually related or differentiated.
+ They are just S-Shaped curves.
+\end_layout
+
+\begin_layout Standard
+It is possible to 
+\begin_inset Quotes eld
+\end_inset
+
+change gears,
+\begin_inset Quotes erd
+\end_inset
+
+ however, and understand all of these S shapes from a single, simplifying
+ perspective.
+ And I usually start presentations on that by asking the audience to re-consider
+ the logistic regression proposed in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:logistic-1"
+
+\end_inset
+
+.
+ Look back at that for a moment, then consider my question:
+\end_layout
+
+\begin_layout Quote
+Where did the error term go? 
+\end_layout
+
+\begin_layout Standard
+Hm.
+ Its almost a Sherlock Holmes mystery, a dog that did not bark in the night.
+ An error term that seemed to vanish.
+ I say 
+\begin_inset Quotes eld
+\end_inset
+
+seemed
+\begin_inset Quotes erd
+\end_inset
+
+ to vanish, because it did not disappear, it just fulfills a different role.
+\end_layout
+
+\begin_layout Standard
+This is the point at which the econometrician's view of the model becomes
+ helpful.
+ In the 
+\begin_inset Quotes eld
+\end_inset
+
+dichotomous
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+binary
+\begin_inset Quotes erd
+\end_inset
+
+ outcomes case, one can write a predictive statement that says
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\left\{ \begin{array}{ll}
+1 & if\, Z_{i}=b_{0}+b_{1}X_{i}-e_{i}>0\\
+0 & if\, Z_{i}=b_{0}+b_{1}X_{i}-e_{i}\leq0
+\end{array}\right.\label{eq:ydefined}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+There's your missing error term.
+ Think of 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ as an underlying, unmeasured variable that is linked to the proclivity
+ of case 
+\begin_inset Formula $i$
+\end_inset
+
+ to reveal an outcome of 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ If this underlying variable exceeds a threshold of 
+\begin_inset Formula $0$
+\end_inset
+
+, then 
+\begin_inset Formula $Y_{i}=1$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ is less than 0, then 
+\begin_inset Formula $Y_{i}$
+\end_inset
+
+ takes on the value of 0.
+ If you let 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ equal the linear function above, the story is complete.
+\end_layout
+
+\begin_layout Standard
+And so the probability that 
+\begin_inset Formula $y_{i}=1$
+\end_inset
+
+ is the same as the probability that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+e_{i}<b_{0}+b_{1}X_{i}.
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+For a given person with input 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+, the probability of a 
+\begin_inset Formula $Y_{i}=1$
+\end_inset
+
+ is given by the probability that a random variable 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is smaller than the 
+\begin_inset Quotes eld
+\end_inset
+
+target
+\begin_inset Quotes erd
+\end_inset
+
+ value 
+\begin_inset Formula $b_{0}+b_{1}\cdot X_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Eventually you see that is just the cumulative probability distribution
+ function (CDF) for the variable 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+.
+ It is the area under the density function of the error term up to the point
+ 
+\begin_inset Formula $b_{0}+b_{1}\cdot X_{i}$
+\end_inset
+
+.
+ Consider the illustration in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:The-Cumulative-Distribution"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If you said the probability density function (PDF) of the error term was
+ 
+\begin_inset Formula $f(e_{i})$
+\end_inset
+
+, it would be conventional to call the cumulative distribution function
+ 
+\begin_inset Formula $F(\alpha)$
+\end_inset
+
+, representing the probability that 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is less than a number 
+\begin_inset Formula $\alpha.$
+\end_inset
+
+ In this case, the 
+\begin_inset Quotes eld
+\end_inset
+
+particular value
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is 
+\begin_inset Formula $b_{0}+b_{1}X_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Cumulative Distribution
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:The-Cumulative-Distribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace 1in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset External
+	template XFig
+	filename importfigs/cumulative.fig
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Generally speaking, then, we are modeling the upper limit of an integral:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(y_{i}=1|X_{i},b)=Prob(e_{i}\leq b_{0}+b_{1}X_{i})=F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}.\label{eq:CDF}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any probability distribution will work within this formulation.
+ 
+\end_layout
+
+\begin_layout Subsection
+Logistic Regression
+\end_layout
+
+\begin_layout Standard
+There is a probability distribution called the 
+\begin_inset Quotes eld
+\end_inset
+
+logistic
+\begin_inset Quotes erd
+\end_inset
+
+ and it happens to have a very workable mathematical form.
+ (In R, run ?rlogis to see for yourself.) 
+\end_layout
+
+\begin_layout Standard
+The logistic distribution has a probability density function for a variable
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $x_{i}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+f(x_{i})=\frac{e^{-(x_{i}-\mu)/\sigma}}{\sigma(1+e^{-(x_{i}-\mu)/\sigma})^{2}}\label{eq:logistpdf}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The expected value of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ in this distribution is 
+\begin_inset Formula $\mu.$
+\end_inset
+
+ And the variance is
+\begin_inset Formula 
+\[
+Var(x)=\frac{1}{3}(\pi\sigma)^{2}
+\]
+
+\end_inset
+
+As a result, if you compared a Normal distribution with mean 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ against this Logistic distribution, you could 
+\begin_inset Quotes eld
+\end_inset
+
+adjust
+\begin_inset Quotes erd
+\end_inset
+
+ the variance of the Logistic to 
+\begin_inset Quotes eld
+\end_inset
+
+match up
+\begin_inset Quotes erd
+\end_inset
+
+ against the variance of the Normal distribution.
+ The value 
+\begin_inset Formula $\pi^{2}/3$
+\end_inset
+
+ is needed to 
+\begin_inset Quotes eld
+\end_inset
+
+rescale
+\begin_inset Quotes erd
+\end_inset
+
+ the Logistic variance to equal the Normal variance.
+ I have prepared a separate handout on the Logistic distribution.
+ Look in my Distributions folder.
+\end_layout
+
+\begin_layout Standard
+Replace the variable 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $x_{i}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ by 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $e_{i}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to make the PDF match the problem, and we are almost done.
+ Please do not be confused that I have Euler's constant 
+\begin_inset Formula $e$
+\end_inset
+
+ and the random variable 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ in the same expression (I used 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ above to avoid that confusion, but now I can't).
+ 
+\begin_inset Formula 
+\begin{equation}
+f(e_{i})=\frac{e^{-(e_{i}-\mu)/\sigma}}{\sigma(1+e^{-(e_{i}-\mu)/\sigma})^{2}}\label{eq:logistpdf-1}
+\end{equation}
+
+\end_inset
+
+If 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is supposed to be a 
+\begin_inset Quotes eld
+\end_inset
+
+random disturbance
+\begin_inset Quotes erd
+\end_inset
+
+, it seems obvious we have to assume it is 
+\begin_inset Quotes eld
+\end_inset
+
+unbiased,
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that its expected value is 0.
+ So we suppose that 
+\begin_inset Formula $\mu=0$
+\end_inset
+
+.
+ Unlike an OLS regression, we NEVER get to estimate 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, so we just have to set it to a constant value.
+ By custom, we suppress that by 
+\begin_inset Quotes eld
+\end_inset
+
+assuming
+\begin_inset Quotes erd
+\end_inset
+
+ it is equal to 1.0.
+ That means the PDF of the logistic simplifies to
+\begin_inset Formula 
+\begin{equation}
+f(e_{i})=\frac{e^{-e_{i}}}{(1+e^{-e_{i}})^{2}}\label{eq:}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The definite integral of this is very simple.
+ 
+\begin_inset Formula 
+\begin{equation}
+F(\alpha)=\int_{-\infty}^{\alpha}\frac{e^{-e_{i}}}{(1+e^{-e_{i}})^{2}}de_{i}=\frac{e^{\alpha}}{1+e^{\alpha}}=\frac{1}{1+e^{-\alpha}}\label{eq:-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the present context, then, the logistic distribution offers a very great
+ simplification.
+ This expression, the integral that represents CDF of the problem under
+ consideration:
+\begin_inset Formula 
+\begin{equation}
+Prob(y_{i}=1|X_{i},b)=F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}.\label{eq:CDF-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+is easily solved with a relatively simple formula.
+ Use the logistic PDF in place of 
+\begin_inset Formula $f(e_{i})$
+\end_inset
+
+, and 
+\begin_inset Formula $b_{0}+b_{1}X_{i}$
+\end_inset
+
+ is used in place of 
+\begin_inset Formula $K$
+\end_inset
+
+, then the whole ugly problem simplifies to the commonly used 
+\begin_inset Quotes eld
+\end_inset
+
+Logistic regression
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\frac{e^{b_{0}+b_{1}X_{i}}}{1+e^{b_{0}+b_{1}X_{i}}}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}\label{eq:logistic}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Probit Regression
+\end_layout
+
+\begin_layout Standard
+On the other hand, if you suppose that 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is Normally distributed.
+ In that case, the formula in expression 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:CDF-1"
+
+\end_inset
+
+ is not mathematically simplified.
+ There is no simple formula for the definite integral:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}\frac{1}{\sqrt{2\pi\sigma^{2}}}\cdot e^{-}\frac{(e_{i}-\mu)^{2}}{2\sigma^{2}}de_{i}\label{eq:probit}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One assumes that 
+\begin_inset Formula $\mu=0$
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+scale parameter
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ cannot be estimated (it is 
+\begin_inset Quotes eld
+\end_inset
+
+unidentified
+\begin_inset Quotes erd
+\end_inset
+
+).
+ It is set equal to 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ Setting the value of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ or 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is not thought to have substantive significance because the values of the
+ estimated 
+\begin_inset Formula $b$
+\end_inset
+
+ coefficients will scale up and down accordingly.
+ There's a theorem in mathematical statistics concerning the 
+\begin_inset Quotes eld
+\end_inset
+
+Change of Variables
+\begin_inset Quotes erd
+\end_inset
+
+ that deals with that.
+\end_layout
+
+\begin_layout Standard
+Because the probit equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:probit"
+
+\end_inset
+
+ is such a complicated thing to write down, articles in social science almost
+ always avoid it, instead adopting some complicated-looking symbol, such
+ as 
+\begin_inset Formula $\Phi$
+\end_inset
+
+, to refer to the cumulative probability distribution.
+ One sees expressions such as 
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\Phi(b_{0}+b_{1}X_{i})\label{eq:probit2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We don't usually think about this in the two-category model, but the probability
+ of observing a 
+\begin_inset Formula $0$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=0|X_{i},b_{i})=1-\Phi(b_{0}+b_{1}X_{i})\label{eq:compl}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Does it matter if you use Logit or Probit?
+\end_layout
+
+\begin_layout Standard
+Not very much.
+ The PDF of the Logistic and the Normal distributions overlap to a considerable
+ extent.
+ If we adjust the parameter 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ of the logistic so that the variance of the Logistic and the Normal distributio
+ns are the same, then we can see that we are talking about 2 distributions
+ that barely differ.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Compare-LogisticNormal"
+
+\end_inset
+
+, one finds a Logistic distribution with 
+\begin_inset Formula $\sigma=1,$
+\end_inset
+
+ and so for both distributions, the expected value is 
+\begin_inset Formula $0$
+\end_inset
+
+ and the standard deviation is 
+\begin_inset Formula $\pi/\sqrt{3}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<landn,echo=F, include=F, fig=T,height=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-6,6, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myNorm <- dnorm(x, mean = 0, sd = pi/sqrt(3)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+matplot(x, cbind(mylogis111, myNorm),type="l",ylim=c(0,0.5), xlab="x", ylab="P(x)
+", main="") 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+normlabel = expression(paste("Normal(",0,",",pi^{2}/3,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", c("Logistic(0,1)",normlabel), lty=1:2, col=1:2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Compare Logistic and Normal
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compare-LogisticNormal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{plots/logit-landn}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Testing Statistical Significance
+\end_layout
+
+\begin_layout Subsection
+z-test and t-test: two approximations
+\end_layout
+
+\begin_layout Standard
+Asymptotically, 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ is Normal (recall fundamental ML Theory).
+ We have the standard error.
+ What about the quantity: 
+\begin_inset Formula 
+\[
+\frac{\hat{b}-b_{null}}{s.e.(\hat{b})}
+\]
+
+\end_inset
+
+it looks like a 
+\begin_inset Formula $t-test$
+\end_inset
+
+, doesn't it? I've seen some people/programs call it a 
+\begin_inset Formula $t-test$
+\end_inset
+
+, but that's not a widespread option these days.
+ Instead, it is more usual to say it is a 
+\begin_inset Formula $z$
+\end_inset
+
+ statistic, approximately Normally distributed 
+\begin_inset Formula 
+\begin{equation}
+z=\frac{\hat{b}-b_{null}}{s.e.(\hat{b})}\label{eq:logitttest}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test: another approximation
+\end_layout
+
+\begin_layout Standard
+Most programs today will either report a 
+\begin_inset Formula $z$
+\end_inset
+
+ test or the Wald Chi-Square.
+ The Wald Chi-square is the ratio of the squared estimate to the variance,
+\begin_inset Formula $\hat{b}^{2}/Var(\hat{b})$
+\end_inset
+
+.
+ But alert users will note that it is simply 
+\begin_inset Formula $z^{2}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{equation}
+z^{2}=\left(\frac{\hat{b}}{s.e.(\hat{b})}\right)^{2}\label{eq:zsquare}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Wald contended that value is distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ variable.
+ The square root 
+\begin_inset Formula $\hat{b}/se(\hat{b})$
+\end_inset
+
+ is approximately Normal (and also approximately t-distributed).
+ That explains why some programs call the statistic 
+\begin_inset Formula $\hat{b}/se(\hat{b})$
+\end_inset
+
+ a 
+\begin_inset Formula $t$
+\end_inset
+
+ variable, while others call it a 
+\begin_inset Formula $Z$
+\end_inset
+
+ statistic.
+ Either way, the information is the same.
+ That is called a Wald Chi-Square statistic in most programs.
+\end_layout
+
+\begin_layout Standard
+From elementary statistics, we know that the square root of a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ variable with one degree of freedom is Normal(0,1), so the Wald Chi-Square
+ test for a single parameter is actually substantively IDENTICAL to the
+ 
+\begin_inset Formula $t$
+\end_inset
+
+ or 
+\begin_inset Formula $z$
+\end_inset
+
+ approaches.
+\end_layout
+
+\begin_layout Standard
+The Wald Chi-Square can be used to simultaneously test several coefficients.
+ 
+\begin_inset Formula 
+\[
+\hat{b}Var(\hat{b)}^{-1}\hat{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that if we were testing only one parameter, this degenerates to the
+ preceeding equation.
+\end_layout
+
+\begin_layout Subsection
+How to estimate the 
+\begin_inset Formula $s.e.(\hat{b})$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+This idea depends on your understanding of maximum likelihood theory.
+ It is probably enough for beginners to believe that we can calculate standard
+ errors as estimates of the standard deviation of sampling distributions.
+\end_layout
+
+\begin_layout Standard
+Nevertheless, here's something worth noting and its not too complicated.
+ This insight was gathered from literature on the Generalized Linear Model.
+\end_layout
+
+\begin_layout Standard
+For the ordinary logistic regression model, the covariance-variance matrix
+ is 
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{b})=\left[(X'WX\right]^{-1}\label{eq:varcovar}
+\end{equation}
+
+\end_inset
+
+ which is quite reminiscent of the OLS formula.
+ In fact, it would be exactly the same if not for the fact that the cases
+ have unique variances.
+\end_layout
+
+\begin_layout Standard
+The matrix in the middle, 
+\begin_inset Formula $W$
+\end_inset
+
+, has the variance of the individual cases, is like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+W=\left[\begin{array}{ccccc}
+P_{1}(1-P_{1}) & 0 & 0 & 0 & 0\\
+0 & P_{2}(1-P_{2}) & 0 & 0 & 0\\
+0 & \cdots\\
+0 & \cdots\\
+0 & 0 & 0 & 0 & P_{N}(1-P_{N})
+\end{array}\right]\label{eq:varmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We don't know the 
+\begin_inset Quotes eld
+\end_inset
+
+true variances
+\begin_inset Quotes erd
+\end_inset
+
+ because we don't know the true probabilities.
+ But we can use approximations from fitted models to get those values.
+\end_layout
+
+\begin_layout Standard
+In the generalized linear model literature, they describe the logistic regressio
+n as a binomial-distributed dependent variable in which the probability
+ of observing an 
+\begin_inset Quotes eld
+\end_inset
+
+event
+\begin_inset Quotes erd
+\end_inset
+
+ on a particular random draw is given by 
+\begin_inset Formula $P=1/(1+e^{-Xb})$
+\end_inset
+
+.
+ In the days before high-speed computers were so freely available, it helped
+ a lot to have an algorithm with which to estimate models that did not require
+ a full maximum likelihood optimizer.
+ The GLM folks found that an interative weighted least squares procedure
+ could produce estimates that were equivalent to Maximum Likelihood (for
+ the restricted class of distributions inside the GLM terminology).
+ As one iterates, one calculates the predicted values for the cases, and
+ so 
+\begin_inset Formula $\hat{P}$
+\end_inset
+
+ values are obtained that can be used in the formula for the variance-covariance
+ matrix.
+\end_layout
+
+\begin_layout Section
+Diagnostics: Goodness of Fit, Deviance, etc
+\end_layout
+
+\begin_layout Standard
+I'm not wasting any breath on pseudo-
+\begin_inset Formula $R^{2}$
+\end_inset
+
+s.
+ 
+\end_layout
+
+\begin_layout Subsection
+Do you have the right model?
+\end_layout
+
+\begin_layout Standard
+Should you remove some variables from your model? Perhaps all of them 
+\end_layout
+
+\begin_layout Standard
+Some programs report a 
+\begin_inset Quotes eld
+\end_inset
+
+model chi-square
+\begin_inset Quotes erd
+\end_inset
+
+, equivalent to 
+\begin_inset Formula $-2ln(LikelihoodRatio)$
+\end_inset
+
+ or 
+\begin_inset Formula $-2LLR$
+\end_inset
+
+, which is the difference between 
+\begin_inset Formula $-2ln(Likelihood\, of\, fitted\, model)$
+\end_inset
+
+ and 
+\begin_inset Formula $-2ln(Likelihood\, of\, constant-only\, model).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The likelihood ratio test can be used to compare any two models that are
+ estimated ON THE SAME DATA.
+ Comparing a full model against a subset, the following can be used to test
+ the hypothesis that the coefficients for a set of variables are all equal
+ to zero.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=-2[ln{L_{restricted}}-ln{L_{full}}]=-2ln{\left[\frac{L_{restricted}}{L_{full}}\right]}\sim\chi_{diff}^{2}\label{eq:LLR}
+\end{equation}
+
+\end_inset
+
+ where 
+\begin_inset Formula $diff$
+\end_inset
+
+ is the difference in the number of fitted parameters, or 
+\begin_inset Quotes eld
+\end_inset
+
+excluded variables
+\begin_inset Quotes erd
+\end_inset
+
+ from the restricted model.
+\end_layout
+
+\begin_layout Subsubsection
+How 
+\begin_inset Quotes eld
+\end_inset
+
+good
+\begin_inset Quotes erd
+\end_inset
+
+ is your likelihood? Deviance
+\end_layout
+
+\begin_layout Standard
+I have learned of another way that the likelihood value is put to use.
+ This is based on the concept of 
+\series bold
+deviance
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Deviance is a benchmark, which in most models is equal to
+\begin_inset Formula $-2ln(Likelihood\, of\, fitted\, model)$
+\end_inset
+
+.
+ In the fine print, one finds out that deviance is the difference between
+ 
+\begin_inset Formula $-2ln(Likelihood\, of\, fitted\, model)$
+\end_inset
+
+ and 
+\begin_inset Formula $-2ln(Likelihood\, of\, saturated\, model)$
+\end_inset
+
+.
+ But the latter value is usually 0: R reports deviance values that are scaled
+ to so that the saturated model has Likelihood of 1 (and hence 
+\begin_inset Formula $-2ln(L)=0$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+A 
+\begin_inset Quotes eld
+\end_inset
+
+saturated model
+\begin_inset Quotes erd
+\end_inset
+
+ is one in which we are allowed to make a unique estimate of 
+\begin_inset Formula $\widehat{P_{i}}$
+\end_inset
+
+ for each unique combination of the input variables.
+ That means, for each combination of input variables, we can make a customized
+ prediction.
+ The likelihood obtained by such a model is surely the best we could possibly
+ get, right? Its not possible to use more degrees of freedom.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+best possible
+\begin_inset Quotes erd
+\end_inset
+
+ deviance value is obtained by fitting a parameter for each case in the
+ dataset, which would reduce 
+\begin_inset Formula $-2ln(Likelihood)$
+\end_inset
+
+ to 
+\begin_inset Formula $0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Get the likelihood for the saturate model, call that 
+\begin_inset Formula $L_{sat}$
+\end_inset
+
+.
+ Then fit a model using some independent variables.
+ Call that likelihood 
+\begin_inset Formula $L_{fit}$
+\end_inset
+
+.
+ The difference between these two likelihood values is an indicator of 
+\begin_inset Quotes eld
+\end_inset
+
+how bad
+\begin_inset Quotes erd
+\end_inset
+
+ your model is when compared against the saturated model.
+ In fact, asymptotically, the deviance indicator: 
+\begin_inset Formula 
+\begin{equation}
+deviance=-2[ln{L_{fit}}-ln{L_{sat}}]=-2ln{\left[\frac{L_{fit}}{L_{sat}}\right]}\label{eq:deviance}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is distributed approximately as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistic with degrees of freedom equal to sample size (N) minus the number
+ of parameters.
+\end_layout
+
+\begin_layout Standard
+If each observation in the dataset has a unique set of values for the inputs,
+ then the saturated model has a log likelihood of 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ See why?
+\end_layout
+
+\begin_layout Standard
+Myers, Montgomery, and Vining (2002) observe, (I'm paraphrasing notation
+ here to match the above notation) 
+\begin_inset Quotes eld
+\end_inset
+
+Formally, an insignificant value of (deviance) in a one-tailed test implies
+ that the fit of the model is not significantly worse than that of the saturated
+ model.
+ ...
+ Often the rule of thumb is applied that the quality of fit is reasonable
+ if 
+\begin_inset Formula $\frac{deviance}{N-p}$
+\end_inset
+
+ is not appreciably larger than 1.
+ The rule of thumb is prompted by the fact that N-p is the mean of the 
+\begin_inset Formula $\chi_{N-p}^{2}$
+\end_inset
+
+ distribution
+\begin_inset Quotes erd
+\end_inset
+
+(p.
+ 113).
+\end_layout
+
+\begin_layout Standard
+In some articles, the idea of deviance is applied mechanically as a test
+ of the quality of a model.
+\end_layout
+
+\begin_layout Subsubsection
+Hosmer and Lemeshow test
+\end_layout
+
+\begin_layout Standard
+Proceed as follows.
+ Calculate predicted values, 
+\begin_inset Formula $\hat{P_{i}}$
+\end_inset
+
+ for all cases.
+ Sort them from low to high.
+ Then subdivide the sample into subgroups.
+ Then find out if the observed frequency of 1's and 0's matches the estimated
+ probabilities from the model.
+\end_layout
+
+\begin_layout Standard
+Pick some pleasant number of subgroups, say 10.
+ For each subgroup, one can calculate the observed 
+\begin_inset Quotes eld
+\end_inset
+
+success rate
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $O_{i}$
+\end_inset
+
+ and an expected (from the model) success rate, and the traditional 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test is used to find out if the model is grossly out-of-whack.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+homer.and.lemeshow_{\chi}^{2}=\sum_{i=1}^{10}\left[\frac{(O_{i}-E_{i})^{2}}{E_{i}}\right]\label{eq:hosmer}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ value is extreme by that standard, it means that your predicted probabilities
+ do not match the observations very well.
+\end_layout
+
+\begin_layout Standard
+That is informative, but not too informative.
+ It does not tell you if the model is 
+\begin_inset Quotes eld
+\end_inset
+
+off
+\begin_inset Quotes erd
+\end_inset
+
+ for any particular reason, and there could be many suspects in your search
+ for the criminal.
+\end_layout
+
+\begin_layout Subsubsection
+Overdispersion
+\end_layout
+
+\begin_layout Standard
+Suppose your deviance is very high.
+ That means your model does not fit as well as you might like, and one of
+ the frequent causes is that the observed variance of scores is higher than
+ the model would predict.
+ If the model is wrongly specified, then the deviance is big.
+\end_layout
+
+\begin_layout Standard
+Another explanation is that the assumed model for the variance of outcomes
+ is wrong.
+ The binomial variance is 
+\begin_inset Formula $P_{i}(1-P_{1})$
+\end_inset
+
+, and so when the predicted value is 0.99, it means we should almost never
+ observe a score of 0.
+ However, in 
+\begin_inset Quotes eld
+\end_inset
+
+real data
+\begin_inset Quotes erd
+\end_inset
+
+, we often do.
+ Sometimes I have seen this called 
+\begin_inset Quotes eld
+\end_inset
+
+extrabinomial variation
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The effects of overdispersion are the same as heteroskedasticity in the
+ OLS model.
+ The estimated variance-covariance matrix of the 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+'s does not match the true variance of the 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+'s.
+\end_layout
+
+\begin_layout Standard
+If one has 
+\begin_inset Quotes eld
+\end_inset
+
+grouped data
+\begin_inset Quotes erd
+\end_inset
+
+, that is, many observations for each value of the input variables, then
+ there is a correction which can be applied that is exactly analogous to
+ feasible weighted least squares.
+\end_layout
+
+\begin_layout Standard
+If one does not have grouped data, but rather all individual level data,
+ then perhaps a more dramatic departure/respecification is needed.
+ For example, instead of assuming that all cases with the same inputs should
+ have the same predicted probability, suppose instead there is an unmeasured
+ error term that affects the subgroups in the dataset.
+ SO, if one started with 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:probit2"
+
+\end_inset
+
+, one could insert an error term, a random component that afflicts the members
+ of group 
+\begin_inset Formula $j$
+\end_inset
+
+: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\Phi(b_{0}+b_{1}X_{i}+e_{j})\label{eq:frailty}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This model is a mixed model, one in which there is a random coefficient
+ that should be taken into account.
+ In R, it is covered in the lmer procedure of lme4 package or the GLMM package
+ (which is simpler to use at the current time) 
+\end_layout
+
+\begin_layout Section
+Calculate predicted values and use them to interpret and present results
+\end_layout
+
+\begin_layout Standard
+In the past, I have calculated predicted values 
+\begin_inset Quotes eld
+\end_inset
+
+manually
+\begin_inset Quotes erd
+\end_inset
+
+ by taking the estimated coefficients and using them in the logistic equations,
+\begin_inset Formula 
+\[
+P(Y_{i}=1)=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is tedious, but instructive, to calculate that.
+ That can be done in R in various ways.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document

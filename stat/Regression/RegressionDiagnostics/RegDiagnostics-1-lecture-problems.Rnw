@@ -1,0 +1,204 @@
+\batchmode
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \newenvironment{lyxcode}
+   {\par\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \setlength{\listparindent}{0pt}% needed for AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \def\{{\char`\{}
+    \def\}{\char`\}}
+    \def\textasciitilde{\char`\~}
+    \item[]}
+   {\end{list}}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\small
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Regression Diagnostics}
+\begin{enumerate}
+\item Run the R function influence.measures() on a fitted regression model.
+Try to understand the output.
+\item Here's some code for an example that I had planned to show in class,
+but did not think there would be time. This shows several variations
+on the ``not all extreme points are dangerous outliers'' theme.
+I hope you can easily enough cut-and paste the code into an R file
+that you can step through. \end{enumerate}
+\begin{lyxcode}
+set.seed(22323)
+
+stde~<-~3
+
+x~<-~rnorm(15,~m=50,~s=10)
+
+y~<-~2~+~0.4~{*}x~+~stde~{*}~rnorm(15,m=0,s=1)
+
+plot(y\textasciitilde{}x)
+
+mod1~<-~lm(y\textasciitilde{}x)
+
+summary(mod1)
+
+abline(mod1)
+
+
+
+\#\#~add~in~an~extreme~case
+
+
+
+x{[}16{]}~<-~100
+
+y{[}16{]}~<-~predict(mod1,~newdata=data.frame(x=100))+~stde{*}rnorm(1)
+
+
+
+plot(y\textasciitilde{}x)
+
+mod2~<-~lm(y\textasciitilde{}x,~x=T)
+
+summary(mod2)
+
+abline(mod2)
+
+hatvalues(mod2)
+
+rstudent(mod2)
+
+mod2x~<-~mod2\$x
+
+fullHat~<-~mod2x~\%{*}\%~solve(t(mod2x)~\%{*}\%~mod2x)~\%{*}\%~t(mod2x)
+
+round(fullHat,~2)
+
+colSums(fullHat)~\#\#all~1
+
+sum(diag(fullHat))
+
+
+
+\#\#
+
+
+
+x{[}16{]}~<-~100
+
+y{[}16{]}~<-~10
+
+
+
+plot(y\textasciitilde{}x)
+
+abline(mod2,~lty=1)
+
+mod3~<-~lm(y\textasciitilde{}x,~x=T)
+
+summary(mod3)
+
+abline(mod3,~lty=2)
+
+hatvalues(mod3)~\#\#hat~values~same
+
+rstudent(mod3)
+
+mod3x~<-~mod3\$x
+
+fullHat~<-~mod3x~\%{*}\%~solve(t(mod3x)~\%{*}\%~mod3x)~\%{*}\%~t(mod3x)
+
+round(fullHat,~2)
+
+colSums(fullHat)~\#\#all~1
+
+sum(diag(fullHat))
+
+
+
+round(dffits(mod3),2)
+
+
+
+dfbetasPlots(mod2)
+
+dfbetasPlots(mod3)
+
+
+
+
+
+stde~<-~3
+
+x1~<-~rnorm(15,~m=50,~s=10)
+
+x2~<-~rnorm(15,~m=50,~s=10)
+
+y~<-~2~+~0.2~{*}x1~+~0.2{*}x2~+~stde~{*}~rnorm(15,m=0,s=1)
+
+plot(y\textasciitilde{}x)
+
+mod4~<-~lm(y\textasciitilde{}x1~+~x2)
+
+summary(mod4)
+
+abline(mod1)
+
+@
+\end{lyxcode}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

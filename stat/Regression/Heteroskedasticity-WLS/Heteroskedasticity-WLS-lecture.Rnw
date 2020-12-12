@@ -1,0 +1,1058 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+% (ERT) argument for the TOC
+\AtBeginDocument{%
+  \let\origtableofcontents=\tableofcontents
+  \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+  \def\gobbletableofcontents#1{\origtableofcontents}
+}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+%\mode<presentation>{
+%%\newcommand\makebeamertitle{\frame{\maketitle}}}
+
+
+%%only for presentation
+\mode<presentation>{
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+%%for presentations
+\mode<presentation>{
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+\title[Heteroskedasticity]{Heteroskedasticity in Regression }
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+\date[2020]{2020}
+
+\makebeamertitle
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\section{Introduction}
+\begin{frame}{Remember the Basic OLS}
+
+\begin{itemize}
+\item Theory behind the Linear Model 
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+e_{i}
+\]
+\item Error term, we assumed, for all $i$, 
+
+\begin{itemize}
+\item $E(e_{i})=0\,for\,all\,i$ (errors are ``symmetric'' above and below) 
+\item $Var(e_{i})=E[(e_{i}-E(e_{i}))^{2}]=\sigma^{2}$ (Homoskedasticity:
+same variance). 
+\end{itemize}
+\item Heteroskedasticity: the assumption of homogeneous variance is violated. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Homoskedasticity means}
+
+\[
+Var(e)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{e}^{2} & 0 & 0\\
+0 & 0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}
+\end{array}\right]
+\]
+
+\end{frame}
+
+\begin{frame}{Heteroskedasticity depicted in one of these ways}
+
+\[
+Var(e)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2}w_{1} &  &  &  & 0\\
+ & \sigma_{e}^{2}w_{2}\\
+ &  & \sigma_{e}^{2}w_{3}\\
+ &  &  & \vdots\\
+0 &  &  &  & \sigma_{e}^{2}w_{N}
+\end{array}\right]\,or\,\left[\begin{array}{ccccc}
+\frac{\sigma_{e}^{2}}{w_{1}} &  &  &  & 0\\
+ & \frac{\sigma_{e}^{2}}{w_{2}}\\
+ &  & \frac{\sigma_{e}^{2}}{w_{3}}\\
+ &  &  & \vdots\\
+0 &  &  &  & \frac{\sigma_{e}^{2}}{w_{N}}
+\end{array}\right]
+\]
+
+I get confused a lot when comparing textbooks because of this problem!
+\end{frame}
+%
+\begin{frame}[containsverbatim]
+\frametitle{Consequences of Heteroskedasticity 1: $\hat{\beta}^{OLS}$ still unbiased, consistent}
+\begin{itemize}
+\item OLS Estimates of $\beta_{0}$ and $\beta_{1}$ are still unbiased
+and consistent.
+
+\begin{itemize}
+\item Unbiased: $E[\hat{\beta}^{OLS}]=\beta$
+\item Consistent: As $N\rightarrow\infty$, $\hat{\beta}^{OLS}$ tends to
+$\beta$ in probability limit.
+\end{itemize}
+\item If the predictive line was ``right'' before, It's still right now.
+\item However, these are incorrect
+\begin{itemize}
+\item standard error of $\hat{\beta}$ 
+\item $RMSE$
+\item confidence / prediction intervals
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[allowframebreaks]{Proof: $\hat{\beta}^{OLS}$ Still Unbiased}
+
+\begin{itemize}
+\item Begin with ``mean centered'' data. OLS with one variable:
+\[
+\hat{\beta}_{1}=\frac{\sum x_{i}\cdot y_{i}}{\sum x_{i}^{2}}=\frac{\sum x_{i}(b\cdot x_{i}+e_{i})}{\sum x_{i}^{2}}=\frac{\beta_{1}\sum x_{i}^{2}+\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}=\beta_{1}+\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}
+\]
+\item Apply the Expected value operator to both sides:
+\[
+E[\hat{\beta}_{1}]=E(\beta_{1})+E(\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}})
+\]
+\[
+E[\hat{\beta}_{1}]=\beta_{1}+E(\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}})=\beta_{1}+(\frac{\sum E[x_{i}\cdot e_{i}]}{\sum x_{i}^{2}})
+\]
+\item Assume $x_{i}$ is uncorrelated with $e_{i}$, $E[x_{i}e_{i}]=0$,
+the work is done
+\end{itemize}
+\[
+E(\hat{\beta}_{1})=\beta_{1}
+\]
+
+\end{frame}
+
+\begin{frame}{Consequence 2. OLS formula for $\widehat{Var(\hat{\beta})}$ is wrong}
+
+\begin{enumerate}
+\item Usual formula to estimate $Var(\hat{\beta})$, $\widehat{Var(\hat{\beta})}$
+is wrong. And it's square root, the $std.err.(\hat{\beta})$ is wrong.
+\item Thus t-tests are WRONG (too big).
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Proof: OLS $\widehat{Var(\hat{\beta})}$ Wrong }
+
+\begin{itemize}
+\item Variance of $e_{i}$: $Var(e_{i})$. 
+\item The variance of the OLS slope estimator, $Var(\hat{b}_{1})$, in ``mean-centered
+(or deviations) form'':
+\end{itemize}
+\begin{equation}
+Var(\hat{\beta}_{1})=Var\left[\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}\right]=\frac{Var[\sum x_{i}e_{i}]}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{\sum Var(x_{i}e_{i})}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{\sum x_{i}^{2}\cdot Var(e_{i})}{\left(\sum x_{i}^{2}\right)^{2}}\label{eq:Varbhat}
+\end{equation}
+
+\begin{itemize}
+\item We assume all $Var(e_{i})$ are equal, and we put in the MSE as an
+estimate of it.
+\end{itemize}
+\begin{equation}
+\widehat{Var(\hat{\beta}_{1})}=\frac{MSE}{\sum x_{i}^{2}}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}{Proof: OLS $Var(\hat{\beta})$Wrong (page 2)}
+
+\begin{itemize}
+\item Instead, suppose the ``true'' variance
+
+\begin{equation}
+Var(e_{i})=s^{2}+s_{i}^{2}
+\end{equation}
+ (a common minimum variance $s^{2}$ plus an additional individualized
+variance $s_{i}^{2}$). 
+\item Plug this into (\ref{eq:Varbhat}):
+\begin{equation}
+\frac{\sum x_{i}^{2}(s^{2}+s_{i}^{2})}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{s^{2}}{\sum x_{i}^{2}}+\frac{\sum x_{i}\cdot s_{i}^{2}}{\left(\sum x_{i}^{2}\right)^{2}}
+\end{equation}
+\item The first term is \textquotedbl roughly\textquotedbl{} what OLS would
+calculate for the variance of $\hat{\beta}_{1}$. 
+\item The second term is the additional \textquotedbl true variance\textquotedbl{}
+in $\hat{\beta}_{1}$ that the OLS formula $\widehat{V(\hat{\beta}_{1})}$
+does not include.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Consequence 3: $\hat{\beta}^{OLS}$ is Inefficient}
+
+\begin{enumerate}
+\item $\hat{\beta}_{i}^{OLS}$is \textit{inefficient}: It has higher variance
+than the ``weighted'' estimator. 
+\item Note that to prove an estimator is ``inefficient'', it is necessary
+to provide an alternative estimator that has lower variance.
+\item WLS: Weighted Least Squares estimator, $\hat{\beta}_{1}^{WLS}$.
+\item The Sum of Squares to be minimized now includes a weight for each
+case
+\begin{equation}
+SS(\hat{\beta}_{0},\hat{\beta}_{1})=\sum_{i=1}^{N}W_{i}(y-\hat{y}_{i})^{2}
+\end{equation}
+\item The weights chosen to ``undo'' the heteroskedasticity. 
+\begin{equation}
+W_{i}^{2}=1/Var(e_{i})
+\end{equation}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}{Covariance matrix of error terms}
+
+\begin{itemize}
+\item This thing is a weighting matrix
+\end{itemize}
+\textrm{
+\[
+\left[\begin{array}{cccc}
+\frac{1}{Var(e_{1})} &  &  & 0\\
+ & \frac{1}{Var(e_{2})}\\
+ &  & \ddots\\
+0 &  &  & \frac{1}{Var(e_{N})}
+\end{array}\right]
+\]
+}
+
+Is usually simplified in various ways. 
+\begin{itemize}
+\item Factor out a common parameter, so each individual's error variance
+is proportional 
+\end{itemize}
+\[
+\frac{1}{\sigma_{e}^{2}}\left[\begin{array}{cccc}
+\frac{1}{w_{1}} &  &  & 0\\
+ & \frac{1}{w_{2}}\\
+ &  & \ddots\\
+0 &  &  & \frac{1}{w_{N}}
+\end{array}\right]
+\]
+
+\end{frame}
+\begin{frame}
+\frametitle{Example. Suppose variance proportional to $x_{i}^2$}
+
+<<sim10,fig=T,echo=T,include=F>>=
+Nsampsize <- 100
+b0 <- 3; b1 <- 0.25; stde <- 10; mult <- 0.05
+x <- rnorm(Nsampsize, m=50, sd=10)
+meanx <- mean(x)
+minx <- min(x)
+e <- rnorm(Nsampsize)
+y <- b0 + b1 * x + mult*(x-minx)*stde*e
+mod <- lm(y~x)
+plot(y~x, main="Heteroskedasticity")
+abline(mod)
+@
+\begin{columns}[t]
+
+
+\column{5cm}
+
+The ``truth'' is 
+\begin{equation}
+y_{i}=3+0.25x_{i}+e_{i}
+\end{equation}
+
+Homoskedastic: 
+\begin{equation}
+Std.Dev.(e_{i})=\sigma_{e}=10
+\end{equation}
+
+Heteroskedastic: 
+
+\begin{equation}
+Std.Dev.(e_{i})=0.05*(x_{i}-min(x_{i}))*\sigma_{e}
+\end{equation}
+
+
+\column{7cm}
+
+\includegraphics[width=6cm]{plots/t-sim10}
+\end{columns}
+
+\end{frame}
+
+<<sim20,fig=F,echo=T,include=F>>=
+Nsampsize <- 500
+x <- rnorm(Nsampsize, m=50, sd=10)
+meanx <- mean(x)
+minx <- min(x)
+simr <- function(i){
+e <- rnorm(Nsampsize, m=0, s=1)
+yhet <- b0 + b1 * x + mult*(x-minx)*stde*e
+mod <- lm(yhet ~ x)
+mod
+}
+nsims <- 1000
+reshet <- lapply(1:nsims, simr)
+@
+
+<<sim21,fig=T,echo=T,include=F>>=
+edemo <- rnorm(Nsampsize, m=0, s=1)
+yhet <- b0 + b1 * x + mult*(x-minx)*stde*edemo
+yhom <- b0 + b1 * x + stde*edemo
+ylimhet <- c(0.9 * range(yhet)[1], 1.1*range(yhet)[2])
+plot(yhet~x, main="Heteroskedastic Errors", ylim=ylimhet, ylab="Heteroskedastic y")
+lapply(reshet, abline, col=gray(.7))
+abline(b0,b1,col="red")
+@
+
+<<sim40,fig=F,echo=T,include=F>>=
+b0 <- 3; b1 <- 0.25; stde <- 10;
+simrhomo <- function(i){
+e <- rnorm(Nsampsize, m=0, s=1)
+yhom <- b0 + b1 * x + stde*e
+mod <- lm(yhom ~ x)
+mod
+}
+nsims <- 1000
+reshomo <- lapply(1:nsims, simrhomo)
+@
+
+<<sim41,fig=T,echo=T,include=F>>=
+edemo <- rnorm(Nsampsize, m=0, s=1)
+plot(yhom~x, main="Homoskedastic Errors", ylim=ylimhet, ylab="Homoskedastic y")
+lapply(reshomo, abline, col=gray(.70))
+abline(b0,b1,col="red")
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare Lines of 1000 Fits (Homo vs Heteroskedastic)}
+\begin{columns}[t]
+
+
+\column{6cm}
+
+\includegraphics[width=6cm]{plots/t-sim21}
+
+\column{6cm}
+
+\includegraphics[width=6cm]{plots/t-sim41}
+\end{columns}
+
+\end{frame}
+
+<<sim50,fig=T,echo=T,include=F>>=
+cof <- sapply(reshet, coefficients)
+cofhomo <- sapply(reshomo, coefficients)
+par(mfrow=c(1,2))
+hhet <- hist(cof[2,], prob=T, main="Heteroskedastic Data", xlab="Slope Est.")
+lines(density(cof[2,]))
+hist(cofhomo[2,], prob=T, xlim=range(hhet$breaks), main="Homoskedastic Data", xlab="Slope Est.")
+lines(density(cofhomo[2,]))
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{Histograms of Slope Estimates (w/Kernel Density Lines) }
+
+\includegraphics[width=10cm]{plots/t-sim50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{So, the Big Message Is}
+\begin{itemize}
+\item Heteroskedasticity inflates the amount of uncertainty in the estimates.
+\item Distorts t-ratios.
+\end{itemize}
+<<sim60, fig=T, include=F>>=
+#b1hat <- vector(nsims, mode="numeric")
+#res <- lapply(res, summary)
+#for (i in 1:nsims){ b1hat[i] <- coefficients(res[[i]])[2,1]}
+#
+#hist(b1hat, breaks=20, probability=T, main="", xlab="Estimates of b1")
+#lines(density(b1hat), lty=4)
+#rb1hat <- range(b1hat)
+#xseq <- seq(from=rb1hat[1],to=rb1hat[2],length.out=200)
+#nseq <- dnorm(xseq, m=b1, s=0.1)
+#lines(xseq, nseq, lty=1)
+#
+#legend("topright",legend=c("kernel density","True Sampling Dist"), lty=c(4,1))
+#legend("topleft", #legend=c(paste("mean=",round(mean(b1hat),3)),paste("std.dev.=",round(sd(b1hat),3)) ))
+@
+
+\end{frame}
+
+\section{Fix \#1: Robust Standard Errors}
+\begin{frame}{Robust estimate of the variance of $\hat{b}$ }
+
+\begin{itemize}
+\item Replace OLS formula for $\widehat{Var(\hat{b})}$ with a more ``robust''
+version
+\item Robust ``heteroskedasticity consistent'' variance estimator: weaker
+assumptions.
+\item No known small sample properties
+\begin{itemize}
+\item But are consistent / asymptotically valid
+\end{itemize}
+\item Note: This does not ``fix'' $\hat{b}^{OLS}$. It just gives us more
+accurate t-ratios by correcting $std.err(\hat{b}).$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Robust Std.Err. in a Nutshell}
+
+\begin{itemize}
+\item Recall: the variance-covariance matrix of the errors assumed by OLS.
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{e}^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}
+\end{array}\right]\label{eq:Vare_homo-1}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Heteroskedastic Covariance Matrix}
+
+\begin{itemize}
+\item If there's heteroskedasticity, we have to allow the possibility like
+this:
+\end{itemize}
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\end{frame}
+
+\begin{frame}{Robust Std.Err. : Use Variance Estimates}
+
+\begin{itemize}
+\item Fill in estimates for the case-specific error variances
+\end{itemize}
+\[
+\widehat{Var(e)}=\left[\begin{array}{ccccc}
+\widehat{\sigma_{1}^{2}} & 0 & 0 & 0 & 0\\
+0 & \widehat{\sigma_{2}^{2}} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \widehat{\sigma_{N-1}^{2}} & 0\\
+0 & 0 & 0 & 0 & \widehat{\sigma_{N}^{2}}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Embed those estimates into the larger formula that is used to calculate
+the robust standard errors.
+\item Famous paper
+
+White, Halbert. (1980). A Heteroskedasticity-Consistent Covariance
+Matrix Estimator and a Direct Test for Heteroskedasticity. \emph{Econometrica},
+48(4), 817-838.
+
+Robust estimator originally proposed by Huber (1967), but was forgotten
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation: Calculating The Robust Estimator of $Var(\hat{b})$}
+
+\begin{itemize}
+\item The true variance of the OLS estimator is
+\end{itemize}
+\begin{equation}
+Var(\hat{b}_{1})=\frac{\sum x_{i}^{2}Var(e_{i})}{(\sum x_{i}^{2})^{2}}
+\end{equation}
+
+\textrm{Assuming Homoskedasticity, estimate $\ensuremath{\sigma_{e}^{2}}$
+with MSE}.
+\begin{equation}
+\widehat{Var(\hat{b}_{1})}=\frac{MSE}{\sum x_{i}^{2}}\,\mbox{and the square root of that is \ensuremath{std.err.(\hat{b}_{1})}}
+\end{equation}
+
+\begin{itemize}
+\item The robust versions replace $Var(e_{i})$ with other estimates. White's
+suggestion was 
+\begin{equation}
+Robust\,\widehat{Var(\hat{b}_{1})}=\frac{\sum x_{i}^{2}\cdot\hat{e}_{i}^{2}}{(\sum x_{i}^{2})^{2}}\label{eq:WhiteBiVar}
+\end{equation}
+
+$\hat{e_{i}}^{2}$ : the ``squared residual'', used in place of
+the unknown error variance.
+\end{itemize}
+\end{frame}
+
+\section{Weighted Least Squares}
+\begin{frame}{WLS is Efficient}
+
+\begin{itemize}
+\item Change OLS:
+\begin{itemize}
+\item 
+\[
+SS(\hat{\beta})=\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}
+\]
+\end{itemize}
+\item to WLS:
+\end{itemize}
+\[
+minimize\,SS(\hat{\beta})=\sum_{i=1}^{N}W_{i}(y_{i}-\hat{y}_{i})^{2}
+\]
+
+\begin{itemize}
+\item In practice, weights are guesses about the standard deviation of the
+error term 
+\begin{equation}
+W_{i}=\frac{1}{\sigma_{i}}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Feasible Weighted Least Squares. }
+
+\begin{itemize}
+\item Analysis proceeds in 2 steps.
+
+\begin{itemize}
+\item Regression is estimated to gather information about the error variance.
+\item That information is used to fill in the Weight matrix with WLS
+\end{itemize}
+\item May revise the weights, re-fit the WLS, repeatedly until convergence.
+\end{itemize}
+\end{frame}
+
+\subsection{Combine Subsets of a Sample}
+\begin{frame}{Data From Categorical Groups}
+
+\begin{itemize}
+\item Suppose you separately investigate data for men and women
+\begin{equation}
+men:\,y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}
+\end{equation}
+\end{itemize}
+\begin{equation}
+women:\,y_{i}=c_{0}+c_{1}x_{i}+u_{i}
+\end{equation}
+
+\begin{itemize}
+\item Then you wonder, ``can I combine the data for men and women to estimate
+one model''
+\begin{equation}
+humans:\,y_{i}=\beta_{0}+\beta_{1}x_{i}+\beta_{2}sex_{i}+\beta_{3}sex_{i}x_{i}+e_{i}
+\end{equation}
+\item This ``manages'' the differences of intercept and slope for men
+and women by adding coefficients $\beta_{2}$ and $\beta_{3}$.
+\item But this ASSUMED that $Var(e_{i})=Var(u_{i})$.
+\item We should have tested for homoskedasticity (the ability to pool the
+2 samples).
+\end{itemize}
+\end{frame}
+
+\subsection{Random coefficient model}
+\begin{frame}{Methods Synonyms}
+
+The basic idea is to say that the linear model has ``extra'' random
+error terms. 
+\begin{columns}
+
+
+\column{6cm}
+
+Synonyms
+\begin{itemize}
+\item Random effects models
+\item Mixed Models
+\item Hierarchical Linear Models (HLM)
+\item Multi-level Models (MLM)
+\end{itemize}
+
+\column{6cm}
+
+This ``Laird and Ware'' notation has now become a standard. Let
+the ``fixed'' coefficients be $\beta$'s, but suppose in addition
+there are random coefficients $b\sim N(0,\sigma_{b}^{2})$. 
+\begin{equation}
+y=X\beta+Zb+e
+\end{equation}
+
+\begin{itemize}
+\item I'll probably write something on the board.
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Simple Random Coefficient Model}
+
+\begin{itemize}
+\item Start with the regression model that has a different slope for each
+case:
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{i}x_{i}+e_{i}
+\end{equation}
+\item Slope is a \textquotedbl random coefficient'' with 2 parts
+\[
+\beta_{i}=\beta_{1}+u_{i}
+\]
+
+\begin{itemize}
+\item $\beta_{1}$ is the ``same'' for all cases
+\item $u_{i}$ is noise in the slope that is individually assigned. It has
+expected value 0 and a variance $\sigma_{u}^{2}$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simple Random Coefficient Model}
+
+\begin{itemize}
+\item The regression model becomes
+\[
+y_{i}=\beta_{0}+(\beta_{1}+u_{i})x_{i}+e_{i}
+\]
+\[
+=\beta_{0}+\beta_{1}x_{i}+u_{i}x_{i}+e_{i}
+\]
+\item Note: My ``new'' error term is $u_{i}x_{i}+e_{i}$. NOT homoskedastic
+\item What's the variance of that? Apply the usual rule: 
+\[
+Var[u_{i}x_{i}+e_{i}]=x_{i}^{2}Var(u_{i})+Var(e_{i})+2x_{i}Cov(u_{i},e_{i})
+\]
+\item Get rid of the last part by asserting that the 2 random effects are
+uncorrelated, so we have
+\end{itemize}
+\[
+=x_{i}^{2}\sigma_{u}^{2}+\sigma_{e}^{2}
+\]
+
+\end{frame}
+
+\subsection{Aggregate Data}
+\begin{frame}{With Aggregated Data, the Variance is Almost Never Homogeneous.}
+
+\begin{itemize}
+\item Each row in the data set represents a collection of observations (``group
+averages'' like ``mean education'' or ``mean salary'')
+\item The averaging process causes heteroskedasticity.
+\item The mean $\bar{y}=\frac{\sum y_{i}}{N}$ and standard deviation $\sigma_{y}^{2}$
+imply the variance of the mean is 
+\[
+Var(\bar{y})=\frac{Var(y_{i})}{N}=\frac{\sigma_{y}^{2}}{N}
+\]
+\item Regression Weights proportional to $\sqrt{N_{group}}$ should be used.
+\end{itemize}
+\end{frame}
+
+\section{Testing for heteroskedasticity }
+
+\subsection{Categorical Heteroskedasticity}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Adapt tests from Analysis of Variance}
+\begin{description}
+\item [{Idea:}] Estimate the error variances for the subgroups, try to
+find out if they are different. 
+\end{description}
+\begin{itemize}
+\item Bartlett's test: Assuming normality of observations, derives a statistic
+that is distributed as a $\chi^{2}$. 
+
+\begin{Sinput}
+library(lmtest)
+plot(count ~ spray, data = InsectSprays)
+bartlett.test(count ~ spray, data = InsectSprays)
+\end{Sinput}
+\end{itemize}
+Bartlett, M. S. (1937). Properties of sufficiency and statistical
+tests. \emph{Proceedings of the Royal Society of London Series A}
+160, 268\textendash 282. 
+\begin{itemize}
+\item Fligner-Killeen Test : Robust against non-normality (less likely to
+confuse non-normality for heteroskedasticity)
+
+\begin{Sinput}
+library(lmtest)
+fligner.test(count ~ spray, data = InsectSprays)
+\end{Sinput}
+\end{itemize}
+William J. Conover, Mark E. Johnson and Myrle M. Johnson (1981). A
+comparative study of tests for homogeneity of variances, with applications
+to the outer continental shelf bidding data. \emph{Technometrics}
+23, 351\textendash 361. 
+\begin{itemize}
+\item Levene's test
+\end{itemize}
+\begin{Sinput}
+library(car)
+leveneTest (y~x*z, data=dat) ##x and z must be factors
+\end{Sinput}
+
+\end{frame}
+
+\subsection{Checking for Continuous Heteroskedasticity}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Goldfield Quandt test}
+
+S.M. Goldfeld \& R.E. Quandt (1965), Some Tests for Homoskedasticity.
+\emph{Journal of the American Statistical Association} 60, 539\textendash 547 
+\begin{itemize}
+\item Consider a continuous numeric predictor. Exclude observations ``in
+the middle'' and then compare observed variances of the left and
+right. 
+\item Draw a picture on Board here!
+\item HOWTO: compare the Error Sum of Squares for 2 chunks of data. 
+\[
+F=\frac{ESS_{2}}{ESS_{1}}=\frac{\mbox{the "lower set" ESS}}{\mbox{the "upper set" ESS}}
+\]
+ and the degrees of freedom for both numerator and denominator are
+$(N-d-4)/2$ , where $d$ is the number of excluded observations.
+\item The more observations you exclude, the smaller will be your degrees
+of freedom, meaning your F value must be larger.
+\end{itemize}
+\begin{Sinput}
+library(lmtest)
+gqtest(y ~ x, fraction=0.2, order.by=c(z))
+gqtest(y ~ x, point=0.4, order.by=c(z))
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Example of Goldfield-Quandt Test: Continuous X}
+\begin{itemize}
+\item Use heteroskedastic model from previous illustration.
+\end{itemize}
+\begin{columns}[t]
+
+
+\column{5cm}
+
+<<gq09, include=F, echo=F>>=
+library(lmtest)
+x <- rnorm(Nsampsize, m=50, sd=10)
+e <- rnorm(Nsampsize)
+y <- b0 + b1 * x + mult*(x-minx)*stde*e
+dat <- data.frame(x,y)
+@
+
+<<gq10, include=F, echo=T>>=
+mymod <- lm(y~x)
+gqtest(mymod, fraction=0.2, order.by= ~ x)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-gq10}
+
+This excludes 20\% of the cases from the middle, and compares the
+variances of the outer sections.
+
+\column{7cm}
+
+<<gq11, fig=T, include=F, echo=T>>=
+plot(x,y, main="Scatter for Goldfield-Quandt Test")
+@
+
+\includegraphics[width=7cm]{plots/t-gq11}
+\end{columns}
+
+\end{frame}
+
+\subsection{Toward a General Test for Heteroskedasticity}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Test for Predictable Squared Residuals}
+\begin{itemize}
+\item Versions of this test were proposed in Breusch \& Pagan (1979) and
+White (1980). 
+\item Basic Idea: If errors are homogeneous, the variance of the residuals
+should not be predictable with the use of input variables. 
+\item T.S. Breusch \& A.R. Pagan (1979), A Simple Test for Heteroscedasticity
+and Random Coefficient Variation. \emph{Econometrica} 47, 1287\textendash 1294 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Breusch-Pagan test}
+\begin{itemize}
+\item Model the squared residuals with the other predictors ($Z1_{i},$
+etc) like this:
+\[
+\frac{\widehat{e_{i}}^{2}}{\widehat{\sigma^{2}}}=\gamma_{o}+\gamma_{1}Z1_{1}+\gamma_{2}Z2_{i}
+\]
+\end{itemize}
+Here, $\widehat{\sigma^{2}}=MSE$. 
+\begin{itemize}
+\item If the error is homoskedastic/Normal, the coefficients $\gamma_{0}$,
+$\gamma_{1}$, and $\gamma_{2}$ will all equal zero. The input variables
+$Z$ can be the same as the original regression, but may are include
+squared values of those variables. 
+\item BP contend that $\frac{1}{2}RSS$ (the regression sum of squares)
+should be distributed as $\chi^{2}$ with degrees of freedom equal
+to the number of Z variables.
+\end{itemize}
+\begin{Sinput}
+library(lmtest)
+mod <- lm (y ~ x1 + x2 +x3, data=dat)
+bptest( mod , studentize=F) ##for the classic bp test
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{A Robust Version of the Test}
+\begin{itemize}
+\item The original form of the BP test assumed Normally distributed errors.
+Non-normal, but homoskedastic, error, might cause the test to indicate
+there is heteroskedasticity.
+\item A ``studentized'' version of the test was proposed by Koenker (1981),
+that's what lmtest's bptest uses by default.
+\end{itemize}
+\begin{Sinput}
+library(lmtest)
+mod <- lm (y ~ x1 + x2 +x3, data=dat)
+bptest( mod ) ## Koenker's robust version
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{White's Version of the Test}
+\begin{itemize}
+\item White's general test for heteroskedasticity is another view of the
+same exercise. Run the regression
+\end{itemize}
+\[
+\widehat{e_{i}}^{2}=\gamma_{o}+\gamma_{1}Z1_{1}+\gamma_{2}Z2_{i}+\ldots
+\]
+
+The $Z$'s should include the predictors, their squares, and cross
+products.
+\begin{itemize}
+\item Under the assumption of homoskedasticity, $N\cdot R^{2}$ is asymptotically
+distributed as $\chi_{p}^{2}$, where N is the sample size, $R^{2}$
+is the coefficient of determination from the fitted model, and $p$
+is the number of $Z$ variables used in the regression.
+\item Algebraically equivalent to robust version of bp test (Waldman, 1983). 
+\end{itemize}
+\end{frame}
+
+\section{Appendix: Robust Variance Estimator Derivation}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Where Robust $Var(\hat{\beta})$ Comes From}
+\begin{itemize}
+\item The OLS estimator in matrix form
+\begin{equation}
+\hat{b}=(X'X)^{-1}X'Y\label{bhat}
+\end{equation}
+\item If $e_{i}$ is homoskedastic, the ``true variance'' of the estimates
+of the $b$'s is~
+\begin{equation}
+Var(\hat{b})=\sigma^{2}\cdot(X'X)^{-1}\label{eq:trueVarb1}
+\end{equation}
+ Replace $\sigma^{2}$, with the Mean Squared Error (MSE). 
+\begin{equation}
+\widehat{Var(\hat{b})}=MSE\cdot(X'X)^{-1}\label{eq:varbhat_homo}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Where OLS Exploits Homoskedastic Assumption}
+\begin{itemize}
+\item In the OLS derivation of (\ref{eq:varbhat_homo}), one arrives at
+this intermediate step:
+\end{itemize}
+\begin{equation}
+OLS:\,Var(\hat{b})=(X'X)^{-1}(X'Var(e)X)(X'X)^{-1}\label{eq:trueVarB2}
+\end{equation}
+
+\begin{itemize}
+\item The OLS derivation exploits homoskedasticity, which appears as 
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma^{2}
+\end{array}\right]\label{eq:Vare_homo}
+\end{equation}
+\end{itemize}
+\begin{equation}
+=\sigma^{2}\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]=\sigma^{2}\cdot I
+\end{equation}
+
+\[
+OLS\,Var(\hat{b})=(X'X)^{-1}(X'\cdot\sigma^{2}\cdot X)(X'X)^{-1}=\sigma^{2}(X'X)^{-1}
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{But Heteroskedasticity Implies}
+\begin{itemize}
+\item If there's heteroskedasticity, we have to allow the possibility like
+this:
+\end{itemize}
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Those ``true variances'' are unknown. How can we estimate $Var(\hat{b})$?
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{White's Idea}
+\begin{itemize}
+\item The variance of $e_{1}$, for example, is never observed, but the
+best estimate we have for it is the mean square for that one case:
+\[
+\widehat{e_{1}}^{2}=(y_{1}-X_{1}\hat{b})(y_{1}-X_{1}\hat{b})
+\]
+\item Hence, Replace $Var(e)$ with a matrix of estimates like this:
+\[
+\widehat{Var(e)}=\left[\begin{array}{ccccc}
+\widehat{e_{1}}^{2}\\
+ & \widehat{e_{2}}^{2}\\
+\\
+ &  &  & \widehat{e_{N-1}}^{2}\\
+ &  &  &  & \widehat{e_{N}}^{2}
+\end{array}\right]
+\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Heteroskedasticity Consistent Covariance Matrix}
+\begin{itemize}
+\item The ``heteroskedasticity consistent covariance matrix of $\hat{b}$''
+uses $\widehat{Var(e)}$ in the formula to calculate estimated variance.
+\[
+hccm\,Var(\hat{b})=(X'X)^{-1}(X'\widehat{Var(e)}X)(X'X)^{-1}
+\]
+\item White proved that the estimator is consistent, i.e, for large samples,
+the value converges to the true $Var(\hat{b})$.
+\item Sometimes called an ``information sandwich'' estimator. The matrix
+$(X'X)^{-1}$ is the ``information matrix''. This equation gives
+us a ``sandwich'' of $X'Var(e)X$ between two pieces of information
+matrix.
+\end{itemize}
+\end{frame}
+
+\include{Heteroskedasticity-WLS-lecture-problems}
+\end{document}

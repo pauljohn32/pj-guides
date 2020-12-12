@@ -1,0 +1,1391 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english,noae,aspectratio=1609,color=pdftex]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{amstext}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+% (ERT) argument for the TOC
+\AtBeginDocument{%
+  \let\origtableofcontents=\tableofcontents
+  \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+  \def\gobbletableofcontents#1{\origtableofcontents}
+}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\usepackage[natbibapa]{apacite}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{longtable}
+%%\usepackage{graphicx}
+\renewcommand{\doiprefix}{doi:\kern-1pt}
+\setlength{\bibsep}{10pt}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+%for bold upright roman in math for matrix algebra
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%%paste in guidePreambleSweavel.tex
+%% From beamer slide:
+%% \usepackage{Sweave}
+%% 
+%% This controls display of code chunks
+\usepackage{ae,fancyvrb,relsize,listings}
+
+\providecommand{\Sweavesize}{\normalsize}
+\providecommand{\Rsize}{}
+\renewcommand{\Rsize}{\normalsize}
+\providecommand{\Routsize}{\scriptsize}
+
+\providecommand{\Rcolor}{\color[rgb]{0.1, 0.1, 0.1}}
+\providecommand{\Routcolor}{\color[rgb]{0.2, 0.2, 0.2}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.43, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.91}}
+\providecommand{\Routbackground}{\color[gray]{0.935}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+\lstdefinestyle{Rinput}{
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  basicstyle=\Rsize\Rcolor\ttfamily,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%,
+  commentstyle=\Rcommentcolor\ttfamily,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1{==}{{=\,=}}2{--}{{-\,-}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+  backgroundcolor=\Rbackground,%
+  numbers=left,%
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}%
+
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routput}{fancyvrb=false,
+  literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+  basicstyle=\Routcolor\Routsize\ttfamily,%
+  backgroundcolor=\Routbackground,
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1 {==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},
+  numbers=left,
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}
+
+\newenvironment{Schunk}{}{}
+\newenvironment{Sinput}{}{}
+\let\Sinput\relax
+\let\Scode\relax
+\let\Soutput\relax
+\lstnewenvironment{Sinput}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routput}}{}
+
+\lstset{tabsize=2, breaklines=true, style=Rinput, breakatwhitespace=true}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+%%\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+\usepackage{realboxes}
+\providecommand*{\code}[1]{\texttt{#1}}
+\renewcommand{\code}[1]{%
+\Colorbox{light-gray}{#1}%
+}%
+%%end paste in guidePreambleSweavel.tex
+
+\usepackage[natbibapa]{apacite}
+
+\definecolor{darkblue}{HTML}{1e2277}
+
+%would be in beamerthemekucrmda%
+\mode<presentation>{
+\definecolor{kublue}{RGB}{0,81,186}
+\usefonttheme{professionalfonts}
+\useoutertheme{infolines}
+\useinnertheme{rounded}
+%disable rounded for alert and example boxes%
+\setbeamertemplate{blocks}[default]
+\usecolortheme{whale}
+\usecolortheme{orchid}
+\setbeamercolor{structure}{bg=kublue,fg=kublue!90!black}
+%\setbeamercolor{structure}{fg=kublue}
+\setbeamercolor{frametitle}{bg=kublue}
+\setbeamercolor{section in toc}{fg=kublue!40!black}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+\beamertemplatenavigationsymbolsempty
+%end of beamerthemekucrmda%
+
+%If you want bigger margins, try this:
+\setbeamersize{text margin left=05mm,text margin right=10mm} 
+\hypersetup{colorlinks,allcolors=.,urlcolor=darkblue}
+
+\titlegraphic{\includegraphics[width=6cm]{theme/logo}}
+} %end mode presentation
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\mode<presentation>{
+\title[CT\&D]{Central Tendency and Dispersion}
+\author{Paul Johnson\inst{1}}
+\institute[KU]{\inst{1}Political Science \& Psychology, KU }
+\date{2020}
+
+\makebeamertitle
+\logo{\includegraphics[width=5mm]{theme/logomini}}
+
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}
+    \tableofcontents[currentsection] 
+  }
+}
+
+}%end mode presentation
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%following is LyX shortcut \vb for bold upright math for matrices
+
+\global\long\def\vb#1{\bm{\mathrm{#1}}}%
+
+%Please leave this code block. OK to revise values inside.
+<<ignoremeRoptions, echo=F>>=
+tdir <- "tmpout"
+if(!dir.exists(tdir)) dir.create(tdir, showWarnings=FALSE)
+library(stationery)
+opts.orig <- options()
+options(width=70, prompt = " ", continue = "  ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+par.orig <- par(no.readonly = TRUE) 
+pjmar <- c(4.1, 4.1, 1.5, 2.1)
+par(mar=pjmar, ps=11)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=tmpout/t,split=TRUE,ae=FALSE,height=4.5,width=7}
+
+% We need 2 image files for logos, front page (logo.pdf) and lower-right
+% decoration (logomini.pdf) that shows on all slides. 
+% You can manually copy your desired image files
+% "logo.pdf" and "logomini.pdf" into the theme folder. 
+% Or run this to retrieve or create them:
+<<texcopy, include=FALSE, echo=FALSE, results=hide>>=
+logos <- c("logo.pdf", "logomini.pdf")
+## This will retrieve logo files from a designated package:
+## try(getFiles(logos, pkg = "stationery", overwrite = FALSE))
+## If you do not have a file after that, 
+## the following will manufacture a blank images for placeholders
+if(!file.exists("theme/logo.pdf")){
+  blankPDF(file = "theme/logo.pdf", height=1, width=2, messg = "")
+}
+if(!file.exists("theme/logomini.pdf")){
+  blankPDF(file = "theme/logomini.pdf", height=1, width=11, messg = "")
+}
+@
+
+\begin{frame}
+
+\frametitle{Here's what I hope you will learn}
+\begin{itemize}
+\item Definition of ``variable'' and notation for writing about variables
+\item Ways to Describe Numeric Variables
+\item Central Tendency: Mean, Median, Mode
+\item Dispersion: Variance, Standard Deviation, etc.
+\item Rescalings
+\end{itemize}
+\end{frame}
+
+\section{Numeric Variables}
+\begin{frame}[containsverbatim]{Variable}
+\begin{description}
+\item [{Variable}] a collection of scores that represent observations.
+\end{description}
+Example:
+
+\begin{equation}
+height=\{6.0,5.1,4.2,5.8,5.4\}\label{eq:-19}
+\end{equation}
+
+\begin{description}
+\item [{Subscript~$height_{i}$:}] $height_{1}$ is observation $1$,
+$height_{2}$ is observation $2,$ and so forth
+\item [{Clarification:}] Social scientists refer to this as ``a sample''
+with 5 observations, but I notice engineers and machine learning people
+refer to it as 5 samples in a collection.
+\end{description}
+\end{frame}
+%
+\begin{frame}[containsverbatim]{Common Notation}
+
+More abstractly
+
+\begin{equation}
+x=\{x_{1},x_{2},x_{3,}x_{4},\ldots,x_{N}\}\label{eq:-8}
+\end{equation}
+
+Or perhaps more succinctly
+\begin{equation}
+x_{i},for\,i\in\{1,...,N\}
+\end{equation}
+
+\begin{enumerate}
+\item $N$: capital $N$ refers to ``sample size'' or ``number of observations''
+(in most social sciences).
+\item Usually, when I talk about $x_{i}$, I mean to refer to any of the
+individual observations in $x$. 
+\item Set notation
+
+\begin{enumerate}
+\item $\in$ means ``element of,'' as in $i\in N$ or $x_{2}\in X=\{x_{1},x_{2},\ldots,x_{N}\}$.
+\item $\forall$ abbreviation of ``for all'', so ``$for\,i\in N$''
+might be $\forall i\in N$.
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+%
+\begin{frame}[containsverbatim]
+\frametitle{Numeric Variables}
+\begin{columns}[c]
+
+
+\column{5cm}
+\begin{itemize}
+\item NUMERIC variables: accept mathematical transformations
+\item The range from $\{minimum,maximum\}$ is (subjectively) meaningful
+\item From $x_{i}$ to $2\times x_{i}$: there is twice as much of it
+\item Analysis may be altered (improved or damaged) by transformations
+\end{itemize}
+
+\column{7cm}
+
+<<logx, echo=F,fig=T, include=F, height=4, width=6>>=
+x <- seq(0.25, 6.0, by=0.1)
+y <- log(x)
+plot(y ~ x, xlim=c(0, 6), type = "l", main=expression(paste(y[i]," is the log of ", x[i])), xlab=expression(x[i]), ylab=expression(y[i]))
+abline(h=c(-1.0, -0.5, 0, 0.5, 1.0, 1.5), col="gray", lty=2)
+abline(v=c(0.5, 1, 4, 4.5))			
+@
+
+\includegraphics[width=6cm]{tmpout/t-logx.pdf}
+\begin{itemize}
+\item $\log()$ magnifies the importance of a step from 0.5 to 1 and shrinks
+the importance of a step from 4 to 4.5. 
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Terminology to Describe Variables}
+\begin{itemize}
+\item Central Tendency: Where, ``generally'' are the scores? Is there
+a ``meaningful'' (subjective) characterization of where ``most''
+scores are situated
+\item Dispersion: How ``spread out'' are the scores? Is it not meaningful
+to talk about a ``typical'' observation?
+\item Shape of Distributions: Do the observations appear to be 
+
+\begin{itemize}
+\item Unimodal (one most-likely score, others less likely)
+\item Symmetric or Skewed
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Histograms}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histograms: Compare Two Variables}
+
+<<c1,fig=T,echo=F,include=F>>=
+x1 <- rnorm (20, mean=14, sd=5)
+x2 <- rnorm (20, mean=84, sd=5)
+par(mfcol=c(2,1))
+hist(x1, prob=T, xlab="x", ylab="density", main="Lots of Low Scores", xlim=c(0,100))
+hist(x2, prob=T, xlab="x", ylab="density", main="Lots of Big Scores", xlim=c(0,100))
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=10cm]{tmpout/t-c1}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histograms: Compare Two Variables}
+
+<<c2,fig=T,echo=F,include=F>>=
+x1 <- rnorm (20, mean=40, sd=2)
+x2 <- rnorm (20, mean=40, sd=15)
+par(mfcol=c(2,1))
+hist(x1, prob=T, xlab="x", ylab="density", main="These are clumped together", xlim=c(0,100))
+hist(x2, prob=T, xlab="x", ylab="density", main="These are spread out", xlim=c(0,100))
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=10cm]{tmpout/t-c2}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Define "Histogram", Please}
+\begin{itemize}
+\item Group observations into ``bins'' of similar scores
+\item Draw bars to represent the proportion of all scores that fall into
+each bin
+\item The areas of the bars should sum to 1.0
+\item The hist function can produce the bins and counts, without drawing
+a plot (see the argument plot=FALSE)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histograms: Check for Data Errors}
+\begin{columns}[c]
+
+
+\column{5cm}
+\begin{itemize}
+\item Suppose your data is supposed to be human age
+\item But somebody put in 999 for ``missing'' data points
+\end{itemize}
+
+\column{7cm}
+
+<<c10,fig=T,echo=F,include=F, height=4, width=6>>=
+age <- rgamma(300, scale = 5, shape = 5)
+age <- c(age, rep(999, 30))
+hist(age, prob=T, xlab="age", ylab="density", main="Age data")
+@
+
+\includegraphics[width=7cm]{tmpout/t-c10}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histograms: Check for Data Errors}
+\begin{columns}[c]
+
+
+\column{5cm}
+\begin{itemize}
+\item If you ignore (remove) the cases that are equal to 999 (or set them
+to NA)
+\item Generally, whenever you get new data from anybody/anywhere, a histogram
+is a good ``first check'' on it.
+\end{itemize}
+
+\column{7cm}
+
+<<c11,fig=T,echo=F,include=F, height=4, width=6>>=
+age <- age[age < 300]
+hist(age, prob=T, xlab="age", ylab="density", main="Age data", xlim=c(0,100))
+@
+
+\includegraphics[width=7cm]{tmpout/t-c11}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Various "transformations" might be applied}
+\begin{itemize}
+\item I'm cautious about fiddling with data
+\item Some transformations are not ``harmless''
+\item Goal: Be honest with self \& others about changes applied to data,
+including
+
+\begin{itemize}
+\item omission of missing or extreme observations
+\item multiplicative re-scaling 
+\item nonlinear transformations (log, Box-Cox, etc.)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Some Examples from the General Social Survey}
+
+/stat/DataSets/GSS/gss-subset2.Rda
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram: Spot Typos/Unusual Scores}
+
+<<gss05, fig=T, include=F, echo=T>>=
+load("../../DataSets/GSS/gss-subset2.Rda")
+par(xpd=T)
+mnummen <- round(mean(dat$nummen, na.rm=T),3) 
+sdnummen <- round(sd(dat$nummen, na.rm=T),3) 
+mednummen <- round(median(dat$nummen, na.rm=T),3) 
+cvnummen <- round(sdnummen/mnummen,3)
+h1 <- hist(dat$nummen, breaks=100, prob = T, main = "Male Sexual Partners (nummen)", xlab = "Number of Male Sexual Partners", ylim=c(0,0.7)) 
+text(max(h1$mids), 0.5, pos=2, label=paste("Mean=", mnummen,"\nStd.Dev=", sdnummen,"\nMedian=", mednummen,"\nC.V.=", cvnummen))  
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss05}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram: Eliminate values greater than 99}
+
+<<gss10, fig=T, include=F, echo=T>>=
+par(xpd=T)
+dat$nummen[dat$nummen > 99] <- NA
+mnummen <- round(mean(dat$nummen, na.rm=T),3) 
+sdnummen <- round(sd(dat$nummen, na.rm=T),3) 
+mednummen <- round(median(dat$nummen, na.rm=T),3) 
+cvnummen <- round(sdnummen/mnummen,3)
+h1 <- hist(dat$nummen, breaks=100, prob=T, main="Male Sexual Partners (nummen)", xlab="Number of Male Sexual Partners", ylim=c(0,0.7)) 
+text(max(h1$mids), max(h1$density)-.2, pos=2, label=paste("Mean=", mnummen,"\nStd.Dev=", sdnummen,"\nMedian=", mednummen,"\nC.V.=", cvnummen))  
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Size of the Bins Can Make a Difference}
+\begin{itemize}
+\item Narrow bars have more detail, possibly less generalizability (harder
+to see patterns)
+\item Wide bars smooth out too many bumps, hide details
+\item Many algorithms proposed to choose bin width to automate production
+of ``good'' histograms.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram: Fatter Bars!}
+
+<<gss15, fig=T, include=F, echo=T>>=
+par(xpd=T)
+h1 <- hist(dat$nummen, prob=T, main="Male Sexual Partners (nummen)", xlab="Number of Male Sexual Partners", ylim=c(0,0.7)) 
+text(max(h1$mids), 0.5, pos=1, label=paste("Mean=", mnummen,"\nStd.Dev=", sdnummen,"\nMedian=", mednummen,"\nC.V.=", cvnummen))  
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss15}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Smoothing Curve: Kernel Density Estimate (KDE)}
+\begin{itemize}
+\item Because of the (subjective) ``bin width'' problem, other density
+estimation methods have been developed
+\item The kernel density estimate is a ``smoothing'' method that estimates
+the density at each value, putting more weight on nearby observations
+than far away ones.
+\item Some propose to replace histograms with KDE
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Density Estimates}
+
+<<gss16, fig=T, include=F, echo=T>>=
+par(xpd=T)
+dennummen <- density(dat$nummen, na.rm=T)
+plot(dennummen, main="The default plot of a density object")
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss16}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram with Density Super-imposed}
+
+<<gss30, fig=T, include=F, echo=T>>=
+par(xpd=T)
+h1 <- hist(dat$nummen, breaks=50, prob=T, main="Male Sexual Partners (nummen)", xlab="Number of Male Sexual Partners", ylim=c(0,0.5)) 
+dennummen <- density(dat$nummen, na.rm=T)
+lines(dennummen, lty=2, lwd=1, col="green")
+text(35, 0.15, label=c("kernel density \n estimate (green)"),pos=3)
+arrows(30, 0.15, 18,0.03, lty=2, length=0.1)
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss30}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram: More on Customizing Histograms}
+\begin{itemize}
+\item My lectures in guides/Rcourse (plot-1, plot-2) have plenty of additional
+detail on beautifying plots.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Histogram: with a "legend"}
+
+<<gss31, fig=T, include=F, echo=T>>=
+par(xpd=T)
+h1 <- hist(dat$nummen, breaks=50, prob=T, main="Male Sexual Partners", xlab="Number of Male Sexual Partners", ylim=c(0,0.5)) 
+dennummen <- density(dat$nummen, na.rm=T)
+lines(dennummen, lty=2, lwd=1, col="green")
+legend("topright",legend=c("Histogram", "Kernel Density"), lty=c(1, 2), col=c("black","green"))
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss31}
+
+\end{frame}
+
+\section{Mean}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Convey Same Info Without a Graph?}
+\begin{itemize}
+\item What if your publisher will not allow you the space for a histogram? 
+\item Convey same information without a picture?
+\item Need to develop terminology to describe and compare what we see.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Mean = Average, Common index of "central tendency"}
+\begin{itemize}
+\item ``central tendency'' is, vaguely speaking, the ``middle'' of a
+symmetric distribution
+\end{itemize}
+\begin{description}
+\item [{Mean:}] (AKA ``average''). 
+\begin{equation}
+\bar{x}=\frac{Sum\,Of\,All\,Scores}{Number\,Of\,Scores}
+\end{equation}
+Given $x$, add up the scores, then divide by $N$.
+\begin{equation}
+\bar{x}=\frac{\sum_{i=1}^{N}x_{i}}{N}\label{eq:-1}
+\end{equation}
+\end{description}
+\begin{itemize}
+\item About Notation: 
+\begin{itemize}
+\item Some math books use ``m'' for estimated mean, because the true (unknown)
+value is $\mu$ (Greek ``mu''). 
+\item $\bar{x}$ is common notation for average, but I don't know why. 
+\item Sometiems I write $\mu$ for the true value and $\hat{\mu}$ for the
+estimate.
+\item Sometimes I write $\widehat{M(x)}$ for the estimate
+\end{itemize}
+\end{itemize}
+<<createnorm, include=F, echo=T>>= 
+set.seed(1234321) 
+myx <- rnorm(1000, mean=50, sd=20) 
+@
+
+<<mstd,include=F,echo=T>>= 
+mx <- mean(myx, na.rm = TRUE)
+sdx <- sd(myx, na.rm = TRUE)
+sdx <- round(sdx, 3)
+@
+
+<<histfinal,echo=T,fig=T,include=F, height=7, width=7>>=
+hist(myx , breaks=30, prob=T, xlab="A Beautiful Variable", ylab="Density", main="")
+text(80, 0.020, label=paste("Mean = ", round(mx,2)), cex=1.5) 
+#text(82, 0.018, label=paste("Std. Dev. = ", round(sdx,2)))
+@
+
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+\begin{columns}[t]
+
+
+\column{4cm}
+\begin{itemize}
+\item I manufactured a sample of pleasantly symmetrical random data
+\item The sample mean is \Sexpr{round(mx,3)}
+\item Appears (to me)
+
+\begin{itemize}
+\item unimodal (one peak) 
+\item symmetric (more or less)
+\end{itemize}
+\end{itemize}
+
+\column{7cm}
+
+\begin{exampleblock}{A Histogram with 30 Bins}
+\includegraphics[totalheight=70mm]{tmpout/t-histfinal}
+\end{exampleblock} 
+\end{columns}
+
+\end{frame}
+
+\begin{frame}   
+\frametitle{You too can manufacture Normal samples}
+   \begin{itemize}  
+    \item I used R's rnorm function to draw some example observations
+    \input{tmpout/t-createnorm}
+    \item That creates 1000 observations from the Normal distribution, $N(50, 20^2)$
+   
+    \item We specify 2 parameters
+        \begin{itemize}
+           \item 50 is the parameter mu ($\mu$), the "true mean"
+           \item 20 is the parameter sigma ($\sigma$), which controls the "dispersion" of the scores.          
+        \end{itemize}
+    \item "Gaussian distribution" another name for the Normal.
+    \item In case you wondered, the sample standard deviation is \Sexpr{sdx} 	
+\end{itemize} 
+\end{frame} 
+
+\begin{frame}[plain, containsverbatim]
+    \frametitle{Compare 2 variables}
+<<histfinal2,echo=T,fig=T,include=F, height=5.5, width=9>>=
+myx2 <- rnorm(1000, 20, 20)
+par(mfcol=c(1,2))
+hist(myx, breaks=30, prob=TRUE, xlab="A Beautiful Variable", ylab="Density", main="", xlim=c(-40, 120), ylim=c(0, 0.025))
+text(10, 0.020, label=paste("Mean = ", round(mx,2)), cex=1.5) 
+#text(82, 0.018, label=paste("Std. Dev. = ", round(sdx,2)))
+hist(myx2, breaks=30, prob=T, xlab="Another Variable", ylab="Density", main="", xlim=c(-40,120), ylim=c(0,0.025))
+mx2 <- mean(myx2, na.rm=T)
+sdx2 <- sd(myx2, na.rm=T)
+text(45, 0.021, label=paste("Mean = ", round(mx2,2)), cex=1.5) 
+@
+\includegraphics[totalheight=65mm]{tmpout/t-histfinal2}
+\end{frame}
+
+\section{Dispersion}
+
+\begin{frame}[allowframebreaks,containsverbatim]
+\frametitle{Variance}
+\begin{description}
+\item [{Variance:}] the average of squared deviations about the mean (AKA
+mean squared error)
+\end{description}
+\begin{enumerate}
+\item Calculate the difference between the $i$'th case and the mean:
+\begin{equation}
+x_{i}-\bar{x}\label{eq:-2}
+\end{equation}
+\item Square that:
+\begin{equation}
+(x_{i}-\bar{x})^{2}\label{eq:-3}
+\end{equation}
+\item Do the same for all and add them up:
+
+\begin{equation}
+\sum_{i=1}^{N}(x_{i}-\bar{x})^{2}\label{eq:-4}
+\end{equation}
+
+\framebreak
+\item Then divide by $N$. 
+\begin{equation}
+Var(x)=\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})^{2}}{N}\label{eq:-5}
+\end{equation}
+\end{enumerate}
+\begin{itemize}
+\item In some contexts, it is preferred to divide by $N-1$. That is needed
+to 
+\begin{enumerate}
+\item create an ``unbiased estimate'' of the true mean squared error of
+a data-generating process
+\item to use the variance as a component in further calculations, such as
+a T-test
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Standard Deviation}
+\begin{description}
+\item [{Standard~Deviation:}] the square root of the variance.
+\end{description}
+\begin{equation}
+Std.Dev.(x)=\sqrt{Var(x)}=\sqrt{\frac{\sum_{i=1}^{N}(x_{i}-\bar{x})^{2}}{N}}\label{eq:-6}
+\end{equation}
+
+\begin{itemize}
+\item Var and Std.Dev. serve same purpose.
+\item Std.Dev. has an advantage: it is measured (roughly speaking) on the
+same scale as the mean. (see below on ``scaling'')
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+    \frametitle{Compare 2 variables}
+<<V1,echo=T,fig=T,include=F, height=5.5, width=9>>=
+myx1 <- rnorm(1000, 40, 10)
+myx2 <- rnorm(1000, 40, 20)
+mx1 <- round(mean(myx1, na.rm=T), 2)
+sdx1 <- round(sd(myx1, na.rm=T), 2)
+mx2 <- round(mean(myx2, na.rm=T), 2)
+sdx2 <- round(sd(myx2, na.rm=T), 2)
+par(mfcol=c(1,2))
+hist(myx1 , breaks=30, prob=T, xlab="Small Variance", ylab="Density", main="", xlim=c(-20,100),ylim=c(0,0.035))
+text(5, 0.026, label=paste("Mean = ", round(mx1,2))) 
+text(5, 0.024, label=paste("Std. Dev. = ", round(sdx1,2)))
+hist(myx2 , breaks=30, prob=T, xlab="Big Variance", ylab="Density", main="", xlim=c(-20,100), ylim=c(0,0.035))
+text(70, 0.026, label=paste("Mean = ", round(mx2,2))) 
+text(70, 0.024, label=paste("Std. Dev. = ", sdx2))
+@
+\includegraphics[totalheight=65mm]{tmpout/t-V1}
+\end{frame}
+
+\begin{frame}
+\frametitle{About Notation}
+
+Call the observed variance what you want!
+\begin{enumerate}
+\item Older stats books
+\begin{enumerate}
+\item $\sigma^{2}$ is the ``true (unknown) variance
+\item $s^{2}$ is the estimate. ``s'' short for ``sigma'' 
+\end{enumerate}
+\item I like the hat notation, estimated variance $\widehat{\sigma^{2}}$. 
+\item l also like notation with the ``true'' variance $\mathrm{Var}(x)$
+while an estimate is $\widehat{\mathrm{Var}(x)}$. 
+\end{enumerate}
+You are allowed to use any symbol you prefer, as long as you are clear
+to define the term when you use it.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Socio Economic Status}
+
+<<gss50, fig=T, include=F, echo=T>>=
+par(xpd=T)
+mh <- hist(dat$sei, xlab= "Socio-economic Index", ylab = "Proportion", xlim=c(0,100), ylim = c(0, 0.04), breaks=25, prob=T, main="")
+densei <- density(dat$sei, na.rm=T)
+lines(densei, lty=2)
+text(10, 0.01, label=c("kernel \n density \n estimate"),pos=3)
+arrows(10, 0.01, 18,0.003, lty=2, length=0.1)
+text( 0.8*max(dat$sei,na.rm=T), max(densei$y), label = paste("mean=", round(mean(dat$sei, na.rm =T),2), "\n std.dev. =", round(sd(dat$sei,na.rm=T),2)), pos=3 )
+@
+
+\includegraphics[width=10cm]{tmpout/t-gss50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Socio Economic Status: Only Men}
+
+<<gss55, fig=T, include=F, echo=T>>=
+par(xpd=T)
+men <- dat[dat$sex %in% levels(dat$sex)[1], ] 
+women <- dat[dat$sex %in% levels(dat$sex)[2], ]
+womend <- density(women$sei,na.rm = TRUE) 
+mend <- density(men$sei, na.rm = TRUE)
+mh <- hist(men$sei, xlab= "Socio-economic Index", ylab = "Proportion", xlim=c(0,100), ylim = c(0, 0.04), breaks = 25, prob = TRUE, main="")
+
+lines(mend, lty=2)
+text(10, 0.01, label=c("kernel \n density \n estimate"),pos=3)
+arrows(10, 0.01, 18,0.003, lty=2, length=0.1)
+
+text( 0.8*max(men$sei,na.rm = TRUE), 0.035, label = paste("mean=", round(mean(men$sei, na.rm =T),2), "\n std.dev. =", round(sd(men$sei,na.rm=T),2)), pos=3 )
+@
+
+\includegraphics[width=8cm]{tmpout/t-gss55}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Socio Economic Status: Women}
+
+<<gss60, fig=T, include=F, echo=T>>=
+par(xpd=T) 
+wh <- hist(women$sei, xlab="Socio-economic Index", ylab="Proportion", xlim=c(0,100), ylim=c(0, 0.04), breaks=25, prob = TRUE, main="")
+
+lines(womend, lty=2)
+
+text(10, 0.01, label=c("kernel \n density \n estimate"),pos=3)
+
+arrows(10, 0.01, 18,0.003, lty=2, length=0.1)
+
+text( 0.8*max(women$sei, na.rm = TRUE), 0.03, pos = 3, 
+label = paste("mean=",round(mean(women$sei,na.rm = TRUE),2), "\n std.dev.=", round(sd(women$sei, na.rm = T),2)))
+@
+
+\includegraphics[width=8cm]{tmpout/t-gss60}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Diversity Indicators}
+\begin{itemize}
+\item Inter-Quartile range: group data by ordered quarters, and then think
+of the range between 25 percentile and 75 percentile as a diversity
+indicator.
+\item Many possible diversity indicators, including
+
+\begin{itemize}
+\item gini index (often used for income inequality)
+\item the mean of absolute valued differences
+\begin{equation}
+Mean\,Absolute\,Deviation=\frac{\sum_{i=1}^{N}|x-\bar{x}|}{N}\label{eq:-10}
+\end{equation}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Symmetry \& the Median}
+
+\begin{frame}
+\frametitle{Symmetry Definition}
+\begin{itemize}
+\item A distribution is symmetric if the chance of observing a score $\bar{x}-c$
+is the same as observing $\bar{x}+c$. 
+\item If a distribution is symmetric, then we have no trouble conveying
+the idea of its 'location'.
+\item The mean is in the middle!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+    	\begin{exampleblock}{A Nonsymmetric Distribution}
+
+<<symmetry1A,echo=T,fig=T,include=F>>=
+myx <- rgamma(1000, 1.5, 3)
+hist(myx , breaks=30, prob=T, xlab="Skewed", ylab="Density", main="")
+mx <- round(mean(myx, na.rm=T), 2)
+sdx <- round(sd(myx), 2)
+text(mx, 1.50, pos=4, label=paste("Mean = ", mx)) 
+#text(mx, 1.35, pos=4, label=paste("Std. Dev. = ", sdx))
+abline(v=mx, col="red")
+@
+\includegraphics[totalheight=70mm]{tmpout/t-symmetry1A}
+\end{exampleblock}  
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+    	\begin{exampleblock}{Another Nonsymmetric Distribution}
+
+<<symmetry1B,echo=T,fig=T,include=F>>=
+myx <- rexp(1000, 5)
+hist(myx , breaks=30, prob=T, xlab="Skewed", ylab="Density", main="")
+mx <- round(mean(myx, na.rm=T), 2)
+sdx <- round(sd(myx, na.rm=T), 2)
+text(mx, 1.50, pos=4, label=paste("Mean = ", mx)) 
+#text(mx, 1.35, pos=4, label=paste("Std. Dev. = ", sdx))
+abline(v=mx, col="red")
+@
+\includegraphics[totalheight=70mm]{tmpout/t-symmetry1B}
+\end{exampleblock}  
+\end{frame}
+
+\begin{frame}
+\frametitle{Median: Center Case}
+\begin{description}
+\item [{Median:}] The ``center observation,'' the number of observations
+that are larger equals the number that is smaller. 
+\end{description}
+Questions:
+\begin{enumerate}
+\item When do you think the mean and median are likely to be the same?
+\item Can you think of a situation in which the median may be more meaningful
+than the mean?
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+    
+\begin{exampleblock}{Add the median. Helpful?}
+
+<<symmetry2A, echo=T, fig=T, include=F>>=
+myx <- rgamma(1000, 1.5, 3)
+hist(myx , breaks=30, prob=T, xlab="Skewed", ylab="Density", main="")
+mx <- round(mean(myx, na.rm=T), 2)
+sdx <- round(sd(myx), 2)
+text(mx, 1.45, pos=4, label=paste("Mean =", mx)) 
+text(mx+0.5, 1.35, pos=4, label=paste("Std. Dev. =", sdx))
+abline(v=mx, col="red")
+medx <- round(median(myx), 2)
+abline(v=medx, col="green")
+text(medx, 1.20, pos=4, label=paste("Median =", medx))
+@
+\includegraphics[totalheight=70mm]{tmpout/t-symmetry2A}
+\end{exampleblock}  
+\end{frame}
+
+\begin{frame}[plain, containsverbatim]
+    	\begin{exampleblock}{Another Nonsymmetric Distribution}
+
+<<symmetry2B,echo=T,fig=T,include=F>>=
+myx <- rexp(1000, 5)
+hist(myx , breaks=30, prob=T, xlab="Skewed", ylab="Density", main="")
+mx <- round(mean(myx, na.rm=T), 2)
+sdx <- round(sd(myx, na.rm=T), 2)
+text(mx, 4.0, pos=4, label=paste("Mean = ", mx), col="red") 
+text(mx+0.5, 1.35, pos=4, label=paste("Std. Dev. = ", sdx))
+abline(v=mx, col="red")
+medx <- round(median(myx), 2)
+abline(v=medx, col="green")
+text(medx, 3.0, pos=4, label=paste("Median =", medx), col="green")
+@
+\includegraphics[totalheight=70mm]{tmpout/t-symmetry2B}
+\end{exampleblock}  
+\end{frame}
+
+\begin{frame}
+\frametitle{When To Emphasize The Mode}
+
+If lots of observations are clumped up at one point, it is worth noting!
+
+Suppose I collected data like this:
+
+\[
+X=\{1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,50\}
+\]
+
+If almost all of the scores are ``2'', we should tell the reader.
+Note about Level of Measurement
+\begin{itemize}
+\item Mean only useful if we have numerical data (silly to average ``low'',
+``medium'', ``high'')
+\item Median requires ordered data, either numerical or ordered categorical
+\item Problem with the mean: it is distorted by a change in one value on
+either side (change one 50 to 5,000,000 and note the mean changes)
+\item Median is a more ``robust'' estimate (jargon: high 'breakdown point')
+\end{itemize}
+\end{frame}
+
+\section{Re-Scaling}
+
+\begin{frame}
+\frametitle{Should the Scale Matter?}
+\begin{itemize}
+\item The temperature in Celsius is 10. The temperature in Farenheit is
+50 (32+9/5{*}10).
+\item My income in dollars is 68,000. My income in Euros is 43,000 and in
+Pesos it is 1,126,123.
+\item Sometimes, we receive data in one format, but convert to another
+\item Simple scale conversions SHOULD NOT substantively change the conclusions
+we will draw.
+\item If simple scale conversions seem to matter, be VERY cautious. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Mean Scales With The Data}
+\begin{itemize}
+\item Take variable $X=\{x_{1},x_{2},\ldots,x_{N}\}$, and multiply each
+value by 10 to create $newx$
+\begin{equation}
+newx=\{10x_{1},10x_{2},\ldots,10x_{N}\}
+\end{equation}
+\item The mean of $newX$ is obviously 10 the mean of old $x$. See? 
+\[
+Mean(newX)=\frac{10x_{1}+10x_{2}+\ldots+10x_{N}}{N}=10\frac{\sum_{i=1}^{N}x_{i}}{N}
+\]
+\[
+Mean(newX)=\overline{newX}=10\times\bar{x}
+\]
+\item Generally (meaning always), the mean of ($k\times X)$ is equal to
+$k$ times the mean of $X$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{My First Big Fact}
+\begin{itemize}
+\item State that as a theorem. $k_{1}$ and $k_{2}$ are any non-zero constants.
+$X$ is any variable. Create a new variable $newX=k_{1}+k_{2}X$
+\end{itemize}
+\begin{alertblock}{}
+{The Mean scales proportionally. Given constants $k_{1}$, $k_{2}$}
+
+\end{alertblock}
+\begin{equation}
+Mean(k_{1}+k_{2}X)=k_{1}+k_{2}\times Mean(X)
+\end{equation}
+
+\begin{itemize}
+\item The point: The Mean changes in a completely predictable way when the
+data is re-scaled by addition and multiplication. Just apply same
+same re-scaling to the old mean.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Variance Doesn't Scale Proportionally}
+\begin{itemize}
+\item Suppose variance of $X$ is $var(X)$
+\item Create $newX$ by multiplying by 10, $newX=10\cdot X$
+\item The variance of $newX$ is $10^{2}Var(X)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{General Result for Variance of Re-scaled Variables}
+\begin{alertblock}{}
+{Calculate the Variance of a re-scaled Variable, X. Given $k_{1}$
+, $k_{2}$ } 
+\begin{equation}
+Var(k_{1}+k_{2}\cdot X)=k_{2}^{2}\cdot Var(X)
+\end{equation}
+\end{alertblock}
+\begin{itemize}
+\item Adding $k_{1}$ does not change the dispersion at all, it just shifts
+the scores.
+\item The variance of $newX=k_{1}+k_{2}X$ is $k_{2}^{2}\times Var(x)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Implication: Don't re-calculate mean and variance if  is proportionally re-scaled.}
+\begin{itemize}
+\item Celsius temperature data, $x$. Suppose the mean is, 100. 
+\item Rescale that data to Fahrenheit
+\begin{equation}
+xF_{i}=32+\frac{9}{5}x_{i}
+\end{equation}
+\item Some students want to re-run $xF_{i}$ through the mean function,
+but they don't need to.
+\item The mean of $xF$ is $32+(9/5)Mean(x)=32+(9/5)100=212$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{But the Standard Deviation Scales Proportionally!}
+\begin{itemize}
+\item The variance of $xF$ is $(9/5)^{2}\times Var(x)$, which is NOT linear
+\item However, recall standard deviation is $\sqrt{Var(x)}$, so the standard
+deviation would be
+\begin{equation}
+Std.Dev.(xF)=\sqrt{(9/5)^{2}\times Var(x)}=(9/5)\times Std.Dev.(x)
+\end{equation}
+\item Like the mean, the standard deviation scales proportionally.
+\end{itemize}
+\begin{alertblock}{}
+{Standard Deviation of kX is $k\times Std.Dev.(X)$}
+
+\begin{equation}
+Std.Dev(k\cdot X)=k\cdot Std.Dev(X)
+\end{equation}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{The ratio $mean/std.dev.$ is Also Scale Invariant}
+\begin{itemize}
+\item Recall $Mean(k\cdot x)=kMean(x)$
+\item And $Std.Dev.(k\cdot x)=kStd.Dev.(x)$
+\item Then the ratio of the mean to the standard deviation is not affected
+by k
+\begin{equation}
+\frac{Mean(k\cdot x)}{Std.Dev.(k\cdot x)}=\frac{k\cdot Mean(x)}{k\cdot Std.Dev.(x)}=\frac{Mean(x)}{Std.Dev.(x)}
+\end{equation}
+\item And the converse is also true
+\begin{equation}
+\frac{k\cdot Std.Dev(x)}{k\cdot Mean(x)}=\frac{Std.Dev(x)}{Mean(x)}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Coefficient of Variation is Std.Dev(x)/M(x)}
+\begin{description}
+\item [{Coefficient~of~variation,}] CV.
+\end{description}
+Question: is ``this distribution'' more ``spread out'' than ``that
+one''?
+\begin{itemize}
+\item This is a difficult, possibly silly question when distributions are
+fundamentally different
+\item But, if they have roughly the same ``shape'', then the re-scaling
+might make them comparable.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare dispersion of 2 disparate variables}
+
+<<scaling1,fig=T,echo=F,include=F>>=
+x1 <- rnorm (20, mean=200, sd=50)
+mx1 <- round(mean(x1), 2)
+sdx1 <- round(sd(x1), 2)
+x2 <- rnorm (20, mean=50, sd=12.5)
+mx2 <- round(mean(x2), 2)
+sdx2 <- round(sd(x2), 2)
+par(mfcol=c(2,1))
+hist(x1, prob=T, xlab="x", ylab="density", main=paste("Mean=",mx1,"SD=", sdx1), xlim=c(0,400))
+hist(x2, prob=T, xlab="x", ylab="density", main=paste("Mean=",mx2,"SD=", sdx2), xlim=c(0,400))
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=11cm]{tmpout/t-scaling1}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare 2: plot x/Mean(x)}
+
+<<scaling2,fig=T,echo=F,include=F>>=
+par(mfcol=c(2,1))
+stx1 <- x1/mx1; stx2 <- x2/mx2
+hist(stx1, prob=T, xlab="x", ylab="density", main=paste("Hist of x1/Mean(x1)"), xlim=c(0,3))
+hist(stx2, prob=T, xlab="x", ylab="density", main=paste("Hist of x2/Mean(x2)"), xlim=c(0, 3))
+par(mfcol=c(1,1))
+@
+
+\includegraphics[width=11cm]{tmpout/t-scaling2}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Summarize those 2 variables}
+
+<<sumlr, echo=T, include=F>>=
+df <- cbind(top=c(summary(x1), mean=mean(x1),sd=sd(x1), sd.over.mean=sd(x1)/mean(x1)), bottom=c(summary(x2),mean(x2), sd(x2),sd(x2)/mean(x2)))
+#means <- round(mean(df),2)
+#sds <- round(sd(df),2)
+#sd.over.mean <- round(sds/means,2)
+#df2 <- rbind(as.data.frame(summary(df)),means, sds, sd.over.mean)
+@
+
+<<sumlr2, echo=F,  include=F>>=
+df
+@
+
+\input{tmpout/t-sumlr2.tex}
+
+\end{frame}
+
+\section{Special Re-Scalings}
+
+\begin{frame}
+\frametitle{Mean-center $x_i$}
+\begin{itemize}
+\item Mean centered data (aka ``data in deviations form'') 
+\begin{equation}
+Mean\,Centered(x_{i})=x_{i}-Mean(x_{i})
+\end{equation}
+\item Do we need abbreviation for that? $x_{i}^{MC}$ or $\widetilde{x}_{i}$
+or ?
+\item The mean of a centered variable is always $0$
+\item The variance and standard deviation are unchanged by centering
+\item Sometimes mean-centered data may faciliate interpretation of results.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Standardized Variables}
+\begin{description}
+\item [{Standardized~Variables.}]~
+\end{description}
+\begin{itemize}
+\item Standardize means ``divide $Mean\,Centered(x_{i}$) by standard deviation''. 
+\end{itemize}
+\begin{equation}
+\frac{x_{i}-\bar{x}}{\sigma_{x}}
+\end{equation}
+
+\begin{itemize}
+\item Since $M(x)/Std.Dev(x)$ is scale invariant, it makes $Mean\,Centered(x_{i})/Std.Dev(x)$
+will also be unaffected by re-scaling of the observations.
+\item The letter ``Z'' is often used to refer to standardized variables. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Standardized implies Mean 0, Std.Dev 1}
+\begin{itemize}
+\item Mean
+\end{itemize}
+\[
+Mean\,of\,Z=\bar{Z}=M(Z)=\mu_{Z}=0
+\]
+
+\begin{itemize}
+\item Standard deviation
+\end{itemize}
+\[
+Std.Dev.(Z)=SD(Z)=\text{\ensuremath{\sigma_{Z}}}=1
+\]
+
+\begin{itemize}
+\item Standardization helps with some ``machine learning'' procedures,
+may help psychologists compare variables
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The log is the most commonly applied nonlinear transformation}
+\begin{columns}[c]
+
+
+\column{5cm}
+\begin{itemize}
+\item We often gather data that is ``clumped'' on the left
+\item Examples, income, education
+\end{itemize}
+
+\column{7cm}
+
+<<z1,fig=T,echo=F,include=F, height=4, width=6>>=
+x <- exp(rnorm(500))
+hist(x, prob=T, xlab="x", ylab="density", main="x is skewed")
+@
+
+\includegraphics[width=7cm]{tmpout/t-z1}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The log is the most commonly applied nonlinear transformation}
+\begin{columns}[c]
+
+
+\column{5cm}
+\begin{itemize}
+\item The distribution of log(x) appears more symmetric
+\end{itemize}
+
+\column{7cm}
+
+<<z2,fig=T,echo=F,include=F, height=4, width=6>>=
+x.log <- log(x)
+hist(x.log, prob=T, xlab="log of x", ylab="density", main="x is not so skewed")
+@
+
+\includegraphics[width=7cm]{tmpout/t-z2}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Difficult to say for sure if logging a variable is good or bad}
+\begin{itemize}
+\item Some methods books will recommend logging all variables, claiming
+that it almost always makes analysis ``work better'' in some sense. 
+\item Please just remember it is a possibilty
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{R functions to remember}
+
+x is a variable
+\begin{columns}[c]
+
+
+\column{6cm}
+\begin{itemize}
+\item mean(x, na.rm = TRUE)
+\item sd(x, na.rm = TRUE)
+\item var(x, na.rm = TRUE)
+\item median(x, na.rm = TRUE)
+\item range(x, na.rm = TRUE)
+\item quantile(x, na.rm = TRUE)
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item summary(x)
+\item rockchalk::summarize(x)
+\item hist(x, prob = TRUE)
+\item xdens <- density(x)
+\item lines(xdens)
+\item plot(xdens)
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{References}
+
+\bibliographystyle{apalike2}
+\bibliography{R}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Session}
+
+Output from R (\citet{RCore})
+
+<<sess10>>=
+sessionInfo()
+@
+
+<<opts20, include=F>>=
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+options(par.orig)
+@
+
+\end{frame}
+\end{document}

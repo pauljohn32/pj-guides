@@ -1,0 +1,1053 @@
+\batchmode
+\documentclass[12pt,american,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{color}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+%\usepackage{Sweave}
+\ifdefined\Sinput
+\else
+  \RequirePackage[nogin]{Sweave}
+\fi
+\usepackage{tikz}
+\newenvironment{dummy}{\par}{\par}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{latexsym}
+\usepackage{graphicx}
+
+
+%\usepackage{psfig}
+\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{Logistic Regression Introduction}
+
+
+\author{Paul Johnson <pauljohn@ku.edu>}
+
+\maketitle
+\selectlanguage{american}%
+%suggested by Ihaka's note on Improving Sweave 
+%%%tighten up text output from R
+%shorten line length
+<<echo=false>>= 
+options(width=60)
+system("mkdir plots")
+@
+\SweaveOpts{prefix.string=plots/logit} 
+%%Prevent printing of + as continuation in R output
+<<echo=false>>= 
+options(continue=" ") 
+@
+
+\selectlanguage{english}%
+
+\section{Times Have Changed}
+
+Logistic regression is one of my areas of special interest. I first
+learned of it in 1981, when the only way to estimate these models
+was to buy a computer tape and send it to CalTech, where Richard McKelvey's
+students would copy some Fortran programs onto the tape and then send
+it back. 
+
+In those days, Logistic regression was new and unfamiliar and, somewhat
+bizarrely in my view, seen by many as an unnecessary complication
+in the regression modeling process. 
+
+In 1987, when I started teaching at KU, the SPSS statistical package
+did not include procedures for logistic regression. SAS offered an
+experimental routine called ``Logistic'' that was contributed by
+Frank Harrell, who has since moved on to write procedures for S+/R.
+Political scientist Doug Rivers wrote a DOS program that he called
+SST and it was commercialized for a while, at least until LimDep,
+the program written by William Greene (to go along with his massively
+successful econometrics textbook) hit the market. In all of these
+packages, logistic regression was treated as a special case.
+
+In 1989, McCullagh and Nelder published their book \emph{Generalized
+Linear Models} and the logistic regression model was recast into a
+family of models. In the S+/R statistical packages, the generalized
+linear model framework is adopted, and a logit model is fitted with
+a ``binomial distribution'' and a ``logit link'' function. For
+example,
+\begin{lyxcode}
+myLogit~<-~glm(y~\textasciitilde{}~x1+x2,~data=whatever,~family=binomial(link=logit))
+\end{lyxcode}
+The glm procedure assumes the link is logit unless you specify otherwise,
+so that can simply be written
+\begin{lyxcode}
+myLogit~<-~glm(y~\textasciitilde{}~x1+x2,~data=whatever,~family=binomial)
+\end{lyxcode}
+If instead you want the so-called ``probit'' model, one simply changes
+the link:
+\begin{lyxcode}
+myLogit~<-~glm(y~\textasciitilde{}~x1+x2,~data=whatever,~family=binomial(link=probit))
+\end{lyxcode}
+As you might have guessed, there are many other link functions that
+can be used. I've always wondered if I could find a use for the option
+link=cauchit, but only because I think that it is fun to say that
+out loud. It sounds like a sneeze! I've never used link=cloglog, but
+it sounds fun too.
+
+One of the main benefits of the GLM approach is that the same estimation
+routine can be used for many different theories; it is thus mainly
+a benefit to the people who write programs. To the users--like us--perhaps
+we don't care so much that the programmers save time or that their
+work is more coherent. Many of us are just as happy if they have to
+write completely separate programs for all of these models that are
+only slightly different. 
+
+But the experts who develop these models are also doing the programming,
+of course, and so we, ``the users,'' have to try to understand what
+they are talking about. Regression for categorical dependent variables--logistic,
+probit, or whatever, is not conceptually difficult. But it is difficult
+in practice because there are many competing sets of terminology for
+it. It is difficult to teach because it has been developed from several
+different--and I mean completely different--schools of thought. 
+
+
+\section{Funny Looking Graphs!}
+
+\label{sec:sec1}
+
+
+\subsection{$y_{i}$ is dichotomous}
+
+Suppose $y_{i}$ is coded 0 and 1, representing answers to a Yes or
+No question. Consider Figure \ref{dichplot1}:
+
+<<echo=F>>=
+set.seed(44444)
+x <- 25:75
+p= 1/(1+exp(2-0.05*x))
+y <- rbinom(length(x), size=1, prob=p)
+@
+
+<<a, echo=F,eval=F>>=
+plot(x,y,ylim=c(-.2,1.2),xlab="Normally distributed input", ylab="dichotomous output", type="n")
+points(x,y,pch=16,cex=0.5)
+@
+
+\begin{figure}
+\caption{Plot a dichotomous Y\label{dichplot1}}
+
+
+<<fig=TRUE,echo=F,width=6,height=5>>=
+<<a>>
+@
+\end{figure}
+
+
+\medskip{}
+Suppose you fit a straight line through that distribution of observations.
+Go ahead, knock yourself out! See Figure \ref{dichplot1}.\medskip{}
+Before logistic regresion was widely known, this was the best we could
+do. It was called a ``linear probability model''. The theory is
+that 
+
+\begin{equation}
+y_{i}=b_{0}+b_{1}X_{i}+e_{i}\label{ols1}
+\end{equation}
+\\
+If $E(e_{i})=0$, then the predicted value can be thought of as the
+probability of $y_{i}=1$. 
+
+\begin{figure}
+\caption{Fit OLS with the Dichotomous Data\label{fig:Fit-OLS-with}}
+<<fig=T, echo=F>>=
+mod <- lm(y~x)
+plot(x,y)
+abline(mod)
+@
+\end{figure}
+
+
+
+\subsection{The Straight Line is Obviously wrong.}
+
+
+\subsection*{OLS predicts out of range.}
+
+As long as $b_{1}\ne0$, the line representing predicted values will
+go above 1 and below 0. This is evident if we construct a more extreme
+example. Consider Figure \ref{fig:OLS-out-of}. What do you say about
+the bottom left and top right?
+
+<<echo=F>>=
+x <- seq(0,150,length=200)
+expbx <- exp((-1)*(-10+.145*x))
+ProbY1 <- 1/(1+expbx)
+for (i in 1:200){y[i] <- rbinom(1,1, ProbY1[i]) }
+@
+
+<<echo=F>>=
+modl2 <- lm(y~x)
+@ 
+
+\begin{figure}
+\caption{OLS out of range\label{fig:OLS-out-of}}
+
+
+\begin{centering}
+<<fig=TRUE, echo=FALSE>>=
+plot(x, y, ylim=c(-0.3,1.5),type="n");
+points(x,y,cex=0.5)
+abline(modl2);
+lines(c(0,150),c(0,0),lty=c(2)); lines(c(0,150),c(1,1),lty=c(2));
+@ 
+\par\end{centering}
+
+\end{figure}
+
+
+
+\subsection*{You could 'truncate' the predicted values at 0 and 1, I suppose...}
+
+To prevent the OLS model from going out of bounds, one approach is
+to insert ``kinks'' in the fitted line. That will constrain the
+predictions so that they can't go above 0 or 1. This is a constrained
+linear probability model. 
+
+It has all kinds of unattractive features, including 
+\begin{enumerate}
+\item Sharp kinks in the predicted value curve are theoretically unappealing.
+Why would it be that the input has no effect, then a linear effect,
+then no effect again?
+\item Does $\hat{y}_{i}=0$ mean something is actually impossible? Does
+$\hat{y}_{i}=1$ mean something is certain to happen? Sometimes a
+model will state that a $1$ is certain to happen, and yet the observation
+is $0$. Something ``impossible'' happened! Does it mean the whole
+model is wrong? 
+\item I don't know of an estimation method that actually tries to account
+for the ``kinks'' in the predicted values. 
+\end{enumerate}
+
+\subsection*{Heteroskedasticity.}
+
+Newcomers should skip this section. It is included only for completeness.
+
+Recall that OLS assumes the variance of the error term is the same
+for all cases. It seems obvious cannot apply in the linear probability
+model. If $\hat{y}_{i}=0.5,$ then we are very uncertain about the
+outcome, so it will have an error with high variance. On the other
+hand, if $\hat{y}_{i}=0.99$, then we are very very confident the
+outcome will be $1$, and the error term cannot have the same variance. 
+
+You may recall that a vital, indispensable assumption in regression
+is that $E(e_{i})=0$ is vital. For any given value of $X_{i}$, note
+that the error term has to make up the difference between $b_{0}+b_{1}\cdot X_{i}$
+and the true value, 1 or 0. Hence the error term must be either $1-b_{0}-b_{1}\cdot X_{i}$
+or $+b_{0}+b_{1}\cdot X_{i}$.
+
+Let $P_{i}$ be the probability that $y_{i}$ is 1. That is, $P_{i}=b_{0}+b_{1}\cdot X_{i}$.
+Note this is not the predicted value from an estimated equation--it
+is the probability from the equation with the true values of $b_{0}$
+and $b_{1}$ inserted.
+
+To repeat the story in the previous paragraph, if $y_{i}=1$, then
+the error term must be $1-P_{i}$, because this amount goes from $P_{i}$
+up to 1. Similarly, the probability that $y_{i}=0$ is $(1-P_{i})$.
+And, if $y_{i}=0$, that must mean the error term is $-P_{i}$, because
+that is the amount you have to take away from $P_{i}$ to get down
+to zero. Hence, for a particular value of $X_{i}$, the expected value
+of the error term must be:
+
+\begin{equation}
+E[e_{i}]=(1-P_{i})P_{i}+P_{i}(1-P_{i})=0\label{eqn}
+\end{equation}
+
+
+By the same logic, the variance of the error term is
+
+\begin{equation}
+\begin{array}{c}
+E(e_{i}^{2})=(1-P_{i})P_{i}^{2}+P_{i}(1-P_{i})^{2}\\
+=P_{i}(1-P_{i})\\
+=(b_{0}+b_{1}X_{i})(1-b_{0}-b_{1}X_{i})
+\end{array}
+\end{equation}
+
+
+As you can plainly see, the variance of the error term depends on
+$X_{i}$. There is heteroskedasticity by definition. You might treat
+this with WLS, but in small samples that not a very desirable proposition.
+
+
+\section{Just One! I Just Need One S-Shaped Curve\label{sec:logit1}.}
+
+Out in ``the real world,'' suppose that the probability that $y_{i}=1$
+changes ``smoothly'' in response to changes in $x_{i}$. That implies
+that the relationship between $x_{i}$ and $Prob(y_{i}=1)$ should
+be S-shaped, as illustrated in Figure \ref{fig:An-S-shaped-Curve}.
+
+\begin{figure}
+\caption{An S-shaped Curve\label{fig:An-S-shaped-Curve}}
+
+
+<<fig=TRUE,height=3,width=6, echo=F>>=
+X2 <- seq(0,150,length=200)
+expbx <- exp((-1)*(-10+.115*X2))
+ProbY1 <- 1/(1+expbx)
+plot(X2,ProbY1,type="l",xlab='X',ylab='Probability(y=1)')
+@
+\end{figure}
+
+
+Here's a formula for an S-shaped curve that I've just pulled from
+the the clear blue sky. 
+\begin{equation}
+\frac{exp(b_{0}+b_{1}X_{i})}{1+exp(b_{0}+b_{1}X_{i})}=\frac{1}{1+exp(-1*(b_{0}+b_{1}X_{i}))}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\end{equation}
+\\
+This transformation of $X_{i}$ gives back a very small value if $X_{i}$
+if $X_{i}$ is really small, and it gives back a value that is close
+to 1 if $X_{i}$ is really big. That is called a ``logistic curve,''
+it was used to create Figure \ref{fig:An-S-shaped-Curve}. In a Logistic
+regression model, we think of the combined value of the inputs being
+transformed through a function into a statement about probability.
+
+
+\subsection{Notes about this particular formula:}
+
+Here are some highlights.
+\begin{enumerate}
+\item The slope--change in probability resulting from a unit increase in
+$X_{i}$ -- is $b_{1}\cdot P_{i}\cdot(1-P_{i})$. Hence, the effect
+of a unit change in $X_{i}$ depends on the probability. If $y_{i}$
+is very likely to be a 1 or a 0, a change in $X_{i}$ doesn't make
+much difference.
+\item The \textquotedbl{}odds ratio\textquotedbl{} is $\frac{P_{i}}{(1-P_{i})}$.
+It can be shown that
+
+
+\begin{equation}
+\ln\left[\frac{P_{i}}{1-P_{i}}\right]=b_{0}+b_{1}\cdot X_{i}
+\end{equation}
+
+
+
+That is to say, if you had observations on the probabilities, you
+could transform them on the left hand side and you would have something
+that you could estimate with OLS. That is the way logistic regressions
+were run for a long time, using observed proportions from ``grouped
+data'' to calculate the estimates of the probabilities. 
+
+\item Some people like to emphasize $exp(b_{1})$. In many computer programs
+that estimate logistic models, the exponential is presented along
+with the coefficient estimates. Here's why. Note that
+
+
+\begin{equation}
+\left[\frac{P_{i}}{1-P_{i}}\right]=exp(b_{0}+b_{1}\cdot X_{i})=exp(b_{0})\cdot exp(b_{1}X_{i})
+\end{equation}
+
+
+
+Suppose that the input variable $X_{i}$ is a ``dummy variable''
+coded 0 and 1. Then the ``overall effect'' of $X$ would be summarized
+by the difference between 
+
+
+\begin{equation}
+exp(b_{0})
+\end{equation}
+
+
+
+and
+\begin{equation}
+exp(b_{0}+b_{1})=exp(b_{0})\cdot exp(b_{1})
+\end{equation}
+
+
+
+So, in some sense, the difference in the outcome for the two values
+of $X_{i}$ boils down to $exp(b_{1})$. 
+
+
+In my experience, people tend to overemphasize $exp(b_{1})$ by applying
+it to input variables that are not dichotomous.
+
+\end{enumerate}
+
+\subsection{Estimation}
+
+How can the parameters $b_{0}$ and $b_{1}$ be estimated? 
+
+This is a fairly straightforward exercise in maximum likelihood. What
+is the likelihood that we would observe a given sample of 0's and
+1's? Put the observations with 0's first and then the 1's. The first
+critical assumption is that the observations are statistically independent,
+meaning the probability of the sample equals the individual probabilities
+multiplied together. Hence,
+
+\begin{eqnarray}
+Likelihood\, of\, Sample=P(y_{1}=0,y_{2}=0,...,y_{m}=0,y_{m+1}=1,y_{m+2}=1,...,y_{N}=1)\\
+=P(y_{1}=0)P(y_{2}=0)\cdots P(y_{m}=0)P(y_{m+1}=1)P(y_{m+2}=1)\cdots P(y_{N}=1)
+\end{eqnarray}
+
+
+This expression is the likelihood function, L, and since the probabilities
+depend on parameters $b_{0}$ and $b_{1}$ , we might as well write
+$L(b_{0},b_{1})$.
+
+Remembering that the probability that $y_{i}=0$ is $1$ minus the
+probability that $y_{i}=1$, we can write 
+\begin{eqnarray}
+L(b_{0},b_{1})=(1-P(y_{1}=1))(1-P(y_{2}=1))\cdots(1-P(y_{m}=1))\nonumber \\
+\times P(y_{m+1}=1)P(y_{m+2}=1)\cdots P(y_{N}=1)
+\end{eqnarray}
+
+
+This notation can be made a little more compact. It is not necessary
+to keep writing down the $P(y_{i}=1)$ over and over again. Instead,
+save a little time and effort by writing $P_{i}$ for this.
+
+The Likelihood function is an impossibly complicated formula because
+it is composed of numbers that are multiplied together. The multiplication
+means that none of the components are separable. In contrast, if we
+work with logarithms, then the product is convertd to a sum. It is
+mathematically identical to maximize $L$ or the log of $L$.
+
+\begin{equation}
+\ln L(b_{0},b_{1})=\ln(1-P_{1})+\ln(1-P_{2})+\cdots+\ln(1-P_{m})+\ln(P_{m+1})+\cdots+\ln(P_{N})
+\end{equation}
+ (fill in the logistic formula $P_{i}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}$
+to here to get an idea of where the $b_{0}$ and $b_{1}$ fit in.)
+
+MLE, short for Maximum Likelihood Estimate, is the choice of estimators
+$b_{0}$, $b_{1}$ that maximize the log of the likelihood function.
+This solution is also a maximizer of L.
+
+
+\subsection{Quick summary of MLE properties.}
+\begin{enumerate}
+\item NOT unbiased.
+\item MLE's are consistent, asymptotically efficient, asymptotically Normal.
+The asymptotic normality implies that we can conduct approximate t-tests,
+as long as we can get estimates of the standard errors of $b_{0}$
+and $b_{1}$.
+\item There are ways to calculate asymptotic standard errors. They tell
+you, approximately, if you had an infinite sample, what the standard
+error of would be. They are sometimes called approximate standard
+errors because you never have an infinite sample.
+\item Maximum Likelihood Estimation allows an equivalent of the F test.
+
+
+A. Let $L_{0}$ be the value of the likelihood function in which the
+\textquotedbl{}slope\textquotedbl{} coefficient $b_{1}$ (or other
+coefficients if they are in the model) is 0. Hence, the $L_{0}$ is
+the maximized likelihood when only a constant, $b_{0}$, is estimated.
+
+
+B. Let $L_{max}$ be the value of the likelihood function at its maximum,
+when all coefficients, the slope and the intercept, are estimated
+to maximize the likelihood.
+
+
+C. Let $\lambda$, (Greek ``lambda''), be the ratio of $L_{0}$
+to $L_{max}$:
+
+
+\begin{equation}
+\lambda\quad=\frac{L_{0}}{L_{max.}}
+\end{equation}
+
+
+
+D. It can be shown that $-2\cdot\ln(\lambda)$ has a $\chi^{2}$ distribution
+with $k$ degrees of freedom, where $k$ is the number of ``slope''
+coefficients you estimated (equivalently, the difference in the number
+of coefficients estimated in calculating $L_{0}$ versus $L_{max}$).
+
+\end{enumerate}
+In the next two sections, I describe two approaches to this.
+
+
+\section{GLM approach.}
+
+The previous section is the ``heres an S shaped curve'' approach.
+The GLM approach would probably be summarized as the ``here is a
+bunch of S-shaped curves'' approach. The GLM approach boils down
+to the the following practical reasoning:
+\begin{quote}
+We need an S-shaped curve. Go get a mathematician who can give you
+a formula for an S-shaped curve. But be ready. Each mathematician
+you visit will give you a different formula for an S-shaped curve,
+and the data will hardly ever give you a reason to prefer one over
+another.
+\end{quote}
+The part of the formula that blends coefficients and observed inputs,
+$b_{0}+b_{1}X_{i}$, is known as the ``linear predictor.'' It is
+customary to call it ``eta'', $\eta_{i}$:
+\[
+\eta_{i}=b_{0}+b_{1}X_{i}.
+\]
+In ordinary least squares regression, of course, $y=b_{0}+b_{1}X_{i}+e_{i}$,
+so $y_{i}=\eta_{i}+e_{i}$. So the ``linear predictor'' is the same
+as ``error-free value'' in OLS. The predicted value is $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}X_{i}=\hat{\eta_{i}}$.
+In the Normally distributed outcome model, where we use OLS, $\eta_{i}$
+would be playing the role of $\mu_{i}$ in $y_{i}\sim N(\mu_{i},\sigma^{2})$.
+
+Our observations are either $0$ or $1$, and the argument in the
+previous sections should lead you to conclude that OLS is the wrong
+approach. We need a formula that connects $\eta_{i}$ to a probability
+value, the chance that we will observe a particular outcome. In the
+Generalized Linear Model, we think of $\eta_{i}$ as a ``location''
+parameter of a distribution (roughly, a ``central tendency''). It
+is causing our probability distribution of outcomes to shift, somehow.
+
+In the GLM, we think of the $0$ or $1$ observations as coming from
+a Binomial distribution. Recall if there are $N$ ``coin flips''
+with probability $p$ of ``success'', then the probability of observing
+a given number of successes is said to follow the distribution $B(N,p)$.
+In this case, we think of gathering just one observation at a time,
+so really we only need $B(1,p)$, which, if you are precise, is a
+Bernoulli distribution. 
+
+The Logit link transforms the probabilities to give back the linear
+predictor:
+\[
+\eta_{i}=ln\left[\frac{Prob(y_{i}=1|x_{i},b)}{1-Prob(y_{i}=1|x_{i},b)}\right]
+\]
+
+
+Which you can rearrange as 
+\begin{equation}
+P(y_{i}=1|x_{i},b)=\frac{1}{1+e^{-\eta}}=\frac{1}{1+e^{-(b_{0}+b_{1}x_{i})}}\label{eq:logistic-1}
+\end{equation}
+
+
+From this perspective, a logistic curve is just a particular \textquotedbl{}S-shaped\textquotedbl{}
+curve. For example, the formula with $b_{0}=10$ and $b_{1}=0.115$
+is shown in Figure \ref{fig:An-S-shaped-Curve}. 
+
+One can replace the logit link with other functions. Any function
+that maps from the estimated probabilities back to the range of the
+linear predictor will do just as well.
+
+In section \ref{sec:logit1}, it was noted that a customized ML estimation
+routine can be used to estimate this model. One of the major elements
+of appeal for the GLM approach is that a single algorithm, the Iteratively-Reweighted
+Least Squares algorithm, can be used to fit all of the members of
+the GLM family. McCullagh and Nelder proved that the estimates from
+their algorithm are equivalent to the special-case ML approach described
+in the previous section. 
+
+
+\section{Cumulative Probability Interpretation}
+
+Although the GLM approach offers various links like ``logit,'' ``cauchit'',
+or ``probit'', I don't think I can explain why a researcher would
+use one approach or another. They don't seem to be conceptually related
+or differentiated. They are just S-Shaped curves.
+
+It is possible to ``change gears,'' however, and understand all
+of these S shapes from a single, simplifying perspective. And I usually
+start presentations on that by asking the audience to re-consider
+the logistic regression proposed in equation \ref{eq:logistic-1}.
+Look back at that for a moment, then consider my question:
+\begin{quote}
+Where did the error term go? 
+\end{quote}
+Hm. Its almost a Sherlock Holmes mystery, a dog that did not bark
+in the night. An error term that seemed to vanish. I say ``seemed''
+to vanish, because it did not disappear, it just fulfills a different
+role.
+
+This is the point at which the econometrician's view of the model
+becomes helpful. In the ``dichotomous'' or ``binary'' outcomes
+case, one can write a predictive statement that says
+
+\begin{equation}
+y_{i}=\left\{ \begin{array}{ll}
+1 & if\, Z_{i}=b_{0}+b_{1}X_{i}-e_{i}>0\\
+0 & if\, Z_{i}=b_{0}+b_{1}X_{i}-e_{i}\leq0
+\end{array}\right.\label{eq:ydefined}
+\end{equation}
+\\
+There's your missing error term. Think of $Z_{i}$ as an underlying,
+unmeasured variable that is linked to the proclivity of case $i$
+to reveal an outcome of $1$. If this underlying variable exceeds
+a threshold of $0$, then $Y_{i}=1$. If $Z_{i}$ is less than 0,
+then $Y_{i}$ takes on the value of 0. If you let $Z_{i}$ equal the
+linear function above, the story is complete.
+
+And so the probability that $y_{i}=1$ is the same as the probability
+that
+
+\begin{equation}
+e_{i}<b_{0}+b_{1}X_{i}.
+\end{equation}
+\\
+For a given person with input $X_{i}$, the probability of a $Y_{i}=1$
+is given by the probability that a random variable $e_{i}$ is smaller
+than the ``target'' value $b_{0}+b_{1}\cdot X_{i}$.
+
+Eventually you see that is just the cumulative probability distribution
+function (CDF) for the variable $e_{i}$. It is the area under the
+density function of the error term up to the point $b_{0}+b_{1}\cdot X_{i}$.
+Consider the illustration in Figure \ref{fig:The-Cumulative-Distribution}.
+
+If you said the probability density function (PDF) of the error term
+was $f(e_{i})$, it would be conventional to call the cumulative distribution
+function $F(\alpha)$, representing the probability that $e_{i}$
+is less than a number $\alpha.$ In this case, the ``particular value''
+$\alpha$ is $b_{0}+b_{1}X_{i}$. 
+
+\begin{figure}
+\caption{The Cumulative Distribution\label{fig:The-Cumulative-Distribution}}
+
+
+\vspace{1in}
+
+
+\centering{}\input{0_home_pauljohn_TrueMounted_ps_SVN-guides_stat____tegorical_LogitProbit_importfigs_cumulative.pdftex_t}
+\end{figure}
+
+
+Generally speaking, then, we are modeling the upper limit of an integral:
+
+\begin{equation}
+Prob(y_{i}=1|X_{i},b)=Prob(e_{i}\leq b_{0}+b_{1}X_{i})=F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}.\label{eq:CDF}
+\end{equation}
+
+
+Any probability distribution will work within this formulation. 
+
+
+\subsection{Logistic Regression}
+
+There is a probability distribution called the ``logistic'' and
+it happens to have a very workable mathematical form. (In R, run ?rlogis
+to see for yourself.) 
+
+The logistic distribution has a probability density function for a
+variable ``$x_{i}$'':
+\begin{equation}
+f(x_{i})=\frac{e^{-(x_{i}-\mu)/\sigma}}{\sigma(1+e^{-(x_{i}-\mu)/\sigma})^{2}}\label{eq:logistpdf}
+\end{equation}
+\\
+The expected value of $x_{i}$ in this distribution is $\mu.$ And
+the variance is
+\[
+Var(x)=\frac{1}{3}(\pi\sigma)^{2}
+\]
+As a result, if you compared a Normal distribution with mean $\mu$
+and variance $\sigma^{2}$ against this Logistic distribution, you
+could ``adjust'' the variance of the Logistic to ``match up''
+against the variance of the Normal distribution. The value $\pi^{2}/3$
+is needed to ``rescale'' the Logistic variance to equal the Normal
+variance. I have prepared a separate handout on the Logistic distribution.
+Look in my Distributions folder.
+
+Replace the variable ``$x_{i}$'' by ``$e_{i}$'' to make the
+PDF match the problem, and we are almost done. Please do not be confused
+that I have Euler's constant $e$ and the random variable $e_{i}$
+in the same expression (I used $x_{i}$ above to avoid that confusion,
+but now I can't). 
+\begin{equation}
+f(e_{i})=\frac{e^{-(e_{i}-\mu)/\sigma}}{\sigma(1+e^{-(e_{i}-\mu)/\sigma})^{2}}\label{eq:logistpdf-1}
+\end{equation}
+If $e_{i}$ is supposed to be a ``random disturbance'', it seems
+obvious we have to assume it is ``unbiased,'' in the sense that
+its expected value is 0. So we suppose that $\mu=0$. Unlike an OLS
+regression, we NEVER get to estimate $\sigma$, so we just have to
+set it to a constant value. By custom, we suppress that by ``assuming''
+it is equal to 1.0. That means the PDF of the logistic simplifies
+to
+\begin{equation}
+f(e_{i})=\frac{e^{-e_{i}}}{(1+e^{-e_{i}})^{2}}\label{eq:}
+\end{equation}
+\\
+The definite integral of this is very simple. 
+\begin{equation}
+F(\alpha)=\int_{-\infty}^{\alpha}\frac{e^{-e_{i}}}{(1+e^{-e_{i}})^{2}}de_{i}=\frac{e^{\alpha}}{1+e^{\alpha}}=\frac{1}{1+e^{-\alpha}}\label{eq:-1}
+\end{equation}
+
+
+In the present context, then, the logistic distribution offers a very
+great simplification. This expression, the integral that represents
+CDF of the problem under consideration:
+\begin{equation}
+Prob(y_{i}=1|X_{i},b)=F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}.\label{eq:CDF-1}
+\end{equation}
+\\
+is easily solved with a relatively simple formula. Use the logistic
+PDF in place of $f(e_{i})$, and $b_{0}+b_{1}X_{i}$ is used in place
+of $K$, then the whole ugly problem simplifies to the commonly used
+``Logistic regression'' model. 
+
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\frac{e^{b_{0}+b_{1}X_{i}}}{1+e^{b_{0}+b_{1}X_{i}}}=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}\label{eq:logistic}
+\end{equation}
+
+
+
+\subsection{Probit Regression}
+
+On the other hand, if you suppose that $e_{i}$ is Normally distributed.
+In that case, the formula in expression \ref{eq:CDF-1} is not mathematically
+simplified. There is no simple formula for the definite integral:
+
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}\frac{1}{\sqrt{2\pi\sigma^{2}}}\cdot e^{-}\frac{(e_{i}-\mu)^{2}}{2\sigma^{2}}de_{i}\label{eq:probit}
+\end{equation}
+
+
+One assumes that $\mu=0$. The ``scale parameter'' $\sigma^{2}$
+cannot be estimated (it is ``unidentified''). It is set equal to
+$1$. Setting the value of $\mu$ or $\sigma^{2}$ is not thought
+to have substantive significance because the values of the estimated
+$b$ coefficients will scale up and down accordingly. There's a theorem
+in mathematical statistics concerning the ``Change of Variables''
+that deals with that.
+
+Because the probit equation \ref{eq:probit} is such a complicated
+thing to write down, articles in social science almost always avoid
+it, instead adopting some complicated-looking symbol, such as $\Phi$,
+to refer to the cumulative probability distribution. One sees expressions
+such as 
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\Phi(b_{0}+b_{1}X_{i})\label{eq:probit2}
+\end{equation}
+
+
+We don't usually think about this in the two-category model, but the
+probability of observing a $0$ is
+
+\begin{equation}
+P(y_{i}=0|X_{i},b_{i})=1-\Phi(b_{0}+b_{1}X_{i})\label{eq:compl}
+\end{equation}
+
+
+
+\subsection{Does it matter if you use Logit or Probit?}
+
+Not very much. The PDF of the Logistic and the Normal distributions
+overlap to a considerable extent. If we adjust the parameter $\sigma$
+of the logistic so that the variance of the Logistic and the Normal
+distributions are the same, then we can see that we are talking about
+2 distributions that barely differ. In Figure \ref{fig:Compare-LogisticNormal},
+one finds a Logistic distribution with $\sigma=1,$ and so for both
+distributions, the expected value is $0$ and the standard deviation
+is $\pi/\sqrt{3}$. 
+
+<<landn,echo=F, include=F, fig=T,height=7>>=
+x <- seq(-6,6, by=0.05)
+
+mylogis111 <- dlogis(x, location = 0, scale = 1, log = FALSE) 
+
+myNorm <- dnorm(x, mean = 0, sd = pi/sqrt(3)) 
+
+matplot(x, cbind(mylogis111, myNorm),type="l",ylim=c(0,0.5), xlab="x", ylab="P(x)", main="") 
+
+normlabel = expression(paste("Normal(",0,",",pi^{2}/3,")"))
+legend("topleft", c("Logistic(0,1)",normlabel), lty=1:2, col=1:2) 
+@
+
+\begin{figure}
+\caption{Compare Logistic and Normal\label{fig:Compare-LogisticNormal}}
+
+
+\includegraphics{plots/logit-landn}
+
+\end{figure}
+
+
+
+\section{Testing Statistical Significance}
+
+
+\subsection{z-test and t-test: two approximations}
+
+Asymptotically, $\hat{b}$ is Normal (recall fundamental ML Theory).
+We have the standard error. What about the quantity: 
+\[
+\frac{\hat{b}-b_{null}}{s.e.(\hat{b})}
+\]
+it looks like a $t-test$, doesn't it? I've seen some people/programs
+call it a $t-test$, but that's not a widespread option these days.
+Instead, it is more usual to say it is a $z$ statistic, approximately
+Normally distributed 
+\begin{equation}
+z=\frac{\hat{b}-b_{null}}{s.e.(\hat{b})}\label{eq:logitttest}
+\end{equation}
+
+
+
+\subsection{$\chi^{2}$ test: another approximation}
+
+Most programs today will either report a $z$ test or the Wald Chi-Square.
+The Wald Chi-square is the ratio of the squared estimate to the variance,$\hat{b}^{2}/Var(\hat{b})$.
+But alert users will note that it is simply $z^{2}$. 
+\begin{equation}
+z^{2}=\left(\frac{\hat{b}}{s.e.(\hat{b})}\right)^{2}\label{eq:zsquare}
+\end{equation}
+
+
+Wald contended that value is distributed as a $\chi^{2}$ variable.
+The square root $\hat{b}/se(\hat{b})$ is approximately Normal (and
+also approximately t-distributed). That explains why some programs
+call the statistic $\hat{b}/se(\hat{b})$ a $t$ variable, while others
+call it a $Z$ statistic. Either way, the information is the same.
+That is called a Wald Chi-Square statistic in most programs.
+
+From elementary statistics, we know that the square root of a $\chi^{2}$
+variable with one degree of freedom is Normal(0,1), so the Wald Chi-Square
+test for a single parameter is actually substantively IDENTICAL to
+the $t$ or $z$ approaches.
+
+The Wald Chi-Square can be used to simultaneously test several coefficients.
+\[
+\hat{b}Var(\hat{b)}^{-1}\hat{b}
+\]
+
+
+Note that if we were testing only one parameter, this degenerates
+to the preceeding equation.
+
+
+\subsection{How to estimate the $s.e.(\hat{b})$?}
+
+This idea depends on your understanding of maximum likelihood theory.
+It is probably enough for beginners to believe that we can calculate
+standard errors as estimates of the standard deviation of sampling
+distributions.
+
+Nevertheless, here's something worth noting and its not too complicated.
+This insight was gathered from literature on the Generalized Linear
+Model.
+
+For the ordinary logistic regression model, the covariance-variance
+matrix is 
+\begin{equation}
+Var(\hat{b})=\left[(X'WX\right]^{-1}\label{eq:varcovar}
+\end{equation}
+ which is quite reminiscent of the OLS formula. In fact, it would
+be exactly the same if not for the fact that the cases have unique
+variances.
+
+The matrix in the middle, $W$, has the variance of the individual
+cases, is like this:
+
+\begin{equation}
+W=\left[\begin{array}{ccccc}
+P_{1}(1-P_{1}) & 0 & 0 & 0 & 0\\
+0 & P_{2}(1-P_{2}) & 0 & 0 & 0\\
+0 & \cdots\\
+0 & \cdots\\
+0 & 0 & 0 & 0 & P_{N}(1-P_{N})
+\end{array}\right]\label{eq:varmatrix}
+\end{equation}
+
+
+We don't know the ``true variances'' because we don't know the true
+probabilities. But we can use approximations from fitted models to
+get those values.
+
+In the generalized linear model literature, they describe the logistic
+regression as a binomial-distributed dependent variable in which the
+probability of observing an ``event'' on a particular random draw
+is given by $P=1/(1+e^{-Xb})$. In the days before high-speed computers
+were so freely available, it helped a lot to have an algorithm with
+which to estimate models that did not require a full maximum likelihood
+optimizer. The GLM folks found that an interative weighted least squares
+procedure could produce estimates that were equivalent to Maximum
+Likelihood (for the restricted class of distributions inside the GLM
+terminology). As one iterates, one calculates the predicted values
+for the cases, and so $\hat{P}$ values are obtained that can be used
+in the formula for the variance-covariance matrix.
+
+
+\section{Diagnostics: Goodness of Fit, Deviance, etc}
+
+I'm not wasting any breath on pseudo-$R^{2}$s. 
+
+
+\subsection{Do you have the right model?}
+
+Should you remove some variables from your model? Perhaps all of them 
+
+Some programs report a ``model chi-square'', equivalent to $-2ln(LikelihoodRatio)$
+or $-2LLR$, which is the difference between $-2ln(Likelihood\, of\, fitted\, model)$
+and $-2ln(Likelihood\, of\, constant-only\, model).$
+
+The likelihood ratio test can be used to compare any two models that
+are estimated ON THE SAME DATA. Comparing a full model against a subset,
+the following can be used to test the hypothesis that the coefficients
+for a set of variables are all equal to zero.
+
+\begin{equation}
+=-2[ln{L_{restricted}}-ln{L_{full}}]=-2ln{\left[\frac{L_{restricted}}{L_{full}}\right]}\sim\chi_{diff}^{2}\label{eq:LLR}
+\end{equation}
+ where $diff$ is the difference in the number of fitted parameters,
+or ``excluded variables'' from the restricted model.
+
+
+\subsubsection{How ``good'' is your likelihood? Deviance}
+
+I have learned of another way that the likelihood value is put to
+use. This is based on the concept of \textbf{deviance}. 
+
+Deviance is a benchmark, which in most models is equal to$-2ln(Likelihood\, of\, fitted\, model)$.
+In the fine print, one finds out that deviance is the difference between
+$-2ln(Likelihood\, of\, fitted\, model)$ and $-2ln(Likelihood\, of\, saturated\, model)$.
+But the latter value is usually 0: R reports deviance values that
+are scaled to so that the saturated model has Likelihood of 1 (and
+hence $-2ln(L)=0$). 
+
+A ``saturated model'' is one in which we are allowed to make a unique
+estimate of $\widehat{P_{i}}$ for each unique combination of the
+input variables. That means, for each combination of input variables,
+we can make a customized prediction. The likelihood obtained by such
+a model is surely the best we could possibly get, right? Its not possible
+to use more degrees of freedom. The ``best possible'' deviance value
+is obtained by fitting a parameter for each case in the dataset, which
+would reduce $-2ln(Likelihood)$ to $0$.
+
+Get the likelihood for the saturate model, call that $L_{sat}$. Then
+fit a model using some independent variables. Call that likelihood
+$L_{fit}$. The difference between these two likelihood values is
+an indicator of ``how bad'' your model is when compared against
+the saturated model. In fact, asymptotically, the deviance indicator:
+\begin{equation}
+deviance=-2[ln{L_{fit}}-ln{L_{sat}}]=-2ln{\left[\frac{L_{fit}}{L_{sat}}\right]}\label{eq:deviance}
+\end{equation}
+
+
+is distributed approximately as a $\chi^{2}$ statistic with degrees
+of freedom equal to sample size (N) minus the number of parameters.
+
+If each observation in the dataset has a unique set of values for
+the inputs, then the saturated model has a log likelihood of $0$.
+See why?
+
+Myers, Montgomery, and Vining (2002) observe, (I'm paraphrasing notation
+here to match the above notation) ``Formally, an insignificant value
+of (deviance) in a one-tailed test implies that the fit of the model
+is not significantly worse than that of the saturated model. ... Often
+the rule of thumb is applied that the quality of fit is reasonable
+if $\frac{deviance}{N-p}$ is not appreciably larger than 1. The rule
+of thumb is prompted by the fact that N-p is the mean of the $\chi_{N-p}^{2}$
+distribution''(p. 113).
+
+In some articles, the idea of deviance is applied mechanically as
+a test of the quality of a model.
+
+
+\subsubsection{Hosmer and Lemeshow test}
+
+Proceed as follows. Calculate predicted values, $\hat{P_{i}}$ for
+all cases. Sort them from low to high. Then subdivide the sample into
+subgroups. Then find out if the observed frequency of 1's and 0's
+matches the estimated probabilities from the model.
+
+Pick some pleasant number of subgroups, say 10. For each subgroup,
+one can calculate the observed ``success rate'' $O_{i}$ and an
+expected (from the model) success rate, and the traditional $\chi^{2}$
+test is used to find out if the model is grossly out-of-whack.
+
+\begin{equation}
+homer.and.lemeshow_{\chi}^{2}=\sum_{i=1}^{10}\left[\frac{(O_{i}-E_{i})^{2}}{E_{i}}\right]\label{eq:hosmer}
+\end{equation}
+
+
+If the $\chi^{2}$ value is extreme by that standard, it means that
+your predicted probabilities do not match the observations very well.
+
+That is informative, but not too informative. It does not tell you
+if the model is ``off'' for any particular reason, and there could
+be many suspects in your search for the criminal.
+
+
+\subsubsection{Overdispersion}
+
+Suppose your deviance is very high. That means your model does not
+fit as well as you might like, and one of the frequent causes is that
+the observed variance of scores is higher than the model would predict.
+If the model is wrongly specified, then the deviance is big.
+
+Another explanation is that the assumed model for the variance of
+outcomes is wrong. The binomial variance is $P_{i}(1-P_{1})$, and
+so when the predicted value is 0.99, it means we should almost never
+observe a score of 0. However, in ``real data'', we often do. Sometimes
+I have seen this called ``extrabinomial variation''.
+
+The effects of overdispersion are the same as heteroskedasticity in
+the OLS model. The estimated variance-covariance matrix of the $\hat{b}$'s
+does not match the true variance of the $\hat{b}$'s.
+
+If one has ``grouped data'', that is, many observations for each
+value of the input variables, then there is a correction which can
+be applied that is exactly analogous to feasible weighted least squares.
+
+If one does not have grouped data, but rather all individual level
+data, then perhaps a more dramatic departure/respecification is needed.
+For example, instead of assuming that all cases with the same inputs
+should have the same predicted probability, suppose instead there
+is an unmeasured error term that affects the subgroups in the dataset.
+SO, if one started with \ref{eq:probit2}, one could insert an error
+term, a random component that afflicts the members of group $j$: 
+
+\begin{equation}
+P(y_{i}=1|X_{i},b_{i})=\Phi(b_{0}+b_{1}X_{i}+e_{j})\label{eq:frailty}
+\end{equation}
+
+
+This model is a mixed model, one in which there is a random coefficient
+that should be taken into account. In R, it is covered in the lmer
+procedure of lme4 package or the GLMM package (which is simpler to
+use at the current time) 
+
+
+\section{Calculate predicted values and use them to interpret and present
+results}
+
+In the past, I have calculated predicted values ``manually'' by
+taking the estimated coefficients and using them in the logistic equations,
+\[
+P(Y_{i}=1)=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\]
+
+
+It is tedious, but instructive, to calculate that. That can be done
+in R in various ways. 
+
+
+\end{document}

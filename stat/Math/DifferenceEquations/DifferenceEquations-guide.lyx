@@ -1,0 +1,3097 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass article
+\language english
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize 12
+\spacing single 
+\papersize letterpaper
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Difference equation lecture notes
+\layout Author
+
+Paul Johnson <pauljohn@ukans.edu>.
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+ordinary
+\begin_inset Quotes erd
+\end_inset 
+
+ writings about difference equations are concerned about systems with constants
+ for input, usually.
+ Or the inputs are simple, step functions or impulse functions.
+ We need to review some of that, then concentrate on the claims/findings
+ of Hamilton, Time Series Analysis, Chapters 1 & 2.
+\layout Section
+
+Constant input
+\layout Subsection
+
+First order difference equation
+\layout Standard
+
+Given the 
+\begin_inset Quotes eld
+\end_inset 
+
+ordinary
+\begin_inset Quotes erd
+\end_inset 
+
+ setup, we have:
+\layout Standard
+
+
+\begin_inset Formula \( y_{t}=A*y_{t-1}+B \)
+\end_inset 
+
+
+\layout Standard
+
+B is constant input, A is a constant 
+\begin_inset Quotes eld
+\end_inset 
+
+multiplier
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ This can be solved easily, just begin at 
+\begin_inset Formula \( y_{0} \)
+\end_inset 
+
+ and go over and over!
+\layout Standard
+
+
+\begin_inset Formula \( y_{1}=A*y_{0}+B \)
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \( y_{2}=A(A*y_{0}+B)+B=A^{2}y_{0}+AB+B \)
+\end_inset 
+
+ 
+\layout Standard
+
+
+\begin_inset Formula \( y_{3}=A(A^{2}y_{0}+AB+B)+B=A^{3}y_{0}+A^{2}B+AB+B \)
+\end_inset 
+
+
+\layout Standard
+
+Could this possibly get more dull.
+ I'm sick of it already.
+ Easily I can see the pattern, can't you?
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{sol0}
+y_{t}=A^{t}y_{0}+A^{t-1}B+A^{t-2}B+A^{t-3}B+...AB+B
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{sol1}
+y_{t}=A^{t}y_{0}+B[A^{t-1}+A^{t-2}+A^{t-3}+...A+1]
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Recall the geometric series we discussed in class.
+ In the brackets, that's what we have, and the series can be solved explicitly
+ as
+\layout Standard
+
+
+\begin_inset Formula \( A^{t-1}+A^{t-2}+A^{t-3}+...A+1=\frac{1-A^{t}}{1-A} \)
+\end_inset 
+
+
+\layout Standard
+
+So put that into equation 
+\begin_inset LatexCommand \vref{sol1}
+
+\end_inset 
+
+ and you get
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=A^{t}y_{0}+B\frac{1-A^{t}}{1-A}\]
+
+\end_inset 
+
+
+\layout Standard
+
+or
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=A^{t}y_{0}+B\frac{1}{1-A}-B\frac{A^{t}}{1-A}=A^{t}y_{0}+\frac{B}{1-A}\left[ 1-A^{t}\right] \]
+
+\end_inset 
+
+
+\layout Standard
+
+or
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{sol2}
+y_{t}=A^{t}[y_{0}-\frac{B}{1-A}]+\frac{B}{1-A}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is what is known as a 
+\series bold 
+solution 
+\series default 
+of the original difference equation.
+ It is a solution because it gives a formula for 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ that does not depend on 
+\begin_inset Formula \( y_{t-1} \)
+\end_inset 
+
+.
+ You can look at this in any of these ways, which ever gives you insight.
+\layout Standard
+
+I often forget to emphasize that this solution is true only if 
+\begin_inset Formula \( A\neq 1 \)
+\end_inset 
+
+.
+ But now I'm emphasizing it.
+ If 
+\begin_inset Formula \( A=1 \)
+\end_inset 
+
+, then it is impossible to divide anything by 
+\begin_inset Formula \( (1-A) \)
+\end_inset 
+
+.
+ Instead, the solution ends up as:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{sol1a}
+y_{t}=A^{t}y_{0}+B[A^{t-1}+A^{t-2}+A^{t-3}+...A+1]=y_{0}+(t-1)*B
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is a symptom of the time-series research problem of the 
+\begin_inset Quotes eld
+\end_inset 
+
+unit root.
+\begin_inset Quotes erd
+\end_inset 
+
+ There is a dramatic change in the behavior of the dynamic system if 
+\begin_inset Formula \( A=1 \)
+\end_inset 
+
+.
+\layout Subsection
+
+Properties
+\layout Standard
+
+It is evident in 
+\begin_inset LatexCommand \vref{sol2}
+
+\end_inset 
+
+ that the path of 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ depends on the value of A.
+ Assuming 
+\begin_inset Formula \( A\neq 1 \)
+\end_inset 
+
+, then: 
+\layout Standard
+
+If 
+\begin_inset Formula \( A\geq 1 \)
+\end_inset 
+
+, then 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+explodes
+\begin_inset Quotes erd
+\end_inset 
+
+, getting bigger and bigger.
+\layout Standard
+
+If 
+\begin_inset Formula \( 0\leq A<1 \)
+\end_inset 
+
+, then 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ gradually 
+\begin_inset Quotes eld
+\end_inset 
+
+moves toward
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula \( \frac{B}{1-A} \)
+\end_inset 
+
+
+\layout Standard
+
+The value 
+\begin_inset Formula \( \frac{B}{1-A} \)
+\end_inset 
+
+ is a vital value, it is the 
+\begin_inset Quotes eld
+\end_inset 
+
+equilibrium
+\begin_inset Quotes erd
+\end_inset 
+
+ level of the system.
+\layout Standard
+
+If 
+\begin_inset Formula \( -1<A<0 \)
+\end_inset 
+
+, then 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ , it goes toward 
+\begin_inset Formula \( \frac{B}{1-A} \)
+\end_inset 
+
+ but it does not do it peacefully.
+ Instead, it 
+\begin_inset Quotes eld
+\end_inset 
+
+oscillates
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Oscillates means it alternates, going above and below the equilibrium.
+\layout Standard
+
+If 
+\begin_inset Formula \( A<-1 \)
+\end_inset 
+
+, then 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+explodes
+\begin_inset Quotes erd
+\end_inset 
+
+, and it oscillates too.
+ 
+\begin_inset Formula \( \left| y_{t}\right|  \)
+\end_inset 
+
+ gets bigger and bigger.
+\layout Standard
+
+Draw some pictures of this!
+\layout Standard
+
+A dynamical system is said to be stable if, as 
+\begin_inset Formula \( t\rightarrow \infty  \)
+\end_inset 
+
+, then 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ remains bounded.
+ It does not 
+\begin_inset Quotes eld
+\end_inset 
+
+explode
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Either it tends to a constant value, as in the AR(1) case, or it oscillates
+ within a limited region.
+\layout Subsection
+
+Look at the 
+\begin_inset Quotes eld
+\end_inset 
+
+big picture
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+Suppose I said to you that the equation
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=Ay_{t-1}+B\]
+
+\end_inset 
+
+
+\layout Standard
+
+has a solution if 
+\begin_inset Formula \( A\neq 1 \)
+\end_inset 
+
+, a general solution, like this:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=k_{1}*\lambda ^{t}+k_{2}\]
+
+\end_inset 
+
+
+\layout Standard
+
+That is true, which means that when you are confronted with the difference
+ equation, then you should think to youself: 
+\begin_inset Quotes eld
+\end_inset 
+
+aha! this a linear time system and there is some 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ which determines the dynamics of the system.
+\begin_inset Quotes eld
+\end_inset 
+
+ In the terms of the trade, the term 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ is known as a 
+\series bold 
+root.
+\layout Standard
+
+The only problem is to find out what 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ might be.
+ Now, if you look at the previous section, you easily know that
+\layout Standard
+
+
+\begin_inset Formula \[
+\lambda =A\]
+
+\end_inset 
+
+
+\layout Standard
+
+and
+\layout Standard
+
+
+\begin_inset Formula \[
+k_{1}=[y_{0}-\frac{B}{1-A}]\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+k_{2}=\frac{B}{1-A}\]
+
+\end_inset 
+
+
+\layout Standard
+
+It does not seem so complicated to me.
+\layout Standard
+
+If you read a big fat book on differential or difference equations, you
+ will see talk about a general solution and a particular solution.
+ The general part refers to solving the homogeneous equation:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}-Ay_{t-1}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+and then adding a particular solution for the other part of the original
+ model, the 
+\begin_inset Quotes eld
+\end_inset 
+
+input
+\begin_inset Quotes erd
+\end_inset 
+
+ B.
+\layout Subsection
+
+The giant picture
+\layout Standard
+
+Now, suppose you said your system had more lagged inputs, as in 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{2pdifeq}
+y_{t}=A*y_{t-1}+B*y_{t-2}+C
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+From looking at this, I can tell you that, for 
+\begin_inset Quotes eld
+\end_inset 
+
+most
+\begin_inset Quotes erd
+\end_inset 
+
+ values of 
+\begin_inset Formula \( A \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( B \)
+\end_inset 
+
+ there is a general solution with 2 
+\begin_inset Quotes eld
+\end_inset 
+
+roots
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Formula \( \lambda _{1} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( \lambda _{2} \)
+\end_inset 
+
+ of the form
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{general2p}
+y_{t}=k_{1}\lambda _{1}^{t}+k_{2}\lambda _{2}^{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Now, you want to know the values of 
+\begin_inset Formula \( \lambda _{1} \)
+\end_inset 
+
+and 
+\begin_inset Formula \( \lambda _{2} \)
+\end_inset 
+
+ if you want to know if this system is stable.
+ Its not so easy to get those 
+\begin_inset Quotes eld
+\end_inset 
+
+roots
+\begin_inset Quotes erd
+\end_inset 
+
+ as it is in the previous case, but at least we understand our goal.
+ We want to know those roots.
+\layout Standard
+
+Goldberg contends (p.
+ 134) that these roots are found as the solution of the 
+\begin_inset Quotes eld
+\end_inset 
+
+auxiliary equation
+\begin_inset Quotes erd
+\end_inset 
+
+, also sometimes known as the 
+\series bold 
+characteristic equation
+\series default 
+.
+ To derive that, set C=0, so we consider only the heart of the system:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}-Ay_{t-1}-By_{t-2}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+Because we get tired of fussing over minus signs, relabel the coefficients
+ as 
+\begin_inset Formula \( a_{1}=-A \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( a_{2}=-B. \)
+\end_inset 
+
+ 
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}+a_{1}y_{t-1}+a_{2}y_{t-2}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+Goldberg says it is 
+\begin_inset Quotes eld
+\end_inset 
+
+easy
+\begin_inset Quotes erd
+\end_inset 
+
+ to see there is at least one 
+\begin_inset Quotes eld
+\end_inset 
+
+test solution
+\begin_inset Quotes erd
+\end_inset 
+
+ like
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=\lambda ^{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+Insert that 
+\begin_inset Quotes eld
+\end_inset 
+
+test solution
+\begin_inset Quotes erd
+\end_inset 
+
+ into 
+\begin_inset LatexCommand \ref{2pdifeq}
+
+\end_inset 
+
+ and you get:
+\layout Standard
+
+
+\begin_inset Formula \[
+\lambda ^{t}+a_{1}*\lambda ^{t-1}+a_{2}*\lambda ^{t-2}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+Which you can rearrange (by dividing everything by 
+\begin_inset Formula \( \lambda ^{t-2} \)
+\end_inset 
+
+) as
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{2pce}
+\lambda ^{2}+a_{1}\lambda +a_{2}=0
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is the 
+\series bold 
+characteristic equation 
+\series default 
+for the second order dynamic system
+\series bold 
+.
+ 
+\series default 
+The possible solutions are referred to as 
+\begin_inset Formula \( \lambda _{1} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( \lambda _{2} \)
+\end_inset 
+
+.
+ If these two solutions are not the same, then the general solution I claimed
+ in 
+\begin_inset LatexCommand \ref{general2p}
+
+\end_inset 
+
+ is valid.
+ That is the case of 
+\begin_inset Quotes eld
+\end_inset 
+
+distinct roots
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Now, we want to know if the roots are:
+\layout Description
+
+real valued: smaller then 1 in absolute value, we want to know if they are
+ positive or negative
+\layout Standard
+
+or
+\layout Description
+
+complex valued: the system oscillates, perhaps without bound!
+\layout Standard
+
+Systems with complex roots make my head hurt, because then I have to remember
+ what 
+\begin_inset Formula \( \sqrt{-1} \)
+\end_inset 
+
+ means.
+ And sin() and cos() and modulus and other stuff I hate.
+\layout Standard
+
+Worry about that another later.
+\layout Subsection
+
+The impossibly huge picture
+\layout Standard
+
+Just remember this:
+\layout Standard
+
+
+\series bold 
+\emph on 
+In general, if your discrete time system has M lags, then its solution has
+ M roots, and your problem is to find out about their values.
+\layout Standard
+
+It is important to find because:
+\layout Standard
+
+1) You can check system 
+\begin_inset Quotes eld
+\end_inset 
+
+stability
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+2) You can see dynamic properties (oscillation)
+\layout Standard
+
+3) You can interpret the importance of inputs into the system.
+ Certain values of the roots will cause the system to respond strongly to
+ new input.
+ Other cases might not.
+\layout Standard
+
+The search for roots is what drives us to work on the so-called characteristic
+ equation.
+ It is characteristic of the system's underlying dynamics.
+ Given a theory like this:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=A*y_{t-1}+B*y_{t-2}+C\]
+
+\end_inset 
+
+
+\layout Standard
+
+write the part with the y's like so:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}-A*y_{t-1}-B*y_{t-2}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+And we know there will be a general solution which fits into a pattern like
+ 
+\begin_inset LatexCommand \ref{general2p}
+
+\end_inset 
+
+.
+ Of course, if you have a really big difference equation, like:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=A*y_{t-1}+B*y_{t-2}+C*y_{t-3}+D*y_{t-4}+E\]
+
+\end_inset 
+
+
+\layout Standard
+
+then the homogeneous general part of this is
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}-A*y_{t-1}-B*y_{t-2}-C*y_{t-3}-D*y_{t-4}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+And if we know the general part of the solution is a set of constants 
+\begin_inset Formula \( k_{j} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( \lambda _{j} \)
+\end_inset 
+
+ such that 
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=k_{1}\lambda _{1}^{t}+k_{2}\lambda _{2}^{t}+k_{3}\lambda _{3}^{t}+k_{4}\lambda _{4}^{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+Now, how in the world do we get the coefficients? We want those roots! We
+ must have them.
+\layout Standard
+
+It turns out that there is a big fat theorem which says that the roots are
+ found as the solution to the so-called 
+\begin_inset Quotes eld
+\end_inset 
+
+characteristic equation
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ I've been confused sometimes because I have seen this written down two
+ different ways.
+ Sometimes it goes like this
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{ce}
+\lambda ^{4}-A\lambda ^{3}-B\lambda ^{2}-C\lambda -D=0
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Other times people get rid of the minus signs (the way I did in the second
+ order case) or they convert the whole equation by dividing everything through
+ by a new variable 
+\begin_inset Formula \( z=\frac{1}{\lambda } \)
+\end_inset 
+
+.
+ 
+\layout Standard
+
+If you can solve that for the 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+'s, then you have the roots, and you can analyze them to determine the system's
+ behavior.
+ There are different ways to solve for these magical numbers, and we will
+ get to that later in these notes, kinda.
+\layout Standard
+
+Also note one more thing.
+ A polynomial like the characteristic equation can also be factored, and
+ it turns out the roots pop up in an obvious way:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{ce2}
+\lambda ^{4}-A\lambda ^{3}-B\lambda ^{2}-C\lambda -D=(\lambda -\lambda _{1})(\lambda -\lambda _{2})(\lambda -\lambda _{3})(\lambda -\lambda _{4})
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In Mickens's book 
+\emph on 
+Difference Equations
+\emph default 
+, on p.
+ 124, he states as a theorem that, as long as the roots are distinct, then
+ the solution to the homogeneous difference equation with p lags takes the
+ general form:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=c_{1}\lambda _{1}^{t}+c_{2}\lambda _{2}^{t}+c_{3}\lambda _{3}^{t}+...+c_{p}\lambda _{p}^{t}\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Now, about that 
+\begin_inset Quotes eld
+\end_inset 
+
+unit circle
+\begin_inset Quotes erd
+\end_inset 
+
+ business.
+\layout Standard
+
+In the first order equation, we know the 
+\begin_inset Quotes eld
+\end_inset 
+
+stability condition
+\begin_inset Quotes erd
+\end_inset 
+
+ is that the coefficient 
+\begin_inset Formula \( |\lambda |<1 \)
+\end_inset 
+
+.
+ In the higher order equations, a similar equation applies for all the individua
+l 
+\begin_inset Formula \( \lambda _{j} \)
+\end_inset 
+
+ .
+ If all the 
+\begin_inset Formula \( \lambda _{j} \)
+\end_inset 
+
+ are real numbers, then the stability requirement is just that each one
+ is smaller than one, or 
+\begin_inset Formula \( |\lambda _{j}|<1 \)
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Unfortunately, sometimes, the root can be a complex number.
+ For example, in a second order system, the characteristic equation is a
+ quadratic equation, and since 9th grade or so we know the famous formula
+ to solve quadratic equations.
+ The 
+\begin_inset Quotes eld
+\end_inset 
+
+roots
+\begin_inset Quotes erd
+\end_inset 
+
+ of 
+\layout Standard
+
+
+\begin_inset Formula \[
+ax^{2}+bx+c=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+are given by the formula
+\layout Standard
+
+
+\begin_inset Formula \( x=\frac{-b\pm \sqrt{b^{2}-4ac}}{2a} \)
+\end_inset 
+
+
+\layout Standard
+
+When I was in school, we said that a solution only existed if 
+\begin_inset Formula \( b^{2}-4ac>0. \)
+\end_inset 
+
+ Back then, they taught us 
+\begin_inset Quotes eld
+\end_inset 
+
+you can't take the square root of a negative number.
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\layout Standard
+
+Well, we aren't in high school anymore! This is college.
+ You can do it! We must solve all these characteristic equations, no matter
+ what the coefficients.
+ And that means figuring out what it means if there is a square root of
+ a negative number! That's what complex numbers are for.
+ In complex number theory (not my specialty, for sure), there is a thing
+ i defined as the square root of minus 1:
+\layout Standard
+
+
+\begin_inset Formula \[
+i=\sqrt{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+and it turns out that we can take the square root of 
+\begin_inset Formula \( \sqrt{b^{2}-4ac}>0 \)
+\end_inset 
+
+ if we use that 
+\begin_inset Formula \( i \)
+\end_inset 
+
+ thing.
+\layout Standard
+
+A complex number has two parts, a real part and an imaginary part.
+ Generally speaking, a complex number looks like so:
+\layout Standard
+
+
+\begin_inset Formula \[
+n_{1}+n_{2}*i\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \( n_{1} \)
+\end_inset 
+
+ is the 
+\begin_inset Quotes eld
+\end_inset 
+
+real part
+\begin_inset Quotes erd
+\end_inset 
+
+ and the rest is the 
+\begin_inset Quotes eld
+\end_inset 
+
+complex part,
+\begin_inset Quotes erd
+\end_inset 
+
+ a number 
+\begin_inset Formula \( n_{2} \)
+\end_inset 
+
+ is a real number multiplied by the square root of -1.
+\layout Standard
+
+In the above example of the quadratic equation, suppose that b=2, a=1 and
+ c =3.
+ Then the root is
+\layout Standard
+
+
+\begin_inset Formula \[
+x=\frac{2\pm \sqrt{4-12}}{2}=\frac{2+\sqrt{-8}}{2}=1\pm \frac{\sqrt{-1}*\sqrt{4}\sqrt{2}}{2}=1\pm i\frac{2\sqrt{2}}{2}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+x=1\pm i\sqrt{2}\]
+
+\end_inset 
+
+
+\layout Standard
+
+The real part is 1, the imaginary part is 
+\begin_inset Formula \( \sqrt{2} \)
+\end_inset 
+
+.
+\layout Standard
+
+So, if you have a characteristic equation with complex roots, you have some
+ trouble ahead of you, but not all that much.
+ To understand all the details, it involves sin(), cos(), and the pythagorean
+ theorem.
+ You can study that on you own if you want, but the only really vital thing
+ is this.
+\layout Standard
+
+Stability a complex root requires the following:
+\begin_inset Formula \( \sqrt{n^{2}_{1}+n_{2}^{2}} \)
+\end_inset 
+
+
+\layout Standard
+
+What's the idea behind this? If 
+\begin_inset Formula \( \lambda _{j} \)
+\end_inset 
+
+ is complex, then raising it to powers like 
+\begin_inset Formula \( \lambda ^{2} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( \lambda ^{3} \)
+\end_inset 
+
+ and so forth may either cause the value to shrink to zero or it might instead
+ explode to infinity.
+ The condition for the value to shrink to zero is that the value of the
+ modulus, of 
+\begin_inset Quotes eld
+\end_inset 
+
+length
+\begin_inset Quotes erd
+\end_inset 
+
+, of the complex number must be smaller than one.
+ Look at Hamilton, p.
+ 709.
+ The modulus is defined by the pythagorean theorem, i.e., 
+\layout Standard
+
+
+\begin_inset Formula \( R=\sqrt{n_{1}^{2}+n_{2}^{2}} \)
+\end_inset 
+
+
+\layout Standard
+
+I don't have the patience to explain the steps that it takes to justify
+ this claim.
+ 
+\layout Standard
+
+If you took a Cartesian plan, a basic graph, you can find all the values
+ of 
+\begin_inset Formula \( n_{1} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( n_{2} \)
+\end_inset 
+
+ for which the modulus is smaller than one.
+ If you dres that, then you would have a circle centered at zero, with a
+ radius of one.
+ This 
+\series bold 
+unit circle 
+\series default 
+is the thing people are referring to when they say that a system is stable
+ if all the roots are inside the unit circle.
+\layout Standard
+
+With real valued roots, inside the unit circle just means 
+\begin_inset Formula \( |\lambda _{j}|<1, \)
+\end_inset 
+
+ but with complex roots, it is a little more complicated to understand.
+\layout Section
+
+What if the inputs are not constant?
+\layout Standard
+
+Here's where I've always gotten stuck in the past! The Hamilton Chapters
+ 1 & 2 cleared up a lot of questions for me.
+\layout Subsection
+
+First-order difference equation
+\layout Standard
+
+Think about the 
+\begin_inset Formula \( B \)
+\end_inset 
+
+ in the first order difference equation for a minute.
+ It is a constant input.
+ But imagine that, instead of a constant B, at each time step we get a different
+ number.
+ Follow Hamilton and use the variable 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ to refer to the different numbers for inputs.
+\layout Standard
+
+Who cares? Then the first order difference equation described above in 
+\begin_inset LatexCommand \vref{sol0}
+
+\end_inset 
+
+ only needs a little bit of adaptation.
+ I like the letter A, but nobody else does, they all seem to like the Greek
+ 
+\begin_inset Formula \( \phi  \)
+\end_inset 
+
+, so I cave in and start using that.
+ Let's follow Hamilton and suppose a first order system:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=\phi y_{t-1}+w_{t}.
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Hamilton starts iterating this equation at t=0, supposing he knows the value
+ at time -1 for y, which he calls 
+\begin_inset Formula \( y_{-1} \)
+\end_inset 
+
+.
+ So we have this:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{0}=\phi y_{-1}+w_{0}\]
+
+\end_inset 
+
+
+\layout Standard
+
+plug that in go get 
+\begin_inset Formula \( y_{1} \)
+\end_inset 
+
+, 
+\begin_inset Formula \( y_{2} \)
+\end_inset 
+
+, and so forth, until we have:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{forder}
+y_{t}=\phi ^{t+1}y_{-1}+\phi ^{t}w_{0}+\phi ^{t-1}w_{t-1}+\phi ^{t-2}w_{t-2}+...+\phi w_{t-1}+w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The key thing is that we are looking at the 
+\begin_inset Quotes eld
+\end_inset 
+
+inputs
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula \( w \)
+\end_inset 
+
+ as just a string of numbers.
+ Instead of adding B at every timestep, we are just adding on 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+.
+ The numbers 
+\begin_inset Formula \( \{w_{0},w_{1},w_{2},...,w_{t}\} \)
+\end_inset 
+
+ are just numbers, nothing special.
+ Just numbers that get added.
+\layout Subsubsection
+
+Dynamic Multiplier
+\layout Standard
+
+Well, maybe they are not just numbers.
+ They are 
+\begin_inset Quotes eld
+\end_inset 
+
+inputs.
+\begin_inset Quotes erd
+\end_inset 
+
+ They are quantities we theorize about, things that we think might affect
+ y.
+ Hamilton is often interested in the 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\series bold 
+dynamic multiplier
+\series default 
+
+\begin_inset Quotes erd
+\end_inset 
+
+, the impact on 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ caused by a change in one of the input values at one time.
+ 
+\layout Standard
+
+In the above example 
+\begin_inset LatexCommand \ref{forder}
+
+\end_inset 
+
+, the first order model, it is painfully obvious.
+ The impact of a change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ depends on 
+\begin_inset Quotes eld
+\end_inset 
+
+how long ago
+\begin_inset Quotes erd
+\end_inset 
+
+ it was and also on these coefficients 
+\begin_inset Formula \( \phi  \)
+\end_inset 
+
+.
+ If you could somehow 
+\begin_inset Quotes eld
+\end_inset 
+
+grab
+\begin_inset Quotes erd
+\end_inset 
+
+ the variable 
+\begin_inset Formula \( w_{0} \)
+\end_inset 
+
+ and make it one unit larger, then it is apparent that the change in 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ would be 
+\begin_inset Formula \( \phi ^{t} \)
+\end_inset 
+
+.
+ If you have to be skeptical about it, look at it like this.
+ Add one unit to 
+\begin_inset Formula \( w_{0} \)
+\end_inset 
+
+ and rewrite 
+\begin_inset LatexCommand \ref{forder}
+
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{forderp}
+y_{t}^{new}=\phi ^{t+1}y_{-1}+\phi ^{t}(w_{0}+1)+\phi ^{t-1}w_{t-1}+\phi ^{t-2}w_{t-2}+...+\phi w_{t-1}+w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Now if you subtract 
+\begin_inset LatexCommand \ref{forder}
+
+\end_inset 
+
+ from 
+\begin_inset LatexCommand \ref{forderp}
+
+\end_inset 
+
+, you get:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}^{new}-y_{t}=\phi ^{t}(w_{0}+1)-\phi ^{t}w_{0}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}^{new}-y_{t}=\phi ^{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This shows the discrete change, the gap between the original 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( y_{t}^{new} \)
+\end_inset 
+
+.
+\layout Standard
+
+To the 
+\begin_inset Quotes eld
+\end_inset 
+
+high powered
+\begin_inset Quotes erd
+\end_inset 
+
+ math types, its not very interesting to look just at the discrete change,
+ they want to look at derivatives or partial derivatives.
+ Maybe we need to talk in more detail about that.
+\layout Standard
+
+Hamilton uses partial derivatives to describe this effect.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{dynmult}
+\frac{\partial y_{t+j}}{\partial w_{t}}=\phi ^{j}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In other words, a change in 
+\begin_inset Formula \( w \)
+\end_inset 
+
+ at time 
+\begin_inset Formula \( t \)
+\end_inset 
+
+ has an effect 
+\begin_inset Formula \( j \)
+\end_inset 
+
+ time periods later that is equal to 
+\begin_inset Formula \( \phi ^{j} \)
+\end_inset 
+
+.
+\layout Standard
+
+Please note that the interpretation of the coefficient 
+\begin_inset Formula \( \phi  \)
+\end_inset 
+
+ in this finding is strikingly similar to the first section above (see equation
+ 
+\begin_inset LatexCommand \ref{sol2}
+
+\end_inset 
+
+).
+ If the system is 
+\begin_inset Quotes eld
+\end_inset 
+
+stable
+\begin_inset Quotes erd
+\end_inset 
+
+, meaning 
+\begin_inset Formula \( \left| \phi \right| <1 \)
+\end_inset 
+
+, then the effect of a change in w has a smaller and smaller effect as time
+ goes by.
+ If the system is unstable, then the effect of w gets bigger and bigger.
+\layout Standard
+
+So, unlike the boring, old interpretation of difference equations, rather
+ than just caring about stability, we are not concerned about the 
+\begin_inset Quotes eld
+\end_inset 
+
+long lasting impact
+\begin_inset Quotes erd
+\end_inset 
+
+ of a variable input into the system.
+\layout Subsubsection
+
+Effect of a permanent increase in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+.
+\layout Standard
+
+The claim in 
+\begin_inset LatexCommand \ref{dynmult}
+
+\end_inset 
+
+ shows the effect of a unit change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ at any one time.
+ We can use that insight to wonder about the impact of a 
+\begin_inset Quotes eld
+\end_inset 
+
+permanent
+\begin_inset Quotes erd
+\end_inset 
+
+ change in 
+\begin_inset Formula \( w \)
+\end_inset 
+
+.
+ If, beginning at some time t, the value of 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ is increased, and all following 
+\begin_inset Formula \( w's \)
+\end_inset 
+
+ are increased similarly, then the effect at t+j is the sum of the effects
+ of all the 
+\begin_inset Formula \( w's \)
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula \[
+1+\phi +\phi ^{2}+\phi ^{3}+\phi ^{4}+\phi ^{5}+\ldots \phi ^{j}\]
+
+\end_inset 
+
+
+\layout Standard
+
+If you let j get really big, say, infinite, and 
+\begin_inset Formula \( |\phi | \)
+\end_inset 
+
+< 1, then this impact in j periods after the change is:
+\layout Standard
+
+
+\begin_inset Formula \[
+\frac{1-\phi ^{j+1}}{1-\phi }\]
+
+\end_inset 
+
+
+\layout Standard
+
+and when j is huge and 
+\begin_inset Formula \( \phi ^{j} \)
+\end_inset 
+
+ tends toward 0, so as a result the impact of a permanent change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{impactar1}
+\frac{1}{1-\phi }
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Do you see why its a rather silly question to measure the impact of a change
+ when 
+\begin_inset Formula \( \phi  \)
+\end_inset 
+
+ is 1 or greater? See why it is so vital that a dynamic system be 
+\begin_inset Quotes eld
+\end_inset 
+
+stable
+\begin_inset Quotes erd
+\end_inset 
+
+ if we are going to get anything useful out of it?
+\layout Subsection
+
+Higher order difference equations
+\layout Standard
+
+Add more lagged y's, and a coefficient 
+\begin_inset Formula \( \phi _{j} \)
+\end_inset 
+
+ for each one:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=\phi _{1}y_{t-1}+\phi _{2}y_{t-2}+...+\phi _{p-1}y_{t-p-1}+\phi _{p}y_{t-p}+w_{t}.
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+If you follow along with Hamilton (p.
+ 8-9), you start to see his plan.
+ Use whatever mathematical tool you can to find out the dynamic properties
+ of the system, and, in particular, measure the impact of changes in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+.
+\layout Standard
+
+On p.
+ 8, Hamilton introduces a way to convert a single equation model into a
+ matrix equation.
+ That's not done just because matrices are cool, but also because they have
+ powers and there are lots of results about them.
+ His attention ends up focusing on the matrix 
+\begin_inset Formula \( F, \)
+\end_inset 
+
+ which is:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+F=\left[ \begin{array}{cccccc}
+\phi _{1} & \phi _{2} & \phi _{3} & \ldots  & \phi _{p-1} & \phi _{p}\\
+1 & 0 & 0 & \vdots  & 0 & 0\\
+0 & 1 & 0 & \vdots  & 0 & 0\\
+0 & 0 & 1 & \vdots  & 0 & 0\\
+\vdots  & \vdots  & \vdots  & \vdots  & \vdots  & \vdots \\
+0 & 0 & 0 & \vdots  & 1 & 0
+\end{array}\right] 
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+You arrive at that matrix by writing the main equation you are interested
+ in in the first row, and then add a set of identities like
+\begin_inset Formula \begin{equation}
+y_{k}=y_{k}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+where k={y-1,y-2,...,y-p}.
+ 
+\layout Standard
+
+Look at the top of p.
+ 9 in Hamilton.
+ You see that if we repeat the iteration process, putting in new inputs
+ and calculating 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ at each step, it is as though we are multiplying F by itself, repeatedly.
+\layout Standard
+
+We can talk details, but the big news is tha the impact of a change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ ends up being filtered through the matrix F and 
+\begin_inset Formula \( F^{2} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( F^{3} \)
+\end_inset 
+
+ and so forth.
+ 
+\layout Section
+
+What's that Eigenvalue thing all about?
+\layout Standard
+
+Oh, please, not that.
+ I took linear algebra in 1985.
+ You expect me to remember that? I didn't like it then, much.
+ If I have to do it again, at least I want to know what for!
+\layout Subsection
+
+Justification of awful pain and suffering
+\layout Standard
+
+There are 2 reasons why the eigenvalue comes back at me after all these
+ years.
+\layout Enumerate
+
+Eigenvalues of the matrix 
+\begin_inset Formula \( F \)
+\end_inset 
+
+ end up solving the characteristic equation 
+\begin_inset LatexCommand \ref{ce}
+
+\end_inset 
+
+.
+ In fact, the eigenvalues 
+\emph on 
+are 
+\emph default 
+the roots of the characteristic equation.
+ (Hamilton proves this in Proposition 1.l, p.
+ 10).
+\layout Enumerate
+
+Eigenvalues of the matrix 
+\begin_inset Formula \( F \)
+\end_inset 
+
+ end up giving ingredients in the calculation of 
+\begin_inset Formula \( \frac{\partial y_{t+j}}{\partial w_{t}} \)
+\end_inset 
+
+.
+ The dynamic multiplier is a linear sum of the eigenvalues, something like
+ 
+\begin_inset Formula \( c_{1}\lambda _{1}+c_{2}\lambda _{2} \)
+\end_inset 
+
+ for a second order system, and the coefficients 
+\begin_inset Formula \( c_{1} \)
+\end_inset 
+
+ and 
+\begin_inset Formula \( c_{2} \)
+\end_inset 
+
+ have formula that include the roots as well.
+ 
+\layout Subsection
+
+Actual pain and suffering
+\layout Standard
+
+Suppose you have some square matrix.
+ I don't know why we can't call it F.
+ The definition of an eigenvalue goes like this.
+ A number 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ is an eigenvalue if the determinant 
+\begin_inset Formula \( \left| F-\lambda I\right| =0 \)
+\end_inset 
+
+.
+ The determinant of a 2x2 matrix is so easy that calculating it is like
+ falling out of bed.
+ If the matrix is:
+\layout Standard
+
+
+\begin_inset Formula \[
+\left[ \begin{array}{cc}
+a & b\\
+c & d
+\end{array}\right] \]
+
+\end_inset 
+
+
+\layout Standard
+
+Then 
+\begin_inset Formula \[
+\left| \left[ \begin{array}{cc}
+a & b\\
+c & d
+\end{array}\right] \right| =ad-cb\]
+
+\end_inset 
+
+
+\layout Standard
+
+A determinant of a bigger matrix is more difficult to calculate, usually
+ involves some high order polynomials.
+\layout Standard
+
+So if the matrix that you are trying to get a determinant is 
+\begin_inset Formula \( F-\lambda I \)
+\end_inset 
+
+, that means you are getting the determinant of 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+F-\lambda I=\left[ \begin{array}{cccccc}
+\phi _{1}-\lambda  & \phi _{2} & \phi _{3} & \ldots  & \phi _{p-1} & \phi _{p}\\
+1 & -\lambda  & 0 & \vdots  & 0 & 0\\
+0 & 1 & -\lambda  & \vdots  & 0 & 0\\
+0 & 0 & 1 & \vdots  & 0 & 0\\
+\vdots  & \vdots  & \vdots  & \vdots  & \vdots  & \vdots \\
+0 & 0 & 0 & \vdots  & 1 & -\lambda 
+\end{array}\right] 
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Solving the determinant 
+\begin_inset Formula \( \left| F-\lambda I\right|  \)
+\end_inset 
+
+usually means solving a polynomial in 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+.
+\layout Standard
+
+There can be up to as many different solutions--values of 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+--as there are rows in this matrix.
+ And finding may not be easy.
+ In fact, I don't think there is a general formula for solving these if
+ the order is more than 3.
+\layout Standard
+
+Now here are 2 mathematical complications:
+\layout Enumerate
+
+If all of the solutions are distinct, some of the mathematics works out
+ more easily.
+ 
+\layout Enumerate
+
+If all of the solutions are real-valued, then we are more familiar with
+ interpreting the results.
+\layout Standard
+
+Note Hamilton has a lot of effort expended to the case in which the eigenvalues
+ are distinct, versus the case in which some are repeated.
+ Note he also has a pretty big effort devoted to working out the details
+ of the complex solution cases.
+\layout Subsection
+
+Characteristic.
+ Schmarasteristic.
+\layout Standard
+
+Now, as far as solving the characteristic equation goes, this just works
+ like magic.
+ You can adjust the coefficient 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ to make 
+\begin_inset Formula \( |F-\lambda I|=0 \)
+\end_inset 
+
+, and all such numbers are the roots of the characteristic equation.
+ Now days, we even have computer smart enough to find the 
+\begin_inset Formula \( \lambda _{j} \)
+\end_inset 
+
+ for us :)
+\layout Subsection
+
+Remember we wanted the dynamic multiplier?
+\layout Standard
+
+As far as finding the dynamic multipliers, it is a little more work.
+\layout Standard
+
+Hamilton, on p.
+ 11, uses a result from linear algebra for matrices with distinct eigenvalues.
+ The result is that
+\layout Standard
+
+
+\begin_inset Formula \[
+F=T\Lambda T^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+for some matrix T and where 
+\begin_inset Formula \( \Lambda  \)
+\end_inset 
+
+ is a matrix that collects up the eigenvalues, like so:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\Lambda =\left[ \begin{array}{ccc}
+\lambda _{1} & 0 & 0\\
+0 & \lambda _{2} & 0\\
+0 & 0 & \lambda _{3}
+\end{array}\right] 
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Now there is a stunning thing about this result.
+ If you need to calculate 
+\begin_inset Formula \( \Lambda ^{2} \)
+\end_inset 
+
+ is is just the squared items from 
+\begin_inset Formula \( \Lambda  \)
+\end_inset 
+
+.
+ If you need 
+\begin_inset Formula \( \Lambda ^{3} \)
+\end_inset 
+
+ , it is just the cubed elements of 
+\begin_inset Formula \( \Lambda  \)
+\end_inset 
+
+.
+ Its just as simple as pie!
+\layout Standard
+
+Furthermore, if you calculate 
+\begin_inset Formula \( F^{2} \)
+\end_inset 
+
+, it ends up being as simple as 
+\begin_inset Formula \( T\Lambda ^{2}T \)
+\end_inset 
+
+, and if you need 
+\begin_inset Formula \( F^{3} \)
+\end_inset 
+
+ it is just 
+\begin_inset Formula \( T\Lambda ^{3}T^{-1} \)
+\end_inset 
+
+.
+\layout Standard
+
+So, it is trivially easy to tell the values of 
+\begin_inset Formula \( F^{t} \)
+\end_inset 
+
+.
+\layout Standard
+
+That means, whenever we need a number from 
+\begin_inset Formula \( F^{t}, \)
+\end_inset 
+
+ it is no trouble to get it.
+\layout Standard
+
+The multiplier is, in general, a combination of the eigenvalues.
+ The impact of a change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ that will be felt after j periods is like so:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial y_{t+j}}{\partial w_{t}}=c_{1}\lambda _{1}^{j}+c_{2}\lambda _{2}^{j}+...+c_{p}\lambda _{p}^{j}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+There's a formula on p.
+ 12 in Hamilton to use for the c coefficients.
+\layout Standard
+
+So we know that the dynamic multiplier, which describes the impact of a
+ unit change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ is a weighted combination of the eigenvalues.
+ 
+\layout Subsection
+
+Didn't you want the impact of a permanent change too?
+\layout Standard
+
+But wait! it gets even better than that.
+ We can use the eigenvalues as a 
+\begin_inset Quotes eld
+\end_inset 
+
+safety check
+\begin_inset Quotes erd
+\end_inset 
+
+ to make one more very important observation.
+ Look back up at equation 
+\begin_inset LatexCommand \ref{impactar1}
+
+\end_inset 
+
+.
+ We want a result like that, but for equations with more lagged y's.
+\layout Standard
+
+The impact of a permanent change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ in a higher order equation can be seen as a direct extension of 
+\begin_inset LatexCommand \ref{impactar1}
+
+\end_inset 
+
+.
+ That is, assuming that ALL roots (eigenvalues) are inside the unit circle,
+ it is meaningful to make the exact same simplifications that led to 
+\begin_inset LatexCommand \ref{impactar1}
+
+\end_inset 
+
+ in a bigger model, and as a result, the impact of a permanent one unit
+ change in 
+\begin_inset Formula \( w_{t} \)
+\end_inset 
+
+ after many many (actually, an infinite number of) periods is:
+\layout Standard
+
+
+\begin_inset Formula \[
+\frac{1}{1-\phi _{1}-\phi _{2}-\phi _{3}-\cdots -\phi _{p}}\]
+
+\end_inset 
+
+
+\layout Standard
+
+(See Hamilton's p.
+ 20 result, Proposition 1.3).
+ Please don't forget this is only valid if the system is stable.
+\layout Section
+
+What the heck is that L thing doing in my reading again?
+\layout Standard
+
+
+\series bold 
+L
+\series default 
+ is the lag operator, and it has some nice properties.
+ Unfortunately, not many authors clearly explore the operator.
+ Instead, they tend to just want to throw it around as if it were a number,
+ which works much of the time, but not always.
+ One of the strength's of Hamilton's chapter 2 is a pretty thorough explanation
+ of what L is and what is good for.
+\layout Subsection
+
+What are we sure is true of L?
+\layout Standard
+
+I don't know about a comprehhensive list, but:
+\layout Standard
+
+1.
+ definition:
+\layout Standard
+
+
+\begin_inset Formula \[
+x_{t-1}=Lx_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+2.
+ raise L to powers
+\layout Standard
+
+
+\begin_inset Formula \[
+x_{t-2}=L(Lx_{t})=L^{2}x_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+x_{t-3}=L(L^{2}x_{t})=L^{3}x_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+3.
+ L obeys linearity, so you can multiply by a constant:
+\layout Standard
+
+
+\begin_inset Formula \[
+4*Lx_{t}=L(4x_{t})\]
+
+\end_inset 
+
+
+\layout Standard
+
+4.
+ L obeys a distributive law.
+ You can also act as if L is a coefficient and do things like:
+\layout Standard
+
+
+\begin_inset Formula \[
+L(3*x_{t}+4*y_{t})=3Lx_{t}+4Ly_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+or
+\layout Standard
+
+
+\begin_inset Formula \[
+L(1+3L)=L+3L^{2}\]
+
+\end_inset 
+
+
+\layout Standard
+
+5.
+ polynomial grouping is meaningful.
+ You can do 
+\begin_inset Quotes eld
+\end_inset 
+
+factoring
+\begin_inset Quotes erd
+\end_inset 
+
+ and 
+\begin_inset Quotes eld
+\end_inset 
+
+multiplying
+\begin_inset Quotes erd
+\end_inset 
+
+ of expressions involving 
+\begin_inset Formula \( L \)
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+6L^{2}+5L+1=(3L+1)(2L+1)\]
+
+\end_inset 
+
+
+\layout Standard
+
+Then we know it is the same thing to apply either the left or the right
+ to a variable 
+\begin_inset Formula \( x_{t} \)
+\end_inset 
+
+.
+ So, first apply the left hand side:
+\layout Standard
+
+
+\begin_inset Formula \[
+(6L^{2}+5L+1)x_{t}=6x_{t-2}+5x_{t-1}+x_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+and that is the same as applying the right hand side:
+\layout Standard
+
+
+\begin_inset Formula \[
+(3L+1)(2L+1)x_{t}=(3L+1)(2x_{t-1}+x_{t})\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=6Lx_{t-1}+3Lx_{t}+2x_{t-1}+x_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=6x_{t-2}+5x_{t-1}+x_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+What do we think is not true of L? Remember L is an operator, so you can't
+ assume it always works like a real number.
+ So, for example, it meaningful to talk about the inverse of 
+\layout Standard
+
+
+\begin_inset Formula \[
+(1-\phi L)\]
+
+\end_inset 
+
+
+\layout Standard
+
+only if 
+\begin_inset Formula \( |\phi |<1 \)
+\end_inset 
+
+.
+ As Hamilton observes, in that case the inverse 
+\begin_inset Formula \( (1-\phi L)^{-1} \)
+\end_inset 
+
+ exists and the idea of 
+\begin_inset Quotes eld
+\end_inset 
+
+dividing
+\begin_inset Quotes erd
+\end_inset 
+
+ something by 
+\begin_inset Formula \( (1-\phi L) \)
+\end_inset 
+
+ make sense.
+ (Hamilton, p.
+ 28; yes, its just another example of the geometric series).
+ 
+\layout Subsection
+
+Think of a difference equation as a polynomial in L
+\layout Standard
+
+Take any discrete time system, like 
+\begin_inset LatexCommand \ref{forder}
+
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{forder3}
+y_{t}=\phi _{1}y_{t-1}+\phi _{2}y_{t-2}+...+\phi _{t-p}y_{t-p}+w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+If you use the L operator, this is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{forderL}
+y_{t}=\phi _{1}Ly_{t}+\phi _{2}L^{2}y_{t}+...+\phi _{t-p}L^{p}y_{t}+w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+And you might as well write:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+(1-\phi _{1}L-\phi _{2}L^{2}-...\phi _{p}L^{p})y_{t}=w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+If we want a 
+\begin_inset Quotes eld
+\end_inset 
+
+solution
+\begin_inset Quotes erd
+\end_inset 
+
+ for 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ then we want 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ on the left hand side, all by itself, an we wish we could do something
+ simple like:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=\frac{w_{t}}{(1-\phi _{1}L-\phi _{2}L^{2}-...\phi _{p}L^{p})}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The big problem is that we can't write such a thing down because we can't
+ just bash L about as if it were a number.
+ In some particular cases, Hamilton shows (p.
+ 30) that it is meaningful.
+ In particular, guess what: it depends on the eigenvalues.
+ Again, eigenvalues, I can't stand it.
+\layout Standard
+
+Still, the notion that we just write use shorthand like
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+C(L)=1-\phi _{1}L-\phi _{2}L^{2}-...\phi _{p}L^{p}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+and
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=C^{-1}(L)w_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+is appealing.
+ Note how doing this makes it clear that the the current value of 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ is a weighted combination of inputs! That's exactly what we wanted for
+ the 
+\begin_inset Quotes eld
+\end_inset 
+
+dynamic multipliers
+\begin_inset Quotes erd
+\end_inset 
+
+ model.
+ If only we knew if 
+\begin_inset Formula \( C^{-1}(L) \)
+\end_inset 
+
+ were a meaningful thing, and how to calculate it!
+\layout Subsection
+
+The result is especially clear in a first order difference equation.
+\layout Standard
+
+Hamilton shows a simple case of an AR(1) model, one for which 
+\begin_inset Formula \( C(L)=1-\phi L \)
+\end_inset 
+
+, and he shows that, by simple algebra, that we can get what we want.
+ Start with
+\layout Standard
+
+
+\begin_inset Formula \[
+(1-\phi L)y_{t}=w_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+and multiply both sides by (1+
+\begin_inset Formula \( \phi L+\phi ^{2}L^{2}+\phi ^{3}L^{3}+...+\phi ^{t}L^{t}). \)
+\end_inset 
+
+ You are allowed to do that with L's, as we described above.
+\layout Standard
+
+Then evaluate this by doing the multiplication term by term:
+\layout Standard
+
+
+\begin_inset Formula \[
+(1+\phi L+\phi ^{2}L^{2}+...+\phi ^{t}L^{t})(1-\phi L)\]
+
+\end_inset 
+
+
+\layout Standard
+
+What do you end up with? 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+(1-\phi ^{t+1}L^{t+1})
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Man, oh man.
+ that means:
+\begin_inset Formula \begin{equation}
+(1-\phi ^{t+1}L^{t+1})y_{t}=(1+\phi L+\phi ^{2}L^{2}+...+\phi ^{t}L^{t})w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+which means
+\begin_inset Formula \begin{equation}
+y_{t}-\phi ^{t+1}L^{t+1}y_{t}=(1+\phi L+\phi ^{2}L^{2}+...+\phi ^{t}L^{t})w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+And since 
+\begin_inset Formula \( L^{t+1}y_{t} \)
+\end_inset 
+
+ is just the value of y at t = -1, then the second term on the left hand
+ side is: 
+\begin_inset Formula \[
+\phi ^{t+1}L^{t+1}y_{t}=\phi ^{t+1}y_{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+Then move that to the right hand side of the big equation, and look what
+ we have:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=\phi ^{t+1}y_{-1}+(1+\phi L+\phi ^{2}L^{2}+...+\phi ^{t}L^{t})w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This got a lot of work done! We have 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ by itself on the left hand side, and some 
+\begin_inset Quotes eld
+\end_inset 
+
+other stuff
+\begin_inset Quotes erd
+\end_inset 
+
+ on the right, just what we wanted! Now, we see 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ by itself on the left hand side, it means we found the 
+\begin_inset Quotes eld
+\end_inset 
+
+practical equivalent
+\begin_inset Quotes erd
+\end_inset 
+
+ of 
+\begin_inset Formula \( C^{-1}(L) \)
+\end_inset 
+
+=(
+\begin_inset Formula \( 1-\phi L)^{-1} \)
+\end_inset 
+
+.
+ It does 
+\begin_inset Quotes eld
+\end_inset 
+
+almost
+\begin_inset Quotes erd
+\end_inset 
+
+ what we want, except there is little problem of the term 
+\begin_inset Formula \[
+\phi ^{t+1}L^{t+1}y_{t}=\phi ^{t+1}y_{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+That is 
+\begin_inset Quotes eld
+\end_inset 
+
+extra
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+unwanted
+\begin_inset Quotes erd
+\end_inset 
+
+,
+\begin_inset Quotes erd
+\end_inset 
+
+hated
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+undesirable
+\begin_inset Quotes erd
+\end_inset 
+
+, and generally ugly.
+ 
+\series bold 
+But, if we assume that 
+\begin_inset Formula \( \phi  \)
+\end_inset 
+
+<1, then we can assert that this extra part 
+\begin_inset Quotes eld
+\end_inset 
+
+shrinks
+\begin_inset Quotes erd
+\end_inset 
+
+ to zero, and we throw it away.
+
+\series default 
+ 
+\layout Standard
+
+The conclusion is that, if 
+\begin_inset Formula \( \phi <1 \)
+\end_inset 
+
+, then we can act 
+\emph on 
+as if 
+\emph default 
+
+\begin_inset Formula \( (1-\phi L)^{-1} \)
+\end_inset 
+
+ exists, and that means we can write things like
+\layout Standard
+
+
+\begin_inset Formula \[
+(1-\phi L)y_{t}=w_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+(1-\phi L)^{-1}(1-\phi L)y_{t}=(1-\phi L)^{-1}w_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{t}=(1-\phi L)^{-1}w_{t}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=(1+\phi L+\phi ^{2}L^{2}+...+\phi ^{t}L^{t})w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Please remember, it is only 
+\begin_inset Quotes eld
+\end_inset 
+
+as if
+\begin_inset Quotes erd
+\end_inset 
+
+ we are allowed to divide both sides by 
+\begin_inset Formula \( (1-\phi L) \)
+\end_inset 
+
+.
+ Since 
+\begin_inset Formula \( L \)
+\end_inset 
+
+ is not a number, it is not strictly meaningful to speak of division by
+ 
+\begin_inset Formula \( L \)
+\end_inset 
+
+.
+\layout Subsection
+
+What if that 
+\begin_inset Quotes eld
+\end_inset 
+
+sneaky trick
+\begin_inset Quotes erd
+\end_inset 
+
+ worked more generally? 
+\layout Standard
+
+Consider a pth order difference equation:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}-\phi _{1}Ly_{t}-\phi _{2}L^{2}y_{t}-...-\phi _{p}L^{p}y_{t}=w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+or
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{poly3}
+(1-\phi _{1}L-\phi _{2}L^{2}-...-\phi _{p}L^{p})y_{t}=w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+When I was in 9th grade, I don't think I was paying attention, but since
+ then I've learned it is true that if you can write a polynomial by factoring
+ it.
+ That means there are some numbers 
+\begin_inset Formula \( \lambda _{1},\lambda _{2},...,\lambda _{p} \)
+\end_inset 
+
+ such that: 
+\begin_inset Formula \[
+(1-\phi _{1}L-\phi _{2}L^{2}-...-\phi _{p}L^{p})=(1-\lambda _{1}L)(1-\lambda _{2}L)\cdots (1-\lambda _{p}L)\]
+
+\end_inset 
+
+
+\layout Standard
+
+So that means we can substitute that for the left hand side of 
+\begin_inset LatexCommand \ref{poly3}
+
+\end_inset 
+
+, and we have:
+\begin_inset Formula \begin{equation}
+\label{polyl}
+(1-\lambda _{1}L)(1-\lambda _{2}L)\cdots (1-\lambda _{p}L)y_{t}=w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Now, we saw in the previous section that we 
+\series bold 
+do
+\series default 
+ know of a way to invert things like this.
+ We could employ the trick from the previous section to get 
+\begin_inset Formula \( (1-\lambda _{1}L)^{-1} \)
+\end_inset 
+
+.
+ We apply that rule over and over again, and our problems are solved! We
+ end up with 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ on the left hand side, all by itself.
+ All we need are the coefficients 
+\begin_inset Formula \( \lambda _{1},\lambda _{2},...,\lambda _{p} \)
+\end_inset 
+
+
+\layout Subsection
+
+Then this new kind of characteristic equation happens
+\layout Standard
+
+Recall the characteristic equation 
+\begin_inset LatexCommand \ref{ce}
+
+\end_inset 
+
+.
+ We said the system is stable if the roots are all inside the unit circle.
+\layout Standard
+
+Now, when people write the difference equation with L's in it, they arrive
+ at a different kind of equation that looks almost just like a characteristic
+ equation.
+ Look at 
+\begin_inset LatexCommand \ref{forderL}
+
+\end_inset 
+
+ and notice there is an equivalent of the characteristic equation, except
+ a little different.
+ 
+\layout Standard
+
+If you replace the lag operator L with the real number z, then the polynomial
+ in L looks like 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+1-\phi _{1}z-\phi _{2}z^{2}-...-\phi _{p}z^{p}=0
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is just the same as the old characteristic equation, except now we
+ have replaced 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+ by 
+\begin_inset Formula \( \frac{1}{z} \)
+\end_inset 
+
+.
+ If we talk about the roots of this equation in z, we are talking about
+ the same roots that we had in the other equation.
+ 
+\layout Standard
+
+But the stabilty conditions are reversed.
+ So, if the original characteristic equation required that all roots be
+ inside the unit circle, what does this new equation say about the roots
+ of z? They have to be outside the unit circle!
+\layout Standard
+
+Note the very excellent paragraph Hamilton, (p.
+ 32), where he mentions the frequent confusion when some authors talk about
+ roots inside or outside the circle without precisely describing what equation
+ they are talking about.
+ Wow.
+ That really answered some questions I had accumulated.
+\layout Subsection
+
+Now, back to the dynamic multipliers again.
+\layout Standard
+
+Look at this equation in the factored polynomial above.
+ Supposing you did apply the inverse for each term, you would end up with
+ 
+\begin_inset Formula \( y_{t} \)
+\end_inset 
+
+ on the left hand side, all by itself.
+ 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\label{polyl2}
+y_{t}=(1-\lambda _{1}L)^{-1}(1-\lambda _{2}L)^{-1}\cdots (1-\lambda _{p}L)^{-1}w_{t}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Doing this requires that each of the roots 
+\begin_inset Formula \( \lambda _{1},\lambda _{2},...\lambda _{p} \)
+\end_inset 
+
+is inside the unit circle.
+\layout Standard
+
+Now, if you recall what it 
+\begin_inset Quotes eld
+\end_inset 
+
+really
+\begin_inset Quotes erd
+\end_inset 
+
+ means to apply 
+\begin_inset Formula \( (1-\lambda _{1}L)^{-1} \)
+\end_inset 
+
+, what we are really doing is multiplying by a long sum, (1 + 
+\begin_inset Formula \( (1+\lambda _{1}L+\lambda _{1}^{2}L^{2}+...+\lambda _{1}^{t}L^{t}) \)
+\end_inset 
+
+.
+ We have to do that for 
+\begin_inset Formula \( (1-\lambda _{2})^{-1} \)
+\end_inset 
+
+ and so forth.
+ At the end, on the right hand side we have all kinds of 
+\begin_inset Formula \( L \)
+\end_inset 
+
+'s and 
+\begin_inset Formula \( \lambda  \)
+\end_inset 
+
+'s floating around.
+ We don't care to actually write all that out, we might as well note, however,
+ that the formula would have to be something like:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{t}=\psi _{t}+\psi _{1}w_{t-1}+\psi _{2}w_{t-2}+...+\psi _{t}w_{0}
+\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The coefficients 
+\begin_inset Formula \( \psi _{t} \)
+\end_inset 
+
+ might be algebraically complicated, but we know for sure they depend on
+ the 
+\begin_inset Formula \( \lambda _{i} \)
+\end_inset 
+
+.
+ 
+\layout Standard
+
+These coefficients 
+\begin_inset Formula \( \psi _{t} \)
+\end_inset 
+
+ are just the dynamic multipliers! Hamilton p.
+ 35 gives the formulae, I'm too tired for that now.
+\the_end

@@ -1,0 +1,1943 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The Multivariate Normal Distribution
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+A one dimensional Normal variable should be very familiar to students who
+ have completed one course in statistics.
+ 
+\end_layout
+
+\begin_layout Standard
+The multivariate Normal is a generalization of the Normal which describes
+ the probability of observing 
+\begin_inset Formula $n-tuples$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The multivariate Normal distribution looks just like you might expect from
+ your experience with the univariate Normal: symmetric, single-peaked, basically
+ pleasant in every way!
+\end_layout
+
+\begin_layout Standard
+The vectors that are described by the multivariate Normal distribution can
+ have many elements as we choose to assign.
+ Let's work with an example in which each randomly selected case has two
+ attributes: a two dimensional model.
+ A point drawn from a two dimensional Normal would be a pair of real-valued
+ numbers (you can call it a vector or a point if you like).
+\end_layout
+
+\begin_layout Standard
+Given any vector, such as
+\begin_inset Formula 
+\[
+(0.2432,\,0.1211)
+\]
+
+\end_inset
+
+or
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(-2.2432,\,0.1211)
+\]
+
+\end_inset
+
+the multivariate Normal density function gives back an indicator of how
+ likely we are to draw that particular pair of values.
+\end_layout
+
+\begin_layout Standard
+The Multi Variate Normal (MVN) distribution has two parameters, but each
+ of these two parameters contains more than one piece of information.
+ One parameter, 
+\begin_inset Formula $\mu$
+\end_inset
+
+, describes the 
+\begin_inset Quotes eld
+\end_inset
+
+location
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+center point
+\begin_inset Quotes erd
+\end_inset
+
+ of the distribution, while the other parameter determines the dispersion,
+ the width of the spread from side to side in the observed points.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<0,eval=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mvtnorm)
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 100
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+meanX <- c( 0, 0 )
+\end_layout
+
+\begin_layout Plain Layout
+
+varX <- matrix ( c( 1, 0, 0, 1), nrow=2 , byrow = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq(meanX[1]-3*varX[1,1], meanX[1]+3*varX[1,1], length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(meanX[2]-3*varX[2,2], meanX[2]+3*varX[2,2] , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myProbX <- function(x1, x2, meanX, varX){
+\end_layout
+
+\begin_layout Plain Layout
+
+  dmvnorm( cbind(x1,x2), mean = meanX, sigma= varX)  
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:MVN1"
+
+\end_inset
+
+ illustrates the density function of a Normal distribution on two dimensions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Multi Variate Normal Distribution
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:MVN1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<1,echo=F,fig=T,height=9,width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+probX <- outer(x1,x2, FUN="myProbX")
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(x1,x2, probX, theta = 140, phi = 10, zlim=c(0,.25), xlab="y1",ylab="y2",
+ zlab="probability", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+In the multivariate Normal density, there are two parameters, 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ The first is an 
+\begin_inset Formula $n\times1$
+\end_inset
+
+ column vector of 
+\begin_inset Quotes eld
+\end_inset
+
+location parameters
+\begin_inset Quotes erd
+\end_inset
+
+ and an 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+dispersion matrix
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+f(y_{i}|\mu,\Sigma) & =\nonumber \\
+ & = & f((y_{i1},y_{i2},...,y_{in})'\,|\,\mu=(\mu_{1},...,\mu_{n})',\Sigma=\left[\begin{array}{ccc}
+\sigma_{1}^{2} &  & \sigma_{1n}\\
+ & \ddots\\
+\sigma_{n1} &  & \sigma_{n}^{2}
+\end{array}\right])\nonumber \\
+ &  & =\frac{1}{\sqrt{(2\pi)^{n}|\Sigma|}}exp(-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu))
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The symbol 
+\begin_inset Formula $|\Sigma|$
+\end_inset
+
+ refers to the determinant of the matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ The determinant is a single real number.
+ The symbol 
+\begin_inset Formula $\Sigma^{-1}$
+\end_inset
+
+ is the inverse of 
+\begin_inset Formula $\Sigma,$
+\end_inset
+
+ a matrix for which 
+\begin_inset Formula $\Sigma\Sigma^{-1}=I.$
+\end_inset
+
+ This equation assumes that 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ can be inverted, and one sufficient condition for the existence of an inverse
+ is that the determinant is not 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ must be positive semi-definite in order to assure that the most likely
+ point is 
+\begin_inset Formula $\mu=(\mu_{1},\mu_{2},\ldots,\mu_{n})$
+\end_inset
+
+ and that, as 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ moves away from 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in any direction, then the probability of observing 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ declines.
+\end_layout
+
+\begin_layout Standard
+The denominator in the formula for the MVN is a normalizing constant, one
+ which assures us that the distribution integrates to 1.0.
+ 
+\end_layout
+
+\begin_layout Standard
+In the last section of this writeup, I have included a little bit to help
+ with the matrix algebra and the importance of a 
+\begin_inset Quotes eld
+\end_inset
+
+weighted cross product
+\begin_inset Quotes erd
+\end_inset
+
+ like 
+\begin_inset Formula $(y_{i}-\mu)\Sigma^{-1}(y_{i}-\mu)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If there is only one dimension, this gives the same value as the ordinary
+ Normal distribution, which one will recall is
+\begin_inset Formula 
+\[
+f(y_{i}|\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}exp\left[\frac{(y_{i}-\mu)^{2}}{2\sigma^{2}}\right]
+\]
+
+\end_inset
+
+In the one dimensional case, 
+\begin_inset Formula $\Sigma=\sigma^{2}$
+\end_inset
+
+, meaning 
+\begin_inset Formula $|\Sigma|=\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Sigma=1/\sigma^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the example with two dimensions, the location parameter has two components
+ 
+\begin_inset Formula 
+\[
+\mu=(\mu_{1},\mu_{2})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and (again for the two dimensional case) the scale parameter is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Sigma=\left[\begin{array}{cc}
+\sigma_{1}^{2} & \sigma_{12}\\
+\sigma_{12} & \sigma_{2}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+For the 
+\begin_inset Formula $2\times2$
+\end_inset
+
+ case, the determinant and inverse are known:
+\begin_inset Formula 
+\begin{eqnarray*}
+|\Sigma|=\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2} & \textrm{and} & \Sigma^{-1}=\left[\begin{array}{cc}
+\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}\\
+\frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{\sigma_{1}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+so you can actually calculate an explicit value 
+\begin_inset Quotes eld
+\end_inset
+
+by hand
+\begin_inset Quotes erd
+\end_inset
+
+ if you have enough patience.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+f(y_{i} & = & (y_{1},y_{2})^{'}|\mu,\Sigma)\\
+ & = & \frac{1}{\sqrt{(2\pi)^{n}\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}}exp(-\frac{1}{2}[y_{i1}-\mu_{1},y_{i2}-\mu_{2}]\left[\begin{array}{cc}
+\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}\\
+\frac{-\sigma_{12}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}} & \frac{\sigma_{1}^{2}}{\sigma_{1}^{2}\sigma_{2}^{2}-\sigma_{12}^{2}}
+\end{array}\right]\left[\begin{array}{c}
+y_{i1}-\mu_{1}\\
+y_{i2}-\mu_{2}
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+At this time, I'm unwilling to write out any more of that.
+ But I encourage you to do it.
+\end_layout
+
+\begin_layout Section
+The Expected Value and Variance
+\end_layout
+
+\begin_layout Standard
+Recall that expected value is defined as a 
+\begin_inset Quotes eld
+\end_inset
+
+probability weighted sum of possible outcomes
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E(y)=\mu
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Var(y)=\Sigma
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because we are considering a multivariate distribution here, it is probably
+ lost in the shuffle that the expected value is calculated by integrating
+ over all dimensions.
+\end_layout
+
+\begin_layout Standard
+If we had a discrete distribution, say 
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+, then the expected value would be calculated by looping over all values
+ of 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ and calculating a probability weighted sum
+\begin_inset Formula 
+\[
+E(x_{1})=\sum_{i=1}^{n}\sum_{j=1}^{m}p(x_{1i},x_{2j})x_{1i}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+With a probability model defined on continuous variables, the calculation
+ of the expected value requires the use of integrals, but except for the
+ change from notation (
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ to 
+\begin_inset Formula $\int$
+\end_inset
+
+ ), there is not major conceptual change.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E(y_{1})=\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}f(y_{1},y_{2})y_{1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because the covariance between two variables is the same, whether we calculate
+ 
+\begin_inset Formula $\sigma_{12}=Covariance(y_{1},y_{2})$
+\end_inset
+
+ or 
+\begin_inset Formula $\sigma_{21}=Coviariance(y_{2},y_{1}),$
+\end_inset
+
+ the matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ has to be same on either side of the diagonal.
+ 
+\end_layout
+
+\begin_layout Standard
+As you can see, the matrix is symmetrical, so that the bottom-left element
+ is the same as the top-right.
+ The matrix is the same as its transpose.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Sigma=\left[\begin{array}{cc}
+\sigma_{1}^{2} & \sigma_{12}\\
+\sigma_{12} & \sigma_{2}^{2}
+\end{array}\right]=\Sigma'
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Subsection
+Contour Plots
+\end_layout
+
+\begin_layout Standard
+The parameters that were used to create Figure 1 were 
+\begin_inset Formula $\mu=(0,0)$
+\end_inset
+
+ and 
+\begin_inset Formula $\Sigma=\left[\begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}\right]$
+\end_inset
+
+.
+ That is the bivariate equivalent of the 
+\begin_inset Quotes eld
+\end_inset
+
+standardized normal distribution.
+\begin_inset Quotes erd
+\end_inset
+
+ A contour plot offers one way to view this distribution.
+ The equally-probable points are connected by lines.
+ The idea will be familiar to economists as 
+\begin_inset Quotes eld
+\end_inset
+
+indifference curves
+\begin_inset Quotes erd
+\end_inset
+
+ and to geographers as 
+\begin_inset Quotes eld
+\end_inset
+
+topographical maps
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Consider the contours in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Contour1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The View from Above Corresponding to Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:MVN1"
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Contour1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#image(x1, x2, probX, col = terrain.colors(100), axes = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+contour(x1,x2,probX)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Change the Variance
+\end_layout
+
+\begin_layout Standard
+If we change one of the diagonal elements in 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, the effect is to 
+\begin_inset Quotes eld
+\end_inset
+
+spread out
+\begin_inset Quotes erd
+\end_inset
+
+ the observations on that dimension.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Fig:Var1-3"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+M
+\begin_inset CommandInset label
+LatexCommand label
+name "Fig:Var1-3"
+
+\end_inset
+
+V Normal(
+\begin_inset Formula $\mu=(0,0)$
+\end_inset
+
+,
+\begin_inset Formula $\sigma^{2}=\left[\begin{array}{cc}
+1 & 0\\
+0 & 3
+\end{array}\right]$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=9,width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+meanX <- c( 0, 0 )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+varX <- matrix ( c( 1, 0, 0, 3), nrow=2 , byrow = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+probX <- outer(x1,x2, FUN="myProbX")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(x1,x2, probX, theta = 120, phi = 15, zlim=c(0,.25), col = "pink", xlab="y1"
+,ylab="y2", zlab="probability",ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The effect of the Covariance parameter
+\end_layout
+
+\begin_layout Standard
+Until this point, we have been considering distributions in which the two
+ variables 
+\begin_inset Formula $y_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $y_{2}$
+\end_inset
+
+were statistically independent, in the sense that the expected value of
+ 
+\begin_inset Formula $y_{1}$
+\end_inset
+
+ was not influenced by 
+\begin_inset Formula $y_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+MV Normal(
+\begin_inset Formula $\mu=(0,0)$
+\end_inset
+
+,
+\begin_inset Formula $\sigma^{2}=\left[\begin{array}{cc}
+1 & .8\\
+.8 & 1
+\end{array}\right]$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=9,width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+meanX <- c( 0, 0 )
+\end_layout
+
+\begin_layout Plain Layout
+
+varX <- matrix ( c( 1, .8, .8, 1), nrow=2 , byrow = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+probX <- outer(x1,x2, FUN="myProbX")
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(x1,x2, probX, theta = 120, phi = 20, zlim=c(0,.25), zlab="probability",
+ xlab="y1",ylab="y2",col = "pink", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The View from Above
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#image(x1, x2, probX, col = terrain.colors(100), axes = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+contour(x1,x2,probX)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Quotes eld
+\end_inset
+
+Cross-sections
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A conditional density gives the probability of the outcome 
+\begin_inset Formula $y=(y_{1},y_{2})$
+\end_inset
+
+ variable when one of these is taken as given.
+ For example, 
+\begin_inset Formula 
+\[
+f((y_{1},y_{2})|y_{2}=0.75)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+reprents the probability of observing 
+\begin_inset Formula $y_{1}$
+\end_inset
+
+ when it is known that 
+\begin_inset Formula $y_{1}=0.75$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The Multivariate Normal distribution has the interesting property that the
+ conditional distributions are basically Normal (Normal up to a constant
+ of proportionality).
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Cross-section0.75"
+
+\end_inset
+
+ illustrates the MVN when 
+\begin_inset Formula $y_{2}=0.75$
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+total area
+\begin_inset Quotes erd
+\end_inset
+
+ under that curve will not equal 1.0, but if we normalize it by finding the
+ area (call that 
+\begin_inset Formula $A$
+\end_inset
+
+), then 
+\begin_inset Formula 
+\[
+\frac{f(y_{1}|y_{2}=0.75)}{A}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+is a valid probability density function.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cross section of Standard MVN for 
+\begin_inset Formula $y_{2}=0.75$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Cross-section0.75"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<3,echo=F,fig=T,height=9,width=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+meanX <- c( 0, 0 )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+varX <- matrix ( c( 1, 0, 0, 1), nrow=2 , byrow = TRUE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+nx2 <- ifelse(x2 <= 0.75, x2, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+nx2 <- ifelse(0.65 < nx2, nx2, NA)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+probX <- outer(x1,nx2, FUN="myProbX")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(x1,x2, probX, theta = 140, phi = 15, zlim=c(0,.25), zlab="probability",
+ xlab="y1",ylab="y2",ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Appendix: Matrix Algebra.
+\end_layout
+
+\begin_layout Standard
+If you have never studied matrix algebra, I would urge you to do a little
+ study right now.
+ Find any book or one of my handouts.
+ 
+\end_layout
+
+\begin_layout Standard
+Your objective is to understand enough about multiplication of matrices
+ and vectors so that you can see the meaning of an expression like the following.
+\begin_inset Formula 
+\[
+x'Mx
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $x$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\times1$
+\end_inset
+
+ column vector and 
+\begin_inset Formula $M$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ matrix.
+ The result is a single number, and if you write it out term-for-term, you
+ find this a 
+\begin_inset Quotes eld
+\end_inset
+
+weighted sum of 
+\begin_inset Formula $x$
+\end_inset
+
+'s squares and cross-products.
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(x_{1},x_{2},\ldots,x_{n})\left[\begin{array}{ccc}
+m_{11} &  & m_{1n}\\
+ & \ddots\\
+m_{n1} &  & m_{nn}
+\end{array}\right]\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+\vdots\\
+x_{n}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+ & = & (x_{1},x_{2},\ldots,x_{n})\left[\begin{array}{c}
+m_{11}x_{1}+m_{12}x_{2}+\ldots+m_{1n}x_{n}\\
+m_{21}x_{1}+m_{22}x_{2}+\ldots+m_{2n}x_{n}\\
+\vdots\\
+m_{n1}x_{1}+m_{n2}x_{2}+\ldots+m_{nn}x_{n}
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+ & = & m_{11}x_{1}x_{1}+m_{12}x_{2}x_{1}+\ldots+m_{1n}x_{n}x_{1}+\\
+ &  & m_{21}x_{1}x_{2}+m_{22}x_{2}x_{2}+\ldots+m_{2n}x_{n}x_{2}+\\
+ &  & \ldots+\\
+ &  & m_{n1}x_{1}x_{n}+m_{n2}x_{2}x_{n}+\ldots+m_{nn}x_{n}x_{n}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}m_{ij}x_{i}x_{j}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If 
+\begin_inset Formula $M$
+\end_inset
+
+ is diagonal, meaning
+\begin_inset Formula 
+\begin{equation}
+M=\left[\begin{array}{cccc}
+m_{11} & 0 & 0 & 0\\
+0 & m_{22} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & m_{nn}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+then there are no 
+\begin_inset Quotes eld
+\end_inset
+
+cross products
+\begin_inset Quotes erd
+\end_inset
+
+ and the result of 
+\begin_inset Formula $x'Mx$
+\end_inset
+
+ is simply a sum of weighted 
+\begin_inset Formula $x$
+\end_inset
+
+-squared terms.
+\begin_inset Formula 
+\begin{equation}
+=\sum_{i=1}^{n}m_{ii}x_{i}^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A matrix is positive semi-definite if, for all 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+x'Mx\geq0
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If 
+\begin_inset Formula $M$
+\end_inset
+
+ is positive semi-definite, so is 
+\begin_inset Formula $M^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the Normal distribution's density formula, we have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+exp(-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu))\label{eq:Nexp}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In that formula, the role of 
+\begin_inset Formula $x$
+\end_inset
+
+ is played by 
+\begin_inset Formula $(y_{i}-\mu)$
+\end_inset
+
+ and the role of 
+\begin_inset Formula $M$
+\end_inset
+
+ is played by 
+\begin_inset Formula $\Sigma^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The Normal distribution requires that 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ is positive semi-definite.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+-\frac{1}{2}(y_{i}-\mu)'\Sigma^{-1}(y_{i}-\mu)>0\label{eq:Nexp}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tidbit, The Eigenvectors 
+\begin_inset Formula $(e_{1},e_{2},...,e_{n})$
+\end_inset
+
+ of 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ are known as its 
+\begin_inset Quotes eld
+\end_inset
+
+principal components
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The principal components give the axes of symmetry of the MVN.
+ If the 
+\begin_inset Formula $i$
+\end_inset
+
+'th eigenvalue (the one associated with the 
+\begin_inset Formula $i'th$
+\end_inset
+
+eigenvector is 
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+, the length of the ellipsoid on the ith axis is proportional to 
+\begin_inset Formula $\sqrt{\lambda_{i}}$
+\end_inset
+
+ (B.Walsh and M.
+ Lynch, Appendix 2, The Multivariate Normal, 2002, 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://nitro.biosci.arizona.edu/zbook/volume_2/chapters/vol2_A2.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

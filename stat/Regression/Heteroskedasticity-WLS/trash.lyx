@@ -1,0 +1,4210 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+\mode<presentation>{
+\newcommand\makebeamertitle{\frame{\maketitle}}}
+
+
+%%only for presentation
+\mode<presentation>{
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+%%for presentations
+\mode<presentation>{
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Heteroskedasticity in Regression 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Heteroskedasticity
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2014
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Remember the Theory
+\end_layout
+
+\begin_layout Itemize
+Linear Model 
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+About the error term, we assumed, for all 
+\begin_inset Formula $i$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $E(e_{i})=0\, for\, all\, i$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Var(e_{i})=E[(e_{i}-E(e_{i}))^{2}]=\sigma^{2}$
+\end_inset
+
+ (Homoskedasticity).
+ 
+\end_layout
+
+\begin_layout Itemize
+There is no 
+\begin_inset Formula $i$
+\end_inset
+
+ subscript on 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ It is the same for all rows.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Heteroskedasticity (or heteroscedasticity): the assumption of homogeneous
+ variance is violated.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Why Bother With this Now?
+\end_layout
+
+\begin_layout Enumerate
+It justifies introduction of WLS estimator (good reason).
+ That's one step from GLS, which is neat.
+\end_layout
+
+\begin_layout Enumerate
+It justifies 
+\begin_inset Quotes eld
+\end_inset
+
+robust
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+heteroskedasticity consistent
+\begin_inset Quotes erd
+\end_inset
+
+) covariance estimators (great reason)
+\end_layout
+
+\begin_layout Enumerate
+Lets me sketch some proofs and demonstrate reasoning about estimators (fabulous
+ reason ☺)
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Consequences of Heteroskedasticity 1: $
+\backslash
+hat{\beta}^{OLS}$ still unbiased, consistent}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+OLS Estimates of 
+\begin_inset Formula $\beta_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+ are still unbiased and consistent.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Unbiased: 
+\begin_inset Formula $E[\hat{\beta}^{OLS}]=\beta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Consistent: As 
+\begin_inset Formula $N\rightarrow\infty$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{\beta}^{OLS}$
+\end_inset
+
+ tends to 
+\begin_inset Formula $b$
+\end_inset
+
+ in probability limit.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If the predictive line was 
+\begin_inset Quotes eld
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+ before, It's still right now.
+\end_layout
+
+\begin_layout Itemize
+Proof on next slide: Key in method is apply E[] to both sides of formula
+ for 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[allowframebreaks]
+\end_layout
+
+\end_inset
+
+Proof: 
+\begin_inset Formula $\hat{\beta}^{OLS}$
+\end_inset
+
+ Still Unbiased
+\end_layout
+
+\begin_layout Itemize
+Easy! Begin with 
+\begin_inset Quotes eld
+\end_inset
+
+mean centered
+\begin_inset Quotes erd
+\end_inset
+
+ data.
+ The slope estimate from OLS with one variable:
+\begin_inset Formula 
+\[
+\hat{\beta}_{1}=\frac{\sum x_{i}\cdot y_{i}}{\sum x_{i}^{2}}=\frac{\sum x_{i}(b\cdot x_{i}+e_{i})}{\sum x_{i}^{2}}=\frac{\beta_{1}\sum x_{i}^{2}+\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}=\beta_{1}+\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Apply the Expected value operator to both sides:
+\begin_inset Formula 
+\[
+E[\hat{\beta}_{1}]=E(\beta_{1})+E(\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}})
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E[\hat{\beta}_{1}]=\beta_{1}+E(\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}})=\beta_{1}+(\frac{\sum E[x_{i}\cdot e_{i}]}{\sum x_{i}^{2}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Regression assumes errors uncorrelated with 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $E[x_{i}e_{i}]=0$
+\end_inset
+
+, the work is done
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E(\hat{\beta}_{1})=\beta_{1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Consequence 2.
+ OLS formula for 
+\begin_inset Formula $\widehat{Var(\hat{\beta})}$
+\end_inset
+
+ is wrong
+\end_layout
+
+\begin_layout Enumerate
+The derivation of the 
+\begin_inset Quotes eld
+\end_inset
+
+true variance
+\begin_inset Quotes erd
+\end_inset
+
+ of the OLS estimator, 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+, assumed 
+\begin_inset Formula $Var[e_{i}]$
+\end_inset
+
+ was same for all 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Thus our formula that estimated 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+, 
+\begin_inset Formula $\widehat{Var(\hat{\beta})}$
+\end_inset
+
+ is wrong.
+ And it's square root, the 
+\begin_inset Formula $std.err.(\hat{\beta})$
+\end_inset
+
+ is wrong.
+\end_layout
+
+\begin_layout Enumerate
+Thus t-tests from OLS, 
+\begin_inset Formula $\hat{\beta}/std.err.(\hat{\beta})$
+\end_inset
+
+ are WRONG (too big).
+\end_layout
+
+\begin_layout Enumerate
+And your p-values are WRONG (too small).
+\end_layout
+
+\begin_layout BeginFrame
+Proof: OLS 
+\begin_inset Formula $\widehat{Var(\hat{\beta})}$
+\end_inset
+
+ Wrong 
+\end_layout
+
+\begin_layout Itemize
+Variance of 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+: 
+\begin_inset Formula $Var(e_{i})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+The variance of the OLS slope estimator, 
+\begin_inset Formula $Var(\hat{\beta}_{1})$
+\end_inset
+
+, in 
+\begin_inset Quotes eld
+\end_inset
+
+mean-centered (or deviations) form
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta}_{1})=Var\left[\frac{\sum x_{i}\cdot e_{i}}{\sum x_{i}^{2}}\right]=\frac{Var[\sum x_{i}e_{i}]}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{\sum Var(x_{i}e_{i})}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{\sum x_{i}^{2}\cdot Var(e_{i})}{\left(\sum x_{i}^{2}\right)^{2}}\label{eq:Varbhat}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We assume all 
+\begin_inset Formula $Var(e_{i})$
+\end_inset
+
+ are equal, and we put in the MSE as an estimate of it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta}_{1})}=\frac{MSE}{\sum x_{i}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Proof: OLS 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+Wrong (page 2)
+\end_layout
+
+\begin_layout Itemize
+Instead, suppose the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ variance
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(e_{i})=s^{2}+s_{i}^{2}
+\end{equation}
+
+\end_inset
+
+ (a common minimum variance 
+\begin_inset Formula $s^{2}$
+\end_inset
+
+ plus an additional individualized variance 
+\begin_inset Formula $s_{i}^{2}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Plug this into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Varbhat"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{equation}
+\frac{\sum x_{i}^{2}(s^{2}+s_{i}^{2})}{\left(\sum x_{i}^{2}\right)^{2}}=\frac{s^{2}}{\sum x_{i}^{2}}+\frac{\sum x_{i}\cdot s_{i}^{2}}{\left(\sum x_{i}^{2}\right)^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The first term is "roughly" what OLS would calculate for the variance of
+ 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+The second term is the additional "true variance" in 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+ that the OLS formula 
+\begin_inset Formula $\widehat{V(\hat{\beta}_{1})}$
+\end_inset
+
+ does not include.
+\end_layout
+
+\begin_layout BeginFrame
+Consequence 3: 
+\begin_inset Formula $\hat{\beta}^{OLS}$
+\end_inset
+
+ is Inefficient
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\hat{\beta}_{i}^{OLS}$
+\end_inset
+
+is 
+\shape italic
+inefficient
+\shape default
+: It has higher variance than the 
+\begin_inset Quotes eld
+\end_inset
+
+weighted
+\begin_inset Quotes erd
+\end_inset
+
+ estimator.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Note that to prove an estimator is 
+\begin_inset Quotes eld
+\end_inset
+
+inefficient
+\begin_inset Quotes erd
+\end_inset
+
+, it is necessary to provide an alternative estimator that has lower variance.
+\end_layout
+
+\begin_layout Enumerate
+WLS: Weighted Least Squares estimator, 
+\begin_inset Formula $\hat{\beta}_{1}^{WLS}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+The Sum of Squares to be minimized now includes a weight for each case
+\begin_inset Formula 
+\begin{equation}
+SS(\hat{\beta}_{0},\hat{\beta}_{1})=\sum_{i=1}^{N}W_{i}(y-\hat{y}_{i})^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+The weights chosen to 
+\begin_inset Quotes eld
+\end_inset
+
+undo
+\begin_inset Quotes erd
+\end_inset
+
+ the heteroskedasticity.
+ 
+\begin_inset Formula 
+\begin{equation}
+W_{i}^{2}=1/Var(e_{i})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[allowframebreaks]
+\end_layout
+
+\end_inset
+
+Some insight from matrix view
+\end_layout
+
+\begin_layout Itemize
+Think of the prediction errors (residuals) as a vector
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y-\hat{y}=\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+y_{3}-\hat{y}_{3}\\
+\vdots\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Think of the Sum of squares in OLS as product of 
+\begin_inset Formula $[y-\hat{y}]$
+\end_inset
+
+ transpose and 
+\begin_inset Formula $[y-\hat{y}]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2}=[y-\hat{y}]^{T}[y-\hat{y}]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc}
+y_{1}-\hat{y}_{1} & y_{2}-\hat{y}_{2} &  & \cdots & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+\vdots\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Weighted least squares can be seen as the insertion of a square diagonal
+ matrix in the middle.
+\end_layout
+
+\begin_layout Standard
+
+\size footnotesize
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc}
+y_{1}-\hat{y}_{1} & y_{2}-\hat{y}_{2} &  & \cdots & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{cccc}
+\frac{1}{Var(e_{1})} &  &  & 0\\
+ & \frac{1}{Var(e_{2})}\\
+ &  & \ddots\\
+0 &  &  & \frac{1}{Var(e_{N})}
+\end{array}\right]\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+y_{3}-\hat{y}_{3}\\
+\vdots\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc}
+y_{1}-\hat{y}_{1} & y_{2}-\hat{y}_{2} &  & \cdots & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{cccc}
+\frac{1}{Var(e_{1})} &  &  & 0\\
+ & \frac{1}{Var(e_{2})}\\
+ &  & \ddots\\
+0 &  &  & \frac{1}{Var(e_{N})}
+\end{array}\right]\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+y_{3}-\hat{y}_{3}\\
+\vdots\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+WLS always proceeds with the assumption that the off-diagonals are 0, so
+ none of the errors are correlated with each other.
+ 
+\end_layout
+
+\begin_layout Itemize
+GLS: Generalized Least Squares introduces those off diagonal components.
+ GLS is used in time series analysis.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Example.
+ Suppose variance proportional to $x_{i}^2$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim10,fig=T,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Nsampsize <- 100
+\end_layout
+
+\begin_layout Plain Layout
+
+b0 <- 3; b1 <- 0.25; stde <- 10; mult <- 0.05
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(Nsampsize, m=50, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+meanx <- mean(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+minx <- min(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+e <- rnorm(Nsampsize)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- b0 + b1 * x + mult*(x-minx)*stde*e
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y~x, main="Heteroskedasticity")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+truth
+\begin_inset Quotes erd
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{equation}
+y_{i}=3+0.25x_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+Homoskedastic: 
+\begin_inset Formula 
+\begin{equation}
+Std.Dev.(e_{i})=\sigma_{e}=10
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+Heteroskedastic: 
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset Formula 
+\begin{equation}
+Std.Dev.(e_{i})=0.05*(x_{i}-min(x_{i}))*\sigma_{e}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+7cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-sim10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim20,fig=F,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+Nsampsize <- 500
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(Nsampsize, m=50, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+meanx <- mean(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+minx <- min(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+simr <- function(i){
+\end_layout
+
+\begin_layout Plain Layout
+
+e <- rnorm(Nsampsize, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+yhet <- b0 + b1 * x + mult*(x-minx)*stde*e
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(yhet ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+nsims <- 1000
+\end_layout
+
+\begin_layout Plain Layout
+
+reshet <- lapply(1:nsims, simr)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim21,fig=T,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+edemo <- rnorm(Nsampsize, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+yhet <- b0 + b1 * x + mult*(x-minx)*stde*edemo
+\end_layout
+
+\begin_layout Plain Layout
+
+yhom <- b0 + b1 * x + stde*edemo
+\end_layout
+
+\begin_layout Plain Layout
+
+ylimhet <- c(0.9 * range(yhet)[1], 1.1*range(yhet)[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(yhet~x, main="Heteroskedastic Errors", ylim=ylimhet, ylab="Heteroskedastic
+ y")
+\end_layout
+
+\begin_layout Plain Layout
+
+lapply(reshet, abline, col=gray(.7))
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(b0,b1,col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Draw 1000 Heteroskedastic Regressions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+1 example scatter
+\end_layout
+
+\begin_layout Itemize
+1000 fitted lines in gray
+\end_layout
+
+\begin_layout Itemize
+True regression line in red
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-sim21}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim40,fig=F,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+b0 <- 3; b1 <- 0.25; stde <- 10;
+\end_layout
+
+\begin_layout Plain Layout
+
+simrhomo <- function(i){
+\end_layout
+
+\begin_layout Plain Layout
+
+e <- rnorm(Nsampsize, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+yhom <- b0 + b1 * x + stde*e
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(yhom ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+nsims <- 1000
+\end_layout
+
+\begin_layout Plain Layout
+
+reshomo <- lapply(1:nsims, simrhomo)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim41,fig=T,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+edemo <- rnorm(Nsampsize, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(yhom~x, main="Homoskedastic Errors", ylim=ylimhet, ylab="Homoskedastic
+ y")
+\end_layout
+
+\begin_layout Plain Layout
+
+lapply(reshomo, abline, col=gray(.70))
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(b0,b1,col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare Lines of 1000 Fits (Homo vs Heteroskedastic)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-sim21}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-sim41}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim50,fig=T,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+cof <- sapply(reshet, coefficients)
+\end_layout
+
+\begin_layout Plain Layout
+
+cofhomo <- sapply(reshomo, coefficients)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hhet <- hist(cof[2,], prob=T, main="Heteroskedastic Data", xlab="Slope Est.")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(density(cof[2,]))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(cofhomo[2,], prob=T, xlim=range(hhet$breaks), main="Homoskedastic Data",
+ xlab="Slope Est.")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(density(cofhomo[2,]))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Histograms of Slope Estimates (w/Kernel Density Lines) }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-sim50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{So, the Big Message Is}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Heteroskedasticity leaves slope estimates correct on average
+\end_layout
+
+\begin_layout Itemize
+Heteroskedasticity inflates the amount of uncertainty in the estimates.
+\end_layout
+
+\begin_layout Itemize
+Weird, confusing effect on t-ratios.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sim60, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#b1hat <- vector(nsims, mode="numeric")
+\end_layout
+
+\begin_layout Plain Layout
+
+#res <- lapply(res, summary)
+\end_layout
+
+\begin_layout Plain Layout
+
+#for (i in 1:nsims){ b1hat[i] <- coefficients(res[[i]])[2,1]}
+\end_layout
+
+\begin_layout Plain Layout
+
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+#hist(b1hat, breaks=20, probability=T, main="", xlab="Estimates of b1")
+\end_layout
+
+\begin_layout Plain Layout
+
+#lines(density(b1hat), lty=4)
+\end_layout
+
+\begin_layout Plain Layout
+
+#rb1hat <- range(b1hat)
+\end_layout
+
+\begin_layout Plain Layout
+
+#xseq <- seq(from=rb1hat[1],to=rb1hat[2],length.out=200)
+\end_layout
+
+\begin_layout Plain Layout
+
+#nseq <- dnorm(xseq, m=b1, s=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+#lines(xseq, nseq, lty=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+#legend("topright",legend=c("kernel density","True Sampling Dist"), lty=c(4,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+#legend("topleft", #legend=c(paste("mean=",round(mean(b1hat),3)),paste("std.dev.="
+,round(sd(b1hat),3)) ))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Fix #1: Robust Standard Errors
+\end_layout
+
+\begin_layout BeginFrame
+Robust estimate of the variance of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+We should not use the OLS formula for 
+\begin_inset Formula $\widehat{Var(\hat{\beta})}$
+\end_inset
+
+ anymore (and hence the 
+\begin_inset Formula $std.err.(\hat{\beta}$
+\end_inset
+
+) from OLS is no good either).
+\end_layout
+
+\begin_layout Itemize
+Robust 
+\begin_inset Quotes eld
+\end_inset
+
+heteroskedasticity consistent
+\begin_inset Quotes erd
+\end_inset
+
+ variance estimator.
+\end_layout
+
+\begin_layout Itemize
+Wish these were accurate for small samples, but they generally are not
+\end_layout
+
+\begin_layout Itemize
+Best we can hope for is 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consistent standard errors 
+\end_layout
+
+\begin_layout Itemize
+asymptotically valid t-tests
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note: This does not 
+\begin_inset Quotes eld
+\end_inset
+
+fix
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\hat{\beta}^{OLS}$
+\end_inset
+
+.
+ It just gives us more accurate t-ratios by correcting 
+\begin_inset Formula $std.err(\hat{\beta}).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Robust Std.Err.
+ in a Nutshell
+\end_layout
+
+\begin_layout Itemize
+Recall: the variance-covariance matrix of the errors assumed by OLS.
+ 
+\begin_inset Formula 
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{e}^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}
+\end{array}\right]\label{eq:Vare_homo-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\sigma_{e}^{2}\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]=\sigma_{e}^{2}I\label{eq:Vare_homo-1-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Heteroskedastic Covariance Matrix
+\end_layout
+
+\begin_layout Itemize
+If there's heteroskedasticity, we have to allow the possibility like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Robust Std.Err.
+ : Use Variance Estimates
+\end_layout
+
+\begin_layout Itemize
+Fill in estimates for the case-specific error variances
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\widehat{Var(e)}=\left[\begin{array}{ccccc}
+\widehat{\sigma_{1}^{2}} & 0 & 0 & 0 & 0\\
+0 & \widehat{\sigma_{2}^{2}} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \widehat{\sigma_{N-1}^{2}} & 0\\
+0 & 0 & 0 & 0 & \widehat{\sigma_{N}^{2}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Embed those estimates into the larger formula that is used to calculate
+ the robust standard errors.
+\end_layout
+
+\begin_layout Itemize
+Famous paper
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+White, Halbert.
+ (1980).
+ A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct
+ Test for Heteroskedasticity.
+ 
+\emph on
+Econometrica
+\emph default
+, 48(4), 817-838.
+\end_layout
+
+\begin_layout Standard
+Robust estimator originally proposed by Huber (1967), but was forgotten
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Calculating The Robust Estimator of 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The true variance of the OLS estimator is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta}_{1})=\frac{\sum x_{i}^{2}Var(e_{i})}{(\sum x_{i}^{2})^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Assuming Homoskedasticity, estimate 
+\begin_inset Formula $\ensuremath{\sigma_{e}^{2}}$
+\end_inset
+
+ with MSE
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta}_{1})}=\frac{MSE}{\sum x_{i}^{2}}\,\mbox{and the square root of that is \ensuremath{std.err.(\hat{\beta}_{1})}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The robust versions replace 
+\begin_inset Formula $Var(e_{i})$
+\end_inset
+
+ with other estimates.
+ White's suggestion was 
+\begin_inset Formula 
+\begin{equation}
+Robust\,\widehat{Var(\hat{\beta}_{1})}=\frac{\sum x_{i}^{2}\cdot\hat{e}_{i}^{2}}{(\sum x_{i}^{2})^{2}}\label{eq:WhiteBiVar}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $\hat{e_{i}}^{2}$
+\end_inset
+
+ : the 
+\begin_inset Quotes eld
+\end_inset
+
+squared residual
+\begin_inset Quotes erd
+\end_inset
+
+, used in place of the unknown error variance.
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+Weighted Least Squares
+\end_layout
+
+\begin_layout BeginFrame
+WLS is Efficient
+\end_layout
+
+\begin_layout Itemize
+WLS has lower variance than OLS
+\end_layout
+
+\begin_layout Itemize
+However, WLS is more difficult to estimate.
+ 
+\end_layout
+
+\begin_layout Itemize
+WLS requires the Weights for minimizing the sum of squares.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+minimize\, SS(\hat{\beta})=\sum_{i=1}^{N}W_{i}(y_{i}-\hat{y}_{i})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And the weights depend on the (unknown) standard deviation of the error
+ term 
+\begin_inset Formula 
+\begin{equation}
+W_{i}=\frac{1}{\sigma_{i}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We need a model for the variance of the error term, 
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Feasible Weighted Least Squares.
+ 
+\end_layout
+
+\begin_layout Itemize
+Analysis proceeds in 2 steps.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Regression is estimated to gather information about the error variance.
+\end_layout
+
+\begin_layout Itemize
+That information is used to fill in the Weight matrix with WLS
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+May revise the weights, re-fit the WLS, repeatedly until convergence.
+\end_layout
+
+\begin_layout Subsection
+Combine Subsets of a Sample
+\end_layout
+
+\begin_layout BeginFrame
+Data From Categorical Groups
+\end_layout
+
+\begin_layout Itemize
+Suppose you separately investigate data for men and women
+\begin_inset Formula 
+\begin{equation}
+men:\, y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+women:\, y_{i}=c_{0}+c_{1}x_{i}+u_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then you wonder, 
+\begin_inset Quotes eld
+\end_inset
+
+can I combine the data for men and women to estimate one model
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+humans:\, y_{i}=\beta_{0}+\beta_{1}x_{i}+\beta_{2}sex_{i}+\beta_{3}sex_{i}x_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This 
+\begin_inset Quotes eld
+\end_inset
+
+manages
+\begin_inset Quotes erd
+\end_inset
+
+ the differences of intercept and slope for men and women by adding coefficients
+ 
+\begin_inset Formula $\beta_{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{3}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+But this ASSUMED that 
+\begin_inset Formula $Var(e_{i})=Var(u_{i})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+We should have tested for homoskedasticity (the ability to pool the 2 samples).
+\end_layout
+
+\begin_layout Subsection
+Random coefficient model
+\end_layout
+
+\begin_layout BeginFrame
+Methods Synonyms
+\end_layout
+
+\begin_layout Standard
+The basic idea is to say that the linear model has 
+\begin_inset Quotes eld
+\end_inset
+
+extra
+\begin_inset Quotes erd
+\end_inset
+
+ random error terms.
+ 
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+Synonyms
+\end_layout
+
+\begin_layout Itemize
+Random effects models
+\end_layout
+
+\begin_layout Itemize
+Mixed Models
+\end_layout
+
+\begin_layout Itemize
+Hierarchical Linear Models (HLM)
+\end_layout
+
+\begin_layout Itemize
+Multi-level Models (MLM)
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+This 
+\begin_inset Quotes eld
+\end_inset
+
+Laird and Ware
+\begin_inset Quotes erd
+\end_inset
+
+ notation has now become a standard.
+ Let the 
+\begin_inset Quotes eld
+\end_inset
+
+fixed
+\begin_inset Quotes erd
+\end_inset
+
+ coefficients be 
+\begin_inset Formula $\beta$
+\end_inset
+
+'s, but suppose in addition there are random coefficients 
+\begin_inset Formula $b\sim N(0,\sigma_{b}^{2})$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{equation}
+y=X\beta+Zb+e
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I'll probably write something on the board.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Simple Random Coefficient Model
+\end_layout
+
+\begin_layout Itemize
+Start with the regression model that has a different slope for each case:
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{i}x_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Slope is a "random coefficient
+\begin_inset Quotes erd
+\end_inset
+
+ with 2 parts
+\begin_inset Formula 
+\[
+\beta_{i}=\beta_{1}+u_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+same
+\begin_inset Quotes erd
+\end_inset
+
+ for all cases
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ is noise in the slope that is individually assigned.
+ It has expected value 0 and a variance 
+\begin_inset Formula $\sigma_{u}^{2}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Simple Random Coefficient Model
+\end_layout
+
+\begin_layout Itemize
+The regression model becomes
+\begin_inset Formula 
+\[
+y_{i}=\beta_{0}+(\beta_{1}+u_{i})x_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\beta_{0}+\beta_{1}x_{i}+u_{i}x_{i}+e_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note: My 
+\begin_inset Quotes eld
+\end_inset
+
+new
+\begin_inset Quotes erd
+\end_inset
+
+ error term is 
+\begin_inset Formula $u_{i}x_{i}+e_{i}$
+\end_inset
+
+.
+ NOT homoskedastic
+\end_layout
+
+\begin_layout Itemize
+What's the variance of that? Apply the usual rule: 
+\begin_inset Formula 
+\[
+Var[u_{i}x_{i}+e_{i}]=x_{i}^{2}Var(u_{i})+Var(e_{i})+2x_{i}Cov(u_{i},e_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Get rid of the last part by asserting that the 2 random effects are uncorrelated
+, so we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=x_{i}^{2}\sigma_{u}^{2}+\sigma_{e}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Aggregate Data
+\end_layout
+
+\begin_layout BeginFrame
+With Aggregated Data, the Variance is Almost Never Homogeneous.
+\end_layout
+
+\begin_layout Itemize
+Each row in the data set represents a collection of observations (
+\begin_inset Quotes eld
+\end_inset
+
+group averages
+\begin_inset Quotes erd
+\end_inset
+
+ like 
+\begin_inset Quotes eld
+\end_inset
+
+mean education
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+mean salary
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+The averaging process causes heteroskedasticity.
+\end_layout
+
+\begin_layout Itemize
+The mean 
+\begin_inset Formula $\bar{y}=\frac{\sum y_{i}}{N}$
+\end_inset
+
+ and standard deviation 
+\begin_inset Formula $\sigma_{y}^{2}$
+\end_inset
+
+ imply the variance of the mean is 
+\begin_inset Formula 
+\[
+Var(\bar{y})=\frac{Var(y_{i})}{N}=\frac{\sigma_{y}^{2}}{N}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Regression Weights proportional to 
+\begin_inset Formula $\sqrt{N_{group}}$
+\end_inset
+
+ should be used.
+\end_layout
+
+\begin_layout Section
+Testing for heteroskedasticity 
+\end_layout
+
+\begin_layout Subsection
+Categorical Heteroskedasticity
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Adapt tests from Analysis of Variance}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Idea: Estimate the error variances for the subgroups, try to find out if
+ they are different.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bartlett's test: Assuming normality of observations, derives a statistic
+ that is distributed as a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(count ~ spray, data = InsectSprays)
+\end_layout
+
+\begin_layout Plain Layout
+
+bartlett.test(count ~ spray, data = InsectSprays)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Bartlett, M.
+ S.
+ (1937).
+ Properties of sufficiency and statistical tests.
+ 
+\emph on
+Proceedings of the Royal Society of London Series A
+\emph default
+ 160, 268–282.
+ 
+\end_layout
+
+\begin_layout Itemize
+Fligner-Killeen Test : Robust against non-normality (less likely to confuse
+ non-normality for heteroskedasticity)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+fligner.test(count ~ spray, data = InsectSprays)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+William J.
+ Conover, Mark E.
+ Johnson and Myrle M.
+ Johnson (1981).
+ A comparative study of tests for homogeneity of variances, with applications
+ to the outer continental shelf bidding data.
+ 
+\emph on
+Technometrics
+\emph default
+ 23, 351–361.
+ 
+\end_layout
+
+\begin_layout Itemize
+Levene's test
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(car)
+\end_layout
+
+\begin_layout Plain Layout
+
+leveneTest (y~x*z, data=dat) ##x and z must be factors
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Checking for Continuous Heteroskedasticity
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Goldfield Quandt test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+S.M.
+ Goldfeld & R.E.
+ Quandt (1965), Some Tests for Homoskedasticity.
+ 
+\emph on
+Journal of the American Statistical Association
+\emph default
+ 60, 539–547 
+\end_layout
+
+\begin_layout Itemize
+Consider a continuous numeric predictor.
+ Exclude observations 
+\begin_inset Quotes eld
+\end_inset
+
+in the middle
+\begin_inset Quotes erd
+\end_inset
+
+ and then compare observed variances of the left and right.
+ 
+\end_layout
+
+\begin_layout Itemize
+Draw a picture on Board here!
+\end_layout
+
+\begin_layout Itemize
+HOWTO: compare the Error Sum of Squares for 2 chunks of data.
+ 
+\begin_inset Formula 
+\[
+F=\frac{ESS_{2}}{ESS_{1}}=\frac{\mbox{the "lower set" ESS}}{\mbox{the "upper set" ESS}}
+\]
+
+\end_inset
+
+ and the degrees of freedom for both numerator and denominator are 
+\begin_inset Formula $(N-d-4)/2$
+\end_inset
+
+ , where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the number of excluded observations.
+\end_layout
+
+\begin_layout Itemize
+The more observations you exclude, the smaller will be your degrees of freedom,
+ meaning your F value must be larger.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+gqtest(y ~ x, fraction=0.2, order.by=c(z))
+\end_layout
+
+\begin_layout Plain Layout
+
+gqtest(y ~ x, point=0.4, order.by=c(z))
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Example of Goldfield-Quandt Test: Continuous X}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use heteroskedastic model from previous illustration.
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gq09, include=F, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(Nsampsize, m=50, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+e <- rnorm(Nsampsize)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- b0 + b1 * x + mult*(x-minx)*stde*e
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gq10, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mymod <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+gqtest(mymod, fraction=0.2, order.by= ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-gq10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+This excludes 20% of the cases from the middle, and compares the variances
+ of the outer sections.
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+7cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gq11, fig=T, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="Scatter for Goldfield-Quandt Test")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-gq11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Toward a General Test for Heteroskedasticity
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Test for Predictable Squared Residuals}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Versions of this test were proposed in Breusch & Pagan (1979) and White
+ (1980).
+ 
+\end_layout
+
+\begin_layout Itemize
+Basic Idea: If errors are homogeneous, the variance of the residuals should
+ not be predictable with the use of input variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+T.S.
+ Breusch & A.R.
+ Pagan (1979), A Simple Test for Heteroscedasticity and Random Coefficient
+ Variation.
+ 
+\emph on
+Econometrica
+\emph default
+ 47, 1287–1294 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Breusch-Pagan test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Model the squared residuals with the other predictors (
+\begin_inset Formula $Z1_{i},$
+\end_inset
+
+ etc) like this:
+\begin_inset Formula 
+\[
+\frac{\widehat{e_{i}}^{2}}{\widehat{\sigma^{2}}}=\gamma_{o}+\gamma_{1}Z1_{1}+\gamma_{2}Z2_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here, 
+\begin_inset Formula $\widehat{\sigma^{2}}=MSE$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+If the error is homoskedastic/Normal, the coefficients 
+\begin_inset Formula $\gamma_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma_{1}$
+\end_inset
+
+, and 
+\begin_inset Formula $\gamma_{2}$
+\end_inset
+
+ will all equal zero.
+ The input variables 
+\begin_inset Formula $Z$
+\end_inset
+
+ can be the same as the original regression, but may are include squared
+ values of those variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+BP contend that 
+\begin_inset Formula $\frac{1}{2}RSS$
+\end_inset
+
+ (the regression sum of squares) should be distributed as 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ with degrees of freedom equal to the number of Z variables.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm (y ~ x1 + x2 +x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+bptest( mod , studentize=F) ##for the classic bp test
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A Robust Version of the Test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The original form of the BP test assumed Normally distributed errors.
+ Non-normal, but homoskedastic, error, might cause the test to indicate
+ there is heteroskedasticity.
+\end_layout
+
+\begin_layout Itemize
+A 
+\begin_inset Quotes eld
+\end_inset
+
+studentized
+\begin_inset Quotes erd
+\end_inset
+
+ version of the test was proposed by Koenker (1981), that's what lmtest's
+ bptest uses by default.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm (y ~ x1 + x2 +x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+bptest( mod ) ## Koenker's robust version
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{White's Version of the Test}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+White's general test for heteroskedasticity is another view of the same
+ exercise.
+ Run the regression
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\widehat{e_{i}}^{2}=\gamma_{o}+\gamma_{1}Z1_{1}+\gamma_{2}Z2_{i}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $Z$
+\end_inset
+
+'s should include the predictors, their squares, and cross products.
+\end_layout
+
+\begin_layout Itemize
+Under the assumption of homoskedasticity, 
+\begin_inset Formula $N\cdot R^{2}$
+\end_inset
+
+ is asymptotically distributed as 
+\begin_inset Formula $\chi_{p}^{2}$
+\end_inset
+
+, where N is the sample size, 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ is the coefficient of determination from the fitted model, and 
+\begin_inset Formula $p$
+\end_inset
+
+ is the number of 
+\begin_inset Formula $Z$
+\end_inset
+
+ variables used in the regression.
+\end_layout
+
+\begin_layout Itemize
+Algebraically equivalent to robust version of bp test (Waldman, 1983).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Appendix: Robust Variance Estimator Derivation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Where Robust $Var(
+\backslash
+hat{\beta})$ Comes From}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The OLS estimator in matrix form
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X'X)^{-1}X'Y\label{bhat}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ is homoskedastic, the 
+\begin_inset Quotes eld
+\end_inset
+
+true variance
+\begin_inset Quotes erd
+\end_inset
+
+ of the estimates of the 
+\begin_inset Formula $b$
+\end_inset
+
+'s is
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta})=\sigma^{2}\cdot(X'X)^{-1}\label{eq:trueVarb1}
+\end{equation}
+
+\end_inset
+
+ Replace 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, with the Mean Squared Error (MSE).
+ 
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta})}=MSE\cdot(X'X)^{-1}\label{eq:varbhat_homo}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Where OLS Exploits Homoskedastic Assumption}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In the OLS derivation of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:varbhat_homo"
+
+\end_inset
+
+), one arrives at this intermediate step:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+OLS:\, Var(\hat{\beta})=(X'X)^{-1}(X'Var(e)X)(X'X)^{-1}\label{eq:trueVarB2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The OLS derivation exploits homoskedasticity, which appears as 
+\begin_inset Formula 
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma^{2}
+\end{array}\right]\label{eq:Vare_homo}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\sigma^{2}\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]=\sigma^{2}\cdot I
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+OLS\, Var(\hat{\beta})=(X'X)^{-1}(X'\cdot\sigma^{2}\cdot X)(X'X)^{-1}=\sigma^{2}(X'X)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But Heteroskedasticity Implies}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If there's heteroskedasticity, we have to allow the possibility like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Those 
+\begin_inset Quotes eld
+\end_inset
+
+true variances
+\begin_inset Quotes erd
+\end_inset
+
+ are unknown.
+ How can we estimate 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{White's Idea}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The variance of 
+\begin_inset Formula $e_{1}$
+\end_inset
+
+, for example, is never observed, but the best estimate we have for it is
+ the mean square for that one case:
+\begin_inset Formula 
+\[
+\widehat{e_{1}}^{2}=(y_{1}-X_{1}\hat{\beta})(y_{1}-X_{1}\hat{\beta})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Hence, Replace 
+\begin_inset Formula $Var(e)$
+\end_inset
+
+ with a matrix of estimates like this:
+\begin_inset Formula 
+\[
+\widehat{Var(e)}=\left[\begin{array}{ccccc}
+\widehat{e_{1}}^{2}\\
+ & \widehat{e_{2}}^{2}\\
+\\
+ &  &  & \widehat{e_{N-1}}^{2}\\
+ &  &  &  & \widehat{e_{N}}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Heteroskedasticity Consistent Covariance Matrix}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+heteroskedasticity consistent covariance matrix of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ uses 
+\begin_inset Formula $\widehat{Var(e)}$
+\end_inset
+
+ in the formula to calculate estimated variance.
+ 
+\begin_inset Formula 
+\[
+hccm\, Var(\hat{\beta})=(X'X)^{-1}(X'\widehat{Var(e)}X)(X'X)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+White proved that the estimator is consistent, i.e, for large samples, the
+ value converges to the true 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Sometimes called an 
+\begin_inset Quotes eld
+\end_inset
+
+information sandwich
+\begin_inset Quotes erd
+\end_inset
+
+ estimator.
+ The matrix 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+information matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This equation gives us a 
+\begin_inset Quotes eld
+\end_inset
+
+sandwich
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $X'Var(e)X$
+\end_inset
+
+ between two pieces of information matrix.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Heteroskedasticity-WLS-lecture-problems.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

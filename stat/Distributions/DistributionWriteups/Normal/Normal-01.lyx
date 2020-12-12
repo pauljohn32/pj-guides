@@ -1,0 +1,1111 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Normal Distribution
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+The Normal distribution describes a continuous variable that takes on values
+ in the real number line.
+ The formula for the Normal has two 
+\series bold
+parameter
+\series default
+s, 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ The parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+location
+\begin_inset Quotes erd
+\end_inset
+
+ parameter and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+scale
+\begin_inset Quotes erd
+\end_inset
+
+ parameter.
+ The probability density function is often written as
+\begin_inset Formula 
+\[
+p(x)=\frac{1}{\sqrt{2\pi\sigma^{2}}}\, e^{-\left(\frac{(x-\mu)^{2}}{2\sigma^{2}}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I think it looks a little nicer if rearranged.
+\begin_inset Formula 
+\[
+p(x)=\frac{1}{\sqrt{2\pi}\sigma}\, e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you want to make sense out of that, it is vital for you to have a mental
+ image of the function 
+\begin_inset Formula $e^{-z^{2}}$
+\end_inset
+
+ on the interval between 0 and 5:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+asequence<- seq(from=0,to=5,by=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+expnegx2 <- exp(-asequence^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(asequence, expnegx2, type = "l", ylab = expression(exp(-z^2)), xlab
+ = "z")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note well that 
+\begin_inset Quotes eld
+\end_inset
+
+all of the action
+\begin_inset Quotes erd
+\end_inset
+
+ in the Normal probability formula is in the 
+\begin_inset Formula $e^{-z^{2}}$
+\end_inset
+
+ part, not in the 
+\begin_inset Quotes eld
+\end_inset
+
+normalizing constant
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\frac{1}{\sqrt{2\pi\sigma^{2}}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In maximum likelihood, we usually end up trying to maximize the log of the
+ likelihood function, and when the Normal is logged, then it simplifies
+ quite dramatically:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+ln(p(x)) & = & ln\left[\frac{1}{\sqrt{2\pi\sigma^{2}}}\right]+ln\left[e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}}\right]\\
+ & = & \left[ln(1)-ln(\sqrt{2\pi\sigma^{2}})\right]-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}\\
+ &  & 0-ln((2\pi\sigma^{2})^{1/2})-\frac{2}{2\sigma^{2}}(x-\mu)^{2}\\
+ & = & -\frac{1}{2}ln(2\pi\sigma^{2})-\frac{1}{2\sigma^{2}}(x-\mu)^{2}\\
+ &  & -\frac{1}{2}ln(2)-\frac{1}{2}ln(\pi)-ln(\sigma)-\frac{1}{2\sigma^{2}}(x-\mu)^{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Illustrations
+\end_layout
+
+\begin_layout Standard
+The probability density function of a Normal distribution with 
+\begin_inset Formula $\mu=3$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma=5$
+\end_inset
+
+ is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Normal-Distribution"
+
+\end_inset
+
+.
+ The R code which produces that figure is:
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Normal1,echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mu <- 3
+\end_layout
+
+\begin_layout Plain Layout
+
+sigma <- 5
+\end_layout
+
+\begin_layout Plain Layout
+
+xrange <- seq(from = mu-3*sigma, to = mu+3*sigma, by = 0.2)
+\end_layout
+
+\begin_layout Plain Layout
+
+mainlabel <- expression(paste("Normal Distribution, N(",mu,",",sigma,"^2",")",
+ sep=""))
+\end_layout
+
+\begin_layout Plain Layout
+
+xprob <- dnorm(xrange, mean = mu, sd = sigma, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(xrange, xprob, type = "l", main = mainlabel, xlab = "possible values
+ of x", ylab = "probability of x")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How would one describe that?  Well, off the top of my head, I'd say the
+ most outstanding characteristics are that it is:
+\end_layout
+
+\begin_layout Enumerate
+Unimodal
+\end_layout
+
+\begin_layout Enumerate
+Symmetric
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Normal Distribution
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Normal-Distribution"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Normal1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How does this distribution change in appearance if 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ are changed? Let's do some experimentation.
+ The following R code creates an array of figures with 4 rows and 2 columns
+ with various values of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Normal2,echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(4,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:4){
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (j in 1:2) {
+\end_layout
+
+\begin_layout Plain Layout
+
+       mu <- 3*j
+\end_layout
+
+\begin_layout Plain Layout
+
+       sigma <- 2*i
+\end_layout
+
+\begin_layout Plain Layout
+
+       xrange <- seq(from=mu-3*sigma,to=mu+3*sigma,by=0.2)
+\end_layout
+
+\begin_layout Plain Layout
+
+       mainlabel <- paste("N(",mu,",",sigma*sigma,",)",sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+       xprob <- dnorm(xrange, mean=mu, sd=sigma, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+       plot(xrange, xprob, type="l", main=mainlabel, xlab="possible values
+ of x", ylab="probability of x")
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Variety-of-Normals"
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Variety of Normals
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Variety-of-Normals"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=9>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Normal2>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+While Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Variety-of-Normals"
+
+\end_inset
+
+ is quite boring and repetitious, it does convey one very important attribute
+ of the Normal distribution: 
+\series bold
+it always keeps the same shape
+\series default
+.
+ At least for these parameter values, it is unimodal and symmetric.
+ These graphs look the same because the X axis is allowed to re-scale itself
+ to use up the allocated space.
+ 
+\end_layout
+
+\begin_layout Standard
+If we restrict the display so that the axes of all of the figures are kept
+ the same--in a position that suits the largest set of values--then the
+ impact of changing the parameters is a bit more apparent.
+ The code only needs to be modified very slightly by a specification of
+ the xlim option in the plot statement.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Normal3,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(4,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i in 1:4){
+\end_layout
+
+\begin_layout Plain Layout
+
+   for ( j in 1:2) {
+\end_layout
+
+\begin_layout Plain Layout
+
+       mu <- 3*j
+\end_layout
+
+\begin_layout Plain Layout
+
+       sigma <- 2*i
+\end_layout
+
+\begin_layout Plain Layout
+
+       xrange <- seq(from = mu-3*sigma, to = mu+3*sigma, by = 0.2)
+\end_layout
+
+\begin_layout Plain Layout
+
+       mainlabel <- paste("N(",mu,",",sigma*sigma,",)", sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+       xprob <- dnorm(xrange, mean = mu, sd = sigma, log = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+       plot(xrange, xprob, type = "l", main = mainlabel, xlab = "possible
+ values of x", ylab = "probability of x", xlim = c(-20,30))
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The result is to be seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Normals-(again)"
+
+\end_inset
+
+.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Normals (again)
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Normals-(again)"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T,echo=F,height=9>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Normal3>>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+What about the parameters 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+As already mentioned, the parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ indicates the 
+\begin_inset Quotes eld
+\end_inset
+
+location
+\begin_inset Quotes erd
+\end_inset
+
+, the left-right position of the distribution.
+ The parameter 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+scale
+\begin_inset Quotes erd
+\end_inset
+
+ parameter, determining how far it reaches from left to right.
+ 
+\end_layout
+
+\begin_layout Standard
+Most students are already aware of the fact that 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ actually play a more familiar role.
+ In fact, many students tell me that the mean of anything is represented
+ by a parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+and standard deviation is 
+\begin_inset Formula $\sigma.$
+\end_inset
+
+ But it is not always so.
+\end_layout
+
+\begin_layout Standard
+Now, in case you are not one of those students, here's some background.
+ The 
+\series bold
+expected value
+\series default
+ of a distribution is defined as the 
+\begin_inset Quotes eld
+\end_inset
+
+probability weighted sum
+\begin_inset Quotes erd
+\end_inset
+
+ of outcomes.
+ For 
+\begin_inset Formula $x\sim N(\mu,\sigma^{2})$
+\end_inset
+
+ , 
+\begin_inset Formula 
+\[
+E(x)=\int_{-\infty}^{+\infty}p(x)\cdot x\, dx
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and, through the magic of mathematics, it turns out that
+\begin_inset Formula 
+\[
+E(x)=\mu
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How do you find that? Well, honestly, I think most of us just look up the
+ answer in a book! If you really want to calculate it, get a book on mathematica
+l statistics and find out how to use a 
+\begin_inset Quotes eld
+\end_inset
+
+moment generating function
+\begin_inset Quotes erd
+\end_inset
+
+ to calculate the expected values of distributions.
+\end_layout
+
+\begin_layout Standard
+The 
+\series bold
+variance
+\series default
+ of a distribution is the 
+\begin_inset Quotes eld
+\end_inset
+
+probability weighted sum
+\begin_inset Quotes erd
+\end_inset
+
+ of the squared differences between outcomes and their expected values.
+\begin_inset Formula 
+\[
+Var(x)=\int_{-\infty}^{+\infty}p(x)\cdot\left[x-E(x)\right]^{2}\, dx
+\]
+
+\end_inset
+
+which can be rearranged as
+\begin_inset Formula 
+\[
+Var(x)=\int_{-\infty}^{+\infty}p(x)\cdot x^{2}\, dx-E(x)^{2}=E(x^{2})-E(x)^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Repeat out loud: 
+\begin_inset Quotes eld
+\end_inset
+
+The Variance of x equals the Expected value of 
+\begin_inset Formula $x$
+\end_inset
+
+ squared minus the Expected value of 
+\begin_inset Formula $x$
+\end_inset
+
+, squared.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again through the magic of mathematics, one would find
+\begin_inset Formula 
+\[
+Var(x)=\sigma^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I think my point here is that it is a completely fortuitous thing that the
+ parameters 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ are simply equal to the expected value and variance (respectively).
+ This is quite rare in the gamut of statistical distributions.
+ The expected value and variance are almost always equal to some more complicate
+d formulae which combine the parameters.
+\end_layout
+
+\end_body
+\end_document

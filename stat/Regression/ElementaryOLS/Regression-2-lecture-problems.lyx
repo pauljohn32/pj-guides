@@ -1,0 +1,1006 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{Sweavel}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\master Regression-2-lecture.lyx
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch notrun
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.85}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Practice Problems
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Problems}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Run any regression and print out a summary of the estimates.
+ Circle and label the following elements in the output:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+point estimate of the intercept
+\end_layout
+
+\begin_layout Enumerate
+point estimate of the slope
+\end_layout
+
+\begin_layout Enumerate
+estimate of the standard deviation of the estimated intercept
+\end_layout
+
+\begin_layout Enumerate
+estimate of the standard deviation of the estimated slope
+\end_layout
+
+\begin_layout Enumerate
+estimate of the standard deviation of the error term
+\end_layout
+
+\begin_layout Enumerate
+estimate of the coefficient of determination
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+If you can't find any data to experiment with, I suggest one of these (in
+ R's base distribution):
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prob1, eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(datasets)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(help=datasets)
+\end_layout
+
+\begin_layout Plain Layout
+
+?Orange
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm( circumference ~ age, data = Orange)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+?cars
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(dist ~ speed, data=cars) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+Write down the formula for the slope estimate, 
+\begin_inset Formula $\hat{b}_{1}$
+\end_inset
+
+.
+ Suppose your assignment is to make sure that value is as large as possible.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Would you rather have the variable 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ scattered far-and-wide across the horizontal axis?
+\end_layout
+
+\begin_layout Enumerate
+If you could get all of your 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ observations at a single value, wouldn't that help you pinpoint the predicted
+ value of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, and hence make for a better slope estimate?
+\end_layout
+
+\begin_layout Enumerate
+Would you rather that the true variance of the error is really small, or
+ really big?
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Did you ever want to make up your own data? Here's the chance.
+ I want you to see the effect of changes in the standard deviation of the
+ error term.
+ Run this:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prob3a, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+stde <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x=rpois(500, lambda=200))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y <- 3 + 0.08 * dat$x + stde * rnorm(500)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x, data=dat); summary(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x, data=dat); abline(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want to see what happens as stde is made larger, so re-set that to 2,
+ and create 
+\begin_inset Formula $y2$
+\end_inset
+
+ from it, and run again:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<prob3b, echo=T, eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+stde <- 2
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y2 <- 3 + 0.08 * dat$x + stde * rnorm(500)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y2 ~ x, data=dat); summary(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y2 ~ x, data=dat); abline(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hopefully 2 examples are enough to give you the idea.
+ Adjust stde again, create y3, run m3, and compare.
+\end_layout
+
+\begin_layout Standard
+Here are the questions:
+\end_layout
+
+\begin_layout Enumerate
+What changes in the regression estimates result from tuning up stde?
+\end_layout
+
+\begin_layout Enumerate
+What parameter estimate in the output is supposed to represent the variable
+ 
+\begin_inset Quotes eld
+\end_inset
+
+stde
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Enumerate
+How well does the OLS procedure do at estimating stde?
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Here's a scatterplot that I found.
+ When I fit the regression line, I can't understand the estimates.
+ The numbers seem to say there is no relationship, but it is plain to the
+ eye that there is! How would you explain it? I think you are more likely
+ to get full credit if you sketch the OLS fitted line on the scatter.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<scat1, fig=T,echo=F,height=3,include=F,width=3>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(200,m=30,s=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+sigma <- 5
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- -3 + 30*x -0.5*x*x + sigma*rnorm(200)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, y, main="", xlab="x", ylab="y")
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+#abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<regmod1, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box position
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align left
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=5cm]{plots/t-scat1}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align left
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-regmod1}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Here is a fitted OLS regression model with standard errors in parentheses
+\begin_inset Formula 
+\begin{eqnarray}
+\widehat{autism_{i}} & = & 8.0+6.3\cdot iron_{i}\\
+ &  & (1.0)\,\,\,\,\,\,\,\,\,(2.1)
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The RMSE (or 
+\begin_inset Quotes eld
+\end_inset
+
+sigma
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+residual standard error
+\begin_inset Quotes erd
+\end_inset
+
+ is 10.0), the 
+\begin_inset Formula $R^{2}=0.32$
+\end_inset
+
+, and the sample size is 1000.
+ The 
+\begin_inset Formula $autism_{i}$
+\end_inset
+
+ score represents a child's placement on the 100 point autism spectrum disorder
+ scale and 
+\begin_inset Formula $iron_{i}$
+\end_inset
+
+ is the number of iron molecules per billion in the child's blood.
+ If the 
+\begin_inset Formula $autism_{i}$
+\end_inset
+
+ score is greater than 20, the child is deemed to be in the 
+\begin_inset Quotes eld
+\end_inset
+
+moderate autism
+\begin_inset Quotes erd
+\end_inset
+
+ range, and if it is greater than 50, the child is deemed to be in the 
+\begin_inset Quotes eld
+\end_inset
+
+severe autism
+\begin_inset Quotes erd
+\end_inset
+
+ range.
+ The 
+\begin_inset Formula $iron_{i}$
+\end_inset
+
+ variable ranges from 1 to 6 in this sample (so the lowest observed score
+ represents 1 part per billion).
+ 
+\end_layout
+
+\begin_layout Enumerate
+What do the results allow us to conclude about the impact of exposure to
+ iron on the rate of autism? I mean 
+\begin_inset Quotes eld
+\end_inset
+
+interpret the slope and intercept.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Conduct a 
+\begin_inset Quotes eld
+\end_inset
+
+null hypothesis test
+\begin_inset Quotes erd
+\end_inset
+
+ for the estimated slope.
+ That means go through the 
+\begin_inset Quotes eld
+\end_inset
+
+four steps
+\begin_inset Quotes erd
+\end_inset
+
+ outlined previously in this lecture.
+\end_layout
+
+\begin_layout Enumerate
+Construct a 
+\begin_inset Quotes eld
+\end_inset
+
+confidence interval
+\begin_inset Quotes erd
+\end_inset
+
+ for the estimate of the slope and write a brief discussion of what the
+ results indicate to you.
+\end_layout
+
+\begin_layout Enumerate
+Create a plot representing the predicted score on the autism scale for iron
+ exposure rates from 1 to 10.
+ 
+\end_layout
+
+\begin_layout Enumerate
+What meaning does the estimated intercept have in this case? Where does
+ it appear in the plot you created?
+\end_layout
+
+\begin_layout Enumerate
+You don't have all of the information you need to construct the 
+\begin_inset Quotes eld
+\end_inset
+
+hour glass
+\begin_inset Quotes erd
+\end_inset
+
+ shaped confidence and prediction intervals for that plot.
+ But, if I told you the mean of iron exposure is 3, then you can sketch
+ the general shape of those intervals.
+ So draw them in and label them (its vital to know which one is outside
+ the other).
+\end_layout
+
+\begin_layout Enumerate
+Refer to your sketch of the confidence interval.
+ Suppose one family lives in a house with lead paint equal to 3, while another
+ has a score of 6.
+ For which family are we most confident about our estimate 
+\begin_inset Formula $\widehat{autism}_{i}$
+\end_inset
+
+ ? Explain.
+\end_layout
+
+\begin_layout Enumerate
+Suppose we measured iron value for another family at 
+\begin_inset Formula $10.0$
+\end_inset
+
+.
+ What would the linear model lead us to predict about their prospects for
+ autism (moderate or severe)? Note there are 2 problems here.
+ One is that the value of 
+\begin_inset Formula $iron_{i}$
+\end_inset
+
+ is far from the mean.
+ Another is that our observations range from 0 to 6, and so in a sense 10
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+out of the range
+\begin_inset Quotes erd
+\end_inset
+
+ of our experience.
+ .
+\end_layout
+
+\begin_layout Enumerate
+Suppose you just found out that your research assistant does not understand
+ numbers.
+ He uses the word 
+\begin_inset Quotes eld
+\end_inset
+
+billion
+\begin_inset Quotes erd
+\end_inset
+
+ when he really means 
+\begin_inset Quotes eld
+\end_inset
+
+million
+\begin_inset Quotes erd
+\end_inset
+
+.
+ What changes will you need to make in your handling of this data and the
+ result?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,625 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Revision History --
+%  2011-02-08 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+%=============================================================================
+% 
+
+
+
+\title[CLT I] % (short title, use only with long paper titles)
+{Central Limit Theorem}
+
+\subtitle{The Deepest Thought Ever Thunk}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2011] % (optional, should be abbreviation of conference name)
+{2011}
+
+\subject{CLT}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\input{figs/t-Roptions}
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+ 
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+%____________________________________
+%\begin{frame}
+%  \frametitle{You Want to Write R Data To Excel?}
+%  \begin{itemize}
+%    \item That seems like a dubious mission
+%    \item Google reports several proposed packages for Writing to Excel
+%  \end{itemize}
+%\end{frame}
+%
+%____________________________________
+
+\section{The Difference Between A Sample and The Truth}
+
+
+\begin{frame}
+  \frametitle{Do you remember your friend, the Normal Distribution?}
+  \begin{columns}%{}
+    
+    \column{8cm}
+    
+    \includegraphics[width=8cm]{importfigs/Normal-2009}
+
+    \column{4cm}
+    
+    \begin{itemize}
+    \item Single Peaked
+    \item Symmetric
+    \item $E[x]=\mu$
+    \item $Var[x]=\sigma^{2}$
+    \item $SD[x]=\sigma$
+    \end{itemize}
+\end{columns}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw one Normal Sample from $N(5.353, 4.55^{2})$ }
+
+\includegraphics{figs/t-simple10}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Theoretical PDF Is This:}
+
+\includegraphics{figs/t-simple20}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{But the Observed Density Differs}
+
+\includegraphics{figs/t-simple30}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{But the Observed Density Differs}
+
+\includegraphics{figs/t-simple40}
+\end{frame}
+
+\section{Sampling Distribution}
+
+\begin{frame}
+  \frametitle{The Basic Idea}
+  \begin{itemize}
+    \item Draw a lot of samples
+      \begin{itemize}
+      \item Collect M samples of size N
+      \item Calculate the mean for each sample
+      \end{itemize}
+  \item What distribution will be observed among all of those means?
+  \item Do you expect the distribution of means will be different
+    from the distribution of x itself?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Important Term: Sampling Distribution}
+  \begin{itemize}
+  \item Definition: Sampling Distribution is the PDF of the ``true'' distribution for an  estimator like $\bar{x}$
+  \item Drawing 500, or 5000,  or 100,000 samples, and then creating a histogram
+    of the estimates, approximates the sampling distribution.
+  \item This histogram (or observed density) will not be exactly the
+    same as the sampling distribution, but it might get very close!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{General Claims about the Sampling Distribution of $\bar{x}$}
+  This is the first set of facts I need to establish
+  \begin{itemize}
+  \item If $E[x] = \mu$, then $E[\bar{x}]=\mu$
+  \item If $Var[x] = \sigma^{2}$, then $Var[\bar{x}]=\frac{Var[x]}{N}$
+  \item Which implies $SD[\bar{x}]=\frac{SD[x]}{\sqrt(N)}$ 
+  \end{itemize}   
+\end{frame}
+
+\begin{frame}
+  \frametitle{In Other Words...}
+  
+  The distribution of $\bar{x}$ 
+  \begin{itemize}
+  \item Is Centered on the same spot as $x_{i}$
+  \item But $\bar{x}$ is clusterd much  more ``tightly'
+    than the distribution of $x_i$ itself.
+  \end{itemize}
+  
+  That's impossibly easy to see
+  
+  \begin{itemize}
+  \item Algebraically. 
+  \item By simulation.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Let's define terms.}
+
+The mean of a sample ${x_1, x_2, x_3, \ldots,x_N}$ is:
+
+\begin{equation}
+\bar{x}=\frac{1}{N} \sum_{i}^{N} x_{i}\label{eq:-2}
+\end{equation}
+
+If we have data on the frequency of each possible score $x_{j}$, calculate proportions
+
+\begin{equation}
+  Prop.(x_{j})=\frac{Frequency(x=x_{j})}{N} 
+ \end{equation}
+
+\begin{equation}
+Mean(x_{i})=\bar{x} = \sum_{j=1}^{m} Prop(x_{j})x_{j}\label{eq:-3}\end{equation}
+
+where $Prop(x_{j})$ is the proportion of observations that
+have value $x_{j}$. (sums across possible values of $x_j$, rather than
+summing across all individuals observed). 
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Expected Value of x, $E[x]$}
+ 
+  \begin{itemize}
+  \item EV=Another term for the {}``population mean'' or ``true mean''
+  \item  Recall, population=the random process that generates $x_{i}$.
+  \item discrete distribution makes it easiest to compare formulae for
+    $\bar{x}$ and $E[x]$
+    \begin{itemize}
+    \item  $f$ is a {}``probability mass function''
+      \begin{equation}
+        Expected\, Value(x)=E[x]=\sum f(x_{j})x_{j}\label{eq:-4}\end{equation}
+    \item    Similar to sample mean formula, except replace the {}``observed
+      proportion'' ($Prop(x_{j})$) with the {}``theoretical probability'' $f(x_{j})$. 
+    \end{itemize}
+  \item Similar for a continuous distribution with pdf $f(x)$ 
+    \begin{equation}     
+      E[x] = \int_{-\infty}^{+\infty}f(x)\, x\, dx.
+    \end{equation}     
+    
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{One Little Tricky Bit Needs explaining First}
+  \begin{itemize}
+  \item Think of a ``variable'' as one single observation from a distribution
+    \begin{equation}
+      x_i
+    \end{equation}
+  \item We were comfortable discussing a variable $x$ as a collection
+    of observations. 
+  \item We said $x$ is normally distributed, usually thinking of a collection
+  \item Now think of $x_1$, $x_2$ and so forth as separate variates
+    from the same distribution. 
+    \item Appeal to Intuition. $E[x] = E[x_1] = E[x_2]= \ldots E[x_N]$
+    \item To me, that was the only really surprising idea in all of this.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Calculate the Expected Value of $\bar{x}$}
+  \begin{eqnarray*}
+    E[\bar{x}] = & E\left[\frac{x_1+x_2 +x_3+\ldots +x_N}{N}\right]\\
+    & = \frac{1}{N} \left\{E[x_1]+E[x_2]+E[x_3]+\ldots + E[x_N] \right\}\\
+    & = \frac{1}{N} \left\{N \cdot E[x] \right\} \\
+    & = E[x]
+  \end{eqnarray*}
+
+   Conclusion: The expected value of the mean is the same as the
+   expected value of one draw from a given distribution.
+   
+   Implication: $\bar{x}$ is an \textbf{unbiased estimator} of $E[x]$
+\end{frame} 
+
+
+
+
+\begin{frame}
+  \frametitle{Variance}
+\begin{itemize}
+  \item  Recall Variance in a sample is the average of squared errors
+    (aka ``mean square error'')
+
+    \begin{equation}
+Variance(x_{i})=\frac{1}{N}\sum(x_{i}-\bar{x})^{2}\label{eq:-6}\end{equation}
+
+ \item Maybe you divide by $N-1$ in order to make this a 'consistent' estimator.
+Not a huge issue at this point.
+ 
+ \item With frequency data:
+
+\begin{equation}
+Variance(x_{i})=\sum Prop.(x_{j})(x_{j}-\bar{x})^{2}\label{eq:-7}\end{equation}
+
+where $Prop(x_{j})$ is the proportion of observations that
+have value $x_{j}$. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Population Variance, same as Theoretical Variance}
+ 
+ The {}``population variance'' of the random process that generates
+ $x_{i}$. 
+
+ For discrete variable, use the PMF in place of $Prop.(x)$:
+
+\begin{equation}
+Theoretical\, Variance(x_{i})=\sum f(x_{i})(x_{i}-\bar{x})^{2}\label{eq:-1}\end{equation}
+ 
+ For a continuous variable $f$, use the PDF instead of proportions:
+
+\begin{equation}
+Theoretical\, Variance(x_{i})=\int f(x_{i})(x_{i}-\bar{x})^{2}dx_{i}\label{eq:}\end{equation}
+
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Recall the Variance of A Sum}
+
+The variance of a sum of two variables $x1$ and $x2$ can be found:
+
+\begin{equation}
+Var[x1+x2] = Var[x1]+ Var[x2] + 2Cov[x1,x2]\label{eq:VarianceX1X2}\end{equation}
+
+And
+
+\begin{equation}
+Var[ax1+bx2]=a^{2} Var[x1]+b^{2} Var[x2] + 2abCov[x1,x2]\label{eq:VarianceOfSum}\end{equation}
+
+Here $a$ and $b$ are constants. 
+
+We want a simple result, so we often assume the $Cov[x1,x2]=0$
+on the grounds that the observations are {}``statistically independent.''
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Calculate the Variance of the Mean}
+
+What is the variance of the mean itself?
+
+\begin{equation}
+Var[\bar{x}]=Var[\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N}]\label{eq:VarOfMean1}\end{equation}
+
+
+Invoking the ``statistical independence'' principle to eliminate
+the Covariance terms, we apply the ``Variance of a sum'' rule
+
+\begin{eqnarray}
+Var(\frac{1}{N}x_{1}+\frac{1}{N}x_{2}+\ldots+\frac{1}{N}x_{N})= \\
+  \frac{1}{N^{2}}Var(x_{1})+\frac{1}{N^{2}}Var(x_{2})+\ldots+\frac{1}{N^{2}}Var(x_{N})\label{eq:VarOfMean2}\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{}
+  
+
+If all the observations were drawn from the same random process--the
+same population--then they all have the same variance, which is just
+$Var(x_{i})$. So the previous instantly reduces to this:
+
+\begin{equation}
+Var(\bar{x})=\frac{1}{N^{2}}\frac{NVar(x_{i})}{1}\label{eq:-8}\end{equation}
+
+
+\begin{equation}
+=\frac{1}{N}Var(x_{i})\label{eq:varN}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{}
+
+In words, the variance of the mean of $x_{i}$ is the variance of
+$x_{i}$ divided by $N$, the sample size upon which the mean is
+calculated. 
+
+
+That must mean the standard deviation of the means is
+
+\[
+Standard\, Deviation(\bar{x})=\frac{Standard\,
+  Deviation(x_{i})}{\sqrt{N}}\]
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Distribution of the Mean is ``Spike-ish''}
+
+Please observe the illustration of the effect of sample size on the
+variance of $\bar{x}$.
+
+\end{frame}
+
+
+\input{figs/t-p10}
+
+\begin{frame}
+
+\frametitle{Distribution of $x \sim Normal(0, 3^{2})$}
+
+\includegraphics{figs/t-normal1}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+ \frametitle{Distribution of Mean, Sample=100 ($Normal(0,3^{2}/100)$)}
+\includegraphics{figs/t-normal2}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{Distribution of Mean, Sample=2000 ($Normal(0,3^{2}/2000)$)}
+\includegraphics{figs/t-normal3}
+\end{frame}
+
+
+\section{Asymptotic Properties}
+
+\begin{frame}
+  \frametitle{Terms}
+  \begin{itemize}
+  \item Asymptotic: related to very large (tending to infinite)
+    sample sizes
+  \item Consistency: an estimator (formula's result) 'tends to' the
+    correct value as sample size tends to infinity
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+ \frametitle{Law of Large Numbers}
+
+As the Sample Size Increases, $\bar{x}$ tends to the Expected Value
+(The True Mean)
+
+This is the {}``law of large numbers''. 
+
+\end{frame}
+
+\section{The Central Limit Theorem}
+
+\begin{frame}
+  \frametitle{The Basic Idea of the CLT}
+  \begin{itemize}
+    \item For ANY DISTRIBUTION (not just the normal) of $x$, the
+      distribution of $\bar{x}$ approaches a normal distribution
+      as the size of the sample upon which $\bar{x}$ is calculated
+      tends to infinity.
+    \item This one is difficult to prove algebraically, but it is
+      quite easy to demonstrate with simulation
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Take, for example, the Poisson Distribution}
+
+\includegraphics{figs/t-p30}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=10 }
+ \includegraphics{figs/t-pois10}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=100 }
+ \includegraphics{figs/t-pois20}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=2000 }
+
+ \includegraphics{figs/t-pois30}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=10000 }
+ \includegraphics{figs/t-pois40}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Means of 1000 Poisson Samples, Sample Size 10\label{fig:PoissonMeans}.}
+
+ \includegraphics{figs/t-pois81}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poissons, Sample Size=100}
+ \includegraphics{figs/t-pois82}
+ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poisson samples, Sample Size=2000}
+
+ \includegraphics{figs/t-pois83}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Poisson samples, Sample Size=10000}
+
+ \includegraphics{figs/t-pois84}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Same thing, bigger picture (N=10000)}
+
+ \includegraphics{figs/t-pois85}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Consider the Uniform Distribution}
+
+\includegraphics{figs/t-U10}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=30}
+
+ \includegraphics{figs/t-u21}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=500}
+
+ \includegraphics{figs/t-u22}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=2000}
+
+ \includegraphics{figs/t-u23}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{OK, Challenge Me With Your Beta(0.9,0.9)}
+
+\includegraphics{figs/t-b10}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Beta Samples, Sample Size=2000}
+
+\includegraphics{figs/t-b23}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{My Mantra}
+
+From whatever distribution you pick, the Central Limit Theorem (CLT)
+says the {}``Sampling Distribution of the Mean is Normal''. 
+
+\end{frame}
+% 
+% ==========================================================
+\end{document}

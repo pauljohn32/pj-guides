@@ -1,0 +1,21 @@
+\begin{Schunk}
+\begin{Sinput}
+ knot <- c(1.8, 4.2, 8.0)
+ thedf <- data.frame(x=x, y=y)
+ thedf <- thedf[order(thedf$x),]
+ #handy function to create "plus variables"
+ createplusvar <- function(input,k) { it <- ifelse(input > k, input-k, 0)}
+ thedf$xp1 <- createplusvar(thedf$x, knot[1])
+ thedf$xp2 <- createplusvar(thedf$x, knot[2])
+ thedf$xp3 <- createplusvar(thedf$x, knot[3])
+ mymod0 <- lm (y ~ x + xp1 + xp2 + xp3, data = thedf)
+ newx <- seq(round(min(x),1), round(max(x)+0.5,1),by=0.1)
+ newdf <- data.frame(x = newx, xp1 = createplusvar(newx, knot[1]),  xp2 = createplusvar(newx,knot[2]), xp3 = createplusvar(newx,knot[3]))
+ newdf$pred <- predict(mymod0, newdata = newdf)
+ mytitle <- paste ("Manual Regression spline knots", knot[1], knot[2], knot[3])
+ plot(thedf$x, thedf$y, main = mytitle, type = "n")
+ points(thedf$x, thedf$y, pch = 16, cex = 0.5)
+ lines(newdf$x, newdf$pred)
+ rm(thedf, mymod0, newdf)
+\end{Sinput}
+\end{Schunk}

@@ -1,0 +1,5689 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+
+\mode<presentation>
+
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par(no.readonly=T) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 5.1, 2.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Confidence Intervals
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2014
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What is this Presentation?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Terminology review
+\end_layout
+
+\begin_layout Itemize
+The Idea of a CI
+\end_layout
+
+\begin_layout Itemize
+Proportions
+\end_layout
+
+\begin_layout Itemize
+Means
+\end_layout
+
+\begin_layout Itemize
+Etc
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What do you really need to learn?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The big idea: we make estimates, try to summarize our uncertainty about
+ them.
+ 
+\end_layout
+
+\begin_layout Itemize
+The Conf Interval idea presumes we can 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+imagine a sampling distribution
+\end_layout
+
+\begin_layout Itemize
+find a way, using only one sample, get estimate of how uncertain we are
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+This can be tricky in some cases, but we try to understand the important
+ cases clearly (and hope we can read a manual when we come to unusual ones)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Recall Terminology:
+\end_layout
+
+\begin_layout Description
+Parameter:
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $\theta$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+parameter
+\begin_inset Quotes erd
+\end_inset
+
+, a 
+\begin_inset Quotes eld
+\end_inset
+
+true value
+\begin_inset Quotes erd
+\end_inset
+
+ that governs a 
+\begin_inset Quotes eld
+\end_inset
+
+data generating process.
+\begin_inset Quotes erd
+\end_inset
+
+ It is the characteristic of the thing from which we draw observations,
+ which in statistics is often called 
+\begin_inset Quotes eld
+\end_inset
+
+the population
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Because that is confusing/value laden, I avoid 
+\begin_inset Quotes eld
+\end_inset
+
+population
+\begin_inset Quotes erd
+\end_inset
+
+ terminology.
+\end_layout
+
+\begin_layout Description
+Parameter
+\begin_inset space ~
+\end_inset
+
+Estimate:
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is a number that gets calculated from sample data.
+ Hopefully, it is 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+consistent (reminder from last lecture).
+\end_layout
+
+\end_deeper
+\begin_layout Description
+Sampling
+\begin_inset space ~
+\end_inset
+
+Distribution: the assumed probability model for 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+.
+ If a particular theory about 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is correct, what would be the PDF of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A Sampling Distributions is characterized by an Expected Value and Variance
+ (as are all random variables).
+\end_layout
+
+\end_deeper
+\begin_layout Description
+Standard
+\begin_inset space ~
+\end_inset
+
+Error: From one sample, estimate the standard deviation of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ (How much 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ would vary if we collected a lot of estimates).
+ Recall the silly notation, 
+\begin_inset Formula $\sqrt{\widehat{Var(\hat{\theta})}}$
+\end_inset
+
+, The estimate of the uncertainty of an estimate.
+\end_layout
+
+\begin_layout BeginFrame
+Today's Focus: Confidence Interval
+\end_layout
+
+\begin_layout Itemize
+General
+\begin_inset space ~
+\end_inset
+
+idea: We know that estimates from samples are not exactly equal to the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ parameters we want to estimate
+\end_layout
+
+\begin_layout Itemize
+Ever watch CNN report that 
+\begin_inset Quotes eld
+\end_inset
+
+41% of Americans favor XYZ, plus-or-minus 3%
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Sampling Dist.
+\end_layout
+
+\begin_layout Standard
+Suppose you know that the Sampling Dist is like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset External
+	template XFig
+	filename importfigs/samplingDist.fig
+	width 12cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This was selected from the elaborate collection of ugly distributions, a
+ freely available library that I can share to you any time you like :).
+\end_layout
+
+\begin_layout Section
+Confidence
+\end_layout
+
+\begin_layout BeginFrame
+Define Confidence Interval
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is a estimate from a sample, a value that would fluctuate from sample-to-sample
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Confidence Interval
+\series default
+: From one estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+, construct a range 
+\begin_inset Formula $[\hat{\theta}_{low},\hat{\theta}_{high}]$
+\end_inset
+
+ that we think is likely to contain the truth.
+\end_layout
+
+\begin_layout Itemize
+We decide 
+\begin_inset Quotes eld
+\end_inset
+
+how likely
+\begin_inset Quotes erd
+\end_inset
+
+ it must be that the truth is in there, then we construct the CI.
+ Common to use 95%.
+\end_layout
+
+\begin_layout Itemize
+A 95% Confidence Interval would have 2 meanings
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+1.
+ Repeated Sampling: 95% of sample estimates would fall into 
+\begin_inset Formula $[\hat{\theta}_{low},\,\hat{\theta}_{high}]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+2.
+ Degree of Belief: The probability is 0.95 that 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is in 
+\begin_inset Formula $[\hat{\theta}_{low},\hat{\,\theta}_{high}]$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+CI: The First Interpretation: Repeated Sampling
+\end_layout
+
+\begin_layout Itemize
+If you knew the sampling distribution, you could get a math genius to figure
+ out the range.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(\widehat{\theta_{low}}<\widehat{\theta}<\widehat{\theta_{high}})\label{eq:-7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This pre-supposes you know the 
+\begin_inset Quotes eld
+\end_inset
+
+true 
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and the PDF of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+.
+ (And that you know a math genius.)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+One custom is to pick the low and high edges so that
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(\widehat{\theta_{low}}<\widehat{\theta}<\widehat{\theta_{high}})=0.95\label{eq:-8}
+\end{equation}
+
+\end_inset
+
+If we repeated this experiment over and over, then the probability that
+ the estimate will be between 
+\begin_inset Formula $\widehat{\theta_{low}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\widehat{\theta_{high}}$
+\end_inset
+
+ is 0.95.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Repeat: There is a 95% chance that a random sample estimate will lie between
+ the two edges.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+p-value
+\begin_inset Quotes erd
+\end_inset
+
+ in statistics is the part that is outside of that range.
+ Here, 
+\begin_inset Formula $p=0.05$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+p-value
+\begin_inset Quotes erd
+\end_inset
+
+ sometimes referred to as 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, or 
+\emph on
+alpha level
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+CI: Second Interpretation: The Degree of Belief 
+\end_layout
+
+\begin_layout Itemize
+This is a stronger statement, one I resisted for many years:
+\end_layout
+
+\begin_layout Theorem
+Construct a CI 
+\begin_inset Formula $[\widehat{\theta_{low}},\widehat{\theta_{high}}]$
+\end_inset
+
+ from one sample.
+ The probability that the true value of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is in that interval is 0.95.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Work through Verzani's argument
+\end_layout
+
+\begin_layout Description
+Claim: Given 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+, there is a 0.95 probability (a 95% chance) that the 
+\begin_inset Quotes eld
+\end_inset
+
+true value of 
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is between 
+\begin_inset Formula $\hat{\theta}_{low}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\theta}_{high}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Think of the low and high edges as plus or minus the true 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+Prob(\theta-something\, on\, the\, left<\nonumber \\
+\widehat{\theta}<\theta+something\, on\, the\, right)=0.95
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+If the Sampling Distribution is Symmetric
+\end_layout
+
+\begin_layout Itemize
+If the sampling distribution is symmetric, we subtract and add the same
+ 
+\begin_inset Quotes eld
+\end_inset
+
+something
+\begin_inset Quotes erd
+\end_inset
+
+ on either side.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(\theta-something<\widehat{\theta}<\theta+something)=0.95
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Subtract 
+\begin_inset Formula $\theta$
+\end_inset
+
+ from each term
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(-something<\widehat{\theta}-\theta<something)=0.95
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Subtract 
+\begin_inset Formula $\widehat{\theta}$
+\end_inset
+
+ from each term
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Prob(-\hat{\theta}-something<-\theta<-\widehat{\theta}+something)=0.95
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Multiply through by 
+\begin_inset Formula $-1$
+\end_inset
+
+ and you get ....
+\end_layout
+
+\begin_layout BeginFrame
+The Big Conclusion: 
+\end_layout
+
+\begin_layout Itemize
+A Confidence Interval is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Prob(\hat{\theta}-something<\theta<\widehat{\theta}+something)=0.95\label{eq:CI}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We believe 
+\begin_inset Quotes eld
+\end_inset
+
+with 95% confidence
+\begin_inset Quotes erd
+\end_inset
+
+ that the true value will lie between two outside edges,
+\begin_inset Formula 
+\[
+[\hat{\theta}-something,\,\hat{\theta}+something]
+\]
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Formula $something$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+margin of error
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Where do CI come from?
+\end_layout
+
+\begin_layout BeginFrame
+The Challenge: Find Way To Calculate CIs
+\end_layout
+
+\begin_layout Itemize
+A CI requires us to know the sampling distribution of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+, and then we:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+grab
+\begin_inset Quotes erd
+\end_inset
+
+ the middle 95%
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Not all CIs are symmetric, but the easiest ones to visualize are symmetric
+ (estimated means, slope coefficients)
+\end_layout
+
+\begin_layout Itemize
+Symmetric CI: 
+\begin_inset Formula $[\hat{\theta}_{low},\hat{\theta}_{high}]=\hat{[\theta}-something,\hat{\theta}+something]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If sampling distribution of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ not symmetric, problem is harder.
+ Will need a formula like 
+\begin_inset Formula 
+\[
+[\hat{\theta}-something\, left,\hat{\theta}+something\, right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Every Estimator has its own CI formula
+\end_layout
+
+\begin_layout Itemize
+The challenge of the CI is that there is no universal formula
+\end_layout
+
+\begin_layout Itemize
+For some estimates, we have 
+\begin_inset Quotes eld
+\end_inset
+
+known solutions
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+R has a function 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+confint()
+\end_layout
+
+\end_inset
+
+ for some estimators
+\end_layout
+
+\begin_layout Itemize
+Some estimators have no agreed-upon CI.
+\end_layout
+
+\begin_layout BeginFrame
+Many Symmetric CIs have a simple/similar formula
+\end_layout
+
+\begin_layout Itemize
+Put the estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ in the center
+\end_layout
+
+\begin_layout Itemize
+Calculate 
+\begin_inset Formula $something$
+\end_inset
+
+ to add and subtract.
+ Generally, it depends on 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Standard error of the estimate
+\end_layout
+
+\begin_layout Enumerate
+Sample size
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Example 1: The Mean has a Symmetric CI
+\end_layout
+
+\begin_layout Subsection
+One Observation From a Normal
+\end_layout
+
+\begin_layout BeginFrame
+If We Knew the Sampling Distribution, life would be easy
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ has a sampling distribution that is Normal with variance 1, i.e., 
+\begin_inset Formula $N(\mu,1)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+An observation 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ is an unbiased estimator of 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Since 
+\begin_inset Formula $\sigma^{2}=1$
+\end_inset
+
+, our knowledge of the Normal tells us that 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is very likely in this region
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+Prob(\mu\in[\hat{\mu}-1.96,\hat{\mu}+1.96])=0.95
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<stdnorm10,fig=T,include=F,echo=T,width=4, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mu <- 0
+\end_layout
+
+\begin_layout Plain Layout
+
+sd <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+xden <- dnorm(x, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, xden, type="l", main="", xlab=expression(hat(mu)), ylab="")
+\end_layout
+
+\begin_layout Plain Layout
+
+h <- 0.5*dnorm(-1.96*sd, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+arrows(-1.96, h, 1.96, h , angle=90, length=0.05, code=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(0,0.5*h,"Confidence Interval",cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-stdnorm10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Suppose 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ were 4
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+is Normal, but with standard deviation 
+\begin_inset Formula $sd(\hat{\mu})=\sigma=4$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $\hat{\mu}\sim N(0,4^{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The 0.95 CI is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+[\hat{\mu}-1.96\cdot4),\\
+\hat{\mu}+1.96\cdot4]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+7cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<stdnorm20, fig=T, include=F, echo=T, width=4, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mu <- 0
+\end_layout
+
+\begin_layout Plain Layout
+
+sd <- 4
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+xden <- dnorm(x, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,xden, type="l", main="", xlab=expression(hat(mu)), ylab="")
+\end_layout
+
+\begin_layout Plain Layout
+
+h <- 0.5*dnorm(-1.96*sd, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(0,0.5*h,"Confidence Interval",cex=0.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+arrows(-1.96*sd, h, 1.96*sd, h , angle=90, length=0.05,code=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-stdnorm20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+How do we know 
+\begin_inset Formula $1.96$
+\end_inset
+
+ is the magic number?
+\end_layout
+
+\begin_layout Description
+Correct
+\begin_inset space ~
+\end_inset
+
+Answer We stipulated that the sampling distribution was Normal.
+ The probability of an outcome below 
+\begin_inset Formula $-1.96$
+\end_inset
+
+ is 0.025 and the chance of an outcome greater than 
+\begin_inset Formula $1.96$
+\end_inset
+
+ is 0.025.
+ 
+\end_layout
+
+\begin_layout Description
+Another
+\begin_inset space ~
+\end_inset
+
+Correct
+\begin_inset space ~
+\end_inset
+
+Answer In the old days, we'd look it up in a stats book that has the table
+ of Normal Probabilities.
+\end_layout
+
+\begin_layout Description
+Another
+\begin_inset space ~
+\end_inset
+
+Correct
+\begin_inset space ~
+\end_inset
+
+Answer Today, we ask R, using the qnorm function:
+\end_layout
+
+\begin_layout LyX-Code
+> qnorm(0.025, m = 0, sd = 1)
+\end_layout
+
+\begin_layout LyX-Code
+[1] -1.959964
+\end_layout
+
+\begin_layout Standard
+The value 
+\begin_inset Formula $-1.959964\approx-1.96$
+\end_inset
+
+ is greater than 0.025 of the possible outcomes.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<stdnorm40,fig=T,echo=T, include=F, width=8, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mu <- 0
+\end_layout
+
+\begin_layout Plain Layout
+
+sd <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(mu-4*sd,mu+4*sd, by=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+xden <- dnorm(x, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+xcum <- pnorm(x, m=mu, sd=sd)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, xcum, type="l", main="", xlab=expression(hat(mu)), ylab=expression(F(mu)
+))
+\end_layout
+
+\begin_layout Plain Layout
+
+text(1, 0.20*max(xcum), "CDF")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<stdnorm50,fig=T, include=F, echo=T, width=8, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,xden, type="l", main="",xlab=expression(hat(mu)),ylab=expression(f(mu)))
+\end_layout
+
+\begin_layout Plain Layout
+
+text(0, 0.20*max(xden), "PDF")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[height=4.5cm]{plots/t-stdnorm40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[height=4.5cm]{plots/t-stdnorm50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Some Example Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Some easy to remember values from the Standard Normal are
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Examples:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "1.3in"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout LyX-Code
+
+\family roman
+\series bold
+\size footnotesize
+> qnorm(0.5)
+\end_layout
+
+\begin_layout LyX-Code
+
+\family roman
+\series bold
+\size footnotesize
+[1] 0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "1.5in"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout LyX-Code
+
+\family roman
+\series bold
+\size footnotesize
+> qnorm(0.05)
+\end_layout
+
+\begin_layout LyX-Code
+
+\family roman
+\series bold
+\size footnotesize
+[1] -1.6448
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some values from the CDF:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(-\infty)=0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(-1.96)=0.025$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula $F(-1.65)=0.05$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(0)=0.5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(1.65)=0.95$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(1.96)=0.975$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F(\infty)=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Conclusion: The 
+\begin_inset Formula $\alpha=0.05$
+\end_inset
+
+ confidence interval for a estimator that is 
+\begin_inset Formula $N(\mu,1)$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{equation}
+(\hat{\mu}-1.96,\hat{\mu}+1.96)\label{eq:N01ConfInt}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Student's T Distribution
+\end_layout
+
+\begin_layout BeginFrame
+The Sampling Distribution of the Mean/Std.Err.(Mean) 
+\end_layout
+
+\begin_layout Itemize
+Previous supposed I knew 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ standard deviation of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Now I make the problem more challenging, forcing myself to estimate the
+ mean, and standard error of the mean.
+\end_layout
+
+\begin_layout Itemize
+In the end, we NEVER create a sampling distribution for the mean by itself.
+\end_layout
+
+\begin_layout Itemize
+We DO estimate the sampling distribution of the ratio of the 
+\begin_inset Quotes eld
+\end_inset
+
+estimation mean
+\begin_inset Quotes erd
+\end_inset
+
+ (
+\begin_inset Formula $\hat{\mu}-\mu$
+\end_inset
+
+) to its standard error.
+\end_layout
+
+\begin_layout Itemize
+Intuition: The CI will be symmetric, 
+\begin_inset Formula $\hat{\mu}\pm something$
+\end_inset
+
+, using the sampling distribution 
+\end_layout
+
+\begin_layout BeginFrame
+Sample Mean
+\end_layout
+
+\begin_layout Itemize
+Collect some observations, 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+, 
+\begin_inset Formula $\ldots,$
+\end_inset
+
+ 
+\begin_inset Formula $x_{N}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The sample mean (call it 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+ or 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+) is an estimate of the 
+\begin_inset Quotes eld
+\end_inset
+
+expected value
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+sample\, mean\, of\, x:\bar{x}=\hat{\mu}=\frac{1}{N}\sum x_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The mean is an 
+\begin_inset Quotes eld
+\end_inset
+
+unbiased
+\begin_inset Quotes erd
+\end_inset
+
+ estimator, meaning its expected value is equal to the 
+\begin_inset Quotes eld
+\end_inset
+
+true value
+\begin_inset Quotes erd
+\end_inset
+
+ of the expected value
+\begin_inset Formula 
+\begin{equation}
+E[\bar{x}]\equiv E[\hat{\mu}]=E[x_{i}]=\mu
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $x_{i}\sim N(\mu,\sigma^{2})$
+\end_inset
+
+, the experts tell us that 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+ (or
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+) is Normally distributed 
+\begin_inset Formula $Normal(\mu,\frac{1}{N}\sigma^{2})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall the CLT as a way to generalize this finding: the sampling distribution
+ of the mean is Normal
+\end_layout
+
+\begin_layout BeginFrame
+Estimate the Parameter Sigma
+\end_layout
+
+\begin_layout Itemize
+The Sample Variance is the mean of squared errors
+\begin_inset Formula 
+\begin{equation}
+sample\, variance(x_{i})=\frac{\sum(x_{i}-\bar{x})^{2}}{N}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Now the 
+\begin_inset Quotes eld
+\end_inset
+
+N-1
+\begin_inset Quotes erd
+\end_inset
+
+ problem comes in.
+ This sample variance is not an 
+\begin_inset Quotes eld
+\end_inset
+
+unbiased
+\begin_inset Quotes erd
+\end_inset
+
+ estimate of 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ I mean, sadly,
+\begin_inset Formula 
+\begin{equation}
+E[sample\, variance(x_{i})]\neq\sigma^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+However, a corrected estimator 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+unbiased\, sample\, variance(x_{i})=\frac{\sum(x_{i}-\bar{x})^{2}}{N-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is unbiased:
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[unbiased\, sample\, variance(x_{i})]=\sigma^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Standard Error of the Mean
+\end_layout
+
+\begin_layout Itemize
+Two lectures ago, I showed that the variance of the mean is proportional
+ to the true variance of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{equation}
+Var[\hat{\mu}]\, same\, as\, Var[\bar{x}]=\frac{1}{N}Var[x_{i}]=\frac{1}{N}\sigma^{2}
+\end{equation}
+
+\end_inset
+
+(no matter what the distribution of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ might be).
+\end_layout
+
+\begin_layout Itemize
+We don't know the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ variance 
+\begin_inset Formula $Var[x_{i}]=\sigma^{2}$
+\end_inset
+
+, but we can take the unbiased sample estimator and use it place of 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+That gives us the dreaded double hatted estimate of the estimated mean:
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var[\hat{\mu]}}=\frac{1}{N}unbiased\, sample\, variance(x_{i})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You can 
+\begin_inset Quotes eld
+\end_inset
+
+plug in
+\begin_inset Quotes erd
+\end_inset
+
+ the 
+\begin_inset Formula $unbiased\, sample\, variance\, of\, x_{i}$
+\end_inset
+
+ from the previous page if you want to write out a formula!
+\end_layout
+
+\begin_layout BeginFrame
+The magical ratio of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ to 
+\begin_inset Formula $std.err.(\hat{\mu})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Because the double hat notation is boring, we call the square root of it
+ the standard error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+std.err.(\bar{x})\, same\, as\, std.err.(\hat{\mu})=\sqrt{\widehat{Var[\hat{\mu]}}}=\sqrt{\frac{1}{N}unbiased\, sample\, variance(x_{i})}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall the definition of the term 
+\begin_inset Quotes eld
+\end_inset
+
+standard error.
+\begin_inset Quotes erd
+\end_inset
+
+ It is an estimate of the standard deviation of a sampling distribution.
+\end_layout
+
+\begin_layout Itemize
+Gosset showed that although the true 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is unknown, the ratio of the estimated mean's fluctuations about its true
+ value to the estimated standard deviation of the mean follows a T distribution:
+\begin_inset Formula 
+\begin{equation}
+\frac{\hat{\mu}-\mu}{\widehat{std.dev.(\hat{\mu})}}=\frac{\hat{\mu}-\mu}{std.err.(\hat{\mu})}\sim T(\nu=N-1)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This new 
+\begin_inset Quotes eld
+\end_inset
+
+t variable
+\begin_inset Quotes erd
+\end_inset
+
+ becomes our primary interest.
+ Since 
+\begin_inset Formula $Var[x]$
+\end_inset
+
+ is unknowable, we have to learn to live with the estimate of it, and that
+ brings us down a chain to T.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+T distribution with 10 d.f.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<T10,fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(-5,5,by=0.015)
+\end_layout
+
+\begin_layout Plain Layout
+
+denx <- dt(x, df=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x, denx, main="", type="l",ylab="density", xlab="t distribution")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x, dnorm(x), lty=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright",legend=c("T","Normal"),lty=c(1,2), col=c("black","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=11cm]{plots/t-T10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+T is Similar to Standard Normal, N(0,1)
+\end_layout
+
+\begin_layout Itemize
+symmetric
+\end_layout
+
+\begin_layout Itemize
+single peaked
+\end_layout
+
+\begin_layout Itemize
+But, there is a difference: T depends on a degrees of freedom, 
+\begin_inset Formula $N-1$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+T is different for every sample size
+\end_layout
+
+\begin_layout Itemize
+T tends to be 
+\begin_inset Quotes eld
+\end_inset
+
+more and more
+\begin_inset Quotes erd
+\end_inset
+
+ Normal as the sample size grows
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare 95
+\backslash
+% Ranges for Normal and T}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<T20,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+qnorm(0.025, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+qt(0.025, df=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+qnorm(0.975, m=0, s=1)
+\end_layout
+
+\begin_layout Plain Layout
+
+qt(0.975, df=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+T-based Confidence Interval
+\end_layout
+
+\begin_layout Itemize
+Using the T distribution, we can 
+\begin_inset Quotes eld
+\end_inset
+
+bracket
+\begin_inset Quotes erd
+\end_inset
+
+ the 0.95 probability 
+\begin_inset Quotes eld
+\end_inset
+
+middle part
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+That puts 
+\begin_inset Formula $\alpha/2$
+\end_inset
+
+ of the probability outside the 95% range on the left, and 
+\begin_inset Formula $\alpha/2$
+\end_inset
+
+ on the right
+\end_layout
+
+\begin_layout Itemize
+In a T distribution with 10 degrees of freedom, the range stretches from
+ (
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+-2.3, 
+\begin_inset Formula $\hat{\mu}+$
+\end_inset
+
+2.3)
+\end_layout
+
+\begin_layout Itemize
+That's wider than 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+ would dictate, of course.
+ The extra width is the penalty we pay for using the estimate 
+\begin_inset Formula $\hat{\sigma}$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Lets Step through some df values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that 
+\begin_inset Formula $T$
+\end_inset
+
+ is symmetric, so the upper and lower critical points are generally just
+ referred to as 
+\begin_inset Formula $-t_{0.025,df}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{0.025,df}$
+\end_inset
+
+ for a 95% CI with 
+\begin_inset Formula $df$
+\end_inset
+
+ degrees of freedom
+\end_layout
+
+\begin_layout Standard
+df=20 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(c(qt(0.025, 20), qt(0.975, 20)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+df=50
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(c(qt(0.025, 50), qt(0.975, 50)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+df=100
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(c(qt(0.025, 100), qt(0.975, 100)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+df=250
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(c(qt(0.025, 250), qt(0.975, 250)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Summary: The CI for an Estimated Mean Is...
+\end_layout
+
+\begin_layout Itemize
+If 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ is Normal, 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+std.err(
+\begin_inset Formula $\hat{\mu})$
+\end_inset
+
+= 
+\begin_inset Formula $\hat{\sigma}/\sqrt{N}$
+\end_inset
+
+ (an estimate of the standard deviation of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Then:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+CI=[\hat{\mu}-t_{n,\alpha/2}std.err.(\hat{\mu)},\hat{\,\,\mu}+t_{n,\alpha/2}std.err.(\hat{\mu)}]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $"something"$
+\end_inset
+
+ in the CI of the mean is 
+\begin_inset Formula $t_{n,\alpha/2}\times\hat{\sigma}/\sqrt{N}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If your sample is over 100 or so, 
+\begin_inset Formula $t_{n,\alpha/2}$
+\end_inset
+
+ will be very close to 
+\begin_inset Formula $2,$
+\end_inset
+
+ hence most of us think of the CI for the mean as
+\begin_inset Formula 
+\begin{equation}
+[\hat{\mu}-2\, std.err.(\hat{\mu}),\,\hat{\mu}+2\, std.err(\hat{\mu})]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Symmetric Estimators are easy
+\end_layout
+
+\begin_layout Itemize
+So far as I know, Every estimator that has a symmetrical sampling distribution
+ ends up, one way or another, with a T-based CI.
+\end_layout
+
+\begin_layout Itemize
+Thus, we are preoccupied with finding parameter estimates and standard errors
+ because they lead to CIs that are manageable.
+\end_layout
+
+\begin_layout Itemize
+With NON-symmetric estimators, the whole exercise goes to hell.
+ Everything becomes less generalizable, more estimator-specific, and generally
+ more frustrating ☹.
+\end_layout
+
+\begin_layout Section
+Asymmetric Sampling Distribution: Correlation Coefficient
+\end_layout
+
+\begin_layout BeginFrame
+Correlation Coefficient
+\end_layout
+
+\begin_layout Itemize
+The product-moment correlation varies from -1 to 1, and 0 means 
+\begin_inset Quotes eld
+\end_inset
+
+no relationship
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ correlation for two random variables is defined as
+\begin_inset Formula 
+\begin{eqnarray}
+\rho & = & \frac{Cov(x,y)}{\sqrt{Var(x)Var(y)}}=\frac{Cov(x,y)}{Std.Dev.(x)Std.Dev.(y)}\\
+ & = & \frac{E[(x-E[x])\cdot(y-E[y])]}{\sqrt{E[(x-E[x])^{2}]}\sqrt{E[(y-E[y])^{2}]}}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Replace those 
+\begin_inset Quotes eld
+\end_inset
+
+true values
+\begin_inset Quotes erd
+\end_inset
+
+ with sample estimates to calculate 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How Sample Estimates are Calculated}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample Variance: Mean Square of Deviations about the Mean (unbiased version).
+ 
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var[x]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})^{2}}{N-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The sample covariance of 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\widehat{Cov[x,y]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})}{N-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Covariance: What is that Again?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Intuition: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ are both 
+\begin_inset Quotes eld
+\end_inset
+
+large
+\begin_inset Quotes erd
+\end_inset
+
+, or both 
+\begin_inset Quotes eld
+\end_inset
+
+small
+\begin_inset Quotes erd
+\end_inset
+
+, then covariance will be positive.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $x$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+large
+\begin_inset Quotes erd
+\end_inset
+
+, but 
+\begin_inset Formula $y$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+small
+\begin_inset Quotes erd
+\end_inset
+
+ (or vice versa), then covariance will be negative.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The sample 
+\begin_inset Quotes eld
+\end_inset
+
+covariance of 
+\begin_inset Formula $x$
+\end_inset
+
+ with itself
+\begin_inset Quotes erd
+\end_inset
+
+ is obviously the same as the variance:
+\begin_inset Formula 
+\begin{equation}
+\widehat{Cov[x,x]}=\widehat{Var[x]}=\frac{\sum_{i=1}^{N}(x_{i}-\widehat{E[x]})(x_{i}-\widehat{E[x]})}{N-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Consider a Scatterplot}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor10,fig=T,include=F,echo=T, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(234234)
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 25; stde <- 2; b <- 0.14
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(N, m=50, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- x[order(x)]
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- 0.3 + b*x + rnorm(N, m=0, sd=stde)
+\end_layout
+
+\begin_layout Plain Layout
+
+mx <- mean(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+my <- mean(y)
+\end_layout
+
+\begin_layout Plain Layout
+
+rx <- range(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+ry <- range(y)
+\end_layout
+
+\begin_layout Plain Layout
+
+cov(x,y)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cor10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Draw in Lines for the Means}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor20,fig=T,include=F,echo=T, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(digits=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h=my, lty=4, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v=mx, lty=4, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2,
+ at=mx)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2,
+ at=my)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cor20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Easier to See Pattern with Some Color}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor30,fig=T,include=F,echo=T, width=6, height=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycols <- ifelse((x-mx)*(y-my) > 0, "blue","red")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="", col=mycols)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h=my, lty=4, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v
+\end_layout
+
+\begin_layout Plain Layout
+
+=mx, lty=4, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2,
+ at=mx)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2,
+ at=my)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-cor30}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+For each point, necessary to calculate 
+\begin_inset Formula $(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[x]})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+add those up!
+\end_layout
+
+\begin_layout Itemize
+blue points have positive products
+\end_layout
+
+\begin_layout Itemize
+red points have negative products
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{+ times + = +, but + times - equals -}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor40,fig=T,include=F,echo=T, width=8, height=8>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycols <- ifelse((x-mx)*(y-my) > 0, "blue","red")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(x,y, main="", type="n", col=mycols)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(h=my, lty=4, col="black", lwd=0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(v=mx, lty=4, col="black", lwd=0.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(x),"]")) ==.(mx)), side=1, line=2,
+ at=mx)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtext(bquote(widehat(E*group("[",list(y),"]")) ==.(my)), side=2, line=2,
+ at=my)
+\end_layout
+
+\begin_layout Plain Layout
+
+points(x[25],y[25])
+\end_layout
+
+\begin_layout Plain Layout
+
+arrows(x[25],my,x[25],.97*y[25], lty=2, lwd=1, code=3, length=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(mx + 0.5*(x[25]-mx), y[25], label = expression(x-widehat(E*group("[",list(x)
+,"]"))), pos=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+arrows(mx,y[25],.97*x[25], y[25], lty=2, lwd=1, code=3, length=0.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+text(x[25], my+0.5*(y[25]-my), label= expression(y-widehat(E*group("[",list(y),"]
+"))), pos=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Here, 
+\begin_inset Formula $(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})>0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Hm.
+ I never noticed before, but that's also the 
+\begin_inset Quotes eld
+\end_inset
+
+area
+\begin_inset Quotes erd
+\end_inset
+
+ of the rectangle
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6cm]{plots/t-cor40}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Remaining Problems}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+How do I know 97 is 
+\begin_inset Quotes eld
+\end_inset
+
+big
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+medium
+\begin_inset Quotes erd
+\end_inset
+
+ number for Covariance
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+How much
+\begin_inset Quotes erd
+\end_inset
+
+ will covariance fluctuate from one sample to another, if the parameters
+ of the data generating process remain fixed?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Correlation: Standardize Covariance}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Divide Covariance by the Standard Deviations
+\begin_inset Formula 
+\begin{eqnarray}
+ & \frac{\widehat{Cov[x,y]}}{\widehat{Std.Dev.[x]}\cdot\widehat{Std.Dev.[y]}}\\
+= & \frac{\sum(x_{i}-\widehat{E[x]})(y_{i}-\widehat{E[y]})/(N-1)}{\left(\sqrt{\sum(x-\widehat{E[x]})^{2}/(N-1)}\right)\left(\sqrt{\sum(y-\widehat{E[y]})^{2}/(N-1)}\right)}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+That produces a number that ranges from 
+\begin_inset Formula $-1$
+\end_inset
+
+ to 
+\begin_inset Formula $+1$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Check that: Calculate the correlation of 
+\begin_inset Formula $x$
+\end_inset
+
+ with itself.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Karl Pearson called it a 
+\begin_inset Quotes eld
+\end_inset
+
+product-moment correlation coefficient
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We often just call it 
+\begin_inset Quotes eld
+\end_inset
+
+Pearson's r
+\begin_inset Quotes erd
+\end_inset
+
+, or 
+\begin_inset Quotes eld
+\end_inset
+
+r
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Often use variable names in subscript 
+\begin_inset Formula $r_{xy}$
+\end_inset
+
+ to indicate which variables are correlated.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+The Distribution of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ is Symmetric only if 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is near 
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If true correlation 
+\begin_inset Formula $\rho=0$
+\end_inset
+
+, then the sampling distribution of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ is perfectly symmetric.
+\end_layout
+
+\begin_layout Itemize
+However, if 
+\begin_inset Formula $\rho\neq0$
+\end_inset
+
+, the Sampling distribution is not symmetric, and as 
+\begin_inset Formula $\rho\rightarrow-1$
+\end_inset
+
+ or 
+\begin_inset Formula $\rho\rightarrow+1,$
+\end_inset
+
+ the Sampling distribution becomes more and more Asymmetric
+\end_layout
+
+\begin_layout BeginFrame
+If 
+\begin_inset Formula $\rho=0$
+\end_inset
+
+ ,
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The Sampling Distribution of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ is Symmetric
+\end_layout
+
+\begin_layout Itemize
+Apparently normal, even with small samples.
+ 
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor110, fig=T, echo=T, include=F, height=7, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mvtnorm)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- c(0,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+rho <- 0
+\end_layout
+
+\begin_layout Plain Layout
+
+sig0 <- matrix( c(1,rho, rho,1), nrow=2, ncol=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+simCor <- function(N, mmean=NULL, msig=NULL) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  xy <- rmvnorm(N, mean=mmean, sigma=msig)
+\end_layout
+
+\begin_layout Plain Layout
+
+  cor(xy[,1], xy[,2])
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+drawHist <- function(N=NULL, sig=NULL){
+\end_layout
+
+\begin_layout Plain Layout
+
+  cors <- sapply(rep(N,5000), simCor, mmean=m1 , msig=sig)
+\end_layout
+
+\begin_layout Plain Layout
+
+  cr <- range(cors)
+\end_layout
+
+\begin_layout Plain Layout
+
+ xlab <- bquote (paste("5000 Observed Correlations(", Sample== .(N),", ",
+ rho== .(round(rho, 2)),')') )
+\end_layout
+
+\begin_layout Plain Layout
+
+  hist(cors, prob=T, xlim=cr, border=gray(.80), xlab=xlab, breaks=100, main="")
+\end_layout
+
+\begin_layout Plain Layout
+
+  lines(density(cors), col="red", lty=2, lwd=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  ind <- seq(cr[1], cr[2], length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+  cm1 <- round(mean(cors), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+  cs1 <- round(sd(cors), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+  nprob <- dnorm(ind, m=cm1, s=cs1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  lines(ind, nprob, lty=1, col="black")
+\end_layout
+
+\begin_layout Plain Layout
+
+  nlab <-   bquote(paste("Normal(", .(round(cm1,3)),",", .(round(cs1,3))^2,")"))
+\end_layout
+
+\begin_layout Plain Layout
+
+  legend("topleft",legend=c("Kernel Density", as.expression(nlab)), lty=c(2,1),
+ col=c("red","black"), lwd=c(1.5,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+  legend("left", legend=c(paste("Obs.
+ Mean=", cm1),paste("Obs.
+ sd=",cs1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+drawHist(N=30, sig=sig0 )
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-cor110}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+If 
+\begin_inset Formula $\rho=.90$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ NOT Symmetric
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The Sampling Distribution of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ is apparently NOT symmetric or normal
+\end_layout
+
+\begin_layout Itemize
+Think for a minute.
+ If the 
+\begin_inset Quotes eld
+\end_inset
+
+true rho
+\begin_inset Quotes erd
+\end_inset
+
+ is .9, then sampling fluctuation can 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+bump up the observed value only between 0.9 and 1.0
+\end_layout
+
+\begin_layout Itemize
+bump down the observed value between -1.0 and 0.9
+\end_layout
+
+\end_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor120,fig=T, echo=T, include=F, height=7, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+rho=0.90
+\end_layout
+
+\begin_layout Plain Layout
+
+sig2 <- matrix( c(1, rho, rho, 1), nrow=2, ncol=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+drawHist(N=30, sig=sig2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots/t-cor120}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Asymmetric Confidence Interval
+\end_layout
+
+\begin_layout Itemize
+In previous example, the true 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is 0.9, and the mean of the observed 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is close to that.
+\end_layout
+
+\begin_layout Itemize
+But the 95% confidence interval is clearly not symmetric.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Can reduce Asymmetry with Gigantic Sample
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+Large samples lead to more precise estimates of 
+\begin_inset Formula $\rho$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The sampling distribution of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ is more symmetric when each sample is very large
+\end_layout
+
+\begin_layout Itemize
+Not so non Normal.
+ 
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<cor130, fig=T, echo=T, include=F, height=7, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+drawHist(N=2000, sig=sig2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots/t-cor130}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Details, Details
+\end_layout
+
+\begin_layout Itemize
+AFAIK, there is no known formula for the exact sampling distribution of
+ 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ or its CI
+\end_layout
+
+\begin_layout Itemize
+Formulae have been proposed to get better approximations of the CI
+\end_layout
+
+\begin_layout Itemize
+Fisher proposed this transformation that converts a non-Normal distribution
+ of 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ into a more Normal distribution
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Z=0.5ln\left(\frac{1+\hat{\rho}}{1-\hat{\rho}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The CI can be created in that 
+\begin_inset Quotes eld
+\end_inset
+
+transformed space
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Map back to original scale to get 95% CI.
+\end_layout
+
+\begin_layout Itemize
+Result is an asymmetric CI centered on the sample estimate.
+\end_layout
+
+\begin_layout BeginFrame
+Checkpoint: What's the Point?
+\end_layout
+
+\begin_layout Itemize
+As long as you know the 
+\begin_inset Quotes eld
+\end_inset
+
+sampling distribution
+\begin_inset Quotes erd
+\end_inset
+
+, you can figure out a confidence interval.
+\end_layout
+
+\begin_layout Itemize
+Work is easier if the CI is symmetric around the estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+.
+ Usually, with means or regression estimates, the CI is something like
+\begin_inset Formula 
+\begin{equation}
+\widehat{\theta}\, plus\, or\, minus\,2\cdot std.err.(\hat{\theta})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For Asymmetric sampling distributions, CI have to be approximated numerically
+ (difficult)
+\end_layout
+
+\begin_layout Section
+Asymmetric CI: Estimates of Proportions
+\end_layout
+
+\begin_layout BeginFrame
+Use 
+\begin_inset Formula $\pi$
+\end_inset
+
+ for True Proportion, 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ for estimate.
+\end_layout
+
+\begin_layout Itemize
+We already used p for probability and for p-value.
+ 
+\end_layout
+
+\begin_layout Itemize
+To avoid conclusion, use 
+\begin_inset Formula $\pi$
+\end_inset
+
+ for the Binomial probability of a success
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\pi$
+\end_inset
+
+ proportion parameter 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ a sample estimator
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ probability model is 
+\begin_inset Formula $Binomial(n,\pi)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We wish we could estimate 
+\begin_inset Formula $\pi$
+\end_inset
+
+ and create a 95% CI
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\pi}-something,\,\,\hat{\pi}+something\label{eq:NormalConfInt-1-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But, the sampling distribution is NOT symmetric, so doing that is wrong,
+ which means people who say a CI (margin or error) is 
+\begin_inset Formula $mean\, plus\, or\, minus\, something$
+\end_inset
+
+ are technically wrong.
+\end_layout
+
+\begin_layout BeginFrame
+Binomial Distribution
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Binomal(n,\pi)$
+\end_inset
+
+ is number of 
+\begin_inset Quotes eld
+\end_inset
+
+successes
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset Formula $n$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+tests
+\begin_inset Quotes erd
+\end_inset
+
+ with probability of success 
+\begin_inset Formula $\pi$
+\end_inset
+
+ for each one.
+\end_layout
+
+\begin_layout Itemize
+The observed number of successes from 
+\begin_inset Formula $B(n,\pi)$
+\end_inset
+
+ is approximately normal if
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if 
+\begin_inset Formula $n$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+big enough
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+and 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is not too close to 0 or 1.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+if 
+\begin_inset Formula $\pi=0.5$
+\end_inset
+
+, the number of successes 
+\begin_inset Formula $y\sim B(n,\pi)$
+\end_inset
+
+ is approximately 
+\begin_inset Formula $Normal(n*\pi,\,\pi(1-\pi)/n)$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+The proportion of successes, 
+\begin_inset Formula $x=y/n$
+\end_inset
+
+, is approximately 
+\begin_inset Formula $Normal(\pi,\pi(1-\pi)$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Otherwise, the Binomial is decidedly NOT normal, as we can see from some
+ simulations.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{n=30, $
+\backslash
+pi=0.05$ ; 2000 samples}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<bin10,fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+SS <- 30
+\end_layout
+
+\begin_layout Plain Layout
+
+p <- 0.05
+\end_layout
+
+\begin_layout Plain Layout
+
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(means, xlim=c(0,0.7), prob=T, breaks=20, main="", xlab="proportion successes
+ observed")
+\end_layout
+
+\begin_layout Plain Layout
+
+mym <- round(mean(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+obssd <- round(sd(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+theomean <- pi
+\end_layout
+
+\begin_layout Plain Layout
+
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c(paste("EV[x]=", p), paste("Obs.Mean=", mym),
+ paste("Theo sd(mean)=", theosd), paste("Obs.
+ sd(mean)=", obssd)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-bin10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Simulate n=500, $
+\backslash
+pi=0.05$ (2000 estimated proportions)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It doesn't help to make each sample bigger
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<bin15,fig=T,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+SS <- 500
+\end_layout
+
+\begin_layout Plain Layout
+
+p <- 0.05
+\end_layout
+
+\begin_layout Plain Layout
+
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(means, xlim=c(0,0.7), prob=T, breaks=20, main="", xlab="proportion successes
+ observed")
+\end_layout
+
+\begin_layout Plain Layout
+
+mym <- round(mean(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+obssd <- round(sd(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+theomean <- pi
+\end_layout
+
+\begin_layout Plain Layout
+
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c(paste("EV[x]=", p), paste("Obs.Mean=", mym),
+ paste("Theo sd(mean)=", theosd), paste("Obs.
+ sd(mean)=", obssd)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-bin10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{More Normal with moderate $
+\backslash
+pi$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Simulate n=100, 
+\begin_inset Formula $\pi=0.2$
+\end_inset
+
+ (2000 samples)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<bin20,fig=T,include=F,echo=T, width=8, height=5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+SS <- 100
+\end_layout
+
+\begin_layout Plain Layout
+
+p <- 0.2
+\end_layout
+
+\begin_layout Plain Layout
+
+means <- replicate(2000, mean(rbinom(SS, size=1, p=p)))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(means, xlim=c(0,0.7), prob=T, breaks=20,main="", xlab="proportion successes
+ observed")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(density(means))
+\end_layout
+
+\begin_layout Plain Layout
+
+mym <- round(mean(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+obssd <- round(sd(means),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+theomean <- 0.2
+\end_layout
+
+\begin_layout Plain Layout
+
+theosd <- round(sqrt(p*(1-p))/sqrt(SS), 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(0,0.5, by =0.01)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(x, dnorm(x, m=theomean, sd=theosd), lty=2, col="red")
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topright", legend=c(paste("EV[x]=",p), paste("Obs.
+ Mean=",mym),paste("Theo sd(mean)=", theosd), paste("Obs.
+ sd(mean)=", obssd)))
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("right", legend=c("Kernel Density",paste("Normal(", theomean, ","
+ ,theosd, "^2)",sep="")), lty=c(1,2), col=c("black","red"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-bin20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Proportions
+\end_layout
+
+\begin_layout Itemize
+The Normal approximation is widely used, but...
+\end_layout
+
+\begin_layout Itemize
+Its valid when 
+\begin_inset Formula $N$
+\end_inset
+
+ is more than 100 or so and 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is in the 
+\begin_inset Quotes eld
+\end_inset
+
+mid ranges
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The Normal approximation lets us take this general idea: 
+\begin_inset Formula 
+\[
+CI=[\hat{\pi}-something\, low,\,\,\hat{\pi}+something\, high]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+and replace it with 
+\begin_inset Formula 
+\[
+CI=[\hat{\pi}-1.96\cdot std.error.(\hat{\pi}),\hat{\pi}+1.96\cdot std.error(\hat{\pi})]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Show My Work: Derive the std.error(
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+)? 
+\end_layout
+
+\begin_layout Standard
+This is a Sidenote.
+ Start with the Expected Value
+\end_layout
+
+\begin_layout Itemize
+Recall, for any random variable 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+E[x]=\sum prob(x)*x
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The chance of a 
+\begin_inset Formula $1$
+\end_inset
+
+ is 
+\begin_inset Formula $\pi$
+\end_inset
+
+ and the chance of a 
+\begin_inset Formula $0$
+\end_inset
+
+ is 
+\begin_inset Formula $(1-\pi)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The expected value of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is clearly 
+\begin_inset Formula $\pi$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+E[x] & = & \pi*1+(1-\pi)*0\nonumber \\
+ & = & \pi\label{eq:-4}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Show My Work: For the Binomial Case
+\end_layout
+
+\begin_layout Itemize
+The observations are 1's and 0's representing successes and failures: 
+\begin_inset Formula $0,1,0,1,1,0,1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+The estimated mean is the 
+\begin_inset Quotes eld
+\end_inset
+
+successful
+\begin_inset Quotes erd
+\end_inset
+
+ proportion of observed scores
+\begin_inset Formula 
+\begin{equation}
+\hat{\pi}=\frac{\sum x_{i}}{N}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recall this is always true for means, the expected value of the estimate
+ the mean is the expected value of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+E[\hat{\pi}]=\pi\label{eq:-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+So it makes sense that we act as though 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ is in the center of the CI.
+\end_layout
+
+\begin_layout BeginFrame
+Show My Work: 
+\begin_inset Formula $E[\hat{\pi}]=E[x]=\pi$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This uses the simple fact that expected value is a 
+\begin_inset Quotes eld
+\end_inset
+
+linear operator
+\begin_inset Quotes erd
+\end_inset
+
+: 
+\begin_inset Formula $E[a\cdot x_{1}+bx_{2}]=aE[x_{1}]+bE[x_{2}]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Begin with the definition of the estimated mean:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\pi}=\frac{x_{1}}{N}+\frac{x_{2}}{N}+\ldots+\frac{x_{N}}{N}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+E[\hat{\pi}]=E\left[\frac{x_{1}}{N}\right]+\left[\frac{x_{2}}{N}\right]+\ldots+\left[\frac{x_{N}}{N}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[\hat{\pi}]=N\cdot\frac{E[x]}{N}=E[x]=\pi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Show My Work: Variance is Easy Too
+\end_layout
+
+\begin_layout Itemize
+Recall the variance is a probability weighted sum of squared deviations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var[x]=\sum prob(x)*x
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For one draw, 
+\begin_inset Formula 
+\begin{eqnarray}
+Var[x]= &  & \pi*(1-\pi)^{2}+(1-\pi)(0-\pi)^{2}\nonumber \\
+ & = & (1-\pi)(\pi*(1-\pi)+\pi^{2})\nonumber \\
+ & = & \pi(1-\pi)\label{eq:-5}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And if we draw N times and calculate 
+\begin_inset Formula $\hat{\pi}=\sum x/N$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Var[\hat{\pi}]=\frac{Var[x]}{N}=\frac{\pi(1-\pi)}{N}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note that's the 
+\begin_inset Quotes eld
+\end_inset
+
+true variance
+\begin_inset Quotes erd
+\end_inset
+
+, AKA the 
+\begin_inset Quotes eld
+\end_inset
+
+theoretical variance
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Show My Work: Here's where we get the standard error
+\end_layout
+
+\begin_layout Itemize
+The standard deviation of 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ is the square root of the variance 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+std.dev.(\hat{\pi})=\sqrt{Var[\hat{\pi}]}=\frac{\sqrt{\pi(1-\pi)}}{\sqrt{N}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+That is the 
+\begin_inset Quotes eld
+\end_inset
+
+true standard deviation.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+As we saw in the CLT lecture, the dispersion of the estimator 
+\begin_inset Quotes eld
+\end_inset
+
+collapses
+\begin_inset Quotes erd
+\end_inset
+
+ rapidly as the sample increases because it is the variance divided by 
+\begin_inset Formula $\sqrt{N}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+We don't know 
+\begin_inset Formula $\pi$
+\end_inset
+
+, however.
+ So from the sample, we estimate it by 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+ (or, we could call it 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Itemize
+Use that estimate in place of the true 
+\begin_inset Formula $\pi$
+\end_inset
+
+ and the value is called the standard error 
+\begin_inset Formula 
+\[
+std.error(\hat{\pi})=\sqrt{\pi(1-\pi)}/\sqrt{N}
+\]
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Citations on Calculations of CI for Proportions
+\end_layout
+
+\begin_layout Itemize
+These give non-symmetric CI's
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Brown, L.
+ D.
+ Cai, T.
+ T.
+ and DasGupta, A.
+ (2001).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Interval estimation for a binomial proportion.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\emph on
+Statistical Science
+\emph default
+, 16(2), 101-133.
+ 
+\end_layout
+
+\begin_layout Standard
+Agresti, A.
+ and Coull, B.
+ A.
+ (1998).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Approximate is better than 'exact' for interval estimation of binomial proportio
+ns,
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\emph on
+The American Statistician
+\emph default
+, 52(2), 119-126.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Summary
+\end_layout
+
+\begin_layout BeginFrame
+What To Remember
+\end_layout
+
+\begin_layout Itemize
+Parameter Estimate, Sampling Distribution, Confidence Interval
+\end_layout
+
+\begin_layout Itemize
+The appeal of the CI is that it gives a 
+\begin_inset Quotes eld
+\end_inset
+
+blunt
+\begin_inset Quotes erd
+\end_inset
+
+ answer to the question, 
+\begin_inset Quotes eld
+\end_inset
+
+how confident are you in that estimate
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Itemize
+The symmetric Sampling Distributions usually lead back to the T distribution,
+ which is almost same as 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+ for large sample sizes, and a pleasant, symmetric
+\begin_inset Formula 
+\begin{equation}
+CI=[\hat{\theta}-2\cdot std.err.(\hat{\theta})\,,,\hat{\theta}+2\cdot std.err.(\hat{\theta})]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The nonsymmetric Sampling Distributions do not have symmetric CI's, and
+ the description of their CI's is case specific and contentious.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

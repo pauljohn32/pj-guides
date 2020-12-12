@@ -1,0 +1,940 @@
+\batchmode
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+%\usepackage{Sweave}
+\ifdefined\Sinput
+\else
+  \RequirePackage[nogin]{Sweave}
+\fi
+\usepackage{tikz}
+\newenvironment{dummy}{\par}{\par}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%%\usepackage{latexsym}
+\usepackage{graphicx}
+
+%%\usepackage{psfig}
+%%\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{Ordinal Outcomes Regression}
+
+
+\author{Paul E. Johnson <pauljohn@ku.edu>}
+
+\maketitle
+
+\section{Introduction}
+
+This is my best effort to succinctly explain the theory behind the
+ordinal logistic regression model (with apologies to the probit model). 
+
+The main takeaway point is supposed to be this: 
+
+The same data leads to different estimates from different programs.
+That happens because the ordinal model can be written down in several
+different ways. None of them are wrong, but they are different, and
+as a result the user must be cautious.
+
+Estimates obtained from four different programs are offered in Tables
+\ref{tab:Output-MASS} through \ref{tab:Stata-Ordinal}. If we line
+these up side by side, we see that estimates from one of the routines
+for R matches Stata (after chopping off the small differences in the
+decimals), while SAS appears to provide the ``wrong sign'' for the
+first row and the second procedure for R seems to provide the ``wrong
+signs'' for the second and third rows.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+ &
+R: polr &
+R: lrm &
+SAS &
+Stata\tabularnewline
+\hline 
+\hline 
+$\hat{b}_{1}$ &
+-0.28 &
+-0.28 &
+0.28 &
+-0.28\tabularnewline
+\hline 
+$\hat{\zeta}_{1}$ &
+-4.24 &
+4.24 &
+-4.24 &
+-4.24\tabularnewline
+\hline 
+$\hat{\zeta}_{2}$ &
+-2.32 &
+2.32 &
+-2.32 &
+-2.32\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+\noindent None of these are actually wrong, they are all correct \emph{given
+the model they specified}. This the point at which the student may
+be tempted to give up. Please don't. I've worked very hard to clear
+this up in the following sections.
+
+
+\section{Extending the Logit Model to deal with Ordinal Dependent Variables}
+
+The easiest way to understand regression with ordinal dependent variables
+is to extend the ``cumulative probability interpretation'' of the
+two category model. 
+
+In the two category model, $y_{i}$ is 1 with probability 
+\begin{equation}
+F(b_{0}+b_{1}X_{i})=\int_{-\infty}^{b_{0}+b_{1}X_{i}}f(e_{i})de_{i}
+\end{equation}
+\\
+And, of course, the probability that $y_{i}$ is 0 will be $1-F(b_{0}+b_{1}X_{i}).$
+The formula $F$ is a ``cumulative distribution function'' (CDF),
+it represents the probability that a random variable $e_{i}$ will
+be as small or smaller than $b_{0}+b_{1}X_{i}$. The function $f$
+is a ``probability density function'' (PDF), which represents the
+probability that $e_{i}$ is equal to some particular value. This
+is illustrated in Figure \ref{fig:Dichotomous}. The ``probability
+density function'' $f$ is defined from left to right and the possible
+outcomes are divided into two sets by the line drawn at $e_{i}=b_{0}+b_{1}X_{i}$.
+The area under the curve on the left side is the probability of getting
+a ``yes'' (or 1). The area on the right is the chance of a ``no''
+(0).
+
+\begin{figure}
+\caption{Dichotomous Outcome Variable\label{fig:Dichotomous}}
+
+
+\vspace{1in}
+
+
+\centering{}\input{0_home_pauljohn_TrueMounted_ps_SVN-guides_stat____on-Categorical_Ordinal_importfigs_ordinal-1.pdftex_t}
+\end{figure}
+
+
+Suppose $y_{i}$ can have $3$ values, $0$, $1$, and $2$. (Keep
+in mind that this model can be written down in several ways. We tackle
+my favorite first, and then consider the others.) Leave the predictive
+part of the model ($b_{0}+b_{1}X_{i})$ the same, but we now introduce
+two new positive constants ($\Pi_{0}$ and $\Pi_{1}$) that divide
+the space. Considering Figure \ref{cap:Ordinal-Logit}, it should
+be easy to see why some people call these new parameters ``thresholds''. 
+
+\begin{figure}
+\caption{Ordinal Logit\label{cap:Ordinal-Logit}}
+
+
+\vspace{1in}
+
+
+\centering{}\input{1_home_pauljohn_TrueMounted_ps_SVN-guides_stat____-Categorical_Ordinal_importfigs_cumulative2.pdftex_t}
+\end{figure}
+
+
+To summarize the effect of these new thresholds, we write down 1 equation
+for each possible outcome. My tendency is to write the thresholds
+as positive values like so:
+
+\begin{equation}
+y_{i}=\left\{ \begin{array}{lll}
+2 & if\, b_{0}+b_{1}X_{i}-e_{i}\geq\Pi_{1}\\
+1 & if\,\Pi_{0}\leq b_{0}+b_{1}X_{i}-e_{i}<\Pi_{1}\\
+0 & if\, b_{0}+b_{1}X_{i}-e_{i}<\Pi_{0}
+\end{array}\right.\label{eq:3category1}
+\end{equation}
+
+
+Note we don't really need 3 equations. If we have two, say $Pr(y_{i}=0)$
+and $Pr(y_{i}=1)$, then the chance of ending up in the other category
+is $1-Pr(y_{i}=0)-Pr(y_{i}=1)$.
+
+In order to translate this into a model involving the cumulative probability
+distribution, re-arrange so that the random variable $e_{i}$ is by
+itself.
+
+\begin{equation}
+y_{i}=\left\{ \begin{array}{lll}
+2 & if\, e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}\\
+1 & if\, b_{0}+b_{1}X_{i}-\Pi_{1}<e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{0}\\
+0 & if\, b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}
+\end{array}\right.\label{eq:3category2-1}
+\end{equation}
+
+
+As in the dichotomous case, the probabilities of the various outcomes
+are calculated by use of cumulative probability. Rearrange \ref{eq:3category1}
+to convert these into probabilities of the individual outcomes.
+
+\begin{equation}
+\begin{array}{lll}
+Pr(y_{i}=2) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}) & =F(b_{0}+b_{1}X_{i}-\Pi_{1})\\
+Pr(y_{i}=1) & =Pr(b_{0}+b_{1}X_{i}-\Pi_{1}\leq e_{i}<b_{0}+b_{1}X_{i}-\Pi_{0})\\
+ & =1-F(b_{0}+b_{1}X_{i}-\Pi_{0})-F(b_{0}+b_{1}X_{i}-\Pi_{1})\\
+Pr(y_{i}=0) & =Pr(b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}) & =1-F(b_{0}+b_{1}X_{i}-\Pi_{0})
+\end{array}\label{eq:3category2}
+\end{equation}
+\\
+Note that any one category can be thought of as a ``residual'' category
+after the others have been assigned their shares. The middle category,
+$y_{i}=1,$ is left over if we ``chop off'' the outcomes on the
+left ($y_{i}=2$) and the right ($y_{i}=0$). We are left with the
+chance of ending up in the middle. In that sense, the probability
+of landing in the middle is equal to $1.0$ minus the chance of a
+very small amount of random noise ($e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}$)
+and minus the chance of having a very large random noise ($b_{0}+b_{1}X_{i}-\Pi_{0}<e_{i}$).
+Similarly, the chances of being in the top category equal $1$ minus
+the chance of ending up in the lower categories.
+
+Any probability distribution can be used for the random error $e_{i}$,
+the two most common being Logistic and Normal. If the Normal is chosen,
+it is customary to call this a ``probit'' model and the symbol for
+the cumulative distribution is usually $\Phi()$.
+
+What if your dependent variable have more categories? Add more thresholds!
+See the example in Figure \ref{fig:Ordinal-5cat}.
+
+\begin{figure}
+\caption{Ordinal Model with More Categories\label{fig:Ordinal-5cat}}
+
+
+\vspace{1in}
+
+
+\centering{}\input{2_home_pauljohn_TrueMounted_ps_SVN-guides_stat____on-Categorical_Ordinal_importfigs_ordinal-3.pdftex_t}
+\end{figure}
+
+
+
+\section{Cumulative Probability Interpretation}
+
+
+\subsection{The probability that $y_{i}$ is greater than or equal to $j$.}
+
+In the previous section, I discussed the probability that $y_{i}=j$. 
+
+Another way to think of the same the model is to consider the probability
+that the observed outcome is in category $j$ or in some ``higher''
+category. That is, consider ``cumulative probability,'' $Pr(y_{i}\geq j)$. 
+
+The cumulative model is used mainly because it effectively convers
+the multicategory outcome model into a sequence of 2 category comparisons.
+The probability model is somewhat easier to write down because we
+can use the familiar ``logit'' function. 
+
+Recall that, in the two category case, the logistic model is easily
+re-arranged so that the probability model
+\begin{equation}
+Pr(y_{i}=1|X_{i})=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i})}}
+\end{equation}
+
+
+\noindent becomes
+\begin{equation}
+ln\left[\frac{Pr(y_{i}=1|X_{i})}{1-Pr(y_{i}=1|X_{i})}\right]=b_{0}+b_{1}X_{i}
+\end{equation}
+\\
+That is to say, the ``log of the odds ratio'' is a linear function
+of the unknown coefficients and the observed variables. Because the
+right hand side ``looks like an ordinary regression equation,''
+many people are more comfortable interpreting input variables as causing
+the change in the log of the odds ratio.
+
+Suppose instead we re-write down the probability that $y_{i}$ is
+greater than or equal to $1$? (Pay no attention to the fact that
+$y_{i}$ can only be $0$ or $1$ for a moment.) Then the dichotomous
+equation would be the same, except that we now use ``greater than
+or equal to'' rather than ``equal to'':
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq1|X_{i})}{1-Pr(y_{i}\geq1|X_{i})}\right]=b_{0}+b_{1}X_{i}.
+\end{equation}
+
+
+For a three category model, it is obvious that the probability that
+$y_{i}$ is 0 or greater is $1.0$. The chance that $y_{i}$ is greater
+than or equal to 1, or 2, is
+
+\begin{equation}
+\begin{array}{lll}
+Pr(y_{i}\geq1) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{0}) & =F(b_{0}+b_{1}X_{i}-\Pi_{0})\\
+Pr(y_{i}\geq2) & =Pr(e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{1}) & =F(b_{0}+b_{1}X_{i}-\Pi_{1})
+\end{array}\label{eq:3category2-2}
+\end{equation}
+
+
+\noindent That should provide the intuition that we can add more categories
+and then use a sequence equations to represent a sequence of ``steps,''
+or ordered comparisons. Is $y_{i}$ greater than or equal to $1$?
+Is $y_{i}$ greater than or equal to $2$? 
+
+If there are three outcome categories, we can write down two equations,
+one for the probability that $y_{i}$ is greater than or equal to
+$1$, and an second for the probability that it is greater than or
+equal to $2$.
+
+\noindent 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq1)}{1-Pr(y_{i}\geq1)}\right]=b_{0}+b_{1}X_{i}-\Pi_{0}\label{eq:parallel1}
+\end{equation}
+
+
+\noindent 
+\begin{equation}
+ln\left[\frac{Pr(y_{i}\geq2)}{1-Pr(y_{i}\geq2)}\right]=b_{0}+b_{1}X_{i}-\Pi_{1}\label{eq:parallel2}
+\end{equation}
+
+
+\noindent More succinctly, for $k$ categories, we would write
+\begin{equation}
+for\, j\,\in\{1,\ldots,k\},\, ln\left[\frac{Pr(y_{i}\geq j)}{1-Pr(y_{i}\geq j)}\right]=b_{0}+b_{1}X_{i}-\Pi_{(j-1)}
+\end{equation}
+ \\
+By making the outcome of interest into a two category comparison--''bigger
+than $j$'' or ``not bigger than $j$'', there is a sense in which
+we have changed this into a series of two-category logistic regressions. 
+
+Of course, this is all consistent with the idea that the chances of
+observing an outcome of $j$ or higher is 
+\begin{equation}
+Pr(y_{i}\geq j)=\frac{1}{1+e^{-(b_{0}+b_{1}X_{i}-\Pi_{(j-1)})}}
+\end{equation}
+
+
+
+\subsection{Cumulative Probability Implies Parallel Lines.}
+
+The basic ordinal logit model is often called the ``parallel lines''
+model. Equations \ref{eq:parallel1} and \ref{eq:parallel2} are parallel
+lines--they have the same slope. Hence, a figure displaying lines
+for the log of the odds ratio would have parallel lines.
+
+This makes the parallel lines assumption painfully obvious. The log
+odds that the outcome is in a particular category, or higher, depend
+on characteristics that are considered fixed (from the individual
+respondent's point of view) like $b_{0}$, $b_{1}$ and $\Pi_{j}$.
+To explain the differences among respondents, our attention should
+focus on $X_{i}$, which is proportional to the log odds ratio.
+
+Another way to think of this is to compare the relative positions
+of the ``dividing'' lines in Figure \ref{cap:Ordinal-Logit}. The
+position of the dividing lines between categories depends only on
+the differences in $\Pi_{j}$. The ``linear predictor'', $\eta_{i}=b_{0}+b_{1}X_{i}$,
+is the same in all dividers. The slope of $b_{1}$ summarizes the
+effect of $X_{i}$ in the model. The equations that refer to the probability
+that a respondent will fall into a lower or higher category are parallel
+lines. A change in the predictor $X_{i}$ has a proportional impact
+on $\eta_{i}$, which is then transformed into a statement about probability.
+
+It is not actually necessary to assume that the slope $b_{1}$ is
+a constant when moving up the scale. There are implementations of
+the ``non parallel lines'' model. There will be $k-1$ separate
+slope coefficients. The parameters proliferate as more predictors
+are added in the model. Estimating the extra parameters required by
+a non-parallel lines model makes this a messy numerical problem, one
+for which there will be no stable maximum likelihood estimates. 
+
+Most practitioners start with the parallel assumption, they may test
+it, and pursue the alternative only when they are persuaded it is
+truly necessary. If the lines are truly not parallel, then at some
+point one has to start to question the idea that the dependent variable
+is an ordinal indicator, because nonparallel lines do cross in a way
+that may change the ordering of the outcomes.
+
+
+\section{Sources of Confusion and Mis-Communication}
+
+There are many sources of possible confusion in this setup. I know
+of at least two dissertation chapters that came out completely wrong
+because of a mismatch between the software's design and the author's
+understanding. 
+
+Here are the most frequent sources of confusion.
+\begin{enumerate}
+\item In my Figure \ref{cap:Ordinal-Logit}, the ordinal outcomes ``step
+down'' from left to right. Some models will code coefficients so
+that outcomes increase from left to right. That has the effect of
+reversing the sign of parameter estimates for $b_{1}$.
+\item Some authors think of the combined effect of $b_{0}+b_{1}X_{i}\pm e_{i}$
+as the random variable of interest, so the dividing points for that
+model will include just the $\Pi_{j}$ and we think of the error adjusted
+linear predictor value moving among categories.
+\item It is not possible to estimate $\Pi_{0}$, $\Pi_{1}$, and $b_{0}$
+at the same time. One of those has to be ``fixed'' at 0 in order
+to allow the others to be estimated. It does not matter which one
+is fixed, the others will adjust. Some programs fix the separation
+threshold between the lowest value and the second lowest value at
+0 and then provide estimates of $b_{0}$ and the other $\Pi$'s. Some
+programs set the constant $b_{0}$ at $0$ and then estimate all of
+the threshold parameters.
+\item It may be that $\Pi_{0}$ or $\Pi_{1}$ are thought of as additional
+``constants'' and their signs might be positive or negative. Where
+I have started with a positive threshold parameter $\Pi_{j}$ like
+so:
+\begin{equation}
+b_{0}+b_{1}X_{i}+e_{i}\leq\Pi_{j}
+\end{equation}
+some people prefer to think of $\Pi_{j}$ as an adjustment in the
+intercept. 
+\begin{equation}
+e_{i}\leq b_{0}+b_{1}X_{i}-\Pi_{j}=(b_{0}-\Pi_{j})+b_{1}X_{i},
+\end{equation}
+
+
+
+one could as well reverse the scale of the thresholds
+\begin{equation}
+e_{i}\leq b_{0}+b_{1}X_{i}+\Pi_{j}
+\end{equation}
+Recognizing the fact that we cannot estimate both $b_{0}$ and $\Pi_{0}$,
+some models will simply combine those two values from the beginning.
+That is, treat $\eta_{1}=b_{0}-\Pi_{0}$ as a combined ``constant''
+$\zeta_{1}$ which usually appears either as a constant in the predictive
+part of the model (and there is not separate ``threshold'' or separator
+estimated): 
+\begin{equation}
+\zeta_{1}+b_{1}X_{i}\leq e_{i}
+\end{equation}
+
+
+
+or as a new threshold in a model in which there is no ``intercept''
+term in the predictive part.
+\begin{equation}
+b_{1}X_{i}+e_{i}<\zeta_{1}
+\end{equation}
+
+
+\end{enumerate}
+
+\section{RTFM: Read the Fine Manual}
+
+As I warned in a previous section, the ordinal logistic regression
+model can be written down in many ways. This is sometimes a blessing,
+sometimes a curse. It certainly forces us to think harder on the question
+of what we are estimating.
+
+Over the years, I've had the same conversation with many different
+students. Here is a dramatic re-interpretation. 
+\begin{quote}
+Student: Here's an ordinal logit model output. What do these theta
+parameters mean?
+
+Professor: How should I know? Why did you choose to estimate them?
+
+Student: I didn't choose them. They just ``came out.'' 
+
+Professor: Go read the manual for that program you chose.
+
+Student: I didn't choose this program. I just Googled ``ordinal logit''
+and some guy in Australia said I should do this.
+
+Professor: Better read the manual that goes along with that software. 
+
+Student: But this other guy in Brazil says the thetas are probability
+numbers. What does that mean?
+
+Professor: Hm. Lets get the manual for this software you are using
+and find out what they are estimating. I'll read it to you.
+
+Student: Thanks, that's what I had been hoping for.
+\end{quote}
+In order for the reader to appreciate the fact that my drama is based
+on ``true life'' experience, I offer four sets of estimates from
+commonly used statistical procedures in Tables \ref{tab:Output-MASS}
+(polr), \ref{tab:Output-LRM} (lrm),\ref{tab:SAS-Logistic} (SAS),
+and \ref{tab:Stata-Ordinal} (Stata). 
+
+All of these estimates are based on the same data from the National
+Election Study of 2002. These models explore the effect of the respondent's
+political ideology on the respondent's opinion about the economy.
+I did not invest much thought in this choice of variables; there is
+no deep theory here. The model asserts that people who are conservative
+may have a different economic evaluations than people who are liberal.
+Since the president was a Republican at the time, my guess was that
+people who liked the conservative president were more likely to say
+the economy has gotten better. Political ideology is measured by the
+usual self-placement along a scale from ``extremely liberal'' to
+``extremely conservative'', while the outcome variable as the respondents
+declare whether they think that the nation's economy has been ``better'',
+the same, or ``worse'' during the last year. A crosstabulation of
+the respondents is presented in ``column proportion form'' in Table
+\ref{tab:Crosstab}.
+
+<<echo=F>>=
+library(foreign)
+nes2002 <- read.xport("/home/pauljohn/ps/ps707/LogisticRegression/PJTEST.sasxport") 
+bushvote <- nes2002$V023111 
+bushvote[bushvote>3] <- NA 
+bushvote[bushvote==0] <- NA 
+bushvote[bushvote==1] <- 0
+bushvote[bushvote==3] <- 1
+democ <- ifelse(nes2002$V023036==1,1,0) 
+repub <- ifelse(nes2002$V023036==2,1,0)
+nes2002$V023027[ nes2002$V023027 == 9] <- NA
+nes2002$economy <- ordered(nes2002$V023027,labels=c("better","same","worse"))
+nes2002$conservatism <- nes2002$V023022
+nes2002$democ <- ifelse(nes2002$V023036==1,1,0) 
+nes2002$repub <- ifelse(nes2002$V023036==2,1,0)
+#library(foreign)
+#write.dta(nes2002, file="nes2002.dta")
+@
+
+\begin{comment}
+\end{comment}
+
+
+\begin{table}
+\caption{Economic Expectations and Political Ideology: A Crosstabulation\label{tab:Crosstab}}
+
+
+<<>>=
+with(nes2002, prop.table(table(economy,conservatism), margin = 2))
+@
+
+
+\inputencoding{latin9}\begin{lstlisting}
+Conservatism. We hear a lot of talk these days about liberals and conservatives. When it comes to politics, do you usually think of yourself as EXTREMELY LIBERAL, LIBERAL, SLIGHTLY LIBERAL, MODERATE OR MIDDLE OF THE ROAD, SLIGHTLY CONSERVATIVE, CONSERVATIVE, EXTREMELY CONSERVATIVE, or haven't you thought much about this? 
+\end{lstlisting}
+\inputencoding{utf8}
+
+\inputencoding{latin9}\begin{lstlisting}[breaklines=true]
+Economy. Now thinking about the economy in the country as a whole, would you say that over the past year the nation's economy has gotten BETTER, STAYED ABOUT THE SAME, or gotten WORSE? 
+\end{lstlisting}
+\inputencoding{utf8}\end{table}
+
+
+\begin{table}
+\caption{Output from MASS polr\label{tab:Output-MASS}}
+
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+library (MASS) 
+polr1 <- polr(economy~conservatism, data=nes2002, Hess=T)
+summary(polr1)
+@
+
+\bigskip{}
+\end{table}
+
+
+
+\section{polr}
+
+The R package that is distributed in support of Venables and Ripley's
+\emph{Modern Applied Statistics} is called MASS. In that package,
+there is a routine called ``polr'' which stands for ``proportional
+odds logistic regression.'' It can be used to fit ordinal logistic
+regression models. The threshold parameter $\Pi_{j}$ in my treatment
+is called zeta, $\zeta_{j}$, in their manual. 
+
+The polr documentation says they are thinking of the range of observed
+outcomes as a result of dividing the real numbers like so: $(-\infty,\zeta_{1},\zeta_{2},...,\zeta_{K},+\infty)$.
+So the lowest categorical outcome is observed when the latent variable
+lies between $-\infty$ and $\zeta_{1}$. The next value is observed
+when it is between $\zeta_{1}$ and $\zeta_{2}$, and so forth. What
+is the latent variable? The polr help page also provides the formula:
+\begin{equation}
+logit\, P(y_{i}\leq k|X_{i})=\zeta_{k}-X_{i}b\label{eq:VR}
+\end{equation}
+In this context, $X_{i}b$ is the linear predictor, which is often
+called $\eta_{i}$. For example, $\eta_{i}$= $b_{1}X1_{i}+b_{2}X2_{i}$
+(if there are 2 input variables). Note that there is no intercept
+coefficient $b_{0}$ in this formulation, it has been fixed at $0$.
+That means we can estimate $k-1$ threshold-separating-parameters
+for a $k$ category model.
+
+A drawing of that particular parameterization is presented in Figure
+\ref{fig:POLR}. The observed outcome categories are numbered $1,2,\ldots,K$,
+and the $k$'th threshold separates the chance that $y_{i}\leq k$
+from the chance that the outcome is greater than $k$. The model is
+designed so that the threshold separators $\zeta_{k}$ grow larger
+as $k$ increases, so they have to be placed from left to right in
+the figure. Compared to my notation, this one has threshold parameters
+and with reversed signs. 
+
+The authors want to investigate the chances that an outcome is in
+a designated category $k$ \emph{or lower. }That means the probability
+model must be
+\begin{equation}
+Pr(y_{i}\leq k|X_{i})=Pr(e_{i}<\zeta_{k}-X_{i}b)
+\end{equation}
+\\
+The chance that the outcome will be $k$ or smaller is equal to the
+chance that a random noise $e_{i}$ is smaller than $\zeta_{k}-X_{i}b.$
+That, of course, is the same as the chance that the linear predictor
+$X_{i}b$ plus the random noise $e_{i}$ remains below a threshold:
+\begin{equation}
+Prob(y_{i}\leq k|X_{i})=Prob(X_{i}b+e_{i}<\zeta_{k})
+\end{equation}
+
+
+\begin{figure}[H]
+\caption{A polr Polychotomy\label{fig:POLR}}
+
+
+\centering{}\input{3_home_pauljohn_TrueMounted_ps_SVN-guides_stat_Regression-Categorical_Ordinal_importfigs_polr-1.pdftex_t}
+\end{figure}
+
+
+The polr model, Venables and Ripley use a minus sign in equation \ref{eq:VR}.
+By writing \ref{eq:VR} with a negative sign, it allows for the re-arranged
+model to have an intuitive interpretation. Simply put, if the linear
+predictor ``gets bigger,'' then chance of a higher outcome is increased. 
+
+To illustrate that change, let's compare two cases.
+\begin{enumerate}
+\item Imagine $\eta_{i}=X_{i}b=0$
+
+
+If $Xb$ were 0, what will be the probability distribution of outcomes?
+Then the probabilities would be represented in Figure \ref{fig:polr-Xb=00003D0}
+
+\item Imaine $\eta_{i}=X_{i}b=2.2$
+
+
+What if $Xb$ is a positive number, say 2.2. Then the dividers in
+the distribution change in the way shown in Figure \ref{fig:Shift-in-Probabilities}
+
+
+The probability of a low outcome is reduced, while the probability
+of the biggest outcome is increased. 
+
+\end{enumerate}
+\begin{figure}
+\caption{polr probabilities when $X_{i}b=0$\label{fig:polr-Xb=00003D0}}
+
+
+\centering{}\input{4_home_pauljohn_TrueMounted_ps_SVN-guides_stat____ion-Categorical_Ordinal_importfigs_polr-2_0.pdftex_t}
+\end{figure}
+
+
+\begin{figure}[H]
+\caption{Shift in Probabilities\label{fig:Shift-in-Probabilities}}
+
+
+\centering{}\input{5_home_pauljohn_TrueMounted_ps_SVN-guides_stat_Regression-Categorical_Ordinal_importfigs_polr-2.pdftex_t}
+\end{figure}
+
+
+SAS's Proc Logistic went in the opposite direction. The default coding
+went in the other direction, so that when there was a large, statistically
+significant coefficient, it indicated that the chance of a higher
+outcome was growing smaller. 
+
+
+\section{SAS Backwards Logistic}
+
+In SAS PROC LOGISTIC, the parameter estimate for the slopes of input
+variables are of the opposite sign. Observe in Table \ref{tab:SAS-Logistic},
+the parameter estimate is 0.2805. 
+
+Why does the SAS estimate come out with the opposite value? It is
+as simple as this. Where the polr model was estimating this expression,
+\begin{equation}
+logit\, P(y_{i}\leq k|X_{i})=\zeta_{k}-X_{i}b\label{eq:VR-1}
+\end{equation}
+\\
+SAS is estimating this
+\begin{equation}
+logit\, Pr(y_{i}\leq k|X_{i})=\zeta_{k}+X_{i}b
+\end{equation}
+
+
+The sign on the coefficient $b$ is reversed, so the estimates are
+reversed. The sign on the threshold/intercept estimates is the same.
+
+SAS is the only program that I've tested in which the slope estimates
+are reversed. The other programs try to help users avoid the mistake
+that so many SAS users have made, thinking that the effects in their
+data are all opposite of their expectations. Most users like to think
+of the input variables as predictors that increase the chances of
+more highly ranked outcomes. In a political participation study, we
+might say ``high'' represents ``did vote'' while ``low'' represents
+``did not.'' A positive slope coefficient should indicate that the
+chance of voting is increased. If we are modeling a person's vote
+for a Republican candidate, we usually think of ``high'' meaning
+``yes,'' the respondent voted for a Republican. 
+
+This is only a matter of interpretation, however. The original SAS
+model was designed to think of the low outcome as the one to be preferred,
+as in ``lacking tumors'' or ``no heart disease.'' 
+
+\begin{table}
+\caption{SAS Logistic is Still Backwards\label{tab:SAS-Logistic}}
+
+
+\inputencoding{latin9}\begin{lstlisting}
+
+proc logistic data=nes2002;
+
+   model economy = conservatism;
+run;
+\end{lstlisting}
+\inputencoding{utf8}
+
+\inputencoding{latin9}\begin{lstlisting}
+            Testing Global Null Hypothesis: BETA=0
+
+    Test                 Chi-Square       DF     Pr > ChiSq
+
+    Likelihood Ratio        41.1011        1         <.0001
+    Score                   39.4521        1         <.0001
+    Wald                    39.2135        1         <.0001
+
+
+            Analysis of Maximum Likelihood Estimates
+
+                                 Standard       Wald
+ Parameter           DF Estimate    Error Chi-Square Pr > ChiSq
+
+ Intercept    better  1  -4.2458   0.2526   282.5931     <.0001
+ Intercept    same    1  -2.3226   0.2196   111.9058     <.0001
+ conservatism         1   0.2805   0.0448    39.2135     <.0001
+\end{lstlisting}
+\inputencoding{utf8}\end{table}
+
+
+In more recent versions of the SAS program, PROC LOGISTIC has been
+generalized to allow users to reverse the signs by the insertion of
+an option called DESCENDING.
+
+
+\section{Stata has the Slope We Expect, but Reversed Thresholds}
+
+In polr and PROC LOGISTIC, the ``intercept'' interpretation for
+the category separators was used. We think of the separation of the
+categorical outcomes as being driven by the replacement of $b_{0}$
+with a sequence of separating constants. 
+
+In Stata, those separator constants are given the ``threshold''
+interpretation, and thus their effects are reversed. See Table \ref{tab:Stata-Ordinal}.
+The Stata manual explains their version of the model (I've reversed
+the roles of $i$ and $j$ to be consistent with the rest of this
+essay). ``The probability of observing outcome $j$ corresponds to
+the probability that the estimated linear function, plus random error,
+is within the range of the cutpoints estimated for the outcome:
+
+\begin{equation}
+Pr(outcome_{i}=j)=Pr(\kappa_{j-1}<\beta_{1}x1_{i}+\beta_{2}x2_{i}+\cdots+\beta_{k}xk_{i}+u_{i}\leq\kappa_{j})
+\end{equation}
+
+
+\noindent $u_{i}$ is assumed to be logistically distributed in ordered
+logit'' (STATABASE REFERENCEMANUAL RELEASE 11, College Station, TX:
+Stata Press, 2009, p. 1268).
+
+\begin{table}
+\caption{Stata Ordinal Logistic Regression\label{tab:Stata-Ordinal}}
+
+
+\inputencoding{latin9}\begin{lstlisting}
+
+. ologit economy conservatism
+
+Iteration 0:   log likelihood = -865.68333  
+Iteration 1:   log likelihood = -845.38741  
+Iteration 2:   log likelihood = -845.13286  
+Iteration 3:   log likelihood = -845.13276  
+Iteration 4:   log likelihood = -845.13276  
+
+Ordered logistic regression                       Number of obs   =       1241
+                                                  LR chi2(1)      =      41.10
+                                                  Prob > chi2     =     0.0000
+Log likelihood = -845.13276                       Pseudo R2       =     0.0237
+
+------------------------------------------------------------------------------
+     economy |   Coef. Std.Err.  z   P>|z|  [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+conservatism | -.2805   .0450  -6.23 0.000  -.3687751    -.192286
+-------------+----------------------------------------------------------------
+       /cut1 | -4.2458  .2532               -4.742078   -3.749548
+       /cut2 | -2.3226  .2204               -2.754558    -1.89068
+------------------------------------------------------------------------------
+
+\end{lstlisting}
+\inputencoding{utf8}\end{table}
+
+
+
+\section{Goldilocks prefers lrm}
+
+I had not realized this until I was done with this exercise. The routine
+that provides parameter estimates of the divider coefficients and
+the slopes to match the theory I presented in Section 2 is Professor
+Frank Harrell's lrm estimator, which is part of a package that supports
+his fine book, \emph{Regression Modeling Strategies}.
+
+The output from lrm is presented in Table \ref{tab:Output-LRM}.
+
+\begin{table}
+\caption{Output Harrell's lrm\label{tab:Output-LRM}}
+
+
+<<echo=F,results=hide>>=
+library(rms)
+@
+<<echo=T>>=
+
+lrm1 <- lrm(economy~conservatism, data=nes2002)
+lrm1
+@
+\end{table}
+
+
+
+\section{Calculating Predicted Probabilties}
+
+Recall that, while using the MASS package, the ordinal regression
+model is called a ``proportional odds'' model and the fitting function
+is called ``polr''. We previously used this fitting function:
+
+\begin{Sinput}
+polr1 <- polr(economy~conservatism, data=nes2002, Hess=T)
+\end{Sinput}
+
+The function predict(polr1) returns a categorical output, the most
+likely outcome for each row of the data frame. This is a large data
+set, I won't print out all of the ``Same'' ``Worse'' or ``Better''
+outcomes, but the tables don't hurt (much). 
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+newds <- polr1$model
+newds$polr1p1 <- predict(polr1)
+(t1 <- table(newds$polr1p1))
+prop.table(table(newds$polr1p1, newds$conservatism), 2)
+@
+
+As you can see, this model is a bit disappointing. This is not an
+uncommon problem. It predicts that every single respondent will say
+``worse''. In the data, the counts of ``worse'',''same'', and
+``better'' are 921, 258, and 62. The proportion of people predicted
+to say ``worse'' is 1.0 in every column.
+
+The cross tabulation of the observed and predicted outcomes is often
+used to create a ``box score'' of the model's predictions. This
+one predicts 921/1241 correctly, and 320/1240 incorrectly. The model
+predicts 74.2\% correctly, but it is really quite a shallow victory.
+You could have predicted just as well without doing the regression
+at all. That's why ``percent correctly predicted'' is not a powerful
+indicator of a model's quality.
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+table(newds$polr1p1, newds$economy)
+@
+
+Adding the option type=''p'' indicates that we want the probabilities
+for the 3 categories to be returned in columns. Lets just inspect
+the first 5 rows of the new data set.
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+newds$polr1p2 <- predict(polr1, type="p")
+colnames(newds)
+newds[1:5, ]
+@
+
+I attempt to generate a bit of diversity in the predictions by throwing
+in more variables. Including additional variables, political party
+indicator variables( ``repub'' and ``democ''), the ``Bush Thermometer''
+scale and education (V023131) coded as a categorical predictor. 
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+library (MASS) 
+polr2 <- polr(economy~conservatism+repub+democ+V023010 + as.factor(V023131), data=nes2002, Hess=T)
+summary(polr2)
+@
+
+I have only meager success in diversifying my predictions.
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+newds <- polr2$model
+newds$polr2p1 <- predict(polr2)
+(t2 <- table(newds$polr2p1))
+table(newds$polr2p1, newds$economy)
+newds$polr2p2 <- predict(polr2, type="p")
+newds[1:5, ]
+@
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+library (MASS) 
+nes2002$income <- factor(nes2002$V023149, levels=c("1","2","3","4","5","6","7"))
+nes2002$income <- as.numeric(levels(nes2002$income))[nes2002$income]
+nes2002$income[nes2002$income == 4] <- 3
+nes2002$income[nes2002$income == 5] <- 4
+nes2002$income[nes2002$income == 6] <- 5
+nes2002$income[nes2002$income == 7] <- 6
+table(nes2002$income)
+race.black <- ifelse(nes2002$V023150 %in% c("1"),1,0)
+race.hispanic <- ifelse(nes2002$V023150 %in% c("4"),1,0)
+race.white <- ifelse(nes2002$V023150 %in% c("5"),1,0)
+table(race.black)
+table(race.white)
+polr3 <- polr(economy~conservatism+repub+democ+V023010 + as.factor(V023131) + race.black + race.white + race.hispanic + income , data=nes2002, Hess=T)
+summary(polr3)
+
+@
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+newds <- polr3$model
+newds$polr3p1 <- predict(polr3)
+(t3 <- table(newds$polr3p1))
+table(newds$polr3p1, newds$economy)
+newds$polr3p2 <- predict(polr3, type="p")
+newds[1:5, ]
+@
+
+Well, supposing I did have to make something of this particular model,
+what is the next step? One option is to calculate the probability
+of a particular outcome for various combinations of the input variables.
+This can lead to a nice table. Lets look at the crosstabulation of
+income (on the 7 point scale) and conservatism (also on a 7 point
+scale). The distribution of respondents is: 
+
+%dependent variable=state of econ, independent variable=ideology
+<<echo=T>>=
+(t6 <- with(nes2002, table(conservatism, income )))
+prop.table(t6, 2)
+@
+\end{document}

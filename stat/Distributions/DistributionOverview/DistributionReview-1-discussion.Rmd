@@ -1,0 +1,354 @@
+---
+title: "Distribution Overview"
+author: "Paul E. Johnson"
+date: '2015-02-04'
+output: slidy_presentation
+---
+
+## Visualize (Whirled Peas)
+
+Quick PDF sketch
+
+- Normal (too easy)
+
+- Gamma   
+
+- Beta
+
+- Logistic
+
+- Poisson
+
+- Binomial
+
+# Guess that Distribution
+
+```{r drawHist,  include=FALSE}
+drawHist <- function(x, ...){
+    dots <- list(...)
+
+    ## These are legal argument names we need to take from ...
+    ## if the user supplied them.
+    histNames <- c("breaks", "nclass", "include.lowest", "right")
+    argsForHist1 <- dots[ names(dots) [names(dots) %in% histNames]]
+    assign("xvar", deparse(substitute(x)))
+    ##argsForHist1[["x"]] <- as.name(deparse(substitute(x)))
+    argsForHist1$x <- x
+    argsForHist1$plot <- FALSE
+
+    if(is.null(dots$breaks)){
+        dots$breaks <- 100
+    }
+    if ((length(dots$breaks) == 1) & is.numeric(dots$breaks)){
+        argsForHist1$breaks <- min(dots$breaks, length(unique(x))+1)
+    }
+
+    h1 <- do.call("hist", argsForHist1)
+    cr <- range(x)
+
+    ## Unless the ... or "h1" arguments say otherwise, use these:
+    defaults <- list(prob = TRUE,
+                     main = "", border = gray(.80), xlim = extendrange(cr,f=0.10),
+                     ylim = rockchalk::magRange(h1$density, c(1,1.2)),
+                     ylab = "density")
+    defaults$xlab <- gsub(".*\\$", "", deparse(substitute(x)))
+    defaults[["x"]] <- as.name(deparse(substitute(x)))
+
+    ## Battle through the ... arguments. Find if any are legal hist arguments
+    ## and insert them.
+    namesOverlap <- names(dots) %in% names(formals(hist.default))
+    dotsForHist <- dots[ names(dots)[namesOverlap] ]
+    defaults <- modifyList(defaults, dotsForHist)
+
+    ## Problem: Must take notice of breaks calculated by h1.
+    defaults <- modifyList(defaults, list("breaks" = h1$breaks,
+                                            "include.lowest" = h1$include.lowest,
+                                            "right" = h1$right,
+                                            "nclass" = h1$nclass))
+
+    callhist <- do.call("hist", defaults)
+
+    lines(density(x), col="red", lty=2, lwd=2)
+
+    ind <- seq(cr[1], cr[2], length.out=100)
+    cm1 <- round(mean(x), 3)
+    cs1 <- round(sd(x), 3)
+    nprob <- dnorm(ind, m = cm1, s = cs1)
+    lines(ind, nprob, lty = 1, col = "black")
+    nlab <-   bquote(paste("Normal(", .(round(cm1,3)),",", .(round(cs1,3))^2,")"))
+    legend("topleft",legend=c("Kernel Density", as.expression(nlab)), lty=c(2,1), col=c("red","black"), lwd=c(1.5,1))
+    legend("left", legend=c(paste("Obs. mean=", cm1), paste("Obs. s.d.=",cs1)))
+    invisible(callhist)
+}
+library(rockchalk)
+```
+
+
+## I'm Not that {.allowframebreaks}
+
+```{r include = FALSE}
+x1 <- rnorm(2000, 88, 200)
+```
+```{r}
+length(x1)
+x1[1:10]
+rockchalk::summarize(x1)
+```
+
+I am not: a) Poisson b) Normal c) Uniform d) Beta e) Binomial
+
+## I'm Not that {.allowframebreaks}
+
+```{r echo=FALSE}
+hist(x1, prob = TRUE, xlab = "Guess What I'm Not!")
+```
+
+I am not a) Poisson b) Normal c) Gamma d) Beta e) Binomial
+
+## Answer:
+
+x1 <- rnorm(2000, 88, 200)
+
+## I'm Not that 2 {.allowframebreaks}
+
+```{r include = FALSE}
+x2 <- rgamma(2000, 2, 1)
+```
+```{r}
+x2[1:10]
+```
+```{r}
+summarize(x2)
+```
+
+I am not a) Poisson b) Normal c) Uniform d) Beta
+
+## I'm Not that 2 {.allowframebreaks}
+
+
+```{r echo=FALSE}
+hist(x2, prob = TRUE, xlab = "Guess What I'm Not!")
+```
+
+I am not a) Poisson b) Logistic c) Uniform d) Beta
+
+## Answer
+
+x2 <- rgamma(2000, 2, 1)
+
+## I'm Not that 3{.allowframebreaks}
+
+```{r include = FALSE}
+x3 <- rbinom(2000, 10, prob = c(0.3))
+```
+```{r}
+x3[1:10]
+```
+
+```{r}
+rockchalk::summarize(x3)
+```
+
+I am not: a) Poisson b) Normal c) Uniform d) Beta e) Binomial
+
+## I'm Not that {.allowframebreaks}
+
+```{r echo=FALSE}
+hist(x3, prob = TRUE, xlab = "Guess What I'm Not!")
+```
+I am not a) Poisson b) Normal c) Gamma d) Beta
+
+## Answer:
+
+Actually, I was rbinom(2000, 10, prob = c(0.3))
+
+
+
+# Harvesting from R/WorkingExamples
+
+## plot-histogramWithLinesAndLegend.R(html)
+
+```{r}
+drawHist(x1)
+```
+
+## ex 2
+
+
+```{r}
+drawHist(x2)
+```
+
+
+## ex 3
+
+```{r}
+drawHist(x3)
+```
+
+# Expected Values
+
+## EV: Simple idea with complicated jargon
+
+- Expected Value
+
+Probability weighted sum of outcomes
+
+- Outcomes are 1, 2, 3
+- Probabilities are 0.5, 0.4, and 0.1
+
+Calculate the Expected Value: ?
+
+0.5 * 1 + 0.4 * 2 + 0.1 * 3
+
+Easy!
+
+## Do you think terminology is the major problem
+
+- Common, everyday meaning of "expected value"
+- Is that ever what a lay person would "expect"?
+- For which distributions is this "informative"? (unimodal, symmetric)
+- When is it not subjectively informative? (others)
+
+## Even if EV is not subjectively informative...
+- Its still a fixed characteristic of the probability process
+- Estimate it!
+- Sometimes we engage in this game
+    - Stipulate a theoretical distribution
+    - Calculate the average from a sample
+    - Note the sample is "so far" from what we theorized about the EV that the theory must be wrong!
+
+## Got R? {.allowframebreaks}
+
+```
+x1 <- rpois(5000, lambda = 0.2)
+hist(x1, main = "My EV is 0.2")
+```
+```
+x2 <- rpois(5000, lambda = 10)
+hist(x2, main = "My EV is 10")
+```
+
+- please make note of these numbers
+
+```
+mean(x1)
+mean(x2)
+sd(x1)
+sd(x2)
+```
+
+## I got {.allowframebreaks}
+
+```{r}
+x1 <- rpois(5000, lambda = 0.2)
+hist(x1, main = "My EV is 0.2")
+```
+
+- Sometimes I notice that R's hist doesn't work so well with discrete variables. Have ideas about that, but don't want to bother you about them now.
+
+```{r}
+x2 <- rpois(5000, lambda = 10)
+hist(x2, main = "My EV is 10")
+```
+
+- Wedge those into same figure with par(mfcol = c(2,1))
+
+```{r echo=FALSE}
+op <- par(no.readonly=TRUE)
+par(mfrow = c(2,1))
+hist(x1, main = "My EV is 0.2")
+hist(x2, main = "My EV is 10")
+par(op)
+```
+
+## Sample average is one way to estimate EV
+
+- The mean 
+
+\[
+\bar{x}=\frac{sum\ of\ observed\ values}{N}
+\]
+- Need criteria to say if $\bar{x}$ is a "good"" estimate of $E[x]$
+
+- Later in term
+    - unbiased
+    
+    > $\bar{x}$ flutters around E[x]
+
+    - consistent
+    
+    > As your sample grows, gap between $\bar{x}$ and $E[x]$ will probably shrink
+
+## Probabilities. Who Likes Calculus?
+
+- This is a discrete variable, so we'd say it has "Probability Mass", techincally different from a "continuum"
+- Easiest math
+- Probability of an outcome simply given to us
+- Easy to see addition and multiplication rules.
+
+## Continuous variables
+- If you can put up with integrals, you can describe these things more clearly.
+    - PDF, f(x): probability density of a score equal to x
+    - CDF, F(k): cumulative distribution function. Chance of an observed score smaller than k
+    
+## Extreme scores
+
+- Sketch some PDF (plays per fumble)
+- Mark any point k. 
+- We almost never interested in question of a score exactly k
+- Are interested in outcomes more extreme than k
+- Imagine 
+    - the distribution of what would happen
+    - the data gives you some estimate k
+    - we want to know if k is extremely different from model 
+    
+# I hate the word population
+
+## Data Generating Process
+
+- I am almost never interested in describing "the people out there from which we are sampling"
+- I am interested in estimating the parameters of the process that generates them.
+
+## I want the distribution of an estimate
+
+- what did you get for $mean(x1)$ before?
+
+- Sampling distribution
+
+# Theoretical Variance
+
+## Variance
+
+- Expected value of $(x - E[x])^2$
+
+- Can we calculate variance of {1, 2, 3}
+ with probabilities {0.5, 0.4, and 0.1}?
+
+- Var[x] is a characteristic of the probability process
+- Sample variance is an estimate of it.
+
+## Terminology
+
+- Differentiate the "theoretical property" from the "sample estimate"
+
+- Expected Value <=> sample mean
+
+- There's no special word for "population variance" similar to expected value (thus creating confusion when discussing variance)
+
+
+## How to calculate sample variance estimates
+
+- Here, the N and N-1 problem slaps us in the face.
+- Intuition, a good formula appears to be
+$$s1 = \frac{Sum\ of (x - E[x])^2}{N}$$
+- That is a maximum likelihood estimate
+
+## But it is not unbiased.
+
+- $E[s1]\neq Var[x]$
+
+- But this is unbiased
+
+$$s1 = \frac{Sum\ of (x - E[x])^2}{N-1}$$
+

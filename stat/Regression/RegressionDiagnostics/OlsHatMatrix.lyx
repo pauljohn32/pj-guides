@@ -1,0 +1,2369 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme palatino
+\graphics default
+\paperfontsize 12
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Title
+The Hat Matrix and Regression Diagnostics
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Section
+OLS Review
+\end_layout
+
+\begin_layout Standard
+Myers, Montgomery, and Vining explain the matrix algebra of OLS with more
+ clarity than any other source I've found.
+ Carefuly study p.
+ 9-14 or so.
+ 
+\end_layout
+
+\begin_layout Standard
+The only criticism I have of their style is that they don't use the hat
+ symbol to differentiate a parameter estimate from the symbol that represents
+ the true value.
+ So if you compare what I write with what they write, you see I try to different
+iate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ from 
+\begin_inset Formula $\beta$
+\end_inset
+
+, whereas I think they are inconsistent, sometimes using 
+\begin_inset Formula $b$
+\end_inset
+
+ for the estimates, but also sometimes 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is either an estimate or a parameter.
+\end_layout
+
+\begin_layout Standard
+Basically, the theory of OLS is that this linear relationship holds:
+\begin_inset Formula \begin{equation}
+y=X\beta+e\label{eq:theory}\end{equation}
+
+\end_inset
+
+
+\newline
+The vectors 
+\begin_inset Formula $y$
+\end_inset
+
+ and 
+\begin_inset Formula $e$
+\end_inset
+
+ are 
+\begin_inset Formula $Nx1,$
+\end_inset
+
+ representing the observed dependent variable and the unobserved errors,
+ respectively.
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ is an 
+\begin_inset Formula $Nxp$
+\end_inset
+
+ matrix, and the goal is to estimate 
+\begin_inset Formula $\beta$
+\end_inset
+
+, which is a vector that is 
+\begin_inset Formula $p\, x\,1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If we have an estimate of 
+\begin_inset Formula $\beta,$
+\end_inset
+
+ say 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+, we can calculate a predicted value, 
+\begin_inset Formula $\hat{y}_{i}$
+\end_inset
+
+ for each case, 
+\begin_inset Formula $\hat{y}_{i}=X_{i}\hat{\beta}$
+\end_inset
+
+ (let 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ refer to the i'th row of 
+\begin_inset Formula $X$
+\end_inset
+
+), or, in matrix form:
+\begin_inset Formula \begin{equation}
+\hat{y}=X\hat{\beta},\label{eq:yhat}\end{equation}
+
+\end_inset
+
+ as well as a 
+\begin_inset Quotes eld
+\end_inset
+
+residual,
+\begin_inset Quotes erd
+\end_inset
+
+ the difference between the predicted and observed value: 
+\begin_inset Formula $\hat{e}_{i}=y_{i}-\hat{y}_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The sum of squared residuals is represented in matrix terms as
+\begin_inset Formula \begin{equation}
+\hat{e}'\cdot\hat{e}\label{eq:eesumsqu}\end{equation}
+
+\end_inset
+
+
+\newline
+Its always true: if you multiply the transpose of the vector by the vector,
+ you end up with the sum of squared elements.
+ Written out in full, it would look like:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+\left[y_{1}-\begin{array}{cccccc}
+\hat{y}_{1} & y_{2}-\hat{y}_{2} & y_{3}-\hat{y}_{3} & \cdots & y_{N-1}-\hat{y}_{N-1} & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{c}
+y_{1-}\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+y_{3}-\hat{y}_{3}\\
+\vdots\\
+y_{N-1}-\hat{y}_{N-1}\\
+y_{N}-\hat{y}_{N}\end{array}\right]\]
+
+\end_inset
+
+
+\newline
+Please convince yourself that if you do this multiplication, it gives you
+ the sum of squared residuals.
+ 
+\end_layout
+
+\begin_layout Standard
+As you would expect from the regression model, of course, for each case
+ the predicted value is calculated as 
+\begin_inset Formula $\hat{y}_{i}=X_{i}\cdot\hat{\beta}$
+\end_inset
+
+, where the 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is lazy notation I adopt to refer to the i'th row from the matrix X.
+ The sum of squared residuals in matrix notation is
+\begin_inset Formula \begin{equation}
+S(\hat{\beta})=\hat{e}'\hat{e}=(y-X\hat{\beta})'(y-X\hat{\beta})\label{eq:sumofsquares}\end{equation}
+
+\end_inset
+
+
+\newline
+The very famous 
+\series bold
+NORMAL EQUATIONS
+\series default
+ result when 
+\begin_inset LatexCommand \ref{eq:sumofsquares}
+
+\end_inset
+
+ is differentiated with respect to each coefficient in the vector of estimates,
+ 
+\begin_inset Formula $\hat{\beta}'=(\hat{\beta}_{1},\hat{\beta}_{2},\cdots,\hat{\beta}_{p}).$
+\end_inset
+
+ Taking the partial derivatives of 
+\begin_inset Formula $S(\hat{\beta})$
+\end_inset
+
+ with respect to each coefficient gives 
+\begin_inset Formula $p$
+\end_inset
+
+ equations, and to find the optimal estimates, the derivatives must be set
+ equal to 0.
+ That is, we need to find, in the end, that 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is the right value so that:
+\begin_inset Formula \begin{equation}
+\begin{array}{ccccc}
+\frac{\partial S}{\partial\hat{\beta}_{1}} & = & 0\\
+\frac{\partial S}{\partial\hat{\beta}_{2}} & = & 0\\
+\frac{\partial S}{\partial\hat{\beta}_{3}} & = & 0\end{array}\label{eq:foc}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you do the math one equation at a time, it gets very boring and tedious,
+ but if you trust in the matrix algebra, it is quite concise.
+ This amounts to
+\begin_inset Formula \[
+(X'X)\hat{\beta}-X'y=0\]
+
+\end_inset
+
+
+\newline
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+(X'X)\hat{\beta}=X'y\label{eq:normal}\end{equation}
+
+\end_inset
+
+
+\newline
+Supposing that the 
+\begin_inset Formula $p\, x\, p$
+\end_inset
+
+ matrix 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ is 
+\emph on
+invertible 
+\emph default
+(review handout on matrices and inverses), then the 
+\begin_inset Quotes eld
+\end_inset
+
+solution
+\begin_inset Quotes erd
+\end_inset
+
+ to the problem is
+\begin_inset Formula \begin{equation}
+\hat{\beta}=(X'X)^{-1}X'y\label{eq:ols}\end{equation}
+
+\end_inset
+
+
+\newline
+That is the 
+\begin_inset Quotes eld
+\end_inset
+
+big kahoona
+\begin_inset Quotes erd
+\end_inset
+
+ of OLS, of course.
+ I once saw excellent t-shirts from ICPSR with that as the slogan.
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $H$
+\end_inset
+
+: The 
+\begin_inset Quotes eld
+\end_inset
+
+hat
+\begin_inset Quotes erd
+\end_inset
+
+ matrix.
+\end_layout
+
+\begin_layout Standard
+Suppose you calculated the predicted value of 
+\begin_inset Formula $y$
+\end_inset
+
+ for all of the observations.
+ Here's a vector:
+\begin_inset Formula \[
+\hat{y}=X\cdot\hat{\beta}\]
+
+\end_inset
+
+
+\newline
+In that equation, replace 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ by the solution in 
+\begin_inset LatexCommand \ref{eq:ols}
+
+\end_inset
+
+.
+ Then the predicted value is equal to
+\begin_inset Formula \[
+\hat{y}=X(X'X)^{-1}X'y\]
+
+\end_inset
+
+ This says you can take input in the form of the OBSERVED 
+\begin_inset Formula $y$
+\end_inset
+
+ vector, and multiply 
+\begin_inset Formula $y$
+\end_inset
+
+ by that glob 
+\begin_inset Formula $X(X'X)^{-1}X'$
+\end_inset
+
+, then you end up with the predicted values.
+ 
+\end_layout
+
+\begin_layout Standard
+That glob is called the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+hat matrix
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ Formally,
+\begin_inset Formula \begin{equation}
+H=X(X'X)^{-1}X'\label{eq:hat}\end{equation}
+
+\end_inset
+
+ 
+\newline
+The hat matrix is 
+\begin_inset Formula $NxN$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Obviously,
+\begin_inset Formula \[
+\hat{y}=Hy=X\hat{\beta}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please note, the values in the hat matrix are directly tied to the observed
+ values of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ for all of the observations.
+ You can't take 
+\begin_inset Quotes eld
+\end_inset
+
+any old
+\begin_inset Quotes erd
+\end_inset
+
+ vector of 
+\begin_inset Formula $y$
+\end_inset
+
+ and multiply by 
+\begin_inset Formula $h$
+\end_inset
+
+ to get meaningful the predicted values.
+ Rather, the particular combination of observed 
+\begin_inset Formula $X$
+\end_inset
+
+ is used for the particular observed 
+\begin_inset Formula $y$
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Section
+R support
+\end_layout
+
+\begin_layout Standard
+R has, in its base, a method called influence.measures().
+ It will calculate the results described in the following sections.
+\end_layout
+
+\begin_layout Section
+The hat matrix has magical properties.
+\end_layout
+
+\begin_layout Standard
+There are many interesting properties of the hat matrix.
+ 
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\hat{e}=(I-H)y$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In words, the OLS residuals are equal to 
+\begin_inset Formula $(I-H)y$
+\end_inset
+
+ (see Myers, Montgomery, Vining, p.
+ 42.)
+\begin_inset Formula \[
+\hat{e}=y-X\hat{\beta}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+=y-Hy\]
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+=(I-H)y\label{eq:I-Hy}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The matrix 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is symmetric.
+\end_layout
+
+\begin_layout Standard
+A matrix 
+\begin_inset Formula $X$
+\end_inset
+
+ is symmetric if 
+\begin_inset Formula $X$
+\end_inset
+
+ is equal to its transpose, 
+\begin_inset Formula $X=X'.$
+\end_inset
+
+ If you wrote out a matrix with 4 elements, say, it would have the 
+\begin_inset Quotes eld
+\end_inset
+
+same numbers
+\begin_inset Quotes erd
+\end_inset
+
+ above and below the main diagonal, 
+\begin_inset Formula \[
+\left[\begin{array}{cccc}
+x_{11} & x_{12} & x_{13} & x_{14}\\
+x_{12} & x_{22} & x_{23} & x_{24}\\
+x_{13} & x_{23} & x_{13} & x_{34}\\
+x_{14} & x_{24} & x_{34} & x_{44}\end{array}\right]\]
+
+\end_inset
+
+ or, for instance, 
+\begin_inset Formula \[
+\left[\begin{array}{cccc}
+0 & 1 & 2 & 3\\
+1 & 0 & 4 & 5\\
+2 & 4 & 0 & 6\\
+3 & 5 & 6 & 0\end{array}\right]\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The only way I know of to convince myself that 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is symmetric is to proceed in two steps.
+ First show the hat matrix itself is symmetric: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+H=H'\label{eq:Hhprime}\end{equation}
+
+\end_inset
+
+
+\newline
+If that is correct, then obviously 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is symmetric, because the subtraction 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ only affects the magnitude diagonal elements of H, and it leaves all of
+ the off-diagonal elements unchanged, except they become negative.
+ So subtracting 
+\begin_inset Formula $H$
+\end_inset
+
+ from 
+\begin_inset Formula $I$
+\end_inset
+
+ cannot change its symmetry.
+\end_layout
+
+\begin_layout Standard
+To convince yourself that 
+\begin_inset Formula $H=H'$
+\end_inset
+
+, work it out! Recall the matrix handout point that 
+\begin_inset Quotes eld
+\end_inset
+
+transpose of a product is the product of the transposes in reverse order
+\begin_inset Quotes erd
+\end_inset
+
+.
+ I'm going to use the word transpose instead of prime symbols when I fear
+ ambiguity, especially when 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ has to be transposed.
+ It would be very ugly to write 
+\begin_inset Formula $((X'X)^{-1})'$
+\end_inset
+
+ Obviously, transpose(X)=X' and X'=transpose(X).
+\begin_inset Formula \begin{equation}
+transpose[X(X'X)^{-1}X']=X\cdot transpose[(X'X)^{-1}]\cdot X'\label{eq:transposexxxx}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Further, we know that 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ is a symmetric matrix.
+ We know that is true because 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ is symmetric, and so, rather obviously, the inverse is symmetric.
+ If you have trouble agreeing that 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ is symmetric, get some paper and create an example X matrix for yourself.
+ After a very very short amount of work, you will see that the off-diagonal
+ elements of 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ are perfectly symmetric.
+ 
+\end_layout
+
+\begin_layout Standard
+If you believe that 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ is symmetric, then by definition
+\begin_inset Formula \[
+transpose[(X'X)^{-1}]=(X'X)^{-1}\]
+
+\end_inset
+
+
+\newline
+and thus the problem is solved, because you can use that result to simplify
+ 
+\begin_inset LatexCommand \ref{eq:transposexxxx}
+
+\end_inset
+
+.
+ In fact, it generates the desired result:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula \begin{equation}
+transpose[X(X'X)^{-1}X']=X(X'X)^{-1}X\label{eq:symmetric}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+(I-H) is idempotent.
+\end_layout
+
+\begin_layout Standard
+Idempotent means that a matrix multiplied by itself is equal to itself!
+ If X is idempotent, then 
+\begin_inset Formula $X\cdot X=X.$
+\end_inset
+
+ How peculiar! Obviously, if 
+\begin_inset Formula $X$
+\end_inset
+
+ is a symmetric matrix, and it is idempotent, then 
+\begin_inset Formula $X'X=X$
+\end_inset
+
+ and 
+\begin_inset Formula $XX'=X.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Try to reason through the argument about 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ with me, because I've forgotten why I think that 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is idempotent.
+ (Not really, of course, but I'm adding dramatic effect!).
+ For starters, I believe the hat matrix itself is idempotent.
+ It is convincing to write it out:
+\begin_inset Formula \begin{equation}
+H\cdot H\label{eq:idem1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \[
+X(X'X)^{-1}X'\cdot X(X'X)^{-1}X'\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+=X(X'X)^{-1}(X'X)(X'X)^{-1}X'\]
+
+\end_inset
+
+ observe in the middle of this that 
+\begin_inset Formula $(X'X)(X'X)^{-1}=I,$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=X(X'X)^{-1}\cdot I\cdot X'\]
+
+\end_inset
+
+ and therfore the result is
+\begin_inset Formula \[
+=X(X'X)^{-1}X'\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's the answer we wanted, isn't it?
+\end_layout
+
+\begin_layout Standard
+Now I just need a transition from the fact that 
+\begin_inset Formula $H$
+\end_inset
+
+ is idempotent to the claim that 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is idempotent.
+ Well, think that through, its not so difficult.
+\begin_inset Formula \begin{equation}
+(I-H)\cdot(I-H)=I(I-H)-H(I-H)=I-H-H+H\cdot H\label{eq:idem2}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \[
+=I-2H+H\cdot H\]
+
+\end_inset
+
+
+\newline
+However, because the hat matrix itself is idempotent, then 
+\begin_inset Formula $H\cdot H=H,$
+\end_inset
+
+ so that reduces to 
+\begin_inset Formula \begin{equation}
+I-2H+H\label{eq:idem3}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \[
+=I-H\]
+
+\end_inset
+
+
+\newline
+Where I come from, that means the proof is finished.
+ I showed that 
+\begin_inset Formula $(I-H)(I-H)=(I-H)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $Var(\hat{e})=\sigma^{2}(I-H)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Apply the 
+\begin_inset Formula $Var()$
+\end_inset
+
+ operator to begin.
+ 
+\end_layout
+
+\begin_layout Standard
+The variance/covariance matrix of the residuals is what you get when you
+ apply the 
+\begin_inset Formula $Var()$
+\end_inset
+
+ operator to each side of 
+\begin_inset LatexCommand \ref{eq:I-Hy}
+
+\end_inset
+
+:
+\begin_inset Formula \begin{equation}
+Var(\hat{e})=Var[(I-H)y]\label{eq:Vare1}\end{equation}
+
+\end_inset
+
+ Please recall from the matrix handout that, generally speaking, if 
+\begin_inset Formula $v$
+\end_inset
+
+ is a column and 
+\begin_inset Formula $X$
+\end_inset
+
+ is a matrix,
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $Var(X\cdot v)=X\cdot Var(v)\cdot X'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+So, putting 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ in place of 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{e}$
+\end_inset
+
+ in place of 
+\begin_inset Formula $v$
+\end_inset
+
+ in that general formula, 
+\begin_inset LatexCommand \ref{eq:Vare1}
+
+\end_inset
+
+ becomes: 
+\begin_inset Formula \begin{equation}
+Var(\hat{e})=(I-H)Var(y)(I-H)'\label{eq:IHVaryIH}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Digression: 
+\begin_inset Formula $Var(\hat{e})=Var(y)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Don't forget that 
+\begin_inset Formula $Var(\hat{e})$
+\end_inset
+
+ and 
+\begin_inset Formula $Var(y)$
+\end_inset
+
+ are both big, NxN symmetric matrices:
+\begin_inset Formula \begin{equation}
+Var(y)=\left[\begin{array}{ccccccc}
+Var(y_{1}) & Cov(y_{1},y_{2}) & Cov(y_{1},y_{3}) &  & \cdots &  & Cov(y_{1},y_{N})\\
+Cov(y_{2},y_{1}) & Var(y_{2})\\
+Cov(y_{3},y) &  & Var(y_{3})\\
+\\\vdots &  &  &  & \ddots\\
+ &  &  &  &  & Var(y_{N-1}) & Cov(y_{N-1},y_{N})\\
+Cov(y_{N},y_{1}) &  & \ldots &  &  & Cov(y_{N},y_{N-1}) & Var(y_{N})\end{array}\right]\label{eq:covy}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Var(y)$
+\end_inset
+
+ is the variance/covariance matrix of the observed 
+\begin_inset Formula $y$
+\end_inset
+
+'s, and 
+\begin_inset Formula $Var(\hat{e})$
+\end_inset
+
+ is the variance/covariance matrix of the residuals.
+ 
+\end_layout
+
+\begin_layout Standard
+If you think for a while, it is obvious that 
+\begin_inset Formula $Var(y)$
+\end_inset
+
+ equals 
+\begin_inset Formula $Var(e)$
+\end_inset
+
+.
+ I'm having trouble thinking of a way of justifying that claim with matrix
+ algebra, but if you look at a particular observation, it is easy.
+ Recall, we ASSUMED in the OLS description of the original model that, for
+ an individual observation, 
+\begin_inset Formula \[
+y_{i}=X_{i}\beta+e_{i}\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Use the 
+\begin_inset Formula $Var()$
+\end_inset
+
+ operator on 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ (Recall the fundamental formula that 
+\begin_inset Formula $Var(aX+bY)=a^{2}Var(X)+b^{2}Var(Y)+2abCov(X,Y)$
+\end_inset
+
+.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+Var(y_{i})=Var(X_{i}\beta+e_{i})=Var(X_{i}\beta)+Var(e_{i})+2Cov(X_{i}\beta,e_{i})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because 
+\begin_inset Formula $Var(\beta)=0$
+\end_inset
+
+ (the 
+\begin_inset Quotes eld
+\end_inset
+
+true values
+\begin_inset Quotes erd
+\end_inset
+
+ don't vary!) and because, deep in its guts OLS requires that 
+\begin_inset Formula $X$
+\end_inset
+
+ is uncorrelated with 
+\begin_inset Formula $e,$
+\end_inset
+
+so 
+\begin_inset Formula $Cov(X_{i}\beta,e_{i}$
+\end_inset
+
+), then we have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=Var(e_{i})\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+=\sigma_{e_{i}}^{2}\]
+
+\end_inset
+
+ Here, 
+\begin_inset Formula $\sigma_{e_{i}}^{2}$
+\end_inset
+
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ variance of the error term for observation i.
+ Homoskedasticity implies that error variance is the same for all observations.
+ So 
+\begin_inset Formula $\sigma_{e_{i}}^{2}=$
+\end_inset
+
+
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+ for all i.
+\end_layout
+
+\begin_layout Standard
+So, with the additional conditions imposed in the typical OLS model: 
+\begin_inset Formula \begin{equation}
+Var(y)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \cdots & 0 & 0\\
+0 & 0 & 0 & \sigma_{e}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}\end{array}\right]=\sigma_{e}^{2}\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 1\end{array}\right]\label{eq:olsvary}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That matrix 
+\end_layout
+
+\begin_layout Itemize
+is diagonal because of the 
+\begin_inset Quotes eld
+\end_inset
+
+no autocorrelation
+\begin_inset Quotes erd
+\end_inset
+
+ assumption on the error terms, meaning 
+\begin_inset Formula $Cov(e_{i},e_{j})=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+has the same value in each diagonal element because of homoskedasticity.
+\end_layout
+
+\begin_layout Subsubsection
+Now proceed to finish the argument.
+\end_layout
+
+\begin_layout Standard
+As a result of the preceeding analysis, equation 
+\begin_inset LatexCommand \ref{eq:IHVaryIH}
+
+\end_inset
+
+ is equal to
+\begin_inset Formula \begin{eqnarray}
+Var(\hat{e}) & = & \sigma_{e}^{2}(I-H)(I-H)'\label{eq:IHVareIH}\end{eqnarray}
+
+\end_inset
+
+
+\newline
+and, because 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ is idempotent and symmetric,
+\begin_inset Formula \[
+=\sigma_{e}^{2}(I-H)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's why the work on 
+\begin_inset Quotes eld
+\end_inset
+
+symmetric and idempotent
+\begin_inset Quotes erd
+\end_inset
+
+ had to be done in the earlier part of this handout.
+\end_layout
+
+\begin_layout Standard
+We never get to know the true variance of the error term, but we estimate
+ it from the data as the MSE (mean square error), and so in a formula like
+ this, we replace 
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+ with the estimate 
+\begin_inset Formula $\hat{\sigma}_{e}^{2}=MSE$
+\end_inset
+
+.
+ So our best estimate of the Variance/Covariance matrix of the residuals
+ is 
+\begin_inset Formula \begin{equation}
+Var(\hat{e})=\hat{\sigma}_{e}^{2}(I-H)\label{eq:varehat}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Estimate the variance of a particular observation's residual
+\end_layout
+
+\begin_layout Standard
+Myers, Montgomery, and Vining adopt a custom that I've seen used elsewhere
+ of referring to the individual elements of the hat matrix by 
+\begin_inset Formula $h_{ij}$
+\end_inset
+
+, for the 
+\begin_inset Formula $i'th$
+\end_inset
+
+ row and 
+\begin_inset Formula $j'th$
+\end_inset
+
+ column of 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The elements on the diagonal of 
+\begin_inset Formula $H$
+\end_inset
+
+ are the important ones in many cases, because you can take, say, the 10'th
+ observation, and you calculate the variance of the residual for that obervation
+:
+\begin_inset Formula \[
+Var(\hat{e}_{10})=\hat{\sigma}_{e}^{2}(1-h_{10,10})\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That means, if you just look at the diagonal values of 
+\begin_inset Formula $(I-H)$
+\end_inset
+
+ you are seeing numbers that indicate how precise the estimate of y is likely
+ to be for a particular value of X.
+ 
+\end_layout
+
+\begin_layout Section
+Regression diagnostics with the hat matrix
+\end_layout
+
+\begin_layout Subsection
+You can use the hat matrix to 
+\begin_inset Quotes eld
+\end_inset
+
+standardize
+\begin_inset Quotes erd
+\end_inset
+
+ --err, 
+\begin_inset Quotes eld
+\end_inset
+
+studentize
+\begin_inset Quotes erd
+\end_inset
+
+-- the residuals!
+\end_layout
+
+\begin_layout Standard
+Consider the importance of the result stated in 
+\begin_inset LatexCommand \ref{eq:varehat}
+
+\end_inset
+
+.
+ If you wonder to yourself, 
+\begin_inset Quotes eld
+\end_inset
+
+Is the value of this particular residual, say for the 10'th case, 
+\begin_inset Formula $\hat{e}_{10}$
+\end_inset
+
+, extremely large?
+\begin_inset Quotes erd
+\end_inset
+
+ you can then answer yourself by comparing that value against the variance
+ of that particular residual, 
+\begin_inset Formula $Var(\hat{e}_{10})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Do you remember the idea of a standardized Normal variable, one for which
+ the expected value is 0 and the standard deviation is 1? A variable 
+\begin_inset Formula $y$
+\end_inset
+
+ divided by its standard deviation 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ gives a pleasant standardized variable.
+ If you could get a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized residual
+\begin_inset Quotes erd
+\end_inset
+
+ you could easily gauge outliers.
+\end_layout
+
+\begin_layout Standard
+Your natural instinct might be to divide the residual by the RMSE.
+ Just about everybody has that idea.
+ That would tell you, roughly, how extreme the error term is.
+ Myers, Montgomery, and Vining, and a few others I've found, call this a
+ standardized residual.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+erroneously\, called\, the\, standardized\, residual_{i}=\frac{\hat{e}_{i}}{\sqrt{\hat{\sigma}_{e}^{2}}}=\frac{\hat{e_{i}}}{\hat{\sigma}_{e}}\label{eq:stdres}\end{equation}
+
+\end_inset
+
+ 
+\newline
+I don't know who proposed that in the first place, or if many people follow
+ it, but is it a mistake to call that 
+\begin_inset Quotes eld
+\end_inset
+
+standardized.
+\begin_inset Quotes erd
+\end_inset
+
+ We know that the standard deviation of 
+\begin_inset Formula $\hat{e}_{i}=\hat{\sigma}\sqrt{1-h_{ii}}$
+\end_inset
+
+.
+ So usage of this denominator is wrong.
+ It is a mistake to call that a standardized residual because the Root Mean
+ Squared Error (RMSE), 
+\begin_inset Formula $\sqrt{\hat{\sigma}_{e}^{2}}$
+\end_inset
+
+is not really and truly the standard deviation of 
+\begin_inset Formula $\hat{e}_{i}$
+\end_inset
+
+.
+ It is, in fact, an OVERSTATEMENT, since 
+\begin_inset Formula $h_{ii}<1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Since we think that the standard deviation of the residual is 
+\begin_inset Formula \begin{equation}
+\hat{\sigma}_{e}\sqrt{1-h_{ii}}\label{eq:stdresidual}\end{equation}
+
+\end_inset
+
+it only seems natural to use that in the denominator instead.
+ Myers, Montgomery, and Vining use the term 
+\series bold
+studentized residual
+\series default
+ for the following value, 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+.
+ I have found at least one source that refers to simply as a standardized
+ residual:
+\begin_inset Formula \begin{equation}
+{studentized\, residual\,\, r}_{i}=\frac{\hat{e}_{i}}{\hat{\sigma}_{e}\sqrt{1-h_{ii}}}\label{eq:ri}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+It seems only right to at least make the known correction to the denominator.
+ 
+\end_layout
+
+\begin_layout Standard
+One might object against 
+\begin_inset LatexCommand \ref{eq:ri}
+
+\end_inset
+
+ because it uses the RMSE from the full model, the one with all of the observati
+ons is used, as an estimate of 
+\begin_inset Formula $\hat{\sigma}_{e}$
+\end_inset
+
+.
+ Suppose, instead, we could use an external estimate of 
+\begin_inset Formula $\sigma_{e}^{2}$
+\end_inset
+
+, one that did not depend on observation 
+\begin_inset Formula $i.$
+\end_inset
+
+ If we recalculate the RMSE after omitting observation i, then, we have
+ a new variant of the
+\series bold
+ 
+\series default
+studentized residual
+\series bold
+ 
+\series default
+that has a stronger property: it follows the Student's t distribution.
+ Myers, Montgomery, and Vining call this the R-student residual.
+ Here, the term 
+\begin_inset Formula $\hat{\sigma}_{e(-i)}$
+\end_inset
+
+ means the RMSE from the model that has the i'th observation deleted.
+ The R-student residual (which the SAS manual calls the studentized residual)
+ is then:
+\series bold
+
+\begin_inset Formula \begin{equation}
+studentized\, residual:\, R_{i}=\frac{\hat{e}_{i}}{\sqrt{\hat{\sigma}_{e(-i)}^{2}(1-h_{ii})}}=\frac{\hat{e}_{i}}{\hat{\sigma}_{e(-i)}\sqrt{1-h_{ii}}}\label{eq:Rstudent}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I think either version of the 
+\begin_inset Quotes eld
+\end_inset
+
+studentized residuals
+\begin_inset Quotes erd
+\end_inset
+
+ is likely to be fine.
+ The key is not to use the flat-out-wrong version of standardized residuals.
+ The studentized residual 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+ is approximately distributed as a Student's t statistic, and the R-student
+ residual is exactly distributed as a t statistic.
+ Since the t is so similar to the Normal, of course, you can scan the values
+ of 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+ to look for 
+\begin_inset Quotes eld
+\end_inset
+
+extreme cases
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+outliers
+\begin_inset Quotes erd
+\end_inset
+
+ with the Normal in mind.
+ If a value of 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{i}$
+\end_inset
+
+ is greater than 2 or 2.5, then you know you have isolated a truly atypical
+ observation.
+ 
+\end_layout
+
+\begin_layout Standard
+Now what does this all have to do with the hat matrix? You don't have to
+ run regressions over and over, dropping observations.
+ The hat matrix can be used to form the estimate of the external MSE, based
+ on all observations except i:
+\begin_inset Formula \begin{equation}
+\hat{\sigma}_{e(-i)}^{2}=\frac{(N-p)\hat{\sigma}_{e}^{2}-\frac{e_{i}^{2}}{(1-h_{ii})}}{N-p-1}\label{eq:externalMSE}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the multiplication by 
+\begin_inset Formula $(N-p)$
+\end_inset
+
+ in the numerator just converts the original MSE back into a sum of squares.
+ Recall that
+\begin_inset Formula \begin{equation}
+\hat{\sigma}_{e}^{2}=\frac{1}{N-p}\sum_{i=1}^{N}\hat{e}^{2}=\frac{1}{N-p}\hat{e}'\cdot\hat{e}.\label{eq:extmse1}\end{equation}
+
+\end_inset
+
+ Recall we are dividing by 
+\begin_inset Formula $N-p$
+\end_inset
+
+ to convert the 
+\begin_inset Quotes eld
+\end_inset
+
+sum of squares
+\begin_inset Quotes erd
+\end_inset
+
+ into the 
+\begin_inset Quotes eld
+\end_inset
+
+mean square.
+\begin_inset Quotes erd
+\end_inset
+
+ We divide by 
+\begin_inset Formula $N-p,$
+\end_inset
+
+ rather than just 
+\begin_inset Formula $N,$
+\end_inset
+
+ as a correction.
+ Use of 
+\begin_inset Formula $N-p$
+\end_inset
+
+ makes the estimate of the error term's variance unbiased and consistent.
+ 
+\end_layout
+
+\begin_layout Standard
+Anyway, you could write 
+\begin_inset LatexCommand \ref{eq:externalMSE}
+
+\end_inset
+
+ as:
+\begin_inset Formula \begin{equation}
+\hat{\sigma}_{e(-i)}^{2}=\frac{\sum e_{i}^{2}-\frac{\hat{e}_{i}^{2}}{(1-h_{ii})}}{N-p-1}=\frac{1}{N-p-1}[\hat{e}'\hat{e}-\frac{\hat{e}_{i}^{2}}{(1-h_{ii})}]\label{eq:extmse2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Its just the Sum of Squared Errors with a correction element subtracted,
+ and then divided by the degrees of freedom.
+ Hm.
+ As I write this, I fear I'm not clarifying anything for you.
+ But, don't worry, it is doing wonders for me.
+ Plus, I saved a bundle on my car insurance :)
+\end_layout
+
+\begin_layout Subsection
+PRESS residuals
+\end_layout
+
+\begin_layout Standard
+Suppose you drop the i'th observation from the data set and then recalculate
+ the regression model.
+ With that model, use 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ to predict 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ That number, which Myers, Montgomery, and Vining (p.
+ 42) refer to as the PRESS residual, (
+\begin_inset Quotes eld
+\end_inset
+
+Prediction Error Sum of Squares
+\begin_inset Quotes erd
+\end_inset
+
+), might be referred to as
+\begin_inset Formula \[
+\hat{e}_{(i)}\, or\, PRESS_{i}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If that procedure is repeated for each observation, then the statistic proposed
+ by Allen (1971) is the sum of squares:
+\begin_inset Formula \[
+PRESS=\sum_{i=1}^{N}\hat{e}_{(i)}^{2}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $PRESS$
+\end_inset
+
+ estimate is sometimes useful as a summary measure of a model's ability
+ to predict new observations.
+\begin_inset Formula \begin{equation}
+R_{prediction}^{2}=1-\frac{PRESS}{Total\, Sum\, of\, Squares}\label{eq:Rprediction}\end{equation}
+
+\end_inset
+
+
+\newline
+If you calculate that number, it can be thought of as the ability to explain
+ the variability in predicting new observations.
+ The ordinary 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ is higher than this PRESS statistic.
+\end_layout
+
+\begin_layout Standard
+The hat matrix enters this discussion because it saves a lot of calculation.
+ One need not actually re-calculate the regression results N different times.
+ Rather, it is true that the PRESS residual is equal to the ordinary residual
+ divided by 
+\begin_inset Formula $1$
+\end_inset
+
+ minus the diagonal of the hat matrix.
+\begin_inset Formula \begin{equation}
+\hat{e}_{(i)}=\frac{\hat{e}_{i}}{1-h_{ii}}\label{eq:hatpress}\end{equation}
+
+\end_inset
+
+
+\newline
+Furthermore, since the hat matrix has already been calculated, one can simply
+ cycle through the values in 
+\begin_inset Formula $H$
+\end_inset
+
+ and calculate PRESS.
+\end_layout
+
+\begin_layout Standard
+I've seen at least one stats manual that refers to this PRESS value as DRESID,
+ short for 
+\begin_inset Quotes eld
+\end_inset
+
+Deleted Residual
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Digression: Standardized PRESS equals Studentized residual
+\end_layout
+
+\begin_layout Standard
+\align left
+Here's an interesting fact I just recently learned from reading a professor's
+ class notes for a Biostatistics class (at http://www.sph.umich.edu/class/bio650/20
+01/LN_Nov05.pdf).
+ 
+\end_layout
+
+\begin_layout Description
+Fact: a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized
+\begin_inset Quotes erd
+\end_inset
+
+ PRESS residual is identical to a studentized residual.
+\end_layout
+
+\begin_layout Standard
+Begin by noting that the variance of 
+\begin_inset Formula $PRESS_{i}=\sigma_{e}^{2}/(1-h_{ii})$
+\end_inset
+
+, and if we use the square root of that as the standardizing value, watch
+ what happens:
+\begin_inset Formula \begin{equation}
+\frac{PRESS_{i}}{\sigma_{e}/\sqrt{1-h_{ii}}}=\frac{\hat{e}_{i}/(1-h_{ii})}{\sigma_{e}/\sqrt{1-h_{ii}}}=\frac{\hat{e}_{i}}{\sigma_{e}\sqrt{1-h_{ii}}}\label{eq:stdpressstudent}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So, if you aren't concerned about the prediction 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+, then perhaps you can dispense with the 
+\begin_inset Formula $PRESS$
+\end_inset
+
+ concept altogether and stick with studentized residuals.
+\end_layout
+
+\begin_layout Subsection
+Inspect H for 
+\begin_inset Quotes eld
+\end_inset
+
+leverage points
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Worrying about outliers is often justified, but just about as often, it
+ is a waste of time.
+ Suppose you sit and worry that observation 19 is extreme.
+ Then you consider excluding that observation, and you wonder if you are
+ doing the right thing.
+ 
+\end_layout
+
+\begin_layout Standard
+It may be that observation does not influence the regression estimates.
+ You'd rather find out if the observation is distorting the predicted values
+ of the other cases.
+\end_layout
+
+\begin_layout Standard
+As it turns out, the hat matrix, H, offers terriffic evidence in this regard.
+ The hat matrix is an 
+\begin_inset Formula $NxN$
+\end_inset
+
+ square.
+ Suppose you calculate predicted values, thus:
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\\\vdots\\
+\\\hat{y}_{N-1}\\
+\hat{y}_{N}\end{array}\right]=\left[\begin{array}{ccccccc}
+h_{11} & h_{12} & h_{13} &  &  &  & h_{1N}\\
+h_{21} &  &  &  &  &  & h_{2N}\\
+h_{31} &  &  & \ddots &  &  & \vdots\\
+\vdots\\
+\\ &  &  &  &  &  & h_{N-1N}\\
+h_{N1} &  &  &  &  & h_{NN-1} & h_{NN}\end{array}\right]\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\\\vdots\\
+\\y_{N-1}\\
+y_{N}\end{array}\right]\label{eq:Hy}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+=\left[\begin{array}{ccccccc}
+y_{1}h_{11} & +y_{2}h_{12} & +y_{3}h_{13} & + & \cdots &  & +y_{N}h_{1N}\\
+y_{1}h_{21} & + &  &  &  &  & +y_{N}h_{2N}\\
+y_{1}h_{31} & + &  & \ddots &  &  & \vdots\\
+\vdots\\
+\\ &  &  &  &  &  & +y_{N}h_{N-1N}\\
+y_{1}h_{N1} & + & \cdots &  &  & +y_{N-1}h_{NN-1} & +y_{N}h_{NN}\end{array}\right]\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you look at this for a while, it becomes apparent that the element, 
+\begin_inset Formula $h_{ij}$
+\end_inset
+
+ gives the influence of the j'th observation on the i'th predicted value,
+ 
+\begin_inset Formula $\hat{y}_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If you compare across row i in the hat matrix, and some values are huge,
+ it means that some observations are exercising a disproportionate influence
+ on the prediction for the i'th observation.
+\end_layout
+
+\begin_layout Standard
+If you concentrate on the diagonal elements, 
+\begin_inset Formula $h_{ii}$
+\end_inset
+
+, you are focusing on the effects that observations have on their own predicted
+ values.
+ If a model estimated without observation 
+\begin_inset Formula $i$
+\end_inset
+
+ offers a grossly different predicted value for 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ than a model that includes 
+\begin_inset Formula $i,$
+\end_inset
+
+ then you know that observation 
+\begin_inset Formula $i$
+\end_inset
+
+ is having a pretty dramatic effect on the fitted model.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider at the diagonal of the hat matrix: 
+\begin_inset Formula \begin{equation}
+\begin{array}{ccccc}
+h_{11}\\
+ & h_{12}\\
+ &  & \ddots\\
+ &  &  & h_{N-1,N-1}\\
+ &  &  &  & h_{NN}\end{array}\label{eq:hatdiag}\end{equation}
+
+\end_inset
+
+
+\newline
+the most 
+\begin_inset Quotes eld
+\end_inset
+
+pleasant
+\begin_inset Quotes erd
+\end_inset
+
+ result would be that all of the elements are the same.
+ It would mean that the positioning of an observation in the X space, as
+ indicated by 
+\begin_inset Formula $h_{ii}$
+\end_inset
+
+, is not exerting an extraordinary influence for any observation.
+ Since being an 
+\begin_inset Quotes eld
+\end_inset
+
+outlier
+\begin_inset Quotes erd
+\end_inset
+
+ is a matter of an observation's position in the X space as well as the
+ y space, that is meaningful.
+\end_layout
+
+\begin_layout Standard
+On p.
+ 47 in Myers, Montgomery, and Vining, there is a discussion of this that
+ is not entirely clear to me.
+ They claim that the sum of the diagonal elements 
+\begin_inset Formula $h_{ii}$
+\end_inset
+
+ is equal to p, the number of parameters to be estimated.
+ If so, that gives us a good standard against which to evaluate values of
+ 
+\begin_inset Formula $h_{ii}$
+\end_inset
+
+.
+ If all of the 
+\begin_inset Formula $h_{ii}$
+\end_inset
+
+ were exactly the same, then they would be equal to 
+\begin_inset Formula $p/N$
+\end_inset
+
+\SpecialChar \@.
+ 
+\end_layout
+
+\begin_layout Standard
+If an element in the hat matrix diagonal is twice as great as that average
+ value, then that observation should be considered a leverage point and
+ one ought to be cautious about it.
+\end_layout
+
+\begin_layout Subsection
+DFFITs
+\end_layout
+
+\begin_layout Standard
+I have seen this question treated slightly differently in several statistics
+ programs and books.
+ This is really just a re-statement of the previous point, but in a slightly
+ different vocabulary.
+ Suppose we calculate the change in predicted value of the j'th observation
+ due to the deletion of observation 
+\begin_inset Formula $j$
+\end_inset
+
+ from the dataset.
+ Call that the DFFIT:
+\begin_inset Formula \begin{equation}
+DFFIT_{j}=\hat{y_{j}}-\hat{y}_{(-j)}\label{eq:DFFIT}\end{equation}
+
+\end_inset
+
+ Keep in mind that 
+\begin_inset Formula $\hat{y}_{j}$
+\end_inset
+
+ is the predicted value for observation 
+\begin_inset Formula $j$
+\end_inset
+
+ from the whole model and the predicted value for observation 
+\begin_inset Formula $j$
+\end_inset
+
+ based on parameters estimated after deleting observation j is 
+\begin_inset Formula $\hat{y}_{(-j)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In and of itself, this value is difficult to interpret.
+ A standardizing approach has often been proposed that employs the hat matrix.
+ The estimate of the RMSE when the 
+\begin_inset Formula $j$
+\end_inset
+
+'th observation is deleted is referred to as 
+\begin_inset Formula $\hat{\sigma}_{e(-j)}$
+\end_inset
+
+.
+ That value is
+\begin_inset Formula \begin{equation}
+DFFITS_{j}=\frac{\hat{y_{j}}-\hat{y}_{(-j)}}{\hat{\sigma}_{e(-j)}\sqrt{h_{jj}}}\label{eq:DFFITS}\end{equation}
+
+\end_inset
+
+
+\newline
+If 
+\begin_inset Formula $DFFITS_{j}$
+\end_inset
+
+ is large, of course, it means that the 
+\begin_inset Formula $j$
+\end_inset
+
+'th observation is influential on the model's predicted value for the 
+\begin_inset Formula $j$
+\end_inset
+
+'th observation.
+ In other words, the model does not fit observation 
+\begin_inset Formula $j$
+\end_inset
+
+ particularly well.
+\end_layout
+
+\begin_layout Standard
+Probably because of the 
+\begin_inset Formula $p/N$
+\end_inset
+
+ reasoning I discuss in the previous section (drawn from Myers, Montgomery,
+ and Vining), it is widely recommended that one should be cautious of observatio
+ns for which 
+\begin_inset Formula $DFFITS>2\sqrt{p/N}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+DFBETA
+\end_layout
+
+\begin_layout Standard
+Apply the 
+\begin_inset Quotes eld
+\end_inset
+
+drop-one-observation-at-a-time
+\begin_inset Quotes erd
+\end_inset
+
+ approach to find out if an observation influences the estimate of a slope
+ parameter.
+ Let 
+\begin_inset Formula \[
+\hat{\beta}_{(-j)}\]
+
+\end_inset
+
+represent the vector of estimates based on the dataset with observation
+ 
+\begin_inset Formula $j$
+\end_inset
+
+ omitted.
+ As usual, 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+refers to the estimate obained using all data.
+\end_layout
+
+\begin_layout Standard
+The 
+\series bold
+DFBETA 
+\series default
+value, a measure of influence of observation 
+\begin_inset Formula $j$
+\end_inset
+
+ on the parameter estimate, is
+\begin_inset Formula \begin{equation}
+d_{j}=\hat{\beta}-\hat{\beta}_{(-j)}\label{eq:DFBETA}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If an element in this vector is huge, it means you should be cautious about
+ including observation 
+\begin_inset Formula $j$
+\end_inset
+
+ in your analysis.
+ 
+\end_layout
+
+\begin_layout Standard
+Of course, 
+\begin_inset Quotes eld
+\end_inset
+
+huge
+\begin_inset Quotes erd
+\end_inset
+
+ is difficult to define, so one idea is to standardize.
+ A standardized variant, where you divide the difference by the standard
+ error of the estimated coefficient.
+ This is called 
+\series bold
+DFBETAS
+\series default
+.
+ DFBETAS is meaningful one-variable-at-a-time, so consider the estimate
+ of parameter 
+\begin_inset Formula $i$
+\end_inset
+
+ when observation 
+\begin_inset Formula $j$
+\end_inset
+
+ is omitted.
+ The notation is getting tedious here, but let's use 
+\begin_inset Formula $d[i]_{j}$
+\end_inset
+
+.
+ Standardize the impact of the 
+\begin_inset Formula $j$
+\end_inset
+
+'th observation on the 
+\begin_inset Formula $i$
+\end_inset
+
+'th parameter estimate as:
+\begin_inset Formula \begin{equation}
+d[i]_{j}*=\frac{d[i]_{j}}{\sqrt{Var(\hat{\beta}_{i(-j)})}}\label{eq:dfbetaij}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The denominator is the standard error of the estimated coefficient when
+ j is omitted.
+ There is a rule of thumb that is often brought to bear: If the DFBETAS
+ value for a particular coefficient is greater than 
+\begin_inset Formula $2/\sqrt{N}$
+\end_inset
+
+ then the influence is large.
+\end_layout
+
+\begin_layout Standard
+Of course, you are wondering why I introduced DFBETA in the middle of a
+ section on the hat matrix.
+ Well, it can be shown that:
+\begin_inset Formula \begin{equation}
+d[i]_{j}=\frac{\hat{e}(X'X)^{-1}X_{j}}{1-h_{ii}}\label{eq:dfbetaij2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cook's distance: Integrating the DFBETA results
+\end_layout
+
+\begin_layout Standard
+The DFBETA analysis is unsatisfying because we can calculate a whole vector
+ of DFBETAS, one for each parameter, but we only analyze them one-by-one.
+ Can't we combine all of those parameters?
+\end_layout
+
+\begin_layout Standard
+The Cook distance approach is a way of integrating all of the information
+ in a single test to answer the following question: 
+\end_layout
+
+\begin_layout Quote
+Is the vector of estimates obtained with observation j omitted, 
+\begin_inset Formula $\hat{\beta}_{(-j)}$
+\end_inset
+
+, meaningfully differerent from the vector obtained when all observations
+ are used?
+\end_layout
+
+\begin_layout Standard
+Cook's distance measure is, in essence, a way to evaluate the overall distance
+ between the point 
+\begin_inset Formula $\hat{\beta}=(\hat{\beta}_{1},\hat{\beta}_{2},...,\hat{\beta}_{p})$
+\end_inset
+
+ and the point 
+\begin_inset Formula $\hat{\beta}_{(-j)}=(\hat{\beta}_{1(-j)},\hat{\beta}_{2(-j)},...,\hat{\beta}_{p(-j)})$
+\end_inset
+
+ .
+ (There are deep thoughts awaiting if you start considering the vector of
+ parameter estimates as a point in a p-dimensional space, incidentally.)
+\end_layout
+
+\begin_layout Standard
+If we were interested only in raw, unstandardized distance, we could use
+ the usual 
+\begin_inset Quotes eld
+\end_inset
+
+straight line between two points
+\begin_inset Quotes erd
+\end_inset
+
+ measure of distance.
+ (Recall the pythagorean theorem? 
+\begin_inset Formula $a^{2}+b^{2}=c^{2}$
+\end_inset
+
+.
+ That is for distances in 2 dimensions, but the idea easily generalizes
+ to p dimensions.
+ The distance is the square root of the sum of the squared differences of
+ the individual elements).
+ The square of the total distance would be
+\begin_inset Formula \[
+(\hat{\beta}_{(-j)}-\hat{\beta})'(\hat{\beta}_{(-j)}-\hat{\beta})\]
+
+\end_inset
+
+
+\newline
+Again, I'd urge you to convince yourself that this is indeed a sum of squares,
+ i.e., a distance measure.
+ Write it out, in other words.
+\end_layout
+
+\begin_layout Standard
+It seems to me that the clever part of Cook's scheme was to weight the distance
+ calculations in order to bring them into a meaningful scale.
+ For a weight, Cook proposed the cross product matrix divided by the number
+ of parameters that are estimated and the MSE.
+\begin_inset Formula \[
+\frac{X'X}{p\cdot\hat{\sigma}_{e}^{2}}\]
+
+\end_inset
+
+The measure 
+\begin_inset Formula $D_{j}$
+\end_inset
+
+ indicates the magnitude of the difference in parameter estimates when j
+ is omitted.
+\begin_inset Formula \[
+D_{j}=\frac{(\hat{\beta}_{(-j)}-\hat{\beta})'X'X(\hat{\beta}_{(-j)}-\hat{\beta})}{p\cdot\hat{\sigma}_{e}^{2}}\]
+
+\end_inset
+
+ 
+\newline
+If you think of the change in predicted value as 
+\begin_inset Formula $X(\hat{\beta}_{(-j)}-\hat{\beta})$
+\end_inset
+
+, then you can look at the above index as the squared change in predicted
+ value divided by a normalizing factor.
+ To see that, regroup as
+\begin_inset Formula \[
+D_{j}=\frac{[X(\hat{\beta}_{(-j)}-\hat{\beta})]'[X(\hat{\beta}_{(-j)}-\hat{\beta})]}{p\cdot\hat{\sigma}_{e}^{2}}\]
+
+\end_inset
+
+
+\newline
+Clearly, the top is the sum of squared prediction changes.
+ The denominator includes 
+\begin_inset Formula $p$
+\end_inset
+
+ because there are 
+\begin_inset Formula $p$
+\end_inset
+
+ parameters that can change and 
+\begin_inset Formula $\hat{\sigma}_{e}^{2}$
+\end_inset
+
+ is, of course, your friend, the MSE, the estimate of the variance of the
+ error term.
+\end_layout
+
+\begin_layout Standard
+Myers, Montgomery, and Vining, citing Cook (1997), suggest that 
+\begin_inset Formula $D_{j}$
+\end_inset
+
+ is distributed as an F variable with the 
+\begin_inset Formula $p$
+\end_inset
+
+ for the numerator degrees of freedom and 
+\begin_inset Formula $(n-p)$
+\end_inset
+
+for the denominator.
+ They recommend that we think of the 
+\begin_inset Quotes eld
+\end_inset
+
+extreme
+\begin_inset Quotes erd
+\end_inset
+
+ outcomes as the ones that would happen less than half of the time, so the
+ significance level in the F table is 0.5.
+ That makes it convenient because the critical value of F is 1.
+\end_layout
+
+\begin_layout Standard
+Of course, since I introduce this under the hat matrix section, you know
+ what's coming.
+ Cook's distance can be calculated as:
+\begin_inset Formula \begin{equation}
+D_{j}=\frac{r_{j}^{2}}{p}\frac{h_{jj}}{(1-h_{jj})}\label{eq:Cookhat}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Alternatives to diagnostics
+\end_layout
+
+\begin_layout Standard
+In case the diagnostics give you a headache, you might investigate further
+ into the topic of 
+\begin_inset Quotes eld
+\end_inset
+
+robust
+\begin_inset Quotes erd
+\end_inset
+
+ regression.
+ With alternative estimation techniques, one can often automatically overcome
+ the impact of outliers simply by estimating according to an alternative
+ criterion.
+ Then one does not need to worry if an observation is an outlier or not.
+ The algorithm will do it for you.
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+The ideas here have never been very useful to me.
+ I think that's because my work has mostly been done with large samples
+ and categorical variables.
+ If one had continuous data, especially small datasets, these ideas could
+ be very important.
+ 
+\end_layout
+
+\begin_layout Standard
+These ideas, however, are very useful building blocks for ideas that are
+ indeed very useful.
+ In the Generalized Linear Model, one encounters a sequence of different
+ kinds of residuals, standardized and not, and they are very important in
+ that context.
+ 
+\end_layout
+
+\end_body
+\end_document

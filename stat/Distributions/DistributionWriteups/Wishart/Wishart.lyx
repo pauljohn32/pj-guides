@@ -1,0 +1,801 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=6,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Wishart
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu> & James W.
+ Stoutenborough <jstout@ku.edu>
+\end_layout
+
+\begin_layout Section
+Introduction.
+\end_layout
+
+\begin_layout Standard
+Suppose you have drawn an observation from a Wishart distribution.
+ What do you have?
+\end_layout
+
+\begin_layout Standard
+You have a matrix! Its a covariance matrix.
+ A square set of numbers, its symmetric
+\begin_inset Formula 
+\[
+W=\left[\begin{array}{cccc}
+w_{11} & w_{12} & w_{13} & w_{14}\\
+w_{21} & w_{22} & w_{23} & w_{24}\\
+w_{31} & w_{32} & w_{33} & w_{44}\\
+w_{41} & w_{42} & w_{43} & w_{45}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is also positive definite.
+ Positive definite means that it would be a suitable covariance matrix for
+ a multivariate normal distribution.
+ Technically, if we multiply that by any vector 
+\begin_inset Formula $x$
+\end_inset
+
+ like this
+\begin_inset Formula 
+\[
+x'\, W\, x>0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we have any matrix--literally any matrix 
+\begin_inset Formula $X$
+\end_inset
+
+--and calculate 
+\begin_inset Formula $X'X$
+\end_inset
+
+, the result is a sum of squares and crossproducts matrix, which is symmetric
+ and positive definite.
+\end_layout
+
+\begin_layout Standard
+Thus one lazy person's way to create Wishart variables is to draw p-variate
+ multivariate normal observations, stack them into an Nxp matrix (
+\begin_inset Formula $X)$
+\end_inset
+
+, and then multiply 
+\begin_inset Formula $X'X$
+\end_inset
+
+ to create a covariance matrix.
+ 
+\end_layout
+
+\begin_layout Standard
+Run this in R, using the handy multivariate normal generator from the package
+ mvtnorm:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<wishex1,eval=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mvtnorm)
+\end_layout
+
+\begin_layout Plain Layout
+
+meanV <- c(0,0,0,0)
+\end_layout
+
+\begin_layout Plain Layout
+
+varV <- 3*diag(4)
+\end_layout
+
+\begin_layout Plain Layout
+
+X <- rmvnorm(10, mean = meanV, sigma = varV)
+\end_layout
+
+\begin_layout Plain Layout
+
+W <- t(X) %*% X
+\end_layout
+
+\begin_layout Plain Layout
+
+W
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<wishex1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How about another Wishart? Re run, recalculate 
+\begin_inset Formula $X'X$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<wishex1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There's more where that came from:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<wishex1>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Are you getting the idea? It is like any other probability model we have
+ studied, except this one is different because the outcome is a whole matrix.
+ Each draw produces a block of wholly new numbers.
+ It is not a single number like the Normal distribution.
+ Its not a vector like multivariate Normal.
+ Instead, its a whole block.
+ The outcomes are blocks of numbers.
+ How many ways can I say it? 
+\end_layout
+
+\begin_layout Standard
+Is there any restriction on these values? Yes.
+ They are sums of squares and cross products.
+\end_layout
+
+\begin_layout Standard
+Just to be clear, we assume we are able to draw multivariate normal observations
+ with a mean of 0 and a covariance matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+.
+ It has to be symmetric and positive definite, of course.
+ 
+\end_layout
+
+\begin_layout Standard
+If we 
+\begin_inset Quotes eld
+\end_inset
+
+stack
+\begin_inset Quotes erd
+\end_inset
+
+ those p-variate normal draws into a matrix that is N rows and p columns
+ wide, the result of 
+\begin_inset Formula $X'X$
+\end_inset
+
+ follows a Wishart distribution.
+ The number of rows in the matrix, which I called N here, plays the role
+ of 
+\begin_inset Quotes eld
+\end_inset
+
+degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The p x p matrix 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ can be any positive definite matrix you choose.
+\end_layout
+
+\begin_layout Standard
+R has a function for drawing samples from any Wishart distribution.
+ It is called rWishart and in order to draw from it, we must specify the
+ covariance matrix.
+ Suppose the covariance matrix is 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Sigma
+\begin_inset Quotes erd
+\end_inset
+
+ and the number of degrees of freedom.
+ So far as I can tell, however, it is not doing anything fancy.
+ It fills up a matrix of 
+\begin_inset Formula $X$
+\end_inset
+
+, row-by-row, of p-variate normals, and then calculates X'X .
+\end_layout
+
+\begin_layout Section
+Mathematical Description
+\end_layout
+
+\begin_layout Standard
+Please review the writeup on the Chi-Square distribution.
+ Recall a Chi-Square variable can be thought of as the result of sampling
+ from a standard normal distribution and then squaring the elements and
+ summing them.
+ In vectors, think of 
+\begin_inset Formula $x$
+\end_inset
+
+ as a column vector.
+ Then the sum of squares is: 
+\begin_inset Formula 
+\[
+x'\cdot x=\left[\begin{array}{cccc}
+x_{1} & x_{2} & x_{3} & x_{4}\end{array}\right]\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+x_{3}\\
+x_{4}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you draw a set of observations from this multivariate Normal distribution,
+ then when you multiply, you'd have 
+\begin_inset Formula 
+\[
+X'X
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The number of rows in 
+\begin_inset Formula $X$
+\end_inset
+
+ is the number of random samples drawn, and it is called the 
+\begin_inset Quotes eld
+\end_inset
+
+degrees of freedom.
+\begin_inset Quotes erd
+\end_inset
+
+ The number of columns is equal to the desired number of rows (= columns)
+ of the Wishart output.
+\end_layout
+
+\begin_layout Standard
+The Wishart distribution is the multivariate analog to the chi-square, in
+ the sense that the Wishart describes the variation you would observe if
+ you repeatedly drew samples and calculated 
+\begin_inset Formula $X'X$
+\end_inset
+
+.
+ It is related to the multivariate normal in the same way that the chi-square
+ is related to the univariate normal.
+ 
+\end_layout
+
+\begin_layout Standard
+The Wishart draw 
+\begin_inset Formula $w_{i}$
+\end_inset
+
+ might be thought of as a reflection of the PRECISION of an MVN distribution.
+ If the covariance matrix of the MVN is called 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, then its inverse, 
+\begin_inset Formula $\Sigma^{-1}$
+\end_inset
+
+ , is its precision.
+\end_layout
+
+\begin_layout Section
+The Probability Denisty
+\end_layout
+
+\begin_layout Standard
+The Wishart distribution can be characterized by its probability density
+ fuction, as follows.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $W_{i}$
+\end_inset
+
+ be a 
+\begin_inset Formula $m\times m$
+\end_inset
+
+ symmetric matrix which a randomly drawn value according to a Wishart distributi
+on.
+ The PDF of 
+\begin_inset Formula $W_{i}$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\[
+prob(W_{i}|v,S)\propto|W_{i}|^{(v-m-1)/2}exp(-\frac{1}{2}trace(S\cdot W_{i}))
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The 
+\begin_inset Quotes eld
+\end_inset
+
+trace
+\begin_inset Quotes erd
+\end_inset
+
+ is the sum of all diagonal elements.
+\end_layout
+
+\begin_layout Standard
+By construction, 
+\begin_inset Formula $W_{i}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+positive definite
+\begin_inset Quotes erd
+\end_inset
+
+, so it can serve as a precision matrix in a MVN distribution.
+ The parameter 
+\begin_inset Formula $v$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Formula $S$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+cross product
+\begin_inset Quotes erd
+\end_inset
+
+ matrix.
+ See Lancaster, p.
+ 179.
+\end_layout
+
+\begin_layout Section
+Moments
+\end_layout
+
+\begin_layout Standard
+The expected value of a Wishart is
+\begin_inset Formula 
+\[
+E(W_{i})=v\, S^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+About the example code.
+\end_layout
+
+\begin_layout Standard
+The multivariate Normal is used here, and I chose a particularly simple
+ covariance matrix (mostly because I was lazy).
+ 
+\begin_inset Formula 
+\[
+\Sigma_{4}=3*\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The inverse of that very simple matrix is (obviously) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+1/3*\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This plays the role of 
+\begin_inset Formula $S^{-1}$
+\end_inset
+
+ in the model.
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,765 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Inferential/HypoTesting//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+
+
+\mode<presentation>
+
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4.5}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par(no.readonly=T) 
+pjmar <- c(5.1, 4.1, 1.5, 2.1) 
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+@
+
+
+\title[Descriptive]{Significance Tests}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{\today}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}
+
+\frametitle{What is this Presentation?}
+
+\tableofcontents{}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Here is the Big Idea}
+
+<<idea10,include=F,fig=T,echo=T>>=
+curve(dchisq(x, 5), from = 0, to = 30, ylab="density", xlab=expression(hat(theta)))
+@
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Suppose I told you the sampling distribution of an estimator looks
+like this.
+\item The most common estimate is around 5, and estimates above 20 are almost
+never going to happen
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots/t-idea10}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{You draw a sample and calculate one estimate, $\hat\theta_1$}
+
+<<idea20,include=F,fig=T,echo=T>>=
+curve(dchisq(x, 5), from = 0, to = 30, ylab="density", xlab=expression(hat(theta)))
+text(25, 0.025, label=expression(hat(theta)[1]))
+arrows(24.5, 0.02, 24.5, 0.005, length = 0.1, col = "red")
+@
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item $\hat{\theta}_{1}$ is \emph{extreme! A VERY UNLIKELY THING HAS OCCURRED}
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots/t-idea20}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{What should you conclude?}
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Your research assistant does some calculations. The chance of an outcome
+as great or greater than $\hat{\theta}_{1}$ is 0.000001
+\item What should you conclude?
+
+\begin{itemize}
+\item Something nearly impossible happened. (?)
+\item The premise that ``this is the sampling distribution of $\hat{\theta}$''
+was wrong from the start.
+\end{itemize}
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots/t-idea20}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Here is the Big Idea}
+
+<<idea30,include=F,fig=T,echo=T>>=
+curve(dchisq(x, 25), from = 0, to = 40, ylab="density", xlab=expression(hat(theta)))
+text(25, 0.012, label=expression(hat(theta)[1]))
+arrows(24.5, 0.01, 24.5, 0.005, length = 0.1, col = "red")
+@
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Maybe the ``true'' sampling distribution is more like this 
+\item In which case $\hat{\theta}_{1}$ is a completely ordinary, common
+occurrence. 
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots/t-idea30}
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Big, Dramatic Question}
+
+<<idea40,include=F,fig=T,echo=T,height=7, width=6>>=
+par(mfcol=c(2,1))
+curve(dchisq(x, 5), from = 0, to = 30, ylab="density", xlab=expression(hat(theta)))
+text(25, 0.025, label=expression(hat(theta)[1]))
+arrows(24.5, 0.02, 24.5, 0.005, length = 0.1, col = "red")
+curve(dchisq(x, 25), from = 0, to = 40, ylab="density", xlab=expression(hat(theta)))
+text(25, 0.012, label=expression(hat(theta)[1]))
+arrows(24.5, 0.01, 24.5, 0.005, length = 0.1, col = "red")
+par(mfcol=c(1,1))
+@
+\begin{columns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Should the evidence from one sample lead you to reject the premise
+on top?
+\item A ``Hypothesis Tester'' says ``yes''. A too-unlikely thing occurred.
+Reject the top model.
+\item Hypo tester does not tell you what you ought to do instead, but we
+know what we reject.
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=5cm]{plots/t-idea40}
+\end{columns}%{}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Hypo Testing Terminology}
+\begin{description}
+\item [{Parameter:}] $\theta$ is a ``number'' that with we estimate
+with $\hat{\theta}$.
+\item [{Set~Up~A~Decision~Rule.}]~
+\item [{Null~Hypothesis:}] A claim about the true value of $\theta,$often
+called $\theta_{0}$ (``Theta sub naught'')
+\item [{Alternative~Hypothesis:}] Usually just a logical rejection of
+the Null Hypo.
+\end{description}
+
+\lyxframeend{}\lyxframe{More formal Terminology}
+\begin{description}
+\item [{Null~Hypothesis:}] $H_{0}:\,\theta=\theta_{0}$: 
+
+
+The presumed value of $\theta$ is $\theta_{0}$.
+
+\item [{Alternative~Hypothesis:}] $H_{A}:\,\theta\neq\theta_{0}$
+\end{description}
+If we reject $H_{0}$ because $\hat{\theta}_{1}$was ``unlikely'',
+that means we think $\theta_{0}$ was wrong. Then we are supposed
+to accept $H_{A}$.
+\begin{description}
+\item [{Weakness~in~Hypo~Testing~Paradigm}]~
+\end{description}
+The ``alternative hypothesis'' is not informative. Its Unsatisfying.
+We rejected $\theta_{0}$, but then what? The ``frequentist statistical
+paradigm'' (which I'm teaching you now) does not help us too much
+there.
+
+
+\lyxframeend{}\section{Hypothesis Testing}
+
+
+\lyxframeend{}\lyxframe{Define ``Statistically Significant''}
+\begin{itemize}
+\item If $\hat{\theta}$ is ``really far'' from the value supposed under
+the Null Hypothesis, then we reject the Null. 
+\item Such a finding is ``statistically significant''. 
+\end{itemize}
+Example:
+
+$H_{0}:\,\mu=7$
+
+$H_{A}:\,\mu\neq7$
+\begin{itemize}
+\item If the estimate $\hat{\mu}$ is \textquotedbl{}far'' from 7 (in a
+sense explained below), then the estimate is ``statistically significantly
+different from 7.'' 
+\item Casual language often used
+
+\begin{itemize}
+\item the difference between $\hat{\mu}$ and 7 is ``statistically significant,'' 
+\item $\hat{\mu}$ is ``statistically significant.''
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{3 Steps of Hypothesis Testing}
+\begin{description}
+\item [{\resizebox{10cm}{!}{\input{1_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_importfigs_sampling-critical.pdftex_t}}}]~
+\item [{Step~1.}] Create A Sampling Distribution for $\hat{\theta}$,
+assuming $\theta_{0}$ is correct 
+\item [{Step~2.}] Mark the ``critical value'' (and critical region)
+that holds, say, 5\% of the area.
+\item [{Step~3.}] Check if the sample estimate $\hat{\theta}$ is in ``critical
+region''
+\end{description}
+
+\lyxframeend{}\lyxframe{Need to match estimators with probability density functions }
+\begin{itemize}
+\item We have distributions like ``Normal'' ``t'' ``$\chi^{2}$''
+and ``F''.
+\item We need a statistician to help us figure out which one matches up
+with our formula $\hat{\theta}$.
+\item You will develop intuition: comparison against the Normal or t will
+be ``automatic''
+\item Comparison against the $\chi^{2}$ will become crystal clear in the
+course on categorical data analysis.
+\item Comparison against the F will be needed in ANOVA and maximum likelihood.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Try this R code }
+\begin{itemize}
+\item I've fiddled with R code to make these null hypo probability plots. 
+\item There's a function in the first part that you can use to draw nice
+looking plots that highlite the extremes.
+\item The first part, by Joshua Wiley (psych grad student, UCLA), is pretty
+good, the other new versions of that function are just me trying to
+be cute.
+\end{itemize}
+\url{http://pj.freefaculty.org/R/WorkingExamples/plot-critical_regions-1.R}
+
+
+\lyxframeend{}\lyxframe{Use T to evaluate $\hat{\theta}-\theta_{0}$}
+\begin{itemize}
+\item For many hypothesis tests, the test statistic is the difference between
+the estimate and the null: 
+\[
+\hat{\theta}-\theta_{0}
+\]
+
+\item We calculate a standard error of $(\hat{\theta}-\theta_{0}$), which
+is the same as the standard error of $(\hat{\theta}$) (because $\theta_{0}$
+is a ``constant'', it does not affect variance). 
+\item The ratio follows a T distribution
+\[
+\hat{t}=\frac{\hat{\theta}-\theta}{standard\, error\,(\hat{\theta})}
+\]
+
+\item T can be ``one sided'' or ``two sided'' (draw on blackboard)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{T, F, and $\chi^{2}$ are the most common sampling distributions}
+\begin{itemize}
+\item The $\chi^{2}$ distribution is used as a one tailed test. Usually,
+it is used to find out if a sum-of-squared ``whatevers'' is bigger
+than expected. 
+\item Example. 
+
+\begin{itemize}
+\item The true variance is $\sigma^{2}$.
+\item The unbiased sample variance is $\widehat{\sigma^{2}}=\frac{\sum(x_{i}-\bar{x})^{2}}{N-1}$. 
+\end{itemize}
+\end{itemize}
+\[
+The\, ratio\,\frac{\sum(x_{i}-\bar{x})^{2}}{\sigma^{2}}\, is\, distributed\, as\,\chi_{(N-1)}^{2}
+\]
+
+\begin{itemize}
+\item if $\sigma^{2}$ were true, then the sum of squares would be approximately
+$N\sigma^{2}$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Alpha Level: Type I Error}
+\begin{description}
+\item [{Alpha~level:}] $\alpha$ is the ``risk'' we are willing to take
+that $H_{0}$ is ``true'' and yet we (mistakenly) reject it.
+\item [{If}] $H_{0}$ is correct, and we reject it, that is called a Type
+I error.
+\item [{Statistical~Significance:}] If the chance of making a mistake
+is smaller than $\alpha$, and we reject $H_{0}$, a result is called
+``statistically significant''. 
+\end{description}
+
+\lyxframeend{}\lyxframe{Type I$\Longleftrightarrow alpha$, Type II$\Longleftrightarrow beta$}
+\begin{description}
+\item [{Type~I~error:}] $H_{0}$ is true, but our test leads us to reject
+it. The chance of this is $\alpha$ (alpha). 
+\item [{Type~II~error:}] $H_{0}$ is false, but our test does not reject
+it. The chance is $\beta$ (beta).
+\item [{Power:}] The ``statistical power'' of a test statistic refers
+to its ability to avoid Type II error. Power is not given enough emphasis
+in political science research, mainly because it is technically much
+more difficult to measure.
+\end{description}
+Type I error is called ``$\alpha$ error''.
+
+Type II error is called ``$\beta$ error''.
+
+In many statistical contexts, the $\alpha$ value is much easier to
+measure and evaluate, and many of us have been trained by people who
+do not put enough emphasis on $\beta$ error. 
+
+
+\lyxframeend{}\section{Tails}
+
+
+\lyxframeend{}\lyxframe{Two-Tailed Test}
+\begin{description}
+\item [{Definition}]~
+\end{description}
+$H_{0}$ can be rejected if $\hat{\theta}$ is either ``too high''
+or ``too low''. 
+
+\noindent \begin{center}
+\resizebox{8cm}{!}{\input{2_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_importfigs_samplingDist2.pdftex_t}}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Symmetric Two-Tailed Test}
+\begin{itemize}
+\item Note area of ``rejection region'' on each side is $1/2*\alpha$.
+\item Often, but not always, the null hypothesis is $0$, symbolizing ``no
+effect'' or ``no difference'' for a variable.
+
+
+$H_{0}:\,\theta=0$
+
+
+$H_{A}:\,\theta\neq0$
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{How is that different from a ``confidence interval''? }
+
+\noindent \begin{center}
+\resizebox{8cm}{!}{\input{3_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_importfigs_samplingDist4.pdftex_t}}
+\par\end{center}
+\begin{itemize}
+\item Important to note, the CI does not imply ``shape'', it is just a
+flat interval.
+\item Width of ``$H_{0}$ accepted region'' is equal to the width of the
+Confidence Interval for some estimators (means, slope coefficients)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{A Little Wrinkle}
+\begin{itemize}
+\item CI and Hypo test: we might casually say ``take an interval 'this
+wide' and move it sideways.''
+\item That is not technically correct for all kinds of hypo tests. (Verzani,
+Intro Stat W/R, p. 218). 
+
+\begin{itemize}
+\item In hypo-testing, the standard error can be based on the null hypothesized
+value of the parameter. 
+\item For some models, we ``know'' the standard deviation of $\hat{\theta}.$
+E.g, for a proportion. The given value of $\theta$ determines uncertainty--there's
+nothing to estimate. 
+\item (Recall, the test is always conducted ``under the null'' hypothesis)
+\item In the creation of a confidence interval, the standard error was based
+on the estimated variance of the data. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{p-value. }
+
+
+\lyxframeend{}\lyxframe{Definition of p-value}
+\begin{itemize}
+\item 1. Calculate the test statistic $\hat{\theta}$.
+\item 2. Place $\hat{\theta}$ into the sampling distribution, assuming
+$\theta_{0}$ is true. 
+\item 3. Figure out how likely it might be that we would find a value of
+$\hat{\theta}$ more extreme than the observed value. This is usually
+done with a two-tailed test in mind, so you imagine you are calculating
+the chance that an estimate would be more extreme than $\hat{\theta}$
+or $\hat{\theta}$. 
+\end{itemize}
+The chance of observing a 'more extreme' value is known as the p-value.
+
+
+\lyxframeend{}\lyxframe{The p-value Compared to the $\alpha$ rejection region}
+
+\resizebox{10cm}{!}{\input{4_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_importfigs_sampling-Pval.pdftex_t}}
+
+
+\lyxframeend{}\lyxframe{I'm cautious about p-values because}
+\begin{itemize}
+\item Emphasis on the p-value can lead you to some misinterpretations. 
+\item One common problem: scholars fish through data sets, scanning many
+estimated $\hat{\theta}$, looking for one with a small p-value.
+
+\begin{itemize}
+\item Problem: $H_{0}$ is true, but 5\% of the time we will observe and
+estimate with a p-value smaller than 0.05. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{In a Perfectly Honest Setting, This Happens. }
+\begin{enumerate}
+\item Construct the sampling distribution
+
+\begin{enumerate}
+\item Select the alpha value
+\item Find the critical values of the test statistic (get the ``rejection
+regions'')
+\end{enumerate}
+\item Calculate $\hat{\theta}$. If it exceeds the critical value, then
+reject the null hypothesis.
+\item My opinion: Do not concern yourself with the magnitude of the test
+statistic, except to find out if it is in the rejection region.
+\end{enumerate}
+NOTE: the observed ``p-value'' plays no role in this analysis
+
+
+\lyxframeend{}\lyxframe{Some Silly People Do This}
+\begin{itemize}
+\item If an estimate is to be 'statistically significant', it is of course
+necessary that $p<0.05.$ 
+\item If the p value is smaller, say $0.0232$, the proponents of the p-value
+want to emphasize the fact that they found a result that is ``more
+unusual'', somehow ``more significant''. \emph{Don't be silly}.
+\item It would be correct to say, ``the estimated value $\hat{\theta}$
+would be statistically significantly different from $\theta_{0}$
+even if the standard error were higher'' or ``even if the sample
+size were smaller.'' But that doesn't mean it is ``more significant''.
+Saying ``more significant'' is one way to reveal yourself as a silly
+person. I think.
+\item I'd say ``capable of rejecting the null hypothesis at a smaller value
+of $\alpha$'' if I had to discuss a p-value.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Statistical Significance and Substantive Significance.}
+\begin{itemize}
+\item Effect Size: slang for measures of importance of a variable's effect
+\item If $\hat{\theta}-\theta_{0}$ is 0.000000001 (very small), it may
+still be the difference is ``statistically significantly different
+from 0''.
+\item But that doesn't mean it is important?
+
+\begin{itemize}
+\item ``important for public policy makers'' 
+\item ``useful for scientists'' 
+\item ``helpful to graduate students''. 
+\end{itemize}
+\item ``Substantive significance''. Can we give a persuasive interpretation
+of the importance of the difference ($\theta-\hat{\theta}$)?
+\end{itemize}
+
+\lyxframeend{}\lyxframe{How Can Rejecting $H_{0}$ Be Not-Valuable?}
+
+Cases in which we reject $\theta_{0}$ but there's no substantive
+satisfaction in it.
+\begin{itemize}
+\item Miniscule effects: If $\hat{\theta}-\theta_{0}$ is 0.000000001. 
+
+\begin{itemize}
+\item If that is ``pounds lost per hour on treadmill'', I don't give a
+hoot if the difference is bigger than 0.
+\item Large sample sizes can make standard errors so small that any trivial
+effect ($\theta-\hat{\theta}$) is ``statistically significantly
+different from 0''
+\end{itemize}
+\item Ridiculous choice of $\theta_{0}$. You can magnify $\hat{\theta}-\theta_{0}$
+by choosing $\theta_{0}$ in a ridiculous way. 
+
+\begin{itemize}
+\item Statistical significance may mean only that the null hypothesis was
+grossly wrong, not that $\hat{\theta}$ is especially meaningful. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{One-Tailed Test}
+
+A one-tailed test is designed so that $H_{0}$ is rejected only if
+the estimated value is at one extreme. 
+
+\noindent \begin{center}
+\resizebox{10cm}{!}{\input{5_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_importfigs_samplingDist3.pdftex_t}}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{One-Tailed Test}
+\begin{itemize}
+\item I'd say it should be stated
+\end{itemize}
+$H_{0}:$$\theta\geq0$
+
+$H_{A}:$$\theta<0$
+\begin{itemize}
+\item Some texts want to put the null hypothesis as $H_{0}:\theta>0$. 
+\end{itemize}
+
+\lyxframeend{}\section{T Test Examples}
+
+
+\lyxframeend{}\lyxframe{Estimates of Means}
+\begin{itemize}
+\item If we previously believed that the average Intelligence Quotient of
+American teenagers was 111, but our current sample (N=100) estimate
+is 123, is it likely that our previous belief is inconsistent with
+the process currently generating the data?
+\item $H_{0}:$$\mu=111$
+\item $H_{A}$: $\mu\neq111$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Here's Where the t distribution comes into play}
+\begin{itemize}
+\item The standard error (estimated standard deviation of the mean) is
+\[
+std.err.(\hat{\mu})=\frac{1}{\sqrt{N}}std.dev.(x)
+\]
+
+\item The test statistic (which plays the role of $\hat{\theta}$ in this
+story) is the ratio:
+\end{itemize}
+\[
+\hat{t}=\frac{\hat{\mu}-\mu}{std.err.(\hat{\mu})}
+\]
+
+
+
+\lyxframeend{}\lyxframe{The t distribution is centered on 0}
+
+<<tdist10, fig=T, include=F>>=
+curve(dt(x, df = 99), from = -3, to = 3, xlab = expression(hat(t)), ylab="density")
+abline(v=c(-1.98, 1.98), col=gray(.80), lty =4)
+text(0, 0.025, label="2 tailed! \n An estimate over here or there\n will lead us to reject H0")
+arrows(c(-1.2,1.2), c(0.015, 0.015), c(-2.2,2.2), c(0.015, 0.015), col="red", length=0.1)
+@
+
+\includegraphics[width=11cm]{plots/t-tdist10}
+
+
+\lyxframeend{}\lyxframe{Consider the IQ test:}
+
+$H_{0}$: $\mu=111$ and the estimates are $\hat{\mu}=123$ and $\widehat{\sigma}_{\hat{\mu}}=7$
+
+$H_{A}$: $\mu\neq111$ 
+
+\[
+t=\frac{123-111}{7}=\frac{12}{7}=1.71
+\]
+
+
+That is ``almost statistically significant'', but not quite. 
+
+<<>>= 
+pt( 12/7, df = 95, lower = FALSE)
+@
+
+The chance of an estimate more extreme than 1.71 is 0.044, but it
+is only ``statistically significantly different from 0'' if it is
+smaller than 0.025 (this is a 2-tailed test). 
+
+
+\lyxframeend{}\lyxframe{Groveling for Statistical Significance}
+
+If you are desperate to find a ``statistically significant result'',
+you have 2 options.
+\begin{enumerate}
+\item Get a bigger sample. The larger N will make the denominator shrink.
+That is the sense in which, if you have a big enough sample, even
+very small, substantively unimportant differences can be statistically
+significant.
+\item Switch to a 1 tailed test. The critical value of $t$ in a two tailed
+test is 1.96, but in a one-tailed test it is 1.65. 
+\end{enumerate}
+Because of your temptation to follow route 2, one-tailed tests have
+gotten something of a bad reputation.
+
+
+\lyxframeend{}\lyxframe{Difference of Means}
+\begin{itemize}
+\item If you have two samples, you are interested to find out if the ``true''
+mean in one is equal to the ``true'' mean in the other. 
+
+
+$H_{0}:\,\theta_{1}=\theta_{2}$
+
+\item That is equivalent to
+
+
+$H_{0}:\,\theta_{1}-\theta_{2}=0$
+
+\item So the test statistic from the data is 
+\begin{equation}
+\widehat{\theta_{1}-\theta_{2}}=\hat{\theta}_{1}-\hat{\theta}_{2}
+\end{equation}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Difference of Means}
+\begin{itemize}
+\item Hence in the test statistic, the 
+
+\begin{itemize}
+\item numerator is the difference between two estimates
+\item denominator is an estimate of the standard error of that difference.
+\begin{equation}
+\hat{t}=\frac{\widehat{(\theta_{1}-\theta_{2})}-(\theta_{1}-\theta_{2})}{std.err.(\widehat{\theta_{1}-\theta_{2})}}
+\end{equation}
+
+\end{itemize}
+\item Of course, if the null is that the two parameters are the same, $\theta_{1}-\theta_{2}=0$,
+then:
+\end{itemize}
+\begin{equation}
+\hat{t}=\frac{\hat{\theta}_{1}-\hat{\theta}_{2}}{std.err.(\widehat{\theta_{1}-\theta_{2})}}\label{eq:}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Calculate $s.e.(\widehat{\theta_{1}-\theta_{2}})$}
+\begin{itemize}
+\item Recall
+\begin{equation}
+Var(\hat{\theta}_{1}-\hat{\theta}_{2})=Var(\hat{\theta}_{1})+Var(\hat{\theta}_{2})-2Cov(\hat{\theta_{1}},\hat{\theta}_{2})
+\end{equation}
+
+\item The standard error in the denominator can be calculated under various
+suppositions (same variance within 2 groups, or not).
+\item The current advice in R is that we should assume that the two samples
+are drawn from populations that have different variances, so output
+from ?t.test will explain that Welch's method is used to calculate
+variance.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Estimated Regression Slope}
+\begin{itemize}
+\item Suppose a model has been run and it says the effect of education (years)
+on starting salary (dollars) is \$2843. That is to say, a linear model
+says that each additional year in school seems to predict a 2843 rise
+in salary.
+\item Ask, is 2843 a substantial effect? Perhaps it would be 0 if you drew
+another sample, or even -2843. We surveyed 1000 people, perhaps a
+different sample would be grossly different.
+\item Hypo testing approach. Push this into a t-test format. The df is 998
+(don't worry why)
+
+\begin{itemize}
+\item $H_{0}:b=0$
+\item $\hat{t}=(\hat{b}-0)/std.err.(\hat{b})$
+\item Suppose $std.err.(\hat{b})=1000$
+\item $\hat{t}=2843/1000=2.843$
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\include{6_home_pauljohn_SVN_SVN-guides_stat_Inferential_HypoTesting_SignifTests-lecture-problems}
+\end{document}

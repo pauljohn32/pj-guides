@@ -1,0 +1,714 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 12
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+GLS (Generalized Least Squares) 
+\layout Author
+
+Paul Johnson
+\layout Section
+
+Ordinary Least Squares
+\layout Standard
+
+These are givens:
+\layout Standard
+
+
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is a column (N-vector) of observations
+\layout Standard
+
+
+\begin_inset Formula $X$
+\end_inset 
+
+ is a matrix of observations with 
+\begin_inset Formula $N$
+\end_inset 
+
+ rows.
+\layout Standard
+
+
+\begin_inset Formula $e$
+\end_inset 
+
+ is a column (N-vector) of errors
+\layout Standard
+
+
+\begin_inset Formula $b$
+\end_inset 
+
+ is a column (p-vector) of parameters
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y=Xb+e\label{eq:OLS1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Choose estimates 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ so as to minimize the sum of squares
+\begin_inset Formula \begin{equation}
+S(\hat{b})=\sum_{i=1}^{N}(y_{i}-X_{i}b)^{2}=(y-X\hat{b})'(y-X\hat{b})\label{eq:OLS_SS}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The OLS solution assumes 
+\begin_inset Formula $E(e)=0$
+\end_inset 
+
+ and that 
+\begin_inset Formula $Cov(e_{i},e_{j})=0$
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+\hat{b}=(X'X)^{-1}X'y\label{eq:bhat}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var(\hat{b})=\sigma^{2}(X'X)^{-1}\label{eq:OLS_Varb}\end{equation}
+
+\end_inset 
+
+
+\layout Section
+
+Weighted Least Squares
+\layout Standard
+
+In OLS, the 
+\begin_inset Quotes eld
+\end_inset 
+
+variance-covariance
+\begin_inset Quotes erd
+\end_inset 
+
+ matrix of the error terms is a very simple, clean thing:
+\begin_inset Formula \begin{equation}
+Var(e)=\left[\begin{array}{cccccc}
+\sigma_{e}^{2} & 0 &  &  & 0 & 0\\
+0 & \sigma_{e}^{2} &  &  & 0 & 0\\
+ &  & \ddots &  &  & 0\\
+0 &  &  & \ddots\\
+0 & 0 &  &  & \sigma_{e}^{2} & 0\\
+0 & 0 & 0 &  & 0 & \sigma_{e}^{2}\end{array}\right]=\sigma_{e}^{2}\left[\begin{array}{cccccc}
+1 & 0 &  &  & 0 & 0\\
+0 & 1 &  &  & 0 & 0\\
+ &  & \ddots &  &  & 0\\
+0 &  &  & \ddots\\
+0 & 0 &  &  & 1 & 0\\
+0 & 0 & 0 &  & 0 & 1\end{array}\right]\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+If you have 
+\begin_inset Quotes eld
+\end_inset 
+
+heteroskedasticity
+\begin_inset Quotes erd
+\end_inset 
+
+, then the off-diagonal elements are the same--all 0.
+ But on the diagonal, the elements differ:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var(e)=\left[\begin{array}{cccccc}
+\sigma_{e_{1}}^{2} & 0 &  &  & 0 & 0\\
+0 & \sigma_{e_{2}}^{2} &  &  & 0 & 0\\
+ &  & \ddots &  &  & 0\\
+0 &  &  & \ddots\\
+0 & 0 &  &  & \sigma_{e_{N-1}}^{2} & 0\\
+0 & 0 & 0 &  & 0 & \sigma_{e_{N}}^{2}\end{array}\right]\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In weighted least squares, we use estimates of 
+\begin_inset Formula $\sigma_{e_{i}}^{2}$
+\end_inset 
+
+ as weights.
+\begin_inset Formula \begin{equation}
+S(\hat{b})=\sum_{i=0}^{N}\frac{1}{\widehat{\sigma_{e_{i}}^{2}}}(y_{i}-\hat{y}_{i})^{2}=\sum_{i=0}^{N}w_{i}(y_{i}-\hat{y}_{i})^{2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Consider the WLS problem.
+ If the heteroskedastic case occurs
+\begin_inset Formula \begin{equation}
+S(\hat{b})=\sum_{i=1}^{N}w_{i}(y_{i}-\hat{y}_{i})^{2}=\sum_{i=1}^{N}(\sqrt{w_{i}}y_{i}-\sqrt{w_{i}}\hat{y}_{i})^{2}\label{eq:WLS_SS}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+=w_{1}(y_{1}-\hat{y}_{1})^{2}+w_{2}(y_{2}-\hat{y}_{2})^{2}+\cdots+w_{N}(y_{N}-\hat{y}_{N})^{2}\end{equation}
+
+\end_inset 
+
+
+\layout Section
+
+Generalized Least Squares (GLS)
+\layout Standard
+
+Suppose, generally, the Variance/Covariance matrix of residuals is
+\begin_inset Formula \begin{equation}
+V=\left[\begin{array}{cccccc}
+\sigma_{1}^{2} & Cov(e_{1},e_{2}) & Cov(e_{1},e_{2}) &  & \cdots & Cov(e_{1},e_{N})\\
+Cov(e_{1},e_{2}) & \sigma_{2}^{2}\\
+ &  & \sigma_{3}^{2}\\
+\vdots &  &  & \ddots\\
+ &  &  &  & \sigma_{N-1}^{2} & Cov(e_{1},e_{N-1})\\
+Cov(e_{1},e_{N}) &  &  &  & Cov(e_{1},e_{N-1} & \sigma_{N}^{2}\end{array}\right]\label{eq:VarE}\end{equation}
+
+\end_inset 
+
+
+\newline 
+You can factor out a constant 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+ if you care to (MM&V do, p.
+ 51).
+ 
+\layout Standard
+
+If all the off diagonal elements of 
+\begin_inset Formula $V$
+\end_inset 
+
+ are set to 
+\begin_inset Formula $0$
+\end_inset 
+
+, then this degenerates to a problem of heteroskedasticity, know as Weighted
+ Least Squares (WLS).
+ 
+\layout Standard
+
+If the off diagonal elements of 
+\begin_inset Formula $V$
+\end_inset 
+
+ are not 0, then there can be correlation across cases.
+ In a time series problem, that amounts to 
+\begin_inset Quotes eld
+\end_inset 
+
+autocorrelation.
+\begin_inset Quotes erd
+\end_inset 
+
+ In a cross-sectional problem, it means that various observations are interrelat
+ed.
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+sum of squared errors
+\begin_inset Quotes erd
+\end_inset 
+
+ approach uses this variance matrix to adjust the data so that the residuals
+ are homoskedastic or that the cross-unit correlations are taken into account.
+ 
+\layout Standard
+
+Let
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+W=V^{-1}\label{eq:W}\end{equation}
+
+\end_inset 
+
+The idea behind WLS/GLS is that there is a way to transform 
+\begin_inset Formula $y$
+\end_inset 
+
+ and 
+\begin_inset Formula $X$
+\end_inset 
+
+ so that the residuals are homogeneous, some kind of weight is applied.
+ 
+\layout Standard
+
+In matrix form, the representation of WLS/GLS is 
+\begin_inset Formula \begin{equation}
+S(\hat{b})=(y-\hat{y})'W(y-\hat{y})\label{eq:SSGLS}\end{equation}
+
+\end_inset 
+
+
+\newline 
+and, if you write that out, the sum of squares in a GLS framework is a rather
+ more complicated thing.
+ All of those off-diagonal 
+\begin_inset Formula $w_{ij}$
+\end_inset 
+
+'s make the number of terms multiply.
+\begin_inset Formula \[
+\left[\begin{array}{cccc}
+y_{1}-\hat{y}_{1} & y_{2}-\hat{y}_{2} & \cdots & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{cccc}
+w_{11} & w_{12} & \cdots & w_{1N}\\
+w_{12} & w_{22} &  & w_{2N}\\
+\vdots &  & \ddots & \vdots\\
+w_{N1} & w_{N2} & \cdots & w_{NN}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+\vdots\\
+y_{N}-\hat{y}_{N}\end{array}\right]\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=\left[\begin{array}{cccc}
+y_{1}-\hat{y}_{1} & y_{2}-\hat{y}_{2} & \cdots & y_{N}-\hat{y}_{N}\end{array}\right]\left[\begin{array}{cccc}
+w_{11}(y_{1}-\hat{y}_{1}) & +w_{12}(y_{2}-\hat{y}_{2}) & \cdots & +w_{1N}(y_{N}-\hat{y}_{N})\\
+w_{12}(y_{1}-\hat{y}_{1}) & +w_{22}(y_{2}-\hat{y}_{2}) &  & +w_{2N}(y_{N}-\hat{y}_{N})\\
+\vdots &  & \ddots & \vdots\\
+w_{N1}(y_{1}-\hat{y}_{1}) & +w_{N2}(y_{2}-\hat{y}_{2}) & \cdots & +w_{NN}(y_{N}-\hat{y}_{N})\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=\left[\begin{array}{cccc}
+w_{11}(y_{1}-\hat{y}_{1})^{2} & +w_{12}(y_{2}-\hat{y}_{2})(y_{1}-\hat{y}_{1}) & \cdots & +w_{1N}(y_{N}-\hat{y}_{N})(y_{1}-\hat{y}_{1})\\
+w_{12}(y_{1}-\hat{y}_{1})(y_{2}-\hat{y}_{2}) & +w_{22}(y_{2}-\hat{y}_{2})^{2} &  & +w_{2N}(y_{N}-\hat{y}_{N})(y_{2}-\hat{y}_{2})\\
+\vdots &  & \ddots & \vdots\\
+w_{N1}(y_{1}-\hat{y}_{1})(y_{N}-\hat{y}_{N}) & +w_{N2}(y_{2}-\hat{y}_{2})(y_{N}-\hat{y}_{N}) & \cdots & +w_{NN}(y_{N}-\hat{y}_{N})^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+\begin{array}{ccc}
+ &  & w_{11}(y_{1}-\hat{y}_{1})^{2}+w_{12}(y_{2}-\hat{y}_{2})(y_{1}-\hat{y}_{1})+\cdots+w_{1N}(y_{N}-\hat{y}_{N})(y_{1}-\hat{y}_{1})\\
+ & = & +w_{12}(y_{1}-\hat{y}_{1})(y_{2}-\hat{y}_{2})+w_{22}(y_{2}-\hat{y}_{2})^{2}+\cdots+w_{2N}(y_{N}-\hat{y}_{N})(y_{2}-\hat{y}_{2})\\
+\\ &  & +w_{N1}(y_{1}-\hat{y}_{1})(y_{N}-\hat{y}_{N})+w_{N2}(y_{2}-\hat{y}_{2})(y_{N}-\hat{y}_{N})+\cdots+w_{NN}(y_{N}-\hat{y}_{N})^{2}\end{array}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+=\sum_{i=1}^{N}\sum_{j=1}^{N}w_{ij}(y_{i}-\hat{y}_{i})(y_{j}-\hat{y}_{j})\label{eq:GLS_SS2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Supposing a linear model:
+\begin_inset Formula \begin{equation}
+\hat{y}=X\hat{b}\label{eq:yhat_linear}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The normal equations (the name for the first order conditions) are found
+ by setting the derivatives of the Sum of Squares with respect to the parameters
+ equal to 0.
+\begin_inset Formula \[
+for\, each\, parameter\,\hat{b}_{j}:\,\frac{\partial}{\partial\hat{b}_{j}}\left[(y-\hat{y})'W(y-\hat{y})\right]=0\]
+
+\end_inset 
+
+ If you insert 
+\begin_inset Formula $\hat{y}=Xb$
+\end_inset 
+
+ in there and do the math (or look it up in a book :) )
+\begin_inset Formula \[
+(X'WX)\hat{b}-X'Wy=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+The WLS/GLS estimator is the solution: 
+\begin_inset Formula \begin{equation}
+\hat{b}=(X'WX)^{-1}X'Wy\label{eq:GLS_bHat}\end{equation}
+
+\end_inset 
+
+
+\newline 
+and, supposing you divide out a constant communal variance term 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+ and the 'leftovers' remain in 
+\begin_inset Formula $W$
+\end_inset 
+
+, the Var/Cov matrix is
+\begin_inset Formula \begin{equation}
+Var(\hat{b})=\sigma^{2}(X'WX)^{-1}\label{eq:Varb}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The estimate of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is consistent and has lower variance than other linear estimators.
+\layout Standard
+
+Please note that the formula 
+\begin_inset LatexCommand \ref{eq:Varb}
+
+\end_inset 
+
+ ends up with such a small, simple formula because of the simplifying results
+ that are invoked along the way.
+ Observe (don't forget that 
+\begin_inset Formula $Var(e)=\sigma^{2}V=\sigma^{2}W^{-1}$
+\end_inset 
+
+, 
+\begin_inset Formula $W=W'$
+\end_inset 
+
+, and 
+\begin_inset Formula $Var(aW)=aVar(W)a'$
+\end_inset 
+
+.) All the rest is easy.
+\begin_inset Formula \begin{equation}
+Var(\hat{b})=Var[(X'WX)^{-1}X'Wy]\label{eq:GLS_VarB}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=Var[(X'WX)^{-1}X'W(Xb+e)]=Var[(X'WX)^{-1}X'We]\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=(X'WX)^{-1}X'W[Var(e)]W'X(X'WX)^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=(X'WX)^{-1}X'W(\sigma^{2}W^{-1})W'X(X'WX)^{-1}\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=\sigma^{2}(X'WX)^{-1}X'WX(X'WX)^{-1}\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=\sigma^{2}(X'WX)^{-1}\]
+
+\end_inset 
+
+
+\layout Section
+
+Robust estimates of 
+\begin_inset Formula $Var(\hat{b})$
+\end_inset 
+
+ 
+\layout Standard
+
+The Huber-White 
+\begin_inset Quotes eld
+\end_inset 
+
+sandwich
+\begin_inset Quotes erd
+\end_inset 
+
+ estimator of 
+\begin_inset Formula $Var(\hat{b})$
+\end_inset 
+
+ is designed to deal with the problem that the model 
+\begin_inset Formula $W$
+\end_inset 
+
+ may not be entirely correct.
+ 
+\layout Standard
+
+Ordinarily, what people do is to calculate an OLS model, and then use the
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+sandwich
+\begin_inset Quotes erd
+\end_inset 
+
+ estimator to make the estimates of the standard errors more robust.
+ In an OLS context, we use the observed residuals:
+\begin_inset Formula \begin{equation}
+\hat{e}=y-X\hat{b}\label{eq:residual}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is an 
+\begin_inset Quotes eld
+\end_inset 
+
+empirical
+\begin_inset Quotes erd
+\end_inset 
+
+ estimator, in the sense that 
+\begin_inset Quotes eld
+\end_inset 
+
+rough
+\begin_inset Quotes erd
+\end_inset 
+
+ estimates of the correlations among observations are used in place of the
+ hypothesized values.
+ Huber and White developed this estimator, which is more likely to be accurate
+ when the assumption about 
+\begin_inset Formula $W$
+\end_inset 
+
+ is wrong.
+ 
+\begin_inset LatexCommand \ref{eq:Varb}
+
+\end_inset 
+
+ 
+\layout Standard
+
+When I get tired of gazing at statistics books and really want to know how
+ things get calculated, I download the source code for R and some of its
+ libraries and go read their code.
+ Assuming they get it right, which they usually do, its quite easy to figure
+ how things are actually done.
+\layout Standard
+
+In the code for the 
+\begin_inset Quotes eld
+\end_inset 
+
+car
+\begin_inset Quotes erd
+\end_inset 
+
+ package by John Fox, for example, there's an R function hccm that calculates
+ 5 flavors of heteroskedasticity consistent covariance matrices.
+ The oldest, the original, the Huber-White formula (version hc 0) works
+ on the hypothesis that one can estimate 
+\begin_inset Formula $Var(e_{i})$
+\end_inset 
+
+ with 
+\begin_inset Formula $(\hat{e}_{i}^{2}$
+\end_inset 
+
+).
+ So, in the OLS model, the 
+\begin_inset Formula $Var(\hat{b})$
+\end_inset 
+
+starts out like so:
+\layout Standard
+
+
+\begin_inset Formula \[
+Var(\hat{b})=(X'X)^{-1}X'Var[e]X(X'X)^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=(X'X)^{-1}X'(\sigma_{e}^{2}I)X(X'X)^{-1}\]
+
+\end_inset 
+
+and we replace the middle part with the empirical estimate of the variance
+ matrix.
+ 
+\layout Standard
+
+In the heteroskedasticity case, that matrix looks like this
+\begin_inset Formula \[
+\left[\begin{array}{ccccc}
+\hat{e}_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \hat{e}_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \hat{e}_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \hat{e}_{N}^{2}\end{array}\right]=diag[e\cdot e']\]
+
+\end_inset 
+
+
+\layout Standard
+
+The heteroskedasticity consistent estimator is thus:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var_{hc0}(b)=(X'X)^{-1}X'\{ diag[e\cdot e']\} X(X'X)^{-1}\label{eq:Sandwich1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+It's called a 
+\begin_inset Quotes eld
+\end_inset 
+
+sandwich estimator
+\begin_inset Quotes erd
+\end_inset 
+
+ because somebody thought it was cute to think of the matching outer elements
+ as pieces of bread.
+ Its also called the 
+\begin_inset Quotes eld
+\end_inset 
+
+information sandwich estimator
+\begin_inset Quotes erd
+\end_inset 
+
+ because those things on the outside look an awful lot like information
+ matrices.
+\layout Standard
+
+TODO: In Dobson there are some special formulae for correction of standard
+ errors from panel studies.
+ Write in all those details.
+\layout Standard
+
+Seems like every time I turn around somebody suggests a new improvement
+ on robust standard errors, especially for panel studies.
+ I guess when these get published, all the textbooks and stat packs will
+ have to be redone.
+\layout Standard
+
+Edward W.
+ Frees and Chunfang Jin.
+ 2003.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Empirical standard errors for longitudinal data mixed linear models
+\begin_inset Quotes erd
+\end_inset 
+
+ University of Wisconsin.
+ for information contact jfrees@bus.wisc.edu
+\the_end

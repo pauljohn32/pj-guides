@@ -1,0 +1,406 @@
+
+R : Copyright 2003, The R Development Core Team
+Version 1.7.1  (2003-06-16)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> dat <- read.table("/home/pauljohn/Research/DriversLicense/fatalLicenses.txt",header=T)
+> dat
+   fatals licenses
+1   114.0   159226
+2     3.0    12076
+3    84.0   157854
+4    66.0    98009
+5   242.0   822995
+6    48.0   113097
+7    40.0   109769
+8    19.0    27184
+9     4.0    13398
+10  354.0   657698
+11  162.0   201744
+12    6.0    32381
+13   26.0    37809
+14  124.0   337621
+15  113.0   183385
+16   71.0    98329
+17   58.0    85057
+18   87.0   120086
+19   71.0   124659
+20   30.0    45287
+21   54.0   140906
+22   38.0   195762
+23  148.0   303848
+24   88.0   133017
+25  109.0    83553
+26  126.0   184988
+27   28.0    30580
+28    2.4    56920
+29   26.0    60466
+30   17.0    39056
+31   86.0   264097
+32   30.0    57214
+33  160.0   484142
+34  182.0   251597
+35    9.0    21828
+36  148.0   375512
+37   87.0   115437
+38   68.0   110625
+39  178.0   437976
+40    7.0    32528
+41   76.0   124678
+42   18.0    26347
+43  130.0   189168
+44  298.0   509752
+45   23.0    48817
+46    9.0    20824
+47  110.0   186419
+48   55.0   163091
+49   36.0    66761
+50   82.0   166662
+51   12.0    16713
+> plot(licenses~fatals, data=dat)
+> dev.copy2eps(file="olderFatals1.eps")
+X11 
+  2 
+> plot(fatals~licenses, data=dat)
+> dev.copy2eps(file="olderFatals1.eps")
+X11 
+  2 
+> plot(fatals~licenses, data=dat, main="1988 Older Driver Fatalities and Licenses across States", xlab="Licensed Older Drivers", ylab="Older Driver Fatalities")
+> ?x11()
+> ?x11
+> x11(width=5.5, height=5.5, pointsize=12)
+> plot(fatals~licenses, data=dat, main="1988 Older Driver Fatalities and Licenses across States", xlab="Licensed Older Drivers", ylab="Older Driver Fatalities")
+> dev.copy2eps(file="olderFatals1.eps")
+X11 
+  3 
+> plot(log(fatals)~log(licenses), data=dat, main="1988 Older Driver Fatalities (log) and Licenses (log) across States", xlab="log(Licensed Older Drivers)", ylab="log(Older Driver Fatalities)")
+> dev.copy2eps(file="olderFatals2.eps")
+X11 
+  3 
+> logtrans(fatals ~ licenses, data=dat)
+Error: couldn't find function "logtrans"
+> library(MASS)
+> logtrans(fatals ~ licenses, data=dat)
+> dev.copy2eps(file="logtrans1.eps")
+X11 
+  3 
+> logtrans(fatals ~ licenses, data=dat, alpha=seq(1,100,len=5))
+> dev.copy2eps(file="logtrans2.eps")
+X11 
+  3 
+> logtrans(fatals ~ licenses, data=dat, alpha=seq(1,1000,len=20))
+> dev.copy2eps(file="logtrans3.eps")
+X11 
+  3 
+> logtrans(fatals ~ licenses, data=dat, alpha=seq(1,1000,len=200))
+> logtrans(fatals ~ licenses, data=dat, alpha=seq(1,1000,len=2000))
+> dev.copy2eps(file="logtrans4.eps")
+X11 
+  3 
+> vals <- logtrans(fatals ~ licenses, data=dat, alpha=seq(1,1000,len=200))
+> vals
+$x
+  [1]    1.0000    6.0201   11.0402   16.0603   21.0804   26.1005   31.1206
+  [8]   36.1407   41.1608   46.1809   51.2010   56.2211   61.2412   66.2613
+ [15]   71.2814   76.3015   81.3216   86.3417   91.3618   96.3819  101.4020
+ [22]  106.4221  111.4422  116.4623  121.4824  126.5025  131.5226  136.5427
+ [29]  141.5628  146.5829  151.6030  156.6231  161.6432  166.6633  171.6834
+ [36]  176.7035  181.7236  186.7437  191.7638  196.7839  201.8040  206.8241
+ [43]  211.8442  216.8643  221.8844  226.9045  231.9246  236.9447  241.9648
+ [50]  246.9849  252.0050  257.0251  262.0452  267.0653  272.0854  277.1055
+ [57]  282.1256  287.1457  292.1658  297.1859  302.2060  307.2261  312.2462
+ [64]  317.2663  322.2864  327.3065  332.3266  337.3467  342.3668  347.3869
+ [71]  352.4070  357.4271  362.4472  367.4673  372.4874  377.5075  382.5276
+ [78]  387.5477  392.5678  397.5879  402.6080  407.6281  412.6482  417.6683
+ [85]  422.6884  427.7085  432.7286  437.7487  442.7688  447.7889  452.8090
+ [92]  457.8291  462.8492  467.8693  472.8894  477.9095  482.9296  487.9497
+ [99]  492.9698  497.9899  503.0101  508.0302  513.0503  518.0704  523.0905
+[106]  528.1106  533.1307  538.1508  543.1709  548.1910  553.2111  558.2312
+[113]  563.2513  568.2714  573.2915  578.3116  583.3317  588.3518  593.3719
+[120]  598.3920  603.4121  608.4322  613.4523  618.4724  623.4925  628.5126
+[127]  633.5327  638.5528  643.5729  648.5930  653.6131  658.6332  663.6533
+[134]  668.6734  673.6935  678.7136  683.7337  688.7538  693.7739  698.7940
+[141]  703.8141  708.8342  713.8543  718.8744  723.8945  728.9146  733.9347
+[148]  738.9548  743.9749  748.9950  754.0151  759.0352  764.0553  769.0754
+[155]  774.0955  779.1156  784.1357  789.1558  794.1759  799.1960  804.2161
+[162]  809.2362  814.2563  819.2764  824.2965  829.3166  834.3367  839.3568
+[169]  844.3769  849.3970  854.4171  859.4372  864.4573  869.4774  874.4975
+[176]  879.5176  884.5377  889.5578  894.5779  899.5980  904.6181  909.6382
+[183]  914.6583  919.6784  924.6985  929.7186  934.7387  939.7588  944.7789
+[190]  949.7990  954.8191  959.8392  964.8593  969.8794  974.8995  979.9196
+[197]  984.9397  989.9598  994.9799 1000.0000
+
+$y
+  [1] -287.3863 -283.6483 -281.7145 -280.4428 -279.5180 -278.8064 -278.2384
+  [8] -277.7735 -277.3860 -277.0585 -276.7788 -276.5378 -276.3290 -276.1469
+ [15] -275.9876 -275.8477 -275.7246 -275.6160 -275.5201 -275.4354 -275.3606
+ [22] -275.2945 -275.2362 -275.1849 -275.1398 -275.1002 -275.0658 -275.0358
+ [29] -275.0099 -274.9878 -274.9690 -274.9533 -274.9404 -274.9300 -274.9219
+ [36] -274.9160 -274.9119 -274.9096 -274.9090 -274.9098 -274.9119 -274.9153
+ [43] -274.9198 -274.9253 -274.9318 -274.9392 -274.9473 -274.9562 -274.9657
+ [50] -274.9758 -274.9865 -274.9977 -275.0094 -275.0215 -275.0339 -275.0467
+ [57] -275.0598 -275.0732 -275.0869 -275.1007 -275.1148 -275.1291 -275.1435
+ [64] -275.1581 -275.1728 -275.1876 -275.2025 -275.2175 -275.2325 -275.2476
+ [71] -275.2627 -275.2779 -275.2931 -275.3083 -275.3235 -275.3387 -275.3539
+ [78] -275.3691 -275.3843 -275.3994 -275.4145 -275.4296 -275.4446 -275.4595
+ [85] -275.4744 -275.4893 -275.5041 -275.5188 -275.5335 -275.5481 -275.5626
+ [92] -275.5771 -275.5915 -275.6058 -275.6200 -275.6342 -275.6482 -275.6622
+ [99] -275.6762 -275.6900 -275.7037 -275.7174 -275.7310 -275.7444 -275.7578
+[106] -275.7712 -275.7844 -275.7975 -275.8106 -275.8235 -275.8364 -275.8492
+[113] -275.8619 -275.8745 -275.8870 -275.8995 -275.9118 -275.9241 -275.9363
+[120] -275.9484 -275.9604 -275.9723 -275.9841 -275.9959 -276.0075 -276.0191
+[127] -276.0306 -276.0420 -276.0534 -276.0646 -276.0758 -276.0869 -276.0979
+[134] -276.1088 -276.1196 -276.1304 -276.1411 -276.1517 -276.1622 -276.1727
+[141] -276.1831 -276.1934 -276.2036 -276.2138 -276.2238 -276.2338 -276.2438
+[148] -276.2536 -276.2634 -276.2732 -276.2828 -276.2924 -276.3019 -276.3113
+[155] -276.3207 -276.3300 -276.3393 -276.3484 -276.3576 -276.3666 -276.3756
+[162] -276.3845 -276.3934 -276.4021 -276.4109 -276.4195 -276.4281 -276.4367
+[169] -276.4452 -276.4536 -276.4620 -276.4703 -276.4785 -276.4867 -276.4949
+[176] -276.5029 -276.5110 -276.5189 -276.5268 -276.5347 -276.5425 -276.5503
+[183] -276.5580 -276.5656 -276.5732 -276.5808 -276.5882 -276.5957 -276.6031
+[190] -276.6104 -276.6177 -276.6250 -276.6322 -276.6393 -276.6464 -276.6535
+[197] -276.6605 -276.6674 -276.6744 -276.6812
+
+> #so 191 is optimal
+> plot(log(fatals+191.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) and Licenses (log) across States", xlab="log(Licensed Older Drivers+191.0)", ylab="log(Older Driver Fatalities)")
+> dev.copy2eps(file="olderFatals3.eps")
+X11 
+  3 
+> boxcox((fatals+191) ~ licenses, plotit=T)
+Error in eval(expr, envir, enclos) : Object "fatals" not found
+> boxcox((fatals+191) ~ licenses, data=dat, plotit=T)
+> boxcox((fatals+191) ~ licenses, data=dat, plotit=T)
+> dev.copy2eps(file="boxcox.eps")
+X11 
+  3 
+> boxcox((fatals) ~ licenses, data=dat, plotit=T)
+> dev.copy2eps(file="boxcox1.eps")
+X11 
+  3 
+> ?boxcox
+> boxcox((fatals+191) ~ licenses, data=dat, plotit=T, xlab="lambda when alpha=191")
+> dev.copy2eps(file="boxcox2.eps")
+X11 
+  3 
+> summary(lm (fatals~licenses, data=dat))
+
+Call:
+lm(formula = fatals ~ licenses, data = dat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-101.94  -17.94   -7.15   16.90   78.65 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 1.660e+01  6.599e+00   2.515   0.0152 *  
+licenses    3.977e-04  2.820e-05  14.106   <2e-16 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 33.72 on 49 degrees of freedom
+Multiple R-Squared: 0.8024,	Adjusted R-squared: 0.7984 
+F-statistic:   199 on 1 and 49 DF,  p-value: < 2.2e-16 
+
+> ?logtrans
+> vals <- logtrans(fatals ~ log(licenses), data=dat, alpha=seq(1,1000,len=200))
+> dev.copy2eps(file="logtrans1.eps")
+X11 
+  3 
+> vals
+$x
+  [1]    1.0000    6.0201   11.0402   16.0603   21.0804   26.1005   31.1206
+  [8]   36.1407   41.1608   46.1809   51.2010   56.2211   61.2412   66.2613
+ [15]   71.2814   76.3015   81.3216   86.3417   91.3618   96.3819  101.4020
+ [22]  106.4221  111.4422  116.4623  121.4824  126.5025  131.5226  136.5427
+ [29]  141.5628  146.5829  151.6030  156.6231  161.6432  166.6633  171.6834
+ [36]  176.7035  181.7236  186.7437  191.7638  196.7839  201.8040  206.8241
+ [43]  211.8442  216.8643  221.8844  226.9045  231.9246  236.9447  241.9648
+ [50]  246.9849  252.0050  257.0251  262.0452  267.0653  272.0854  277.1055
+ [57]  282.1256  287.1457  292.1658  297.1859  302.2060  307.2261  312.2462
+ [64]  317.2663  322.2864  327.3065  332.3266  337.3467  342.3668  347.3869
+ [71]  352.4070  357.4271  362.4472  367.4673  372.4874  377.5075  382.5276
+ [78]  387.5477  392.5678  397.5879  402.6080  407.6281  412.6482  417.6683
+ [85]  422.6884  427.7085  432.7286  437.7487  442.7688  447.7889  452.8090
+ [92]  457.8291  462.8492  467.8693  472.8894  477.9095  482.9296  487.9497
+ [99]  492.9698  497.9899  503.0101  508.0302  513.0503  518.0704  523.0905
+[106]  528.1106  533.1307  538.1508  543.1709  548.1910  553.2111  558.2312
+[113]  563.2513  568.2714  573.2915  578.3116  583.3317  588.3518  593.3719
+[120]  598.3920  603.4121  608.4322  613.4523  618.4724  623.4925  628.5126
+[127]  633.5327  638.5528  643.5729  648.5930  653.6131  658.6332  663.6533
+[134]  668.6734  673.6935  678.7136  683.7337  688.7538  693.7739  698.7940
+[141]  703.8141  708.8342  713.8543  718.8744  723.8945  728.9146  733.9347
+[148]  738.9548  743.9749  748.9950  754.0151  759.0352  764.0553  769.0754
+[155]  774.0955  779.1156  784.1357  789.1558  794.1759  799.1960  804.2161
+[162]  809.2362  814.2563  819.2764  824.2965  829.3166  834.3367  839.3568
+[169]  844.3769  849.3970  854.4171  859.4372  864.4573  869.4774  874.4975
+[176]  879.5176  884.5377  889.5578  894.5779  899.5980  904.6181  909.6382
+[183]  914.6583  919.6784  924.6985  929.7186  934.7387  939.7588  944.7789
+[190]  949.7990  954.8191  959.8392  964.8593  969.8794  974.8995  979.9196
+[197]  984.9397  989.9598  994.9799 1000.0000
+
+$y
+  [1] -263.2079 -258.0997 -256.6620 -256.4128 -256.6735 -257.1749 -257.7912
+  [8] -258.4586 -259.1425 -259.8240 -260.4923 -261.1418 -261.7692 -262.3733
+ [15] -262.9539 -263.5110 -264.0455 -264.5581 -265.0499 -265.5217 -265.9747
+ [22] -266.4097 -266.8278 -267.2299 -267.6168 -267.9893 -268.3482 -268.6942
+ [29] -269.0281 -269.3503 -269.6616 -269.9624 -270.2534 -270.5349 -270.8074
+ [36] -271.0715 -271.3273 -271.5755 -271.8162 -272.0498 -272.2767 -272.4971
+ [43] -272.7113 -272.9196 -273.1222 -273.3194 -273.5113 -273.6983 -273.8804
+ [50] -274.0579 -274.2309 -274.3997 -274.5643 -274.7250 -274.8818 -275.0350
+ [57] -275.1846 -275.3307 -275.4736 -275.6132 -275.7498 -275.8834 -276.0141
+ [64] -276.1420 -276.2672 -276.3897 -276.5098 -276.6274 -276.7426 -276.8555
+ [71] -276.9661 -277.0746 -277.1810 -277.2854 -277.3877 -277.4881 -277.5867
+ [78] -277.6834 -277.7784 -277.8717 -277.9632 -278.0532 -278.1415 -278.2283
+ [85] -278.3137 -278.3975 -278.4799 -278.5610 -278.6407 -278.7190 -278.7961
+ [92] -278.8719 -278.9465 -279.0199 -279.0922 -279.1633 -279.2333 -279.3022
+ [99] -279.3700 -279.4369 -279.5027 -279.5675 -279.6313 -279.6943 -279.7562
+[106] -279.8173 -279.8775 -279.9369 -279.9954 -280.0530 -280.1099 -280.1660
+[113] -280.2212 -280.2758 -280.3296 -280.3826 -280.4350 -280.4866 -280.5376
+[120] -280.5879 -280.6375 -280.6865 -280.7348 -280.7826 -280.8297 -280.8762
+[127] -280.9222 -280.9675 -281.0123 -281.0566 -281.1003 -281.1435 -281.1861
+[134] -281.2283 -281.2699 -281.3111 -281.3517 -281.3919 -281.4316 -281.4709
+[141] -281.5097 -281.5480 -281.5859 -281.6234 -281.6605 -281.6971 -281.7333
+[148] -281.7692 -281.8046 -281.8397 -281.8743 -281.9086 -281.9426 -281.9761
+[155] -282.0093 -282.0422 -282.0747 -282.1069 -282.1387 -282.1702 -282.2014
+[162] -282.2322 -282.2627 -282.2930 -282.3229 -282.3525 -282.3818 -282.4109
+[169] -282.4396 -282.4681 -282.4963 -282.5242 -282.5518 -282.5792 -282.6063
+[176] -282.6331 -282.6597 -282.6860 -282.7121 -282.7380 -282.7636 -282.7889
+[183] -282.8141 -282.8390 -282.8637 -282.8881 -282.9123 -282.9363 -282.9601
+[190] -282.9837 -283.0071 -283.0302 -283.0532 -283.0759 -283.0985 -283.1208
+[197] -283.1430 -283.1649 -283.1867 -283.2083
+
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T)
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> postscript()
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> dev.off()
+X11 
+  2 
+> postscript(width=5.5,height=5.5)
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> dev.off()
+X11 
+  2 
+> postscript(width=5.5,height=5.5)
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> dev.off()
+X11 
+  2 
+> summary(lm (log(fatals+21)~log(licenses), data=dat))
+
+Call:
+lm(formula = log(fatals + 21) ~ log(licenses), data = dat)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.86667 -0.14693  0.04505  0.15089  0.60311 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   -2.97012    0.43089  -6.893 9.72e-09 ***
+log(licenses)  0.63835    0.03723  17.147  < 2e-16 ***
+---
+Signif. codes:  0 `***' 0.001 `**' 0.01 `*' 0.05 `.' 0.1 ` ' 1 
+
+Residual standard error: 0.2719 on 49 degrees of freedom
+Multiple R-Squared: 0.8571,	Adjusted R-squared: 0.8542 
+F-statistic:   294 on 1 and 49 DF,  p-value: < 2.2e-16 
+
+> postscript(file="olderFatals4.eps", width=5.5,height=5.5)
+> ?postscript
+> dev.off()
+X11 
+  2 
+> postscript(file="olderFatals4.eps", width=5.5,height=5.5,onrfile=T)
+Error in check.options(new = new, name.opt = ".PostScript.Options", reset = FALSE,  : 
+	invalid argument name(s) `onrfile' in "postscript(file = "olderFatals4.eps", width = 5.5, height = 5.5, "
+> postscript(file="olderFatals4.eps", width=5.5,height=5.5,onefile=T)
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> dev.off()
+X11 
+  2 
+> postscript(file="olderFatals4.eps", width=5.5,height=5.5,onefile=F)
+> plot(log(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="log(Older Driver Fatalities)")
+> dev.off()
+X11 
+  2 
+> ?boxcox
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0")
+> dev.copy2eps(file="boxcox3.eps")
+X11 
+  2 
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=30)
++ )
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=100)
++ )
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=1000))
+> postscript(file="boxcox3.eps", width=5.5,height=5.5,onefile=T)
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=1000))
+> dev.off
+function (which = dev.cur()) 
+{
+    if (which == 1) 
+        stop("Cannot shut down device 1 (the null device)")
+    if (exists(".Devices")) {
+        .Devices <- get(".Devices")
+    }
+    else {
+        .Devices <- list("null device")
+    }
+    .Devices[[which]] <- ""
+    assign(".Devices", .Devices)
+    .Internal(dev.off(as.integer(which)))
+    assign(".Device", .Devices[[dev.cur()]])
+    dev.cur()
+}
+<environment: namespace:base>
+> dev.off()
+X11 
+  2 
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=1000),horizontal=F)
+Warning message: 
+Extra arguments F are just disregarded. in: lm.fit(x, y, offset = offset, ...) 
+> postscript(file="boxcox3.eps", width=5.5,height=5.5,onefile=T,horizontal=F)
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=1000))
+> dev.off()
+X11 
+  2 
+> postscript(file="boxcox3.eps", width=5.5,height=5.5,onefile=F,horizontal=F)
+> boxcox((fatals+21) ~ licenses, data=dat, plotit=T,xlab="lambda when alpha=21.0", lambda=seq(-1,2, length=1000))
+> dev.off()
+X11 
+  2 
+> plot(sqrt(fatals+21.0)~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> plot(sqrt(fatals+21.0)~(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> plot(sqrt(0.5(fatals+20.5))~(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+Error in eval(expr, envir, enclos) : attempt to apply non-function
+> plot(sqrt(0.5*(fatals+20.5))~(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> plot(sqrt(0.5*(fatals+20.5))~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> postscript(file="olderBoxResult.eps", width=5.5,height=5.5,onefile=F,horizontal=F)
+> plot(sqrt(0.5*(fatals+20.5))~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> dev.off()
+X11 
+  2 
+> plot(sqrt(2*(fatals+20.5))~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> postscript(file="olderBoxResult.eps", width=5.5,height=5.5,onefile=F,horizontal=F)
+> plot(sqrt(2*(fatals+20.5))~log(licenses), data=dat, main="1988 Older Driver Fatalities (shifted log) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers+21.0)", ylab="sqrt(Older Driver Fatalities+21)")
+> dev.off()
+X11 
+  2 
+> postscript(file="olderBoxResult.eps", width=5.5,height=5.5,onefile=F,horizontal=F)
+> plot(sqrt(2*(fatals+20.5))~log(licenses), data=dat, main="1988 Older Driver Fatalities (boxcox) \n and Licenses (log) across States", xlab="log(Licensed Older Drivers)", ylab="2*sqrt(Older Driver Fatalities+20.5)")
+> dev.off()
+X11 
+  2 
+> 

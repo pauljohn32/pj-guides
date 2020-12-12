@@ -1,0 +1,2211 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.25in
+\topmargin 1in
+\rightmargin 1.25in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Maximum Likelihood, part Deux
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Standard
+These notes were put together while I was studying the Generalized Linear
+ Model (GLM) and building up to study Mixed models and GEE.
+ 
+\end_layout
+
+\begin_layout Section
+Review
+\end_layout
+
+\begin_layout Standard
+Please review the earlier handout on maximum likelihood analysis of the
+ OLS model.
+\end_layout
+
+\begin_layout Standard
+Note that minimizing the sum of squares (as in OLS) involves minimizing
+ a sum:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+min\,\sum_{i=1}^{N}(y_{i}-\hat{y}_{i})^{2},\, where\,\hat{y}_{i}=f(\hat{b},X)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Maximizing a log likelihood for a normally distributed dependent variable
+ ends up being the exact same goal.
+ 
+\begin_inset Formula 
+\[
+max\,-\sum(y_{i}-\hat{y}_{i})^{2},\, where\,\hat{y}_{i}=f(\hat{b},X)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Maximizing the log likelihood leads to the same estimates of the slope parameter
+s as does minimizing the sum of squares.
+ In other words, we are still in the same business of formulating a predictive
+ model 
+\begin_inset Formula $f(\hat{b},X)$
+\end_inset
+
+ and finding out how well it fits.
+\end_layout
+
+\begin_layout Standard
+Now, suppose the dependent variable is not normal.
+ Perhaps the observed 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is dichotomous, or a count, or it is truncated or skewed.
+ In those cases, it is harder to stretch the math to make an OLS fit seem
+ sensible, but it is often plain to see that maximizing the likelihood is
+ a not-unreasonable approach.
+ You can stipulate any distribution you like for 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ as a function of the data and parameters.
+\end_layout
+
+\begin_layout Standard
+Sometimes we will find that ML solutions are impractical, so we have to
+ use other estimation principles, such as 
+\begin_inset Quotes eld
+\end_inset
+
+method of moments
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Bayesian MCMC.
+\begin_inset Quotes erd
+\end_inset
+
+ Nevertheless, the ML approach is still preferred when it is practical.
+\end_layout
+
+\begin_layout Section
+Some new terms! Some old terms!
+\end_layout
+
+\begin_layout Standard
+My goal here is to put light on some of the terms and results that GLM practitio
+ners commonly refer to, but seldom explain in depth.
+ 
+\end_layout
+
+\begin_layout Standard
+Before I worked with psychologists, I though it was frustrating to go between
+ audieneces of economists, statisticians, and political scientists.
+ In some ways, the babel in my head has grown worse as I work with a new
+ group, but it has also started to clear up some points of confusion.
+ 
+\end_layout
+
+\begin_layout Standard
+I see now that the underlying mathematical model is generally the same as
+ one travels among audiences, but the names used for the elements are different.
+ The terms and interpretations of the technical fundamentals will differ.
+ 
+\end_layout
+
+\begin_layout Standard
+The economists are not so emphatic about the terminology Generalized Linear
+ Model as are statisticians.
+ This caused me a great deal of confusion, because one simply cannot do
+ regression work in R without a solid understanding of the GLM terminology.
+ Consider William Greene's 
+\emph on
+Econometric Analysis, 5ed
+\emph default
+.
+ There is no chapter on the GLM.
+ Nevertheless, Greene's nearly encyclopedic coverage of the mathematical
+ underpinnings is unparalleled, and if one is trying to find a proof of
+ the supposedly 
+\begin_inset Quotes eld
+\end_inset
+
+elementary
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+fundamental
+\begin_inset Quotes erd
+\end_inset
+
+ truths of statistics, it may be the best place to look.
+ As I go between Greene's discussion of maximum likelihood and the discussions
+ of statisticians and social scientists, I am often pressed to translate
+ the claims they make into the vocabularies of the other fields.
+ In the following, I name some of these terms and try to justify them.
+\end_layout
+
+\begin_layout Subsection
+Likelihood and log Likelihood functions
+\end_layout
+
+\begin_layout Standard
+The sample is 
+\begin_inset Formula $y=(y_{1},y_{2},...,y_{N})$
+\end_inset
+
+.
+ Each 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is drawn from some distribution.
+ The probability each observation is given by a probability model that you
+ provide.
+ Lets suppose that the parameters of the distribution are 
+\begin_inset Formula $\theta=(\theta_{1},\theta_{2})$
+\end_inset
+
+ and the probability is given by a formula 
+\begin_inset Formula $f(y_{i}|\theta)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The Likelihood of observing the sample of size N is
+\begin_inset Formula 
+\begin{equation}
+L(\theta)=\prod_{i=1}^{N}f(y_{i}|\theta)\label{eq:Likelihood}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Apply the log to convert the big product (
+\begin_inset Formula $\prod)$
+\end_inset
+
+ to a sum (
+\begin_inset Formula $\sum$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+lnL(\theta)=\sum_{i=1}^{N}ln(f(y_{i}|\theta))\label{eq:logLikelihood}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Dramatic Foreshadowing: 
+\end_layout
+
+\begin_layout Standard
+Recall that if 
+\begin_inset Formula $f(y_{i})=exp(y_{i})$
+\end_inset
+
+, then 
+\begin_inset Formula $ln(f(y_{i}))=y_{i}$
+\end_inset
+
+.
+ So if you work with distributions that are 
+\begin_inset Quotes eld
+\end_inset
+
+exponential
+\begin_inset Quotes erd
+\end_inset
+
+ in nature, then you get a RADICAL simplification in the formulae after
+ applying the natural log.
+ To take a look at most of the distributions that you use very often and
+ check to see how much simpler they get after you log 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Remember that 
+\begin_inset Formula $ln(a^{b})=b\cdot ln(a)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+The Score
+\end_layout
+
+\begin_layout Standard
+The vector of first partial derivatives of the log likelihood is called
+ the 
+\series bold
+score function
+\series default
+, sometimes Fischer's score function, in honor of a famous statistician
+ who pioneered maximum likelihood.
+ People often refer to the score function as 
+\begin_inset Formula $U(\theta)$
+\end_inset
+
+.
+ Don't forget it is really a vector, with one term for each parameter being
+ estimated:
+\begin_inset Formula 
+\[
+U(\theta)=\left[\begin{array}{c}
+\frac{\partial lnL}{\partial\theta_{1}}\\
+\frac{\partial lnL}{\partial\theta_{2}}
+\end{array}\right]
+\]
+
+\end_inset
+
+Recalling that 
+\begin_inset Formula $lnL$
+\end_inset
+
+ is a sum of N terms, and that the derivative is a linear operator, then
+ it is true that
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial lnL}{\partial\theta_{1}}=\frac{\partial f(y_{1}|\theta)}{\partial\theta_{1}}+\frac{\partial f(y_{2}|\theta)}{\partial\theta_{1}}+...+\frac{\partial f(y_{N}|\theta)}{\partial\theta_{1}}\label{eq:sumofpartials}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+So you could think of the score function as the sum of scores of individual
+ observations.
+ You might call the score for an individual observation 
+\begin_inset Formula $u_{i}(\theta)$
+\end_inset
+
+, or some other letter if the 
+\begin_inset Formula $u$
+\end_inset
+
+ bothers you.
+\end_layout
+
+\begin_layout Subsection
+First Order Conditions
+\end_layout
+
+\begin_layout Standard
+In maximimum likelihood analysis, we maximize log Likelihood by choosing
+ the best combination of 
+\begin_inset Formula $(\theta_{1},\theta_{2})$
+\end_inset
+
+.
+ Take partial derivatives with respect to 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+and 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+ and set them equal to 0.
+ 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial lnL}{\partial\theta_{1}}=0\label{eq:derivLogL}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{\partial lnL}{\partial\theta_{2}}=0
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+These are the 
+\series bold
+first order conditions
+\series default
+ for a maximum point.
+ There are 2 equations with 2 unknowns.
+ Statisticians use the term 
+\begin_inset Quotes eld
+\end_inset
+
+maximum likelihood score equations
+\begin_inset Quotes erd
+\end_inset
+
+ to refer to the system in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:derivLogL"
+
+\end_inset
+
+.
+ Green simply calls them the 
+\begin_inset Quotes eld
+\end_inset
+
+likelihood equations.
+\begin_inset Quotes erd
+\end_inset
+
+ If one sets the score function equal to 0, as in a matrix equation, one
+ has
+\begin_inset Formula 
+\begin{equation}
+U(\theta)=\frac{\partial lnL}{\partial\theta}=\left[\begin{array}{c}
+\frac{\partial lnL}{\partial\theta_{1}}\\
+\frac{\partial lnL}{\partial\theta_{2}}
+\end{array}\right]=\left[\begin{array}{c}
+0\\
+0
+\end{array}\right]\label{eq:scoreequation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The solution of the score equations is the MLE.
+\end_layout
+
+\begin_layout Standard
+When the score function is set equal to 0, one has the maximum likelihood
+ score equations.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Assuming 
+\end_layout
+
+\begin_layout Enumerate
+the probability model is 
+\begin_inset Quotes eld
+\end_inset
+
+regular,
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that it is mathematically continuous and differentiable and
+ has finite expected values (Greene, p.
+ 474).
+\end_layout
+
+\begin_layout Enumerate
+the point 
+\begin_inset Formula $\hat{\theta}=(\hat{\theta}_{1},\hat{\theta}_{2})$
+\end_inset
+
+ can be found at which both equations are equal to 0, and
+\end_layout
+
+\begin_layout Enumerate
+at that point, 
+\begin_inset Formula $lnL(\hat{\theta})$
+\end_inset
+
+ is a maximum point (rather than a minimum or saddle point)
+\end_layout
+
+\begin_layout Standard
+then 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is a maximum likelihood estimate.
+\end_layout
+
+\begin_layout Subsection
+Second Order Conditions: The Hessian
+\end_layout
+
+\begin_layout Standard
+The Hessian matrix is the matrix of second derivatives.
+ Take each element of 
+\begin_inset Formula $U(\theta)$
+\end_inset
+
+ as represented in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:scoreequation"
+
+\end_inset
+
+.
+ Differentiate each element by each of the parameters, you arrive at a partial
+ derivatives.
+ It turns into a 2x2 matrix:
+\begin_inset Formula 
+\begin{equation}
+H(\theta)=\frac{\partial^{2}lnL}{\partial\theta\partial\theta'}=\left[\begin{array}{cc}
+\frac{\partial^{2}lnL}{\partial\theta_{1}^{2}} & \frac{\partial^{2}lnL}{\partial\theta_{1}\partial\theta_{2}}\\
+\frac{\partial^{2}lnL}{\partial\theta_{1}\partial\theta_{2}} & \frac{\partial^{2}lnL}{\partial\theta_{2}^{2}}
+\end{array}\right]\label{eq:hessian}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Of course, if you had 10 parameters, you would have a 10x10 matrix.
+\end_layout
+
+\begin_layout Standard
+The Hessian is also thought of as 
+\begin_inset Formula $\partial U/\partial\theta'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The Hessian provides the 
+\series bold
+second order conditions
+\series default
+ that indicate whether the point at which the partial derivatives are equal
+ to 0 is a maximum.
+ If we have found a maximum point, then we know for sure that 
+\begin_inset Formula $\frac{\partial^{2}lnL}{\partial\theta_{1}\partial\theta_{1}}$
+\end_inset
+
+and 
+\begin_inset Formula $\frac{\partial^{2}lnL}{\partial\theta_{2}\partial\theta_{2}}$
+\end_inset
+
+ must be negative.
+ There is also a condition that restricts the values of the other terms
+ to be within a certain range.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace vfill
+\end_inset
+
+(make a sketch)
+\begin_inset VSpace vfill
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Root Finding: The Score and the Hessian work together
+\end_layout
+
+\begin_layout Standard
+It is easy to sit and say that you will find a value of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ that maximizes the likelihood.
+ 
+\end_layout
+
+\begin_layout Standard
+It is sometimes very difficult to actually make the calculations.
+ For some models, you can actually solve algebraically to get 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ in a clear, algebraic formula.
+ Many times that cannot be done.
+\end_layout
+
+\begin_layout Standard
+Review my handout on 
+\begin_inset Quotes eld
+\end_inset
+
+approximations
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We need to find the 
+\begin_inset Quotes eld
+\end_inset
+
+roots
+\begin_inset Quotes erd
+\end_inset
+
+ of the score equations, the values at which 
+\begin_inset Formula $U(\hat{\theta)=0.}$
+\end_inset
+
+ Applying Newton's method to find the value 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ for which 
+\begin_inset Formula $U(\hat{\theta})=0$
+\end_inset
+
+, one applies an algorithmic process
+\begin_inset Formula 
+\[
+\hat{\theta}_{new}=\hat{\theta}_{old}-H(\hat{\theta}_{old})^{-1}\cdot U(\hat{\theta}_{old})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Do that over and over again, until there is only minimal change in the value
+ of the score.
+ It becomes close to 0, but because of rounding errors, it is never exactly
+ 0.
+\end_layout
+
+\begin_layout Standard
+The various approaches to maximization are variations on that theme.
+\end_layout
+
+\begin_layout Standard
+Alternative methods of doing these calculations are usually just slightly
+ different.
+ The method of Fisher Scoring replaces the Hessian matrix with the expected
+ value of the second derivative matrix.
+ 
+\end_layout
+
+\begin_layout Section
+Estimate the Variance of 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Here's the 
+\begin_inset Quotes eld
+\end_inset
+
+big idea.
+\begin_inset Quotes erd
+\end_inset
+
+ Consider the score equation, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:scoreequation"
+
+\end_inset
+
+.
+ Suppose that the MLE is found and, furthermore, suppose that the score
+ function is very sharply peaked at the solution point.
+ In that case, one is highly confident with the choice of a particular estimate;
+ at the top of a sharp mountain, it is clear where the maximum is to be
+ found.
+ The estimate is precise.
+ If that is the case, the diagonal elements of 
+\begin_inset Formula $H(\theta)$
+\end_inset
+
+ will be negative numbers that are large in magnitude.
+ The fit of the model is changing dramatically as one moves away from the
+ solution.
+\end_layout
+
+\begin_layout Standard
+Suppose, on the other hand, the score is a nearly flat mound.
+ One is not very confident of the estimate of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ because the neighboring values of 
+\begin_inset Formula $\theta$
+\end_inset
+
+are nearly as good.
+ In that case, the diagonal will have negative numbers of small magnitude.
+\end_layout
+
+\begin_layout Standard
+In a later section of these notes, I present a description of two vital
+ results in maximum likelihood.
+ Those results lead up to the claim that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(U(\theta))=-E[H]\label{eq:VarUThetaEqMinusEH}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and, from there, it is only a 
+\begin_inset Quotes eld
+\end_inset
+
+hop, skip and jump
+\begin_inset Quotes erd
+\end_inset
+
+ to the most important claim, which is the variance of the estimated parameter,
+ 
+\begin_inset Formula $Var[\hat{\theta}]$
+\end_inset
+
+ can be consistently estimated.
+\end_layout
+
+\begin_layout Subsection
+The Information Matrix
+\end_layout
+
+\begin_layout Standard
+The result stated in equation
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VarUThetaEqMinusEH"
+
+\end_inset
+
+ (and proven below in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "VarUEH"
+
+\end_inset
+
+) is important because it eventually leads to estimates of the variance
+ of the ML parameter estimates.
+ Because it is so important, the name 
+\series bold
+information matrix
+\series default
+ is given to 
+\begin_inset Formula $-E[H]$
+\end_inset
+
+.
+ We might as well write it out, for the fun:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Info(\theta)=-E\left[\begin{array}{cc}
+\frac{\partial^{2}lnL}{\partial\theta_{1}\partial\theta_{1}} & \frac{\partial^{2}lnL}{\partial\theta_{1}\partial\theta_{2}}\\
+\frac{\partial^{2}lnL}{\partial\theta_{2}\partial\theta_{1}} & \frac{\partial^{2}lnL}{\partial\theta_{2}\partial\theta_{2}}
+\end{array}\right]\label{eq:InfoMatrix}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In many books, one finds the assertion that the Information Matrix can be
+ estimated as 
+\begin_inset Formula $-H$
+\end_inset
+
+, but that is true only for some (I think a broad class) of models.
+\end_layout
+
+\begin_layout Subsection
+Asymptotically, 
+\begin_inset Formula $Var(\hat{\theta})=Info(\theta)^{-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is Normal!
+\end_layout
+
+\begin_layout Standard
+In words: as the sample size tends to infinity, the variance of the MLE
+ is the inverse of the information matrix.
+ This is another of the ML claims that is frequenty asserted, seldom explained.
+ 
+\end_layout
+
+\begin_layout Standard
+Greene (p.
+ 478) gives the argument.
+ This requires a Taylor series approximation and an invocation of the Lindberg-L
+evy central limit theorem, and I have not found a way to explain it all
+ in a simple way.
+ But I can give some hints.
+\end_layout
+
+\begin_layout Standard
+Recall the score equation, evaluated at the MLE 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+U(\widehat{\theta})=0
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Suppose the true parameter value is 
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+.
+ We want to approximate the score in the vicinity of that value (because
+ 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is consistent, then for a large sample it is 
+\begin_inset Quotes eld
+\end_inset
+
+tending to
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\theta_{0})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The first two terms of the Taylor series approximation of 
+\begin_inset Formula $U(\theta)$
+\end_inset
+
+ are
+\begin_inset Formula 
+\[
+U(\widehat{\theta})=U(\theta_{0})+\frac{\partial U(\widetilde{\theta})}{\partial\theta}(\widehat{\theta}-\theta_{0})=U(\theta_{0})+H(\widetilde{\theta})(\widehat{\theta}-\theta_{0})=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The mean value theorem implies that there is some value 
+\begin_inset Formula $\widetilde{\theta}$
+\end_inset
+
+ which can make the equality hold.
+ Rearrange:
+\begin_inset Formula 
+\[
+U(\theta_{0})=-H(\widetilde{\theta})(\widehat{\theta}-\theta_{0})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(\widehat{\theta}-\theta_{0})=\left[-H(\widetilde{\theta})\right]^{-1}U(\theta_{0})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+As I examined Greene, p.
+ 478-9, it seemed to me that was the really critical part.
+ We've got the inverse of the negative Hessian matrix.
+ 
+\end_layout
+
+\begin_layout Standard
+After a sequence of rearrangements, invoking the fact that MLE are consistent
+ (meaning 
+\begin_inset Formula $\widehat{\theta}\rightarrow\theta_{0}$
+\end_inset
+
+), and the Lindberg-Levy limit theorem, we arrive at the result that the
+ MLE is Normally distributed, thus:
+\begin_inset Formula 
+\begin{equation}
+\hat{\theta}\sim N[\theta_{0},Info(\theta_{0})^{-1}]\label{eq:AsymNormality}
+\end{equation}
+
+\end_inset
+
+ The estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ converges 
+\begin_inset Quotes eld
+\end_inset
+
+in distribution
+\begin_inset Quotes erd
+\end_inset
+
+ to the Normal as the sample size approaches infinity, a Normal distribution
+ with mean equal to the true parameter vector 
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+ and variance equal to the inverse of the information matrix evaluated at
+ 
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+What's all that good for?
+\end_layout
+
+\begin_layout Subsection
+Significance tests for single parameters.
+ 
+\end_layout
+
+\begin_layout Standard
+Your old friend the 
+\begin_inset Formula $t$
+\end_inset
+
+ test might be be tempting.
+ Suppose the null hypothesis is 
+\begin_inset Formula $0.$
+\end_inset
+
+ You might calculate:
+\begin_inset Formula 
+\[
+\frac{\hat{\theta}}{\sqrt{Var(\hat{\theta})}}=\frac{\hat{\theta}}{Std.Error(\hat{\theta})}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and act as if it were a t statistic.
+ Many people have done so.
+ 
+\end_layout
+
+\begin_layout Standard
+That is not exactly a 
+\begin_inset Formula $t$
+\end_inset
+
+ variable, however, because, as you recall, a 
+\begin_inset Formula $t$
+\end_inset
+
+ statistic is actually an 
+\begin_inset Quotes eld
+\end_inset
+
+exact distribution
+\begin_inset Quotes erd
+\end_inset
+
+ that depends on your number of cases (degrees of freedom).
+ This number here is something else because we don't have an exact estimate
+ of the standard error, but rather an asymptotic approximation of it.
+ At best, it is an asymptotically valid 
+\begin_inset Formula $t$
+\end_inset
+
+ test.
+ 
+\end_layout
+
+\begin_layout Standard
+An alternative is Wald's test:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\hat{\theta}\ ^{2}}{Var(\ \theta)}\sim\chi^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If a variable is 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+, its square root is Normal, so Wald's test looks like your old friend 
+\begin_inset Formula 
+\[
+\frac{\hat{\theta}}{Std.Error(\hat{\theta})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which looks an awful lot like a 
+\begin_inset Formula $t$
+\end_inset
+
+ statistic to me, but it isn't really.
+\end_layout
+
+\begin_layout Subsection
+Significance tests for groups of parameters.
+\end_layout
+
+\begin_layout Standard
+Wald's test can be stated in matrix form so that you can test several parameters
+ at once, as in
+\begin_inset Formula 
+\[
+(\hat{\theta}-\theta_{null})'V^{-1}(\hat{\theta}-\theta_{null})
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+or, for an example with two coefficients being tested against null values
+ of 
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+[\hat{\theta}_{1},\hat{\theta}_{2}]\left[\begin{array}{cc}
+Var(\hat{\theta}_{1}) & Cov(\hat{\theta}_{1},\hat{\theta}_{2})\\
+Cov(\hat{\theta}_{1},\hat{\theta}_{2}) & Var(\hat{\theta}_{2})
+\end{array}\right]^{-1}\left[\begin{array}{c}
+\hat{\theta}_{1}\\
+\hat{\theta}_{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Stupefying Mathematical Facts That are Required if you want to believe the
+ previous sections
+\end_layout
+
+\begin_layout Subsection
+Fact: 
+\begin_inset Formula $E[U(\hat{\theta})]=0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Remember 
+\begin_inset Formula $U(\theta)$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{\partial lnL}{\partial\theta}$
+\end_inset
+
+ are random variables.
+\end_layout
+
+\begin_layout Standard
+Since the observations on 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ are random, and those values are used to calculate the probability of a
+ particular outcome, then the derivative is also a random variable.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+At the MLE 
+\begin_inset Formula $\hat{\theta},$
+\end_inset
+
+
+\begin_inset Formula $E[U(\hat{\theta})]=0$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:At-the-MLE"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have seen this claim assumed in many stats books and I always wondered
+ why.
+ It turns out it is not an 
+\begin_inset Quotes eld
+\end_inset
+
+obvious
+\begin_inset Quotes erd
+\end_inset
+
+ thing.
+ There's a proof in Greene (p.
+ 475).
+ Actually, Greene proves a stronger result.
+ Greene shows that the derivative of 
+\begin_inset Formula $lnL(y_{i}|\theta)$
+\end_inset
+
+, the score value for each observation, has an expected value of 0.
+ That is, at the MLE,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E\left[\frac{\partial lnL(y_{i}|\hat{\theta})}{\partial\theta_{i}}\right]=0\,\, for\, all\, i.
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+And, naturally, the sum of those expected values is 0, so the expected value
+ of the score is as well: 
+\begin_inset Formula $E[U(\hat{\theta})]=0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Greene's presentation relies only on results you could find in a first-year
+ calculus book.
+ If you are willing to just believe the result, move on.
+ I did for a long time.
+ Otherwise read Greene.
+ Or consider this 
+\begin_inset Quotes eld
+\end_inset
+
+story
+\begin_inset Quotes erd
+\end_inset
+
+ about it, and then you will understand fully if you read Greene.
+\end_layout
+
+\begin_layout Standard
+Remember that expected value means a 
+\begin_inset Quotes eld
+\end_inset
+
+probability weighted sum of observations.
+\begin_inset Quotes erd
+\end_inset
+
+ For a discrete variable 
+\begin_inset Formula $y,$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E[y]=\sum f(y_{i})\cdot y_{i}
+\]
+
+\end_inset
+
+ or, for a continuous variable, 
+\begin_inset Formula 
+\[
+E[y]=\int f(y)\cdot y\, dy.
+\]
+
+\end_inset
+
+The same works for expections of functions.
+ Supposing 
+\begin_inset Formula $U(y)$
+\end_inset
+
+ is a function of 
+\begin_inset Formula $y$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+E[U(y)]=\sum f(y_{i})\cdot U(y_{i})
+\]
+
+\end_inset
+
+ or
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E[U(y)]=\int f(y)\cdot U(y)dy
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The probability may depend on some parameter (or collection of parameters),
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+, and that is written 
+\begin_inset Formula $f(y_{i}|\theta)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The definition of a probability distribution is
+\begin_inset Formula 
+\[
+\int f(y_{i}|\theta)dy_{i}=1\, or\,\int f(y_{i}|\theta)-1=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Take the derivative with respect to 
+\begin_inset Formula $\theta:$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{\partial\int f(y_{i}|\theta)dy_{i}}{\partial\theta}=0
+\]
+
+\end_inset
+
+ Next, apply Leibnitz Theorem:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial}{\partial\theta}\int f(y_{i}|\theta)dy_{i}=\int\frac{\partial f(y_{i}|\theta)}{\partial\theta}dy_{i}=0
+\]
+
+\end_inset
+
+ Leibnitz theorem, usually covered in the first year of calculus: The derivative
+ of an integral is the integral of the derivative (or something roughly
+ like that, where I'm assuming away the problem about the limits of the
+ integral that might change as a function of 
+\begin_inset Formula $\theta$
+\end_inset
+
+.)
+\end_layout
+
+\begin_layout Standard
+Then comes the sneaky part, the part I would not have thought of on my own.
+ Greene observes: 
+\begin_inset Formula 
+\begin{equation}
+\int\frac{\partial f(y_{i}|\theta)}{\partial\theta}dy_{i}=\int f(y_{i}|\theta)\frac{\partial ln[f(y_{i}|\theta)]}{\partial\theta}dy_{i}\label{eq:partial}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+How do you get from the left to the right? Recall 
+\begin_inset Formula $\frac{\partial ln(y)}{\partial y}=\frac{1}{y}$
+\end_inset
+
+ and by the chain rule, 
+\begin_inset Formula $\frac{\partial ln[f(y)]}{\partial y}=\frac{1}{f(y)}\frac{\partial f(y)}{\partial y}$
+\end_inset
+
+.
+ Rearrange that to solve for 
+\begin_inset Formula $\frac{\partial f(y)}{\partial y}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial f(y)}{\partial y}=\frac{\partial ln[f(y)]}{\partial y}f(y)\label{eq:fdevlnf}
+\end{equation}
+
+\end_inset
+
+Use that little tidbit in the left hand side of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:partial"
+
+\end_inset
+
+, and you get the right hand side.
+ And that means the proof is finished, because the right hand side is equal
+ to the expected value of the partial derivative of 
+\begin_inset Formula $ln[f(y_{i}|\theta)]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $Var[U(\theta)]=-E[H]$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "VarUEH"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is another result that is frequently asserted and I had never bothered
+ to find out why until recently.
+ This depends on the result in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:At-the-MLE"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The argument is described in detail in Greene (p.
+ 475).
+ As in the previous case, he shows the result is true for a single observation
+ 
+\begin_inset Formula $i.$
+\end_inset
+
+ Begin with the result stated above.
+ That is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\int f(y_{i}|\theta)\frac{\partial ln[f(y_{i}|\theta)]}{\partial\theta}dy_{i} & = & 0.\label{eq:VarU1}
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Differentiating under the integral (Leibnitz rule),
+\begin_inset Formula 
+\[
+\int\frac{\partial f(y_{i}|\theta)}{\partial\theta}\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}dy+\int f(y_{i}|\theta)\frac{\partial^{2}ln([f(y|\theta)]}{\partial\theta\partial\theta'}dy=0
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+which one can easily see is:
+\begin_inset Formula 
+\begin{equation}
+-\int f(y_{i}|\theta)\left[\frac{\partial^{2}ln([f(y|\theta)]}{\partial\theta\partial\theta'}\right]dy=\int\frac{\partial f(y_{i}|\theta)}{\partial\theta}\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}dy\label{eq:VarU2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The left hand side is 
+\begin_inset Formula $-E[H]$
+\end_inset
+
+, so we are almost finished.
+\end_layout
+
+\begin_layout Standard
+Concentrate on the right hand side.
+ Then take a look back at the linchpin 
+\begin_inset Quotes eld
+\end_inset
+
+secret trick
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:fdevlnf"
+
+\end_inset
+
+.
+ If you use that same trick:
+\begin_inset Formula 
+\[
+\int\frac{\partial f(y_{i}|\theta)}{\partial\theta}\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}dy=\int f(y_{i}|\theta)\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}dy
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+=\int f(y_{i}|\theta)\left(\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}\right)^{2}dy\label{eq:VarU3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Claim: The last term is 
+\begin_inset Formula $Var[U(\theta]$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+How do I know that? Recall the definition of the variance:
+\begin_inset Formula 
+\[
+Var[U(\theta]=\int f(y_{i}|\theta)(U(\theta)-E[U(\theta)]^{2})dy
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+As shown in the previous section, 
+\begin_inset Formula $E[U(\theta)]=0$
+\end_inset
+
+.
+ So:
+\begin_inset Formula 
+\[
+Var[U(\theta]=\int f(y_{i}|\theta)U(\theta)^{2}dy
+\]
+
+\end_inset
+
+which (remembering the definition of 
+\begin_inset Formula $U(\theta)$
+\end_inset
+
+) is just
+\begin_inset Formula 
+\[
+Var[U(\theta)]=\int f(y_{i}|\theta)\left(\frac{\partial ln[f(y_{i}|\theta]}{\partial\theta}\right)^{2}dy
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Maximum Likelihood and the Normal distribution
+\end_layout
+
+\begin_layout Subsection
+Definition
+\end_layout
+
+\begin_layout Standard
+Recall the Normal Distribution:
+\begin_inset Formula 
+\[
+prob(y_{i}|\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}\, e^{-\frac{1}{2\sigma^{2}}(y_{i}-\mu_{i})^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That can be rearranged as
+\begin_inset Formula 
+\begin{equation}
+prob(y_{i}|\mu,\sigma^{2})=exp\left[-\frac{1}{2}ln(2\pi)-\frac{1}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y_{i}-\mu)^{2}\right]\label{eq:Normal2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is pitifully easy to find the log likelihood! Because:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+ln\left[exp\left[anything\right]\right]=anything
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The best estimate of the parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is the sample mean! 
+\end_layout
+
+\begin_layout Standard
+Because of result 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Normal2"
+
+\end_inset
+
+, it is horribly easy to get maximum likelihood estimates.
+ That's so because the sum the log likelihoods is so simple.
+\end_layout
+
+\begin_layout Standard
+The log likelihood of the entire sample is the sum of the log likelihoods,
+ and look how simple that is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+lnL(\mu,\sigma^{2})=\sum_{i=1}^{N}\left[-\frac{1}{2}ln(2\pi)-\frac{1}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y_{i}-\mu)^{2}\right]\label{eq:normalloglik1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=-\frac{1}{2}\sum_{i=1}^{N}ln(2\pi)-\frac{1}{2}\sum_{i=1}^{N}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}\sum_{i=1}^{N}(y_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=-\frac{1}{2}\cdot N\cdot ln(2\pi)-\frac{1}{2}\cdot N\cdot ln(\sigma^{2})-\frac{1}{\sigma^{2}}\sum_{i=1}^{N}(y_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=-\frac{N}{2}\cdot ln(2\pi)-\frac{N}{2}\cdot ln(\sigma^{2})-\frac{1}{2\sigma^{2}}\sum_{i=1}^{N}(y_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You want to maximize that by adjusting the values of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ Ignore the first part (that does not at all depend on either 
+\begin_inset Formula $\mu$
+\end_inset
+
+ nor 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+).
+ Throw away the 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+ in the front of each term, because removing that does not change the location
+ of the maximum.
+ So the log likelihood is proportional to a much simpler thing (the symbol
+ 
+\begin_inset Formula $\propto$
+\end_inset
+
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+is proportional to
+\begin_inset Quotes erd
+\end_inset
+
+):
+\begin_inset Formula 
+\[
+lnL(\mu,\sigma^{2})\propto-N\cdot ln(\sigma^{2})-\frac{1}{\sigma^{2}}\sum_{i=1}^{N}(y_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+nuisance parameter.
+\begin_inset Quotes erd
+\end_inset
+
+ In fact, if you look at this, you realize that, NO MATTER WHAT value you
+ put in for 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, the optimal value of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is not affected.
+ The best estimate is the value of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ that maximizes this:
+\begin_inset Formula 
+\[
+-\sum_{i=1}^{N}(y_{i}-\hat{\mu})^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Which is -1 times the sum of squared deviations about 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+.
+ The best estimate, 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+, is found by solving the first order condition
+\begin_inset Formula 
+\[
+\frac{\partial lnL}{\partial\hat{\mu}}=-2\sum_{i=1}^{N}(y_{i}-\hat{\mu})=0
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+\sum_{i=1}^{N}y_{i}-N\cdot\hat{\mu}=0
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\hat{\mu}=\frac{\sum_{i=1}^{N}y_{i}}{N}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Result: The maximum likelihood estimate of the parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is the mean of the observations.
+\end_layout
+
+\begin_layout Subsection
+Regression with a Normal Variable
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $y_{i}\sim N(\mu_{i},\sigma^{2})$
+\end_inset
+
+ .
+ If 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is a the i'th row of a data set, suppose further that, 
+\begin_inset Formula 
+\[
+\mu_{i}=X_{i}\beta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then one can think of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ as if it followed the 
+\begin_inset Formula $N(X_{i}\beta,\sigma^{2})$
+\end_inset
+
+ distribution.
+ That means we need to estimate 
+\begin_inset Formula $\beta$
+\end_inset
+
+, rather than 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ Compare against equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Normal2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+prob(y_{i}|\beta,\sigma^{2})=exp\left[-\frac{1}{2}ln(2\pi)-\frac{1}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y_{i}-X_{i}\beta)^{2}\right]\label{eq:NormalOLS}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+lnL(\beta\mu,\sigma^{2})=\sum_{i=1}^{N}\left[-\frac{1}{2}ln(2\pi)-\frac{1}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y_{i}-X_{i}\beta)^{2}\right]\label{eq:oLSlloglik1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+which implies
+\begin_inset Formula 
+\[
+lnL(\beta,\sigma^{2})=-\frac{N}{2}ln(2\pi)-\frac{N}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}\sum_{i=1}^{N}(y_{i}-X_{i}\beta)^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and if you prefer, you can replace 
+\begin_inset Formula $\sum(y_{i}-X_{i}\beta)^{2}$
+\end_inset
+
+ with vectors 
+\begin_inset Formula $(y-X\beta)'(y-X\beta)$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+lnL(\beta,\sigma^{2})=-\frac{N}{2}ln(2\pi)-\frac{N}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y-X\beta)'(y-X\beta)\label{eq:lnL}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The score function is the vector of derivatives
+\begin_inset Formula 
+\[
+U(\beta)=\left[\begin{array}{c}
+\frac{\partial lnL}{\partial\beta_{1}}\\
+\frac{\partial lnL}{\partial\beta_{2}}\\
+\vdots\\
+\frac{\partial lnL}{\partial\beta_{p}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Why doesn't the score function include 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+? Just convenience, I believe.
+ I think it could be included, but it is not because estimation (in practice)
+ proceeds in two steps.
+ We calculate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ first, then an estimate of 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ can be calculated.
+ 
+\end_layout
+
+\begin_layout Standard
+The first order condition is
+\begin_inset Formula 
+\[
+U(\beta)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+MLE Equals OLS
+\end_layout
+
+\begin_layout Standard
+Give a casual glance at the objective function in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:lnL"
+
+\end_inset
+
+ and you can tell that the first two terms don't matter because they don't
+ depend on 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ As a result, maximizing 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:lnL"
+
+\end_inset
+
+ is the same as maximizing
+\begin_inset Formula 
+\[
+-\frac{1}{2\sigma^{2}}(y-X\beta)'(y-X\beta)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Which is the same as minimizing
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(y-X\beta)'(y-X\beta)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+which is just the sum of squared residuals.
+ So MLE is mathematically identical to OLS.
+\end_layout
+
+\begin_layout Subsection
+Solving the system
+\end_layout
+
+\begin_layout Standard
+The Normally distributed variable is one for which we have an explicit solution.
+ There is no need for approximation approaches described earlier.
+\end_layout
+
+\begin_layout Standard
+In Myers, Montgomery, and Vining, p.
+ 32, they show the steps to solve that, although I find had some trouble
+ retracing one step (perhaps there is a typographical error).
+ So maybe it is worthwhile to write it down.
+ This looks like one equation, but really it is a matrix equation with the
+ number of rows equal to p.
+ The solution is the 
+\begin_inset Quotes eld
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+ value of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+: 
+\begin_inset Formula 
+\[
+lnL(\beta,\sigma)=-\frac{N}{2}ln(2\pi)-\frac{N}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y'y-\beta'X'y-y'X\beta+\beta'X'X\beta)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Since 
+\begin_inset Formula $y'X\beta$
+\end_inset
+
+ is a scalar (a 
+\begin_inset Formula $1x1$
+\end_inset
+
+ matrix), it is equal to its transpose, 
+\begin_inset Formula $y'X\beta=y'X\beta$
+\end_inset
+
+, so this reduces to: : 
+\begin_inset Formula 
+\[
+lnL(\beta,\sigma)=-\frac{N}{2}ln(2\pi)-\frac{N}{2}ln(\sigma^{2})-\frac{1}{2\sigma^{2}}(y'y-2\beta'X'y+\beta'X'X\beta)
+\]
+
+\end_inset
+
+The first order condition is
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\[
+U(\hat{\beta})=\frac{\partial lnL}{\partial\beta}=-\frac{1}{2\sigma^{2}}\,\frac{\partial}{\partial\beta}(-2\hat{\beta}'X'y+\hat{\beta}'X'X\hat{\beta})=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(-2X'y+2X'X\hat{\beta})=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+2X'X\hat{\beta}=2X'y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X'X\hat{\beta}=X'y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the inverse of 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ exists, the solution is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\beta}=(X'X)^{-1}X'y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the MLE for 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is found by differentiating 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:lnL"
+
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+\frac{\partial lnL}{\partial\sigma^{2}}=-\frac{N}{2\hat{\sigma^{2}}}-\frac{1}{2\hat{\sigma^{4}}}(y-X\hat{\beta}')(y-X\beta)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

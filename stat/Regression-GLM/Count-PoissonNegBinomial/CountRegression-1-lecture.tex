@@ -1,0 +1,839 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression-GLM/Count-PoissonNegBinomial//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\synctex=-1
+\usepackage{graphicx}
+\usepackage{esint}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{Sweavel}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+%%only for presentation
+\mode<presentation>{
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+%%for presentations
+\mode<presentation>{
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+\input{plots/t-Roptions}
+
+
+\title{Count Regression Introduction}
+
+
+\author{Paul Johnson <pauljohn@ku.edu>}
+
+\makebeamertitle
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+
+\lyxframeend{}\lyxframe{Welcome}
+\begin{itemize}
+\item This is not ready yet
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+ 
+
+
+\lyxframeend{}\section{Motivation}
+
+
+\lyxframeend{}\lyxframe{Count means}
+\begin{itemize}
+\item integer valued, 0, 1, 2,...
+\item must be positive (0 or greater).
+\end{itemize}
+Well, if the expected number of observed cases is large, and the distribution
+of the count data is drawn from the Poisson distribution, then OLS
+might be OK. The Poisson is not all that different from a Normal distribution.
+So sometimes the Normal case can be thought of as an approximation.
+
+But if the expected number of counts is small, the Poisson distribution
+is not even a little bit like a normal distribution.
+
+
+\lyxframeend{}\lyxframe{Alternatives might not be as good.}
+
+There are alternatives
+\begin{itemize}
+\item tobit (OLS, but with a truncation at 0)
+\item ordinal logit/probit
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Generalized Linear Model Approach }
+\begin{itemize}
+\item Recall. We asserted the dependent variable $y_{i}$ as a sum of a
+``predictable part'' and a ``random'' part: $y_{i}=b_{0}+b_{1}x_{i}+e_{i}$.
+\item If $e_{i}$ is ``Normal with a mean of 0 and standard deviation of
+$\sigma_{e}$'', 
+
+\begin{itemize}
+\item then $y_{i}$ is ``Normal with a mean of $b_{0}+b_{1}x_{i}$ and
+a standard deviation of $\sigma_{e}$.'' 
+\end{itemize}
+\item So OLS with an assumed Normal error implies
+\end{itemize}
+\[
+y_{i}\sim N(X_{i}b,\,\,\sigma_{e}^{2})
+\]
+
+
+The symbol ``$\sim$'' means ``is distributed as'' or ``is drawn
+from''. $X_{i}b$ is shorthand matrix terminology for the ``linear
+predictor'', $b_{o}+b_{1}x1_{i}+b_{2}x2_{i}$. 
+
+
+\lyxframeend{}\lyxframe{What's the big point here?}
+\begin{quote}%{}
+We think of the predictor as determining a parameter in a distribution
+from which observations are drawn. 
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{You can use any distribution you want}
+\begin{itemize}
+\item $y_{i}$ can be any distribution you want
+\item Let the properties of that distribution depend on input variables
+and parameters. 
+\item For a ``count'' model, all you absolutely need is an integer-valued
+distribution for which $y_{i}\geq0$. 2 possibilities:
+
+\begin{itemize}
+\item Poisson 
+\item Negative Binomial
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Poisson.}
+
+
+\lyxframeend{}\section{Poisson: $\mbox{\ensuremath{\lambda}}$}
+\begin{itemize}
+\item The Poisson is a ``one parameter'' distribution. 
+\item The parameter is usually called $\lambda$, and that parameter determines
+the expected value and the variance.
+\[
+Pr(y_{i}|input_{i})=\frac{exp(-\lambda)\lambda^{y_{i}}}{y_{i}!}
+\]
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Relabel $\lambda$ as ``input'' For Interpretation}
+\begin{itemize}
+\item Instead of the greek letter $\lambda$, let's call it what we mean:
+``input''.
+\item 
+\[
+Pr(y_{i}|input_{i})=\frac{exp(-input_{i})input_{i}^{y_{i}}}{y_{i}!}
+\]
+For any $y_{i}$ you put in here, this tells you how likely you are
+to count that many ``things'' if the input is ``input''. 
+\item When I write ``input'', I mean the combined impact of parameters
+and variables. 
+\end{itemize}
+Input is not necessarily simply $X_{i}b$. In fact, we usually have
+to ``translate'' or ``curve'' the linear predictor so it fits
+``within boundaries.'' 
+
+So ``input'' is typically some function that depends on $X_{i}b$,
+for generality, $g(X_{i}b)$.
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\subsection{Graph the Poisson Distribution to Get a ``Feeling''.}
+
+\begin{frame}[containsverbatim]
+\frametitle{Poisson Sample, small lambda}
+\includegraphics[width=12cm]{plots/t-pois01}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Poisson Sample, large lambda}
+\includegraphics[width=12cm]{plots/t-pois01}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Noteworthy }
+\begin{enumerate}
+\item The Expected Value of the Poisson is $\lambda="input"$.
+\item The Variance of the Poisson is $\lambda="input"$.
+\item The shape changes and gets ``more normal'' as ``input'' gets bigger.
+
+
+Implication: If your count data has high values, then the OLS Normal
+model may serve about as well as a Poisson model
+
+
+However, there are 2 problems.
+\begin{enumerate}
+\item Nonlinearity.
+\item Heteroskedasticity.
+\end{enumerate}
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Nonlinear Transformation of $X_{i}b$ Required for Poisson}
+
+\textbf{The $input_{i}$ must be positive!} We are considering a ``count
+variable,'' something that is always POSITIVE. The expected value
+of a Poisson variable has to be positive. Since the expected value
+equals the value of ``$input_{i}$'', then $X_{i}b$ cannot serve
+as $input_{i}$ because it may be negative. 
+
+All kinds of transformations have been considered to make sure input
+is positive. A common way is to say that the input should be exponentiated,
+because exp(anything) is positive. 
+
+\[
+input_{i}=exp(X_{i}b)
+\]
+
+
+Now, that results in the stupid looking exp(exp) appearance of the
+Poisson regression model:
+\[
+Pr(y|Xb)=\frac{exp(-exp(Xb))(exp(Xb))^{y}}{y!}
+\]
+
+
+or it looks slightly less ugly (not much) if we write:
+
+\[
+Pr(y|Xb)=\frac{exp(-e^{Xb})(e^{Xb})^{y}}{y!}
+\]
+
+
+
+\lyxframeend{}\lyxframe{King called it the ``Exponential Poisson'' model, others call it
+the ``log link''.}
+
+If
+\[
+input_{i}=exp(X_{i}b)
+\]
+
+
+then
+\[
+log(input_{i})=X_{i}b
+\]
+
+
+In the Generalized Linear Model literature, they think of the transformation
+happing to the left hand side, they call it the link function. 
+
+So the exponential on the right is the ``inverse link'' function.
+
+
+\lyxframeend{}\lyxframe{Estimation: straight forward ML}
+
+Adjust the b's to maximize the product of the probabilities of the
+observations:
+\[
+L(b;y,X)=Pr(y_{1}|Xb)*Pr(y_{2}|Xb)*...*Pr(y_{N}|Xb)
+\]
+
+
+Usually, one would take logs, and maximize the log likelihood, which
+would be a sum.
+
+
+\lyxframeend{}\lyxframe{Interpretation}
+\begin{itemize}
+\item Recall the expected value of $y_{i}$ given input is just the input
+itself. 
+\[
+E(y_{i}|X_{i})=exp(X_{i}\hat{b})
+\]
+
+\item So if the k'th variable changes, the impact is
+\end{itemize}
+\[
+\frac{\partial E(y_{i}|X_{i})}{\partial x_{k}}=\hat{b}_{k}*E(y_{i}|X_{i})
+\]
+
+
+\[
+=\hat{b}_{k}*exp(X_{i}\hat{b})
+\]
+
+\begin{itemize}
+\item Long discusses the calculation of the percent change in expected y,
+i.e.
+\end{itemize}
+\[
+\frac{E(y_{i}|X_{i},x_{k}+\delta)}{E(y_{i}|X_{i},x_{k})}=exp(\hat{b}*\delta)
+\]
+
+
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{See poisson-1.R for this example}
+\includegraphics[width=10cm]{plots/t-pois20}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Poisson GLM Fit}
+\input{plots/t-pois30}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Just for Curiosity, fit OLS}
+\input{plots/t-pois31}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{See poisson-1.R for this example}
+\input{plots/t-pois35}
+\includegraphics[width=10cm]{plots/t-pois35}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{From x2's point of view}
+\input{plots/t-pois36}
+\includegraphics[width=10cm]{plots/t-pois36}
+\end{frame}
+
+
+\lyxframeend{}\section{Negative Binomial}
+
+
+\lyxframeend{}\lyxframe{Poisson Weaknesses}
+\begin{enumerate}
+\item Poisson is a ``one parameter'' model. The variance is not separately
+under our control. Maybe we could find a two parameter distribution
+with a more well-suited variance parameter.
+\item Repeat the same point: The Poisson may not fit the data because the
+variance predicted by the Poisson may be too small for the observed
+data.
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Negative Binomial Derivation: Overdispersion}
+\begin{itemize}
+\item The Negative Binomial can be described in a number of ways. 
+\item I think the ``extra randomness'' interpretation is the simplest. 
+\item $input_{i}$ additional random error that causes ``heterogeneity''
+(sometimes the term ``frailty'' is used) in the outputs for cases
+that have the same observed values of $X_{i}$. 
+\item Suppose the Poisson process has an expected value:
+\end{itemize}
+\[
+new\, input_{i}=input_{i}*\delta_{i}
+\]
+
+
+Note that if
+
+\[
+\delta_{i}=1
+\]
+\\
+then this thing just degenerates back to the original Poisson model. 
+
+
+\lyxframeend{}\lyxframe{Log Link and Multiplicative Error}
+\begin{itemize}
+\item In the most common version of the Poisson model, we use the ``log
+link'' 
+\end{itemize}
+\[
+input_{i}=exp(X_{i}b)
+\]
+
+\begin{itemize}
+\item Supplement with an additional error term $u_{i}$:
+\item 
+\[
+new\, input_{i}=exp(X_{i}b+u_{i})
+\]
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Multiplicative <-> Additive}
+\begin{itemize}
+\item Easy:
+\item 
+\[
+new\, input_{i}=exp(X_{i}b+u_{i})=exp(X_{i}b)\times exp(u_{i})
+\]
+
+\item So one can either think of the new error as an additive bit of noise
+with the linear predictor ($+u_{i})$ or a multiplicative effect applied
+to the transformed linear predictor ($\times\delta_{i}=exp(u_{i})$). 
+\item Obviously, we can convert ``back and forth'' 
+\[
+u_{i}=log(\delta_{i})
+\]
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Vital to Pick $\delta_{i}$ Distribution Properly}
+\begin{itemize}
+\item It is necessary to assume that this new noise is ``neutral'', in
+the sense that it causes more uncertainty, but it does not change
+the average outcome. 
+\item That is true if
+
+
+\[
+E[\delta_{i}]=1\Longrightarrow E(exp(u_{i}))=1
+\]
+\\
+or, equivalently, 
+\[
+E[u_{i}]=0
+\]
+
+
+\item ``On average'' the extra error term has ``no effect''.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Output is Conditional Poisson Model}
+\begin{itemize}
+\item The maximum likelihood estimation has to be amended to incorporate
+a new likelihood component for each case. 
+\item Hence, our theory says that GIVEN $X_{i}$ and an additional perturbation
+$u_{i}$, the probability model is a a Poisson process.
+\end{itemize}
+\[
+P(y_{i}|X_{i},u_{i})=\frac{exp(-new\, input_{i})\times new\, input_{i}^{y_{i}}}{y!}.
+\]
+
+
+The input on the right side includes the additional frailty.
+
+
+\lyxframeend{}\subsection{Gamma distributed heterogeneity}
+
+
+\lyxframeend{}\lyxframe{Gamma is most Common Frailty Distribution}
+\begin{itemize}
+\item Gamma is common probability distribution for $\delta_{i}=exp(u_{i})$
+\item The full Gamma distribution has two parameters, but we are going to
+simplify them so we only need to worry about one, $v=shape$, which
+determines the variance. This simplification of the gamma can be done
+in several ways, which will be outlined later. 
+\item The key think is this: If $\delta_{i}$ is drawn from ``a properly
+selected'' gamma distribution, then $E(\delta_{i})=1$ and $Var[\delta_{i}]=1/some\, parameter\, we\, choose$.
+\end{itemize}
+
+\lyxframeend{}\subsection{Gamma distribution background}
+
+
+\lyxframeend{}\lyxframe{Gamma Density Illustration}
+
+The Gamma describes the probability of a continuous variable on $[0,\infty].$
+It can look like a ``ski slope'' or it can look single-peaked.
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=3in]{0_home_pauljohn_SVN_SVN-guides_stat_Regression-GLM_Count-PoissonNegBinomial_importfigs_GammaPDF.pdf}
+\par\end{centering}
+
+\caption{Gamma Distribution\label{fig:Gamma-Distribution}}
+\end{figure}
+
+
+
+\lyxframeend{}\lyxframe{Gamma PDF}
+\begin{itemize}
+\item 2 parameters, $shape$ and $scale$. In some books, the $scale$ parameter
+is replaced by a parameter called $rate$, which is equal to $1/scale$.
+\item If $\delta_{i}$ is Gamma distributed, the probability density function
+is:
+\end{itemize}
+\[
+f(\delta_{i})=\frac{1}{scale^{shape}\Gamma(shape)}\delta_{i}^{(shape-1)}e^{-(\frac{\delta_{i}}{scale})}
+\]
+
+
+
+\lyxframeend{}\lyxframe{What is that Gamma function?}
+\begin{topcolumns}%{}
+
+\end{topcolumns}%{}
+
+\column{6cm}
+\begin{itemize}
+\item The function $\Gamma(shape)$ is the Gamma function (which is a complicated
+math thing I've never looked into very much). It is $\Gamma(s)=\int_{0}^{\infty}t^{s-1}e^{-t}dt$
+if $s>0$. If you pick s as an integer, $\Gamma(s)$ is very easy
+to calculate:
+
+
+\[
+\Gamma(s)=(s-1)!\,\,\, s=1,2,...
+\]
+
+\begin{itemize}
+\item So, the value of $\Gamma(1)=1.$ And $\Gamma(2)=1.$ And $\Gamma(20)$
+is some impossibly huge number. 
+\end{itemize}
+
+\column{6cm}
+
+
+\begin{center}
+\includegraphics[width=2in]{1_home_pauljohn_SVN_SVN-guides_stat_Regression-___nt-PoissonNegBinomial_importfigs_GammaFunct.pdf}
+\par\end{center}
+
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Adjust the Gamma PDF to create the right kind of heterogeneity.}
+\begin{itemize}
+\item The two parameter Gamma probability distribution has these interesting
+properties:
+\end{itemize}
+\[
+E(\delta_{i})=shape*scale
+\]
+
+
+\[
+Var(\delta_{i})=shape*scale^{2}
+\]
+
+\begin{itemize}
+\item Simplify: $scale=1/shape$
+\item The expected value and variance are 
+\[
+E[\delta_{i}]=shape/shape=1
+\]
+
+\end{itemize}
+\[
+Var[\delta_{i}]=shape/shape^{2}=1/shape
+\]
+
+
+
+\lyxframeend{}\lyxframe{Suppose shape is the Same for All Observations}
+\begin{itemize}
+\item The $shape$ parameter is assumed to exist, we need to estimate it. 
+\item In this formulation, it is easy to see that if $shape$ is very large,
+then the variance of $\delta_{i}$ is very small. The extra heterogeneity
+has only a minor effect, and, in fact, as $shape$ tends to $\infty$,
+the value of $\delta_{i}$ collapses around $1.0$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Another Derivation that ends up at the same place}
+\begin{itemize}
+\item Fix the scale = 1. 
+\item Draw a random variable $m_{i}$ with gamma(shape, 1). Then the probability
+density formula with scale=1 simplifies to:
+\end{itemize}
+\[
+f(m_{i})=\frac{1}{\Gamma(shape)}m_{i}^{(shape-1)}e^{-m{}_{i}}\,\,\,\, shape>0
+\]
+
+\begin{itemize}
+\item If shape=1, then this is an exponential distribution (because $\Gamma(1)=1).$ 
+\item The expected value and variance are:
+
+
+\[
+E[m_{i}]=shape
+\]
+and
+
+\end{itemize}
+\[
+Var[m_{i}]=shape.
+\]
+\\
+
+
+
+\lyxframeend{}\lyxframe{Not Better formulation, just Different}
+\begin{itemize}
+\item The advantage of this formulation is that we can easily see what we
+need to do to convert $m_{i}$ into our final result:
+\[
+\delta_{i}=\frac{m_{i}}{shape}
+\]
+
+\item Notice that after diving each draw by $shape,$ we have a variable
+with just the same properties as the other formulation.
+\end{itemize}
+\[
+E(\delta_{i})=E(\frac{m_{i}}{shape})=\frac{1}{shape}E(m_{i})=\frac{shape}{shape}=1
+\]
+
+
+and also
+
+\[
+V(\delta_{i})=V(\frac{m_{i}}{shape})=\frac{1}{shape^{2}}V(m_{i})=\frac{shape}{shape^{2}}=\frac{1}{shape}
+\]
+
+\begin{itemize}
+\item If you go back and forth between books, you get a headache because
+no two books seem to write this down in exactly the same way. But
+I'm pretty sure I've written it down correctly.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Illustrate $m_{i}/shape$}
+
+.
+
+\begin{center}
+\includegraphics[width=8cm]{2_home_pauljohn_SVN_SVN-guides_stat_Regression-___oissonNegBinomial_importfigs_GammaDivShape1.pdf}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Illustrate $log(\frac{v_{i}}{shape})$}
+
+\begin{center}
+\includegraphics[width=8cm]{3_home_pauljohn_SVN_SVN-guides_stat_Regression-___sonNegBinomial_importfigs_logGammaDivShape1.pdf}
+\par\end{center}
+
+Please note that, as the math above indicates, the center of the distribution
+of $log(\frac{v_{i}}{shape})$ is centered on 0, and that as the shape
+increases, the variance of the distribution shrinks dramatically.
+
+
+\lyxframeend{}\lyxframe{About that ``shape'' parameter}
+
+\begin{center}
+\includegraphics[width=8cm]{4_home_pauljohn_SVN_SVN-guides_stat_Regression-___-PoissonNegBinomial_importfigs_GammaDistrib.pdf}
+\par\end{center}
+
+
+\lyxframeend{}\lyxframe{Estimating }
+\begin{itemize}
+\item Fitting is an iterative, two-stage process. 
+
+\begin{itemize}
+\item The shape estimate is chosen
+\item Then the slope parameters are estimated. 
+\end{itemize}
+\item Repeat until estimates converge to stable values.
+\item The MASS package for R provides a procedure ``glm.nb'' which will
+do maximum likelihood to estimate the b's and the shape parameter.
+(In Venables \& Ripley, p. 207, the ``shape'' parameter is called
+$\theta$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{The Negative Binomial Distribution ``Pops Out''}
+\begin{itemize}
+\item If you start with a Poisson model, and then add random noise with
+multiplicative Gamma error, 
+\end{itemize}
+\[
+Y\,|\,\delta_{i}\sim Poisson(input_{i}*\delta_{i})
+\]
+
+\begin{itemize}
+\item The result is known (in probability theory) to be a Negative Binomial
+Distribution. 
+\end{itemize}
+\[
+f_{y}(y|shape,input)=\frac{\Gamma(shape+y)}{\Gamma(shape)y!}\bullet\frac{input^{y}shape^{shape}}{(input+shape)^{shape+y}}
+\]
+
+
+(Venables and Ripley, 4th ed, p. 206)
+
+\[
+E(y_{i})=input
+\]
+
+
+\[
+Var(y_{i})=input+input^{2}/shape
+\]
+
+
+Note that if $shape=\infty$, then the variance of $y_{i}$ is just
+$input_{i}$, meaning the original Poisson model is back! But for
+other values of the shape parameter, the variance of $y_{i}$ is greater
+than in the Poisson model.
+
+
+\lyxframeend{}\subsection{NB estimation}
+
+The results indicate one surprise, that the expected value of y is
+the same in the Poisson and the NB model. However, the variance is
+different. In the NB model, the variance is
+\[
+Var(y_{i}|X)=exp(X_{i}b)\left(1+\frac{exp(X_{i}b)}{v_{i}}\right)
+\]
+
+
+
+\lyxframeend{}\subsection{Overdispersion}
+
+Estimates from a Poisson model are inefficient and have bad standard
+errors if the data is really produced by a heterogeneous process of
+the NB sort.
+
+Note the Poisson model is really ``nested'' inside the NB model.
+If we do a significance test of $H_{o}:\alpha=0$ and cannot reject
+it, then it means we ought to go back to the Poisson. Long p. 237
+discusses other tests. See the R package pscl for a test that can
+be used.
+
+
+\lyxframeend{}\section{Zero inflated models}
+
+The Poisson or NB models might not match the data because they don't
+have enough observed 0's.
+
+The ``fix'' is to think of the probability process as a two step
+thing. First, the observed y is either 0 or a number $y_{i}.$ Whether
+it is observed or not is modeled by any dichotomous regression model,
+such as logit or probit. Second, if it is observed, the count is given
+by one of the models above.
+
+All kinds of details flow forth if you get into writing out one of
+these models. Should the predictors in the dichotomous regression
+exercise be the same ones that are used in the Poisson or NB regression?
+Should we insist the predictive part of the probit model is proportional
+to the count model?
+
+Now, how can a probability process give back a 0?
+
+Either through the failure of the probit stage or a predicted 0 from
+the count stage, so in the Poisson 
+\[
+P(y_{i}=0|X_{i})=\psi_{i}+(1-\psi_{i})*exp(-exp(Xb))
+\]
+
+
+(Write out the poisson for y=0 to understand the last term).
+
+And the probability of any other value is given by the regular poisson,
+multiplied by $(1-\psi_{i}):$
+
+\[
+P(y_{i}|X_{i})=(1-\psi_{i})*Poisson(Xb)
+\]
+
+
+
+\lyxframeend{}\section{Additional Readings}
+
+For more reading on Count models, consult the following, probably
+in this order:
+
+Scott Long, Regression Models for Categorical and Limited Dependent
+Variables, Chapter 8, ``Count outcomes''
+
+Gary King. 1988. Statistical Models for Political Science Event Counts:
+Bias in Conventional Procedures and Evidence for the Exponential Poisson
+Regression Model, \emph{American Journal of Political Science}, 32(3):
+838-863.
+
+Gary King. 1989. Variance Specification in Event Count Models: From
+Restrictive Assumptions to a Generalized Estimator. \emph{American
+Journal of Political Science} 33(3): 762-784
+
+Cameron and Trivedi, 1998. \emph{Regression Analysis of Count Data},
+Cambridge University Press.
+
+
+\lyxframeend{}
+\end{document}

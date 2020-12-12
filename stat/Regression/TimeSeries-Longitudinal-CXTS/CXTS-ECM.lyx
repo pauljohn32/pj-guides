@@ -1,0 +1,663 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+CXTS (Panel) Notes on Error Correction Models.
+\layout Author
+
+Paul Johnson <pauljohn@ku.edu>
+\layout Section
+
+The Panel Data Problem
+\layout Standard
+
+We gather a few (say, 5) observations on each of 50 states.
+ Should we do 5 sets of research, one for each 
+\begin_inset Quotes eld
+\end_inset 
+
+snapshot
+\begin_inset Quotes erd
+\end_inset 
+
+?
+\layout Section
+
+Don't just 
+\begin_inset Quotes eld
+\end_inset 
+
+pool
+\begin_inset Quotes erd
+\end_inset 
+
+ all the observations.
+\layout Standard
+
+You might stack all the observations into one big dataset and then proceed
+ with regression as if there were 200 separate observations.
+\layout Standard
+
+That's bad because it:
+\layout Enumerate
+
+Ignores substantively significant elements you might want to isolate (effect
+ of time or location)
+\layout Enumerate
+
+Ignores possibility of heteroskedasticity
+\layout Enumerate
+
+Ignores possibility of autoregression
+\layout Section
+
+Dummy Variables to the rescue
+\layout Standard
+
+We are VERY FAMILIAR with the idea of using dummy variables as intercept
+ and slope shifters.
+ 
+\layout Standard
+
+The least squares dummy variable (LSDV) approach is to customize the regression
+ model by adding dummy variables for the time and location of observations,
+ to find out if observations for New York are different from California,
+ or if observations in 1980 are different from observations in 1982.
+\layout Standard
+
+
+\series bold 
+The big problem: 
+\series default 
+too many dummy variables floating around! If you have 50 states, you need
+ 49 dummy variables.
+ If you want to cross-check time effects, then add more.
+\layout Standard
+
+And still that does not solve the fundamental issues of heteroskedasticity,
+ autocorrelation.
+\layout Section
+
+Background: Random Effects Models.
+\layout Standard
+
+Sometime after I took my last regression class (1983) and now, a new rage
+ has swept through the regression community: random effects models.
+ These were discussed before 1983, but only in very limited contexts and
+ esoteric books.
+ Now these ideas have become more well known and have found their way into
+ stats books, such as Gujarati Chapter 16.
+\layout Subsection
+
+Randomly varying slope:
+\layout Standard
+
+Here's the idea.
+ Suppose that 
+\begin_inset Formula $\beta$
+\end_inset 
+
+ is not a constant.
+ Rather, it is a random variable.
+ So we would write 
+\begin_inset Formula $\beta_{i}$
+\end_inset 
+
+.
+ How odd looking that is.
+ And a regression model with a random coefficient would be
+\begin_inset Formula \begin{equation}
+y_{i}=\beta_{0}+\beta_{1i}x_{i}+u_{i}\label{eq:1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Then try this standard 
+\begin_inset Quotes eld
+\end_inset 
+
+sneaky trick
+\begin_inset Quotes erd
+\end_inset 
+
+ that is loved by econometrics professors far and wide.
+ Suppose that the coefficient 
+\begin_inset Formula $\beta_{1i}$
+\end_inset 
+
+ really has 2 parts.
+ It has a 
+\begin_inset Quotes eld
+\end_inset 
+
+fixed part
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\beta_{1}$
+\end_inset 
+
+ as well as an additive 
+\begin_inset Quotes eld
+\end_inset 
+
+error term
+\begin_inset Quotes erd
+\end_inset 
+
+ of its own:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\beta_{1i}=\beta_{1}+u_{i}\label{eq:2}\end{equation}
+
+\end_inset 
+
+
+\newline 
+It is very important to add some conditions.
+ We need the random element 
+\begin_inset Formula $u_{i}$
+\end_inset 
+
+ to be well behaved.
+ It needs to have an expected value of 0 and a constant variance.
+ If so, then
+\begin_inset Formula \[
+E(\beta_{1i})=\beta_{1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+If that is correct--so the slope is just a constant plus or minus an individual
+ level error, then you can insert 
+\begin_inset LatexCommand \ref{eq:2}
+
+\end_inset 
+
+ into 
+\begin_inset LatexCommand \ref{eq:1}
+
+\end_inset 
+
+ and you end up with:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{i}=\beta_{0}+\beta_{1}x_{i}+u_{i}+e_{i}*x_{i}\]
+
+\end_inset 
+
+
+\layout Standard
+
+This appears to be a relatively simple problem of heteroskedasticity.
+ 
+\layout Standard
+
+Interpretation: the regression tools we have used so far can be extended
+ to include 
+\begin_inset Quotes eld
+\end_inset 
+
+random effects.
+\begin_inset Quotes erd
+\end_inset 
+
+ The estimates of the b's from ordinary least squares can be thought of
+ as estimates of the average effects of randomly varying coefficients.
+\layout Subsection
+
+Randomly varying intercept
+\layout Standard
+
+Its even simpler if the intercept is the random coefficient.
+ If
+\begin_inset Formula \begin{equation}
+\beta_{0i}=\beta_{0}+e_{i}\label{eq:3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+then in the regression model 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{i}=\beta_{0i}+\beta_{1}x_{i}+u_{i}\label{eq:4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+we would simply insert 
+\begin_inset LatexCommand \ref{eq:3}
+
+\end_inset 
+
+ into 
+\begin_inset LatexCommand \ref{eq:4}
+
+\end_inset 
+
+ and get:
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{i}=\beta_{0}+\beta_{1}x_{i}+e_{i}+u_{i}\]
+
+\end_inset 
+
+
+\layout Standard
+
+If the two unobserved errors are just sitting there by themselves, it must
+ mean we should use ordinary least square.
+\layout Standard
+
+The estimate of 
+\begin_inset Formula $\beta_{0}$
+\end_inset 
+
+is an estimate of the average of the intercepts across units.
+\layout Subsection
+
+Terminology: Mixed Models
+\layout Standard
+
+A mixed model is one in which some coefficients are random and others are
+ fixed.
+\layout Section
+
+Error Components (Gujarati, p.
+ 649) approach to Panel Data
+\layout Subsection
+
+Randomly varying intercept across units.
+\layout Standard
+
+A panel model in which we hypothesize there is a randomly varying intercept
+ across units is called an 
+\emph on 
+error components model
+\emph default 
+.
+ 
+\layout Standard
+
+In a panel study context, the idea is that each unit is randomly assigned
+ an intercept, and then at each time point there is a second random error.
+ 
+\layout Standard
+
+N: number of units observed
+\layout Standard
+
+T: number of observations per unit
+\layout Standard
+
+N*T = total number of observations
+\layout Standard
+
+i indexes units
+\layout Standard
+
+t indexes times
+\layout Standard
+
+
+\begin_inset Formula \[
+y_{it}=\beta_{0i}+\beta_{1}x_{i}+u_{it}\]
+
+\end_inset 
+
+
+\layout Standard
+
+and if you insert 
+\begin_inset LatexCommand \ref{eq:2}
+
+\end_inset 
+
+ into this, you have:
+\begin_inset Formula \[
+y_{it}=\beta_{0}+\beta_{1}x_{i}+e_{it}+u_{i}\]
+
+\end_inset 
+
+
+\layout Standard
+
+We have already imposed a lot of regularity on this problem.
+ We wave the mathemagical pen to assert that 
+\begin_inset Formula $u_{it}$
+\end_inset 
+
+ is uncorrelated across time and space.
+ And further 
+\begin_inset Formula $e_{i}$
+\end_inset 
+
+ is uncorrelated with 
+\begin_inset Formula $u_{it}$
+\end_inset 
+
+.
+ So the error term has the expected value of 0:
+\begin_inset Formula \[
+E(e_{it}+u_{i})=E(e_{it})+E(u_{i})=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+and the variance is:
+\begin_inset Formula \[
+V(e_{it}+u_{i})=V(e_{it})+V(u_{i})+2Cov(e_{it},u_{i})\]
+
+\end_inset 
+
+
+\layout Standard
+
+but we've already used the heavy hand to assert that the 
+\begin_inset Formula $e_{it}$
+\end_inset 
+
+'s are uncorrelated with the 
+\begin_inset Formula $u_{i}$
+\end_inset 
+
+'s, so this reduces to:
+\begin_inset Formula \[
+V(e_{it}+u_{i})=V(e_{it})+V(u_{i})\]
+
+\end_inset 
+
+
+\layout Standard
+
+That's homoskedastic!
+\layout Standard
+
+But Gujarati notes on p.
+ 648 there is autocorrelation of a particular sort.
+ Take a look at the combined error term, which he calls 
+\begin_inset Formula $w_{it}$
+\end_inset 
+
+
+\begin_inset Formula \[
+w_{it}=e_{it}+u_{i}\]
+
+\end_inset 
+
+
+\layout Standard
+
+Note that, at each time point, there are two parts of random variation,
+ but really there is only one.
+ The random number 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\begin_inset Formula $u_{i}$
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+ is the same for all observations on a given unit.
+ That means there is a common factor influencing the error term across time
+ within a single unit.
+ 
+\layout Standard
+
+Gujarati claims (p.
+ 648) that the correlation coefficient between two observations at times
+ s and t on a unit i, 
+\begin_inset Formula $w_{it}$
+\end_inset 
+
+ and 
+\begin_inset Formula $w_{is}$
+\end_inset 
+
+, have the following correlation:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+r_{w_{it}w_{is}}=\frac{V(e_{it})}{V(e_{it})+V(u_{i})}\label{eq:corr}\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+Digression on where formula 
+\begin_inset LatexCommand \ref{eq:corr}
+
+\end_inset 
+
+ comes from
+\layout Standard
+
+I had to stare at that a long time to remember where it comes from.
+ It is written down in Greene's Econometric Analysis 5th ed, p.
+ 294, where he observes that:
+\layout Standard
+
+
+\begin_inset Formula \begin{eqnarray*}
+E(w_{it}^{2}|x) & = & V(e_{it})+V(u_{i})=E(e_{it}^{2})+E(u_{i}^{2})\end{eqnarray*}
+
+\end_inset 
+
+
+\newline 
+Greene adds the conditional notation |x because he wants to remind you that
+ we are looking at a particular given input variable x (not a random variable
+ x).
+ 
+\layout Standard
+
+and within a unit, the covariance between observations is:
+\begin_inset Formula \[
+E(w_{it}*w_{is}|x)=V(e_{it})\]
+
+\end_inset 
+
+
+\layout Standard
+
+This is so because the intercept is not varying within the unit, so 
+\begin_inset Formula $V(u_{i}|x)=0$
+\end_inset 
+
+ and there is no covariance between 
+\begin_inset Formula $e$
+\end_inset 
+
+ and 
+\begin_inset Formula $u$
+\end_inset 
+
+.
+ 
+\begin_inset Formula \[
+E(w_{it}*w_{is}|x)=E((e_{it}+u_{i})(e_{it}+u_{i})|x)\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=E(e_{it}^{2}|x)+E(u_{i}^{2}|x)+2E(e_{it}u_{i}|x)\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=E(e_{it}^{2}|x)\]
+
+\end_inset 
+
+
+\layout Standard
+
+You can get from there to the correlation coefficient WITHIN a unit by rememberi
+ng the formula for the correlation between 2 variables x and y is:
+\layout Standard
+
+
+\begin_inset Formula \[
+r_{x,y}=\frac{Cov(x,y)}{Var(x)Var(y)}\]
+
+\end_inset 
+
+
+\layout Standard
+
+and
+\layout Standard
+
+
+\begin_inset Formula \[
+Cov(x,y)=E(x-E(x))*E(y-E(y))\]
+
+\end_inset 
+
+
+\layout Subsection
+
+So the error term's covariance matrix is...
+\layout Standard
+
+Within a given unit, the errors are intercorrelated as described in the
+ previous section.
+ The covariance matrix looks like this if there are, say, 6 observations
+ for the unit:
+\layout Standard
+
+
+\begin_inset Formula \[
+\Sigma=\left[\begin{array}{cccccc}
+V(e)+V(u) & V(e) & V(e) & V(e) & V(e) & V(e)\\
+V(e) & V(e)+V(u) & V(e) & V(e) & V(e) & V(e)\\
+V(e) & V(e) & V(e)+V(u) & V(e) & V(e) & V(e)\\
+V(e) & V(e) & V(e) & V(e)+V(u) & V(e) & V(e)\\
+V(e) & V(e) & V(e) & V(e) & V(e) & V(e)+V(u)\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+And then the 
+\begin_inset Quotes eld
+\end_inset 
+
+BIG
+\begin_inset Quotes erd
+\end_inset 
+
+ covariance matrix for the whole model would have these 
+\begin_inset Formula $\Sigma$
+\end_inset 
+
+ things surrounded by 0's:
+\layout Standard
+
+
+\begin_inset Formula \[
+\Omega=\left[\begin{array}{cccccccccc}
+\Sigma &  &  &  &  &  &  &  & 0\\
+0 & \Sigma\\
+ &  & \Sigma &  &  &  & ...\\
+ &  &  & \Sigma & 0\\
+ &  &  &  & \Sigma\\
+ &  &  &  &  & \Sigma &  &  & 0\\
+ &  &  &  &  &  & \Sigma &  & 0\\
+0 &  &  &  &  &  &  & \Sigma & 0\\
+0 & 0 &  &  &  &  &  &  & \Sigma\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Section
+
+Separate route of analysis through Maximum Likelihood (or REML)
+\layout Standard
+
+In the Gujarati or other econometrics-style treatments, we are pursuing
+ GLS and fiddling with the var/covar matrix of the error term.
+\layout Standard
+
+If you go read some of the writings of statisticians or biostatisticians
+ on mixed models, you find the emphasis is rather different.
+ Consider Diggle, et al, or Pinheiro and Bates.
+ 
+\layout Standard
+
+The Maximum Likelihood approach is arrived at by assuming that the random
+ effect follows a Normal (Gaussian) distribution.
+\layout Standard
+
+The REML (Restriced Maximum Likelihood) approach, which is the default in
+ the lme package of Pinheiro and Bates.
+ REML is strongly advocated by Diggle, et al.
+\layout Standard
+
+Will write more later...
+\the_end

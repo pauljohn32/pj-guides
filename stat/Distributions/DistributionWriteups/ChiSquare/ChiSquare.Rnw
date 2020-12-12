@@ -1,0 +1,433 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Distributions/DistributionWriteups/ChiSquare//}}
+\makeatother
+\documentclass[12pt,english]{article}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{lmodern}
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Chi-Square Distribution}
+
+
+\author{James W. Stoutenborough <jstout@ku.edu> and Paul E. Johnson <pauljohn@ku.edu>}
+
+
+\date{June 10, 2013}
+
+\maketitle
+
+\section{Introduction}
+
+The Chi-Square distribution is a staple of statistical analysis. It
+is often used to judge ``how far away'' some number is from some
+other number.
+
+The simplest place to start is that the Chi-Square distribution is
+what you get if you take observations from a standard Normal distribution
+and square them and add them up. If we use $Z_{1},$$Z_{2}$, and
+so forth to refer to draws from $N(0,1)$, then 
+\[
+Z_{1}^{2}+Z_{2}^{2}+\ldots+Z_{N}^{2}=\,\sum_{i=1}^{N}Z_{i}^{2}\sim\chi_{N}^{2}
+\]
+\\
+That's means the sum of $Z's$ squared has a Chi-Square distribution
+with $N$ degrees of freedom. The term ``degrees of freedom'' has
+some emotional and cognitive implications for psychologists, but it
+is really just a parameter for us.
+
+\textbf{Things that are sums of squares have $\chi^{2}$ distributions.}
+
+Now, suppose the numbers being added up are not standardized, but
+they are centered. That is to say, they have a Normal distribution
+with a mean of 0 and a standard deviation of $sd$. That means we
+would have to divide each observation by $sd$ in order to obtain
+the $Z_{i}$'s which are standardized Normal observations. Obviously, 
+
+\[
+\left(\frac{Y_{1}}{sd}\right)^{2}+\left(\frac{Y_{2}}{sd}\right)^{2}+\cdots+\left(\frac{Y_{N}}{sd}\right)^{2}=\frac{1}{sd^{2}}\sum_{i=1}^{N}Y_{i}^{2}=\sum_{i=1}^{N}Z_{i}^{2}\sim\chi_{N}^{2}
+\]
+
+
+Equivalently, suppose you think of the $Y_{i}$ as being proportional
+to the $Z_{i}$ in this way: 
+\[
+Y_{i}=sd*Z_{i}
+\]
+
+
+The coefficient $sd$ is playing the role of a ``scaling coefficient''
+and without too much effort you find out that if some variable $x_{i}=\sum Z_{i}^{2}$
+has a Chi-square distribution, $\chi_{N}^{2}$, then $sd\times x_{i}$
+has a distribution equal to $sd\times\chi_{N}^{2}$.
+
+The elementary laws of expected values and variances dictate that
+\[
+E(sd\times x_{i})=sd*E(x_{i})
+\]
+and
+\[
+Var(sd\times x_{i})=sd^{2}Var(x_{i})
+\]
+
+
+In other words, the Chi-square distribution applies not just for a
+sum of squares of a standardized Normal distribution, but in fact
+it describes a sum of squares of any Normal distribution that is centered
+around zero. 
+
+
+\section{Mathematical Description}
+
+The Chi-Square probability density function for $x_{i}=\sum Z_{i}^{2}$
+is defined as:
+
+\begin{center}
+\[
+f\left(x_{i}\right)=\frac{x_{i}^{\left(N/2-1\right)}exp\left(-x_{i}/2\right)}{2^{N/2}\Gamma\left[N/2\right]}
+\]
+
+\par\end{center}
+
+It is defined on a range of positive numbers,  $0\leq x_{i}\leq\infty$.
+Because we are thinking of this value as a sum of squared values,
+it could not possibly be smaller than zero. It also assumes that $N$
+> 0, which is obviously true because we are thinking of the variable
+as a sum of $N$ squared items.
+
+Why does the $\chi^{2}$ have that functional form? Well, write down
+the probability model for a standardized Normal distribution, and
+then realize that the probability of a squared-value of that standardized
+Normal is EXTREMELY easy to calculate if you know a little bit of
+mathematical statistics. The only ``fancy'' bit is that this formula
+uses our friend the Gamma Function (see my handout on the Gamma distribution),
+to represent a factorial. But we have it on good authority (Robert
+V. Hogg and Allen T. Craig, Introduction to Mathematical Statistics,
+4ed, New York: Macmillian, 1978, p. 115) that $\Gamma(1/2)=\sqrt{\pi}$.
+
+
+\section{Illustrations}
+
+The probability density function of the Chi-Square distribution changes
+quite a bit when one puts in different values of the parameters. If
+somebody knows some ``interesting'' parameter settings, then a clear,
+beautiful illustration of the Chi-square can be produced. Consider
+the following code, which can be used to create the illustration of
+2 possible Chi-Square density functions in Figure \ref{cap:Chi-Square1}.
+
+<<Chi-Square1,echo=T, height=6, width=6>>=
+xvals <- seq(0,10,length.out=1000)
+chisquare1 <- dchisq(xvals, df=1)
+chisquare2 <- dchisq(xvals, df=6)
+matplot(xvals, cbind(chisquare1, chisquare2), type="l", xlab="possible values of x", ylab="probability of x",  ylim=c(0,1), main="Chi-Square Probability Densities")
+text(.4, .9, "df=1", pos=4, col=1)
+text(4, .2, "df=6", pos=4, col=2)
+@
+
+\begin{figure}
+<<fig=T,echo=F>>=
+<<Chi-Square1>>
+@
+
+\caption{$\chi^{2}$ Density Functions\label{cap:Chi-Square1}}
+\end{figure}
+
+
+The shape of the Chi-Square is primarily dependent upon the degrees
+of freedom that are witnessed in any particular univariate analysis.
+The adjustment of the degrees of freedom will have a substantial impact
+on the shape of the distribution. The following code will produce
+example density functions for a variety of shapes with a variety of
+degrees of freedom. Examples of Chi-Square density function with a
+variety of degrees of freedom are found in Figure \ref{cap:Chi-Square2}.
+
+<<Chi-Square2,echo=F,eval=F,height=6, width=6>>=
+xvals <- seq(0,22,length.out=1000)
+
+chisquare1 <- dchisq(xvals, df=1)
+chisquare2 <- dchisq(xvals, df=6)
+chisquare3 <- dchisq(xvals, df=2)
+chisquare4 <- dchisq(xvals, df=3)
+chisquare5 <- dchisq(xvals, df=10)
+chisquare6 <- dchisq(xvals, df=15)
+
+matplot(xvals, cbind(chisquare1, chisquare2, chisquare3, chisquare4, chisquare5, chisquare6), type="l", xlab="possible values of x", ylab="probability of x",  ylim=c(0,1), main="Chi-Square Probability Densities")
+text(.4, .9, "df=1", pos=4, col=1)
+text(4.2, .15, "df=6", pos=4, col=2)
+text(.44, .4, "df=2", pos=4, col=3)
+text(1.7, .23, "df=3", pos=4, col=4)
+text(10, .10, "df=10", pos=4, col=5)
+text(15, .08, "df=15", pos=4, col=6)
+@
+
+\begin{figure}
+<<fig=T,echo=F,height=8,width=6>>=
+<<Chi-Square2>>
+@
+
+\caption{Chi-Square Densities various df\label{cap:Chi-Square2}}
+\end{figure}
+
+
+
+\section{Expected Value, Variance, and the role of the parameters}
+
+The Chi-Square distribution is a form of the Gamma distribution, and
+most treatments of the Chi-Square rely on the general results about
+the Gamma to state the characteristics of the special-case Chi-square.
+The Gamma distribution $G(\alpha,\beta)$ is a two parameter distribution,
+with parameters shape ($\alpha$) and scale $(\beta)$. 
+\[
+Gamma\, probability\, density=\frac{1}{\Gamma(\alpha)\beta^{\alpha}}x^{\alpha-1}e^{-x/\beta}
+\]
+Note that if the shape parameter of a Gamma distribution is $\frac{N}{2}$
+and the scale parameter is equal to 2, then this probability density
+is identical to the Chi-square distribution with degrees of freedom
+equal to $N$. 
+
+Since it is known that the expected value of a Gamma distribution
+is $\alpha\beta$ and the variance is $\alpha\beta^{2}$, that means
+that the expected value of a Chi-square for $N$ observations is
+\[
+E(x)=N
+\]
+\\
+and the variance of a Chi-square variable is
+\[
+Var(x)=2N
+\]
+
+
+Now, if a variable is proportional to a Chi-Square $x_{i}$, $y_{i}=\sigma x_{i}$,
+we know that $y_{i}$ has a distribution
+\[
+y_{i}\sim\sigma\chi_{N}^{2}
+\]
+ and the probability density is (via a ``change of variables'')
+
+\[
+f\left(y_{i}\right)=\frac{y{}_{i}^{\left(\frac{N}{2}-1\right)}exp\left(-\frac{y{}_{i}}{2\sigma}\right)}{\sigma^{N/2}2^{N/2}\Gamma\left[N/2\right]}
+\]
+
+
+and 
+\[
+E(y_{i})=\sigma N
+\]
+\[
+Var(y_{i})=\sigma^{2}N
+\]
+
+
+The mode (for $N>2$) is
+\[
+mode(y_{i})=\sigma(N-2)
+\]
+
+
+The Chi-Square is related to the Poisson distributions with parameter
+and expected value equal to $\frac{x_{i}}{2}$ by:
+
+\begin{center}
+$P\left[Chi-Square(n)\geq x_{i}\right]=P\left[Poisson\left(\frac{x_{i}}{2}\right)\leq\frac{n}{2}-1\right]$
+\par\end{center}
+
+
+\section{How is this useful in Bayesian analysis?}
+
+In statistical problems, we often confront 2 kinds of parameters.
+The ``slope coefficients'' of a regression model are one type, and
+we usually have priors that are single-peaked and symmetric. The prior
+for such a coefficient might be Uniform, Normal, or any other mathematically
+workable distribution. 
+
+Sometimes other coefficients are not supposed to be symmetrical. For
+example, the variance of a distribution cannot be negative, so we
+need a distribution that is shaped to have a minimum at zero. The
+Gamma, or its special case the Chi-square, is an obvious candidate.
+
+The most important aspect of the Chi-square, however, is that it is
+very mathematically workable! If one is discussing a Normal distribution,
+for example, $N(\mu,\sigma^{2})$ one must specify prior beliefs about
+the distributions of $\mu$ and $\sigma^{2}$. Recall that in Bayesian
+updating, we calculate the posterior probability as the product of
+the likelihood times the prior, so some formula that makes that result
+as simple as possible would be great.
+\[
+p(\sigma^{2}|y)=p(y|\sigma^{2})p(\sigma^{2})
+\]
+
+
+From the story that we told about where Chi-square variables come
+from, it should be very obvious that if $y$ is normal, we can calculate
+$p(y|\sigma^{2}$) (assuming $\mu$ is taken as ``given'' for the
+moment). So all we need is a prior that makes $p(\sigma^{2}|y$) as
+simple as possible. If you choose $p(\sigma^{2})$ to be Chi-squared,
+then it turns out to be very workable.
+
+Suppose you look at the numerator from the Chi-Square, and ``guess''
+that you want to put $1/\sigma^{2}$ in place of $x_{i}$. You describe
+your prior opinion about $\sigma^{2}$
+
+\begin{center}
+$prior:\,\, p\left(\sigma^{2}\right)\propto(\sigma^{2})^{-N/2-1}exp\left(-\frac{1}{2}S_{o}/\sigma^{2}\right)$
+\par\end{center}
+
+We use $N$ and $S_{0}$ as a ``scaling factors'' to describe how
+our beliefs vary from one situation to another. N is the ``degrees
+of freedom''. 
+
+Note that is very convenient if your Normal theory for $y$ says:
+\[
+p(y_{i}|\sigma^{2})=\frac{1}{\sqrt{2\pi\sigma^{2}}}exp(-\frac{1}{2}\frac{(y_{i}-\mu)^{2}}{\sigma^{2}})
+\]
+
+
+Suppose the sample size of the dataset is $n.$ If you let $S=\sum_{i=1}^{n}(y_{i}-\mu^{2})$
+represent the sum of squares, then we rearrange to find a posterior:
+\[
+p(\sigma^{2}|y)\propto(\sigma^{2})^{-(N+n)/2-1}exp(-\frac{1}{2}(S_{o}+S)/\sigma^{2})
+\]
+
+
+Look how similar the prior is to the posterior. 
+
+It gets confusing discussing $\sigma^{2}$ and $1/\sigma^{2}$. Bayesians
+don't usually talk about estimating the variance of $\sigma^{2}$,
+but rather the precision, which is defined as 
+\[
+\tau=\frac{1}{\sigma^{2}}
+\]
+
+
+Hence, the distribution of the ``precision'' is given as a Chi-Square
+variable, and if your prior is 
+\[
+prior:\,\, p\left(\tau\right)\propto\tau{}^{N/2-1}exp\left(-\frac{1}{2}S_{o}\tau\right)
+\]
+
+
+then the posterior is a Chi-Square variable
+\[
+(S_{o}+S)\tau\sim\chi_{N+n}^{2}
+\]
+
+
+If you really do want to talk about the variance, rather than the
+precision, then you are using a prior that is an INVERSE Chi-Square.
+Your prior is the inverse chi-square
+
+\[
+\sigma^{2}\sim S_{o}X_{N}^{-2}
+\]
+ which I've seen referred to as
+\[
+\sigma^{2}\sim(S_{0}+S)\chi_{N+n}^{-2}
+\]
+
+
+As a result, a prior for a variance parameter is often given as an
+inverse Chi-square, while the prior for a precision parameter is given
+as a Chi-square.
+\end{document}

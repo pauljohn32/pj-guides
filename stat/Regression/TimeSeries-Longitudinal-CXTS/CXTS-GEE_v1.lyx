@@ -1,0 +1,1045 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 11
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Generalized Estimating Equations
+\layout Author
+
+Paul E.
+ Johnson <pauljohn@ku.edu>
+\layout Standard
+
+Liang and Zeger (1986) proposed a modeling strategy that they called GEE,
+ Generalized Estimating Equations.
+ GEE is an extension of the "quasi-likelihood" approach to estimation that
+ is inspired by Generalized Least Squares.
+ Christopher Zorn (American Journal of Political Science, 2001 offers a
+ very understandable survey with examples).
+\layout Standard
+
+Liang and Zeger proved that the estimates from the GEE are consistent, meaning
+ asymptotically accurate.
+ 
+\layout Section
+
+What is GEE good for?
+\layout Standard
+
+My inclination is to get lost in details without explaining what all of
+ this work is for.
+ Let's avoid that.
+\layout Standard
+
+GEE is useful because it can help you to build models of cross-sectional/time-se
+ries data in which the dependent variable is a 
+\begin_inset Quotes eld
+\end_inset 
+
+logit
+\begin_inset Quotes erd
+\end_inset 
+
+ or a 
+\begin_inset Quotes eld
+\end_inset 
+
+Poisson
+\begin_inset Quotes erd
+\end_inset 
+
+ or some other nonNormal thing.
+\layout Standard
+
+GEE is an extension of FGLS to nonNormal distributions and it is also an
+ extension of quasi-likelihood to deal with inter-correlated observations.
+\layout Standard
+
+The only key requirements are that the observations are 
+\begin_inset Quotes eld
+\end_inset 
+
+clustered
+\begin_inset Quotes erd
+\end_inset 
+
+ in a meaningful, and that the observations within the clusters are intercorrela
+ted in some substantively interesting way.
+\layout Standard
+
+If the clustered observations form themselves into short time-series, we
+ have longitudinal data.
+ 
+\layout Standard
+
+The key thing is that the clusters, however they are considered, are stochastica
+lly independent.
+ If you want to write a model in which observations are interrelated, the
+ data should be conceptualized so that those observations are within a cluster.
+\layout Standard
+
+That is to say, we are ruling-out the 
+\begin_inset Quotes eld
+\end_inset 
+
+contemporaneous correlation
+\begin_inset Quotes erd
+\end_inset 
+
+ across units that is assumed to be important in the panel-corrected standard
+ error (Beck and Katz, 1995).
+\layout Section
+
+GLM
+\layout Standard
+
+Consult my GLM1 handout in case this is unfamiliar to you.
+\layout Standard
+
+The mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is hypothesized to be 
+\begin_inset Formula $E(y_{i})=\mu_{i}=g^{-1}(X_{i}b)$
+\end_inset 
+
+.
+ The so-called link function is 
+\begin_inset Formula $g(\mu_{i})$
+\end_inset 
+
+ and 
+\begin_inset Formula $g^{-1}(X_{i}b)$
+\end_inset 
+
+ is the inverse link function.
+ The inverse link function takes input from the linear predictor 
+\begin_inset Formula $\eta_{i}=X_{i}b$
+\end_inset 
+
+ and gives back a predicted value.
+\layout Standard
+
+Assume the observations follow an exponential distribution.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i})=exp\left\{ \frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi}+h(y_{i},\phi)\right\} \label{eq:expfamily1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The variance of observed 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is hypothesized to be separable into two parts, one is a function of the
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, commonly called the variance function 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset 
+
+ and a constant 
+\begin_inset Quotes eld
+\end_inset 
+
+dispersion
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+scale
+\begin_inset Quotes erd
+\end_inset 
+
+ parameter 
+\begin_inset Formula $\phi$
+\end_inset 
+
+: 
+\begin_inset Formula \[
+Var(y_{i})=\phi V(\mu_{i})\]
+
+\end_inset 
+
+
+\newline 
+Note that, right from the start, I'm adopting the simplification that a
+ single dispersion parameter is shared among all observations.
+ There's no subscript 
+\begin_inset Formula $i$
+\end_inset 
+
+ on 
+\begin_inset Formula $\phi$
+\end_inset 
+
+, in other words.
+ Note that one must be cautious because authors vary in their notation.
+ In some work, authors use a scale parameter 
+\begin_inset Formula $1/\phi$
+\end_inset 
+
+.
+ But they use the symbol 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ for it.
+ (Liang and Zeger, 1986, use such notation.) 
+\layout Standard
+
+The first order condition for the likelihood function is a score equation.
+ For the noncanonical link (the most general kind of model), as stated in
+ McCullagh & Nelder (p.
+ 41), MM&V (p.
+ 331), or Dobson (p.
+ 63)
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{V(\mu_{i})}\left[y_{i}-\mu_{i}\right]\frac{\partial\mu_{i}}{\partial\eta_{i}}x_{ik}=0\label{eq:UNonCanonical2}\end{equation}
+
+\end_inset 
+
+
+\newline 
+which is the same as
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\left[y_{i}-\mu_{i}\right]\frac{\partial\theta_{i}}{\partial\eta_{i}}x_{ik}=0\label{eq:UNonCanonical3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+In matrix form:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+X'W(y-\mu)=0\label{eq:UNonCanonicalSystem1}\end{equation}
+
+\end_inset 
+
+ The matrix 
+\begin_inset Formula $W$
+\end_inset 
+
+ is NxN square, but it has only diagonal elements 
+\begin_inset Formula $\frac{1}{V(\mu_{i})}\frac{\partial\mu_{i}}{\partial\eta_{i}}=\frac{\partial\theta_{i}}{\partial\eta_{i}}$
+\end_inset 
+
+.
+ The fine points are described in depth in the handout GLM#1.
+ The dispersion parameter 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ disappears because, since it is a constant, it plays no role in equating
+ the left and right hand sides.
+\layout Section
+
+Quasi-likelihood
+\layout Standard
+
+What if the probability model for 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is unknown? If one is willing to provide a function for the mean and variance
+ of observations of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, then quasi-likelihood offers a good strategy to estimate the coefficients
+ 
+\begin_inset Formula $b.$
+\end_inset 
+
+ 
+\layout Standard
+
+Let the predicted mean (as a function of observed input variables 
+\begin_inset Formula $X_{i}$
+\end_inset 
+
+ and parameters 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+) be:
+\begin_inset Formula \[
+\hat{\mu}_{i}=g^{-1}(X_{i}\hat{b})\]
+
+\end_inset 
+
+
+\layout Standard
+
+In complete generality, the variance of the observations is an 
+\begin_inset Formula $N\times N$
+\end_inset 
+
+ matrix 
+\begin_inset Formula $V$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The proponents of quasi-likelihood estimators (following Wedderburn, 1974;
+ Liang and Zeger 1986) propose that one should estimate 
+\begin_inset Formula $b$
+\end_inset 
+
+ by solving a quasi-score equation:
+\begin_inset Formula \begin{equation}
+D'V^{-1}(y-\hat{\mu})=0\label{eq:QuasiScore}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The inspiration for that is said to be found in Generalized Least Squares.
+ See my handout CXTS1 which tries to draw out this comparison.
+\layout Standard
+
+While the estimate 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is being calculated, it is interesting because 
+\begin_inset Formula $b$
+\end_inset 
+
+ is an element in the formulas for 
+\begin_inset Formula $D$
+\end_inset 
+
+, 
+\begin_inset Formula $V$
+\end_inset 
+
+, and 
+\begin_inset Formula $\hat{\mu}$
+\end_inset 
+
+.
+\layout Subsection
+
+The D term
+\layout Standard
+
+D' represents 
+\begin_inset Formula $[\partial\hat{\mu}/\partial\hat{b}]$
+\end_inset 
+
+'.
+\layout Standard
+
+
+\begin_inset Formula \[
+D=\left[\begin{array}{ccccc}
+\frac{\partial\hat{\mu}_{1}}{\partial\hat{b}_{1}} & \frac{\partial\hat{\mu}_{2}}{\partial\hat{b}_{1}} & \cdots & \frac{\partial\hat{\mu}_{N-1}}{\partial\hat{b}_{1}} & \frac{\partial\hat{\mu}_{N}}{\partial\hat{b}_{1}}\\
+\vdots &  &  &  & \vdots\\
+\frac{\partial\hat{\mu}_{1}}{\partial\hat{b}_{p}} & \frac{\partial\hat{\mu}_{2}}{\partial\hat{b}_{p}} & \cdots &  & \frac{\partial\hat{\mu}_{N}}{\partial\hat{b}_{p}}\end{array}\right]\]
+
+\end_inset 
+
+ If we have an estimate 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+, we can calculate an estimate 
+\begin_inset Formula $\hat{\mu}_{i}$
+\end_inset 
+
+ for the 
+\begin_inset Formula $i'th$
+\end_inset 
+
+ case, and we can also calculate an estimate of 
+\begin_inset Formula $D$
+\end_inset 
+
+.
+ 
+\layout Subsubsection
+
+Digression: 
+\begin_inset Formula $D'=X'diag[\partial\hat{\mu}/\partial\hat{\eta}]$
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula $D'$
+\end_inset 
+
+ can be simplified and rewritten in various ways.
+ 
+\layout Standard
+
+The value of 
+\begin_inset Formula $\partial\hat{\mu}_{i}/\partial\hat{b}_{k}$
+\end_inset 
+
+ depends on the link function.
+ Since, by definition
+\layout Standard
+
+
+\begin_inset Formula \[
+\partial\hat{\mu}_{i}/\partial\hat{b}_{k}=\partial\hat{\mu}_{i}/\partial\hat{\eta}_{k}\cdot\partial\hat{\eta}_{i}/\partial\hat{b}_{k}\]
+
+\end_inset 
+
+ and this is a linear model, 
+\layout Standard
+
+
+\begin_inset Formula \[
+\partial\hat{\eta}_{i}/\partial\hat{b}_{k}=x_{ik}\]
+
+\end_inset 
+
+ so 
+\layout Standard
+
+
+\begin_inset Formula \[
+\partial\hat{\mu}_{i}/\partial\hat{b}_{k}=x_{ik}\cdot\partial\hat{\mu}_{i}/\partial\hat{\eta}_{k}\]
+
+\end_inset 
+
+ 
+\layout Standard
+
+This finding can be used to define
+\begin_inset Formula \[
+\Gamma=diag[\partial\hat{\mu}/\partial\hat{\eta}]=\left[\begin{array}{ccccc}
+\partial\hat{\mu}_{1}/\partial\hat{\eta}_{1} & 0 & \cdots & 0 & 0\\
+0 & \partial\hat{\mu}_{2}/\partial\hat{\eta}_{2} & 0 & 0 & 0\\
+\vdots &  & \ddots & 0 & 0\\
+0 & 0 &  & \partial\hat{\mu}_{N-1}/\partial\hat{\eta}_{N-1} & 0\\
+0 & 0 & \cdots &  & \partial\hat{\mu_{N}}/\partial\hat{\eta}_{N}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+And thus
+\begin_inset Formula \[
+D'=X'\Gamma\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Independent observations
+\layout Standard
+
+Take the simple case of independent--uncorrelated--observations.
+ Then the variance matrix for the observations, would be simple:
+\begin_inset Formula \[
+V=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\newline 
+I have in mind that 
+\begin_inset Formula $\sigma_{i}^{2}=\phi V(\mu_{i})$
+\end_inset 
+
+, so all the user need supply is 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset 
+
+ and we estimate 
+\begin_inset Formula $\phi$
+\end_inset 
+
+.
+\layout Subsubsection*
+
+Here's the big result
+\layout Standard
+
+The quasi-score equation for this case of independent observations reduces
+ to, for the k'th parameter in 
+\begin_inset Formula $b$
+\end_inset 
+
+,
+\begin_inset Formula \[
+U_{k}=\frac{\partial lnL}{\partial b_{k}}=\sum_{i=1}^{N}\frac{1}{\sigma_{i}^{2}}\left[y_{i}-\mu_{i}\right]\frac{\partial\mu_{i}}{\partial b_{k}}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+U_{k}=\frac{\partial lnL}{\partial b_{k}}=\sum_{i=1}^{N}\frac{1}{\sigma_{i}^{2}}\left[y_{i}-\mu_{i}\right]\frac{\partial\mu_{i}}{\partial\eta_{i}}x_{ik}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+which (we should not be shocked to find) is the same as the GLM score equation
+ in equation 
+\begin_inset LatexCommand \ref{eq:UNonCanonical2}
+
+\end_inset 
+
+.
+\layout Standard
+
+So, when the mean and variance stipulated in a GLM matches the mean and
+ variance stipulated in a quasi-likelihood model, the 2 result in the same
+ parameter estimates.
+\layout Standard
+
+You can write the matrix equation as:
+\layout Standard
+
+
+\begin_inset Formula \[
+X'\Gamma V^{-1}(y-\hat{\mu})=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+The big difference between GLM and quasi-likelihood, of course, is that
+ the quasi-likelihood is defined for many more situations than the GLM.
+\layout Subsubsection*
+
+Now here's the but...
+\layout Standard
+
+The equality of the two models is strictly true only when the variance matrix
+ of 
+\begin_inset Formula $y$
+\end_inset 
+
+ is diagonal, since that is the only case in which the GLM is defined.
+ If, instead of a diagonal matrix 
+\begin_inset Formula $V,$
+\end_inset 
+
+ we have the full, complicated looking thing 
+\begin_inset Formula \[
+V=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & \sigma_{12} & \sigma_{13} & \cdots & \sigma_{1N}\\
+\sigma_{21} & \sigma_{2}^{2} &  &  & \sigma_{2N}\\
+\sigma_{31} &  &  &  & \sigma_{3N}\\
+\vdots &  &  & \sigma_{N-1}^{2}\\
+\sigma_{N1} & \sigma_{N2} & \cdots & \sigma_{N(N-1)} & \sigma_{N}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\newline 
+then quasi-likelihood is a different beast altogether, more similar in appearanc
+e to the GLS score in 
+\begin_inset LatexCommand \ref{eq:GLSScore1}
+
+\end_inset 
+
+(in my opinion).
+ 
+\layout Standard
+
+In any case, the longitudinal model requires us to deal with intercorrelated
+ observations.
+ Rather than dealing with the problem in complete generality, the GEE approach
+ takes advantage of the separation of observations among clusters.
+\layout Subsubsection
+
+Digression
+\layout Standard
+
+In the case of independence, Liang and Zeger have the matrix version of
+ the score equation
+\begin_inset Formula \[
+U=X'\Delta[y-\hat{\mu}]=0\]
+
+\end_inset 
+
+where 
+\begin_inset Formula \[
+\Delta=\left[\begin{array}{ccccc}
+d\theta_{1}/d\eta_{1} & 0 & 0 & 0 & 0\\
+0 & d\theta_{2}/d\eta_{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & d\theta_{N-1}/d\eta_{N-1} & 0\\
+0 & 0 & 0 & 0 & d\theta_{N}/d\eta_{N}\end{array}\right]\]
+
+\end_inset 
+
+
+\newline 
+This is found to be equivalent to the result in the preceding section, recalling
+ that
+\begin_inset Formula \[
+\Delta=\left[\begin{array}{ccccc}
+\frac{1}{V(\mu_{1})}\frac{\partial\mu_{1}}{\partial\eta_{1}} & 0 & 0 & 0 & 0\\
+0 & \frac{1}{V(\mu_{2})}\frac{\partial\mu_{2}}{\partial\eta_{2}} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \frac{1}{V(\mu_{N-1})}\frac{\partial\mu_{N-1}}{\partial\eta_{N-1}} & 0\\
+0 & 0 & 0 & 0 & \frac{1}{V(\mu_{N})}\frac{\partial\mu_{N}}{\partial\eta_{N}}\end{array}\right]\]
+
+\end_inset 
+
+
+\newline 
+The dispersion parameter 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+disappeared
+\begin_inset Quotes erd
+\end_inset 
+
+ because it is a constant.
+\layout Section
+
+GEE
+\layout Standard
+
+Turn back to the basic problem of longitudinal data analysis.
+ There are a few observations (
+\begin_inset Formula $T$
+\end_inset 
+
+) about each of 
+\begin_inset Formula $N$
+\end_inset 
+
+ subjects.
+ Each 
+\begin_inset Quotes eld
+\end_inset 
+
+cluster
+\begin_inset Quotes erd
+\end_inset 
+
+ of observations has its own 
+\begin_inset Formula $V_{i}$
+\end_inset 
+
+ to describe the inter-correlation of its observed 
+\begin_inset Formula $y_{i}'=(y_{i1},y_{i2},y_{i3},...,y_{iT})'$
+\end_inset 
+
+ 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var(y)=\left[\begin{array}{ccccc}
+V_{1} &  &  &  & 0\\
+ & V_{2}\\
+ &  & V_{3}\\
+ &  &  & \ddots\\
+0 &  &  &  & V_{N}\end{array}\right]\label{eq:longitudinal2}\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+Working Correlation Matrix
+\layout Standard
+
+Among other things, the seminal paper by Liang and Zeger (1986) contributed
+ a workable system for representing our ideas about the matrix 
+\begin_inset Formula $V_{i}$
+\end_inset 
+
+ and a coherent estimation and interpretation strategy.
+\layout Standard
+
+Here are the essentials.
+ The 
+\begin_inset Quotes eld
+\end_inset 
+
+working correlation
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $R(\alpha)$
+\end_inset 
+
+ matrix is:
+\begin_inset Formula \begin{equation}
+V_{i}=A_{i}^{1/2}R(\alpha)A_{i}^{1/2}/\phi\label{eq:Vi}\end{equation}
+
+\end_inset 
+
+
+\newline 
+(Note, here's a case where 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ is relabeled as 
+\begin_inset Formula $1/\phi$
+\end_inset 
+
+, if you know what I mean.)
+\layout Standard
+
+
+\begin_inset Formula $R(\alpha)$
+\end_inset 
+
+ is a 
+\begin_inset Formula $T\times T$
+\end_inset 
+
+ matrix of correlation coefficients, numbers between -1 and +1.
+ The parameter 
+\begin_inset Formula $\alpha$
+\end_inset 
+
+is a 
+\begin_inset Quotes eld
+\end_inset 
+
+tunable parameter
+\begin_inset Quotes erd
+\end_inset 
+
+ on which 
+\begin_inset Formula $R(\alpha)$
+\end_inset 
+
+ depends.
+\layout Standard
+
+The symbol 
+\begin_inset Formula $A_{i}^{1/2}$
+\end_inset 
+
+ is the diagonal matrix that holds the square root of the variances of the
+ observed 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+\begin_inset Formula \[
+A_{i}=diag[\sigma_{i}^{2}]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \sigma_{T-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{T}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+A_{i}^{1/2}=\left[\begin{array}{ccccc}
+\sigma_{1} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \sigma_{T-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{T}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Aside: Correlation/Covariance 
+\layout Standard
+
+The correlation and covariance concepts fit together.
+ In case you have forgotten, correlation is defined as 
+\begin_inset Formula \[
+r=\frac{Cov(X1,X2)}{\sqrt{\sigma_{X1}^{2}\cdot\sigma_{X2}^{2}}}\]
+
+\end_inset 
+
+
+\newline 
+So, if one is given 
+\begin_inset Formula $r$
+\end_inset 
+
+, one can recover 
+\begin_inset Formula $Cov(X1,X2)$
+\end_inset 
+
+ by multiplying:
+\begin_inset Formula \[
+Cov(X1,X2)=\sqrt{\sigma_{X1}^{2}\sigma_{X2}^{2}}\cdot r=\sigma_{X1}\cdot\sigma_{X2}\cdot r\]
+
+\end_inset 
+
+
+\newline 
+The matrix equivalent of this trick for recovering the Covariance from the
+ Correlation is the formula given in expression 
+\begin_inset LatexCommand \ref{eq:Vi}
+
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Examples of correlation matrices
+\layout Enumerate
+
+Unstructured
+\layout Enumerate
+
+Exchangeable
+\layout Enumerate
+
+AR(1)
+\layout Subsection
+
+General Estimating Equations
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+general estimating equations
+\begin_inset Quotes erd
+\end_inset 
+
+ (Liang and Zeger, 1986, p.
+ 15) are the result of taking this structure into account within a quasi-likelih
+ood context.
+ The general estimating equations are defined in the matrix form as
+\layout Standard
+
+
+\begin_inset Formula \[
+D'Var(y)^{-1}(y-\hat{\mu})=0\]
+
+\end_inset 
+
+
+\newline 
+Because 
+\begin_inset Formula $Var(y)$
+\end_inset 
+
+ has a block-diagonal structure (lots of 0's surrounded by square matrices),
+ this simplifies to a sum of scores for the N clusters, so the generalized
+ estimating equations are often written as:
+\begin_inset Formula \[
+\sum_{i=1}^{N}D_{i}'V_{i}^{-1}(y_{i}-\hat{\mu}_{i})=0\]
+
+\end_inset 
+
+
+\newline 
+Liang and Zeger (1986) have 
+\begin_inset Formula $D_{i}=[d\hat{\mu}/d\hat{b}]=A_{i}\Delta_{i}X_{i}$
+\end_inset 
+
+, where 
+\layout Standard
+
+
+\begin_inset Formula \[
+\Delta_{i}=diag(d\theta_{it}/d\hat{\eta}_{it})=\left[\begin{array}{ccccc}
+\frac{d\theta_{11}}{d\hat{\eta}_{11}} & 0 & 0 & 0 & 0\\
+0 & \frac{d\theta_{12}}{d\hat{\eta}_{12}} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & \frac{d\theta_{N(T-1)}}{d\hat{\eta}_{N(T-1)}} & 0\\
+0 & 0 & 0 & 0 & \frac{d\theta_{NT}}{d\hat{\eta}_{NT}}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Iterative Estimation Procedure
+\layout Standard
+
+A numerical maximization procedure is described in such horrifying detail
+ in the textbooks that I can't bear to write it down.
+ Maybe next time.
+\layout Subsection
+
+Statistical Properties
+\layout Standard
+
+The estimate from the GEE approach are consistent and Normally distributed.
+ 
+\layout Standard
+
+Furthermore, the variance/covariance matrix of the estimate 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+is
+\begin_inset Formula \[
+Var(\hat{b})=\hat{\phi}(X'\Delta Var(y)\Delta X)^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+That assumes 
+\begin_inset Formula $Var(y)$
+\end_inset 
+
+ is specified correctly.
+ Computer output from GEE programs will present these 
+\begin_inset Quotes eld
+\end_inset 
+
+model standard errors
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Liang and Zeger proposed the robust estimator (in the Huber-White tradition).
+ Their robust estimator of the variance/covariance matrix of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is stated on their p.
+ 15.
+ 
+\begin_inset Formula \[
+robustVar(\hat{b})=\left(\sum D_{i}'V_{i}^{-1}D_{i}\right)^{-1}\{\sum D'V_{i}^{-1}\left(\widehat{Var(y)}\right)V_{i}^{-1}D_{i}\}\left(\sum D_{i}'V_{i}^{-1}D_{i}\right)^{-1}\]
+
+\end_inset 
+
+ The information matrix is 
+\begin_inset Formula $\sum(D_{i}'V_{i}{}^{-1}D_{i})$
+\end_inset 
+
+.
+ This really is an information sandwich.
+ 
+\layout Standard
+
+The robust estimator is also sometimes called the 
+\begin_inset Quotes eld
+\end_inset 
+
+empirical estimator
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\begin_inset Formula \[
+robustVar(\hat{b})=\left(\sum D_{i}'V_{i}^{-1}D_{i}\right)^{-1}\{\sum D'V_{i}^{-1}(y-\hat{\mu})(y-\hat{\mu})'\, V_{i}^{-1}D_{i}\}\left(\sum D_{i}'V_{i}^{-1}D_{i}\right)^{-1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+Focus on the middle part, say, for cluster 1:
+\layout Standard
+
+
+\begin_inset Formula \[
+D_{1}'V_{1}^{-1}\,(y_{1}-\hat{\mu}_{1})(y_{1}-\hat{\mu})'\, V_{1}^{-1}D_{1}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+=D_{1}'V_{1}^{-1}\,\left[\begin{array}{c}
+y_{11}-\hat{\mu}_{11}\\
+y_{12}-\hat{\mu}_{12}\\
+y_{13}-\hat{\mu}_{13}\end{array}\right]\left[\begin{array}{ccc}
+y_{11}-\hat{\mu}_{11} & y_{12}-\hat{\mu}_{12} & y_{13}-\hat{\mu}_{13}\end{array}\right]\, V_{1}^{-1}D_{1}\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=D_{1}'V_{1}^{-1}\,\left[\begin{array}{ccc}
+(y_{11}-\hat{\mu}_{11})^{2} & (y_{12}-\hat{\mu}_{12})(y_{11}-\hat{\mu}_{11}) & (y_{13}-\hat{\mu}_{13})(y_{11}-\hat{\mu}_{11})\\
+(y_{11}-\hat{\mu}_{11})(y_{12}-\hat{\mu}_{12}) & (y_{12}-\hat{\mu}_{12})^{2} & (y_{13}-\hat{\mu}_{13})(y_{12}-\hat{\mu}_{12})\\
+(y_{11}-\hat{\mu}_{11})(y_{13}-\hat{\mu}_{13}) & (y_{12}-\hat{\mu}_{12})(y_{13}-\hat{\mu}_{13}) & (y_{13}-\hat{\mu}_{13})(y_{13}-\hat{\mu}_{13})\end{array}\right]\, V_{1}^{-1}D_{1}\]
+
+\end_inset 
+
+
+\the_end

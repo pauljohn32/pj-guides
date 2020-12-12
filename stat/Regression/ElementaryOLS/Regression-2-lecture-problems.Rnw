@@ -1,0 +1,278 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/ElementaryOLS//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{calc}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{Sweavel}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.85}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\lyxframeend{}\section{Practice Problems}
+
+\small
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Problems}
+\begin{enumerate}
+\item Run any regression and print out a summary of the estimates. Circle
+and label the following elements in the output:
+
+\begin{enumerate}
+\item point estimate of the intercept
+\item point estimate of the slope
+\item estimate of the standard deviation of the estimated intercept
+\item estimate of the standard deviation of the estimated slope
+\item estimate of the standard deviation of the error term
+\item estimate of the coefficient of determination
+
+
+If you can't find any data to experiment with, I suggest one of these
+(in R's base distribution):
+
+
+<<prob1, eval=F, echo=T>>=
+library(datasets)
+library(help=datasets)
+?Orange
+m1 <- lm( circumference ~ age, data = Orange)
+summary(m1)
+?cars
+m2 <- lm(dist ~ speed, data=cars) 
+summary(m2)
+@
+
+\end{enumerate}
+\item Write down the formula for the slope estimate, $\hat{b}_{1}$. Suppose
+your assignment is to make sure that value is as large as possible. 
+
+\begin{enumerate}
+\item Would you rather have the variable $x_{i}$ scattered far-and-wide
+across the horizontal axis?
+\item If you could get all of your $x_{i}$ observations at a single value,
+wouldn't that help you pinpoint the predicted value of $y_{i}$, and
+hence make for a better slope estimate?
+\item Would you rather that the true variance of the error is really small,
+or really big?
+\end{enumerate}
+\item Did you ever want to make up your own data? Here's the chance. I want
+you to see the effect of changes in the standard deviation of the
+error term. Run this:
+
+
+<<prob3a, echo=T, eval=F>>=
+stde <- 1
+dat <- data.frame(x=rpois(500, lambda=200))
+dat$y <- 3 + 0.08 * dat$x + stde * rnorm(500)
+m1 <- lm(y ~ x, data=dat); summary(m1)
+plot(y ~ x, data=dat); abline(m1)
+@
+
+
+We want to see what happens as stde is made larger, so re-set that
+to 2, and create $y2$ from it, and run again:
+
+
+<<prob3b, echo=T, eval=F>>=
+stde <- 2
+dat$y2 <- 3 + 0.08 * dat$x + stde * rnorm(500)
+m2 <- lm(y2 ~ x, data=dat); summary(m2)
+plot(y2 ~ x, data=dat); abline(m2)
+@
+
+
+Hopefully 2 examples are enough to give you the idea. Adjust stde
+again, create y3, run m3, and compare.
+
+
+Here are the questions:
+\begin{enumerate}
+\item What changes in the regression estimates result from tuning up stde?
+\item What parameter estimate in the output is supposed to represent the
+variable ``stde''?
+\item How well does the OLS procedure do at estimating stde?
+\end{enumerate}
+\item Here's a scatterplot that I found. When I fit the regression line,
+I can't understand the estimates. The numbers seem to say there is
+no relationship, but it is plain to the eye that there is! How would
+you explain it? I think you are more likely to get full credit if
+you sketch the OLS fitted line on the scatter.
+
+
+<<scat1, fig=T,echo=F,height=3,include=F,width=3>>=
+x <- rnorm(200,m=30,s=5)
+sigma <- 5
+y <- -3 + 30*x -0.5*x*x + sigma*rnorm(200)
+plot(x, y, main="", xlab="x", ylab="y")
+mod1 <- lm(y~x)
+#abline(mod1)
+@
+
+
+<<regmod1, echo=F, include=F, results=tex>>=
+library(rockchalk)
+outreg(mod1, tight=T)
+@
+
+
+\begin{tabular}{cc}
+\framebox{\begin{minipage}[t]{0.5\columnwidth}%
+\noindent \begin{flushleft}
+\includegraphics[width=5cm]{plots/t-scat1}
+\par\end{flushleft}%
+\end{minipage}} &
+\begin{minipage}[t]{0.5\columnwidth}%
+\noindent \begin{flushleft}
+\input{plots/t-regmod1}
+\par\end{flushleft}%
+\end{minipage}\tabularnewline
+\end{tabular}
+
+\item Here is a fitted OLS regression model with standard errors in parentheses
+\begin{eqnarray}
+\widehat{autism_{i}} & = & 8.0+6.3\cdot iron_{i}\\
+ &  & (1.0)\,\,\,\,\,\,\,\,\,(2.1)
+\end{eqnarray}
+
+
+
+The RMSE (or ``sigma'' or ``residual standard error'' is 10.0),
+the $R^{2}=0.32$, and the sample size is 1000. The $autism_{i}$
+score represents a child's placement on the 100 point autism spectrum
+disorder scale and $iron_{i}$ is the number of iron molecules per
+billion in the child's blood. If the $autism_{i}$ score is greater
+than 20, the child is deemed to be in the ``moderate autism'' range,
+and if it is greater than 50, the child is deemed to be in the ``severe
+autism'' range. The $iron_{i}$ variable ranges from 1 to 6 in this
+sample (so the lowest observed score represents 1 part per billion). 
+\begin{enumerate}
+\item What do the results allow us to conclude about the impact of exposure
+to iron on the rate of autism? I mean ``interpret the slope and intercept.''
+\item Conduct a ``null hypothesis test'' for the estimated slope. That
+means go through the ``four steps'' outlined previously in this
+lecture.
+\item Construct a ``confidence interval'' for the estimate of the slope
+and write a brief discussion of what the results indicate to you.
+\item Create a plot representing the predicted score on the autism scale
+for iron exposure rates from 1 to 10. 
+\item What meaning does the estimated intercept have in this case? Where
+does it appear in the plot you created?
+\item You don't have all of the information you need to construct the ``hour
+glass'' shaped confidence and prediction intervals for that plot.
+But, if I told you the mean of iron exposure is 3, then you can sketch
+the general shape of those intervals. So draw them in and label them
+(its vital to know which one is outside the other).
+\item Refer to your sketch of the confidence interval. Suppose one family
+lives in a house with lead paint equal to 3, while another has a score
+of 6. For which family are we most confident about our estimate $\widehat{autism}_{i}$
+? Explain.
+\item Suppose we measured iron value for another family at $10.0$. What
+would the linear model lead us to predict about their prospects for
+autism (moderate or severe)? Note there are 2 problems here. One is
+that the value of $iron_{i}$ is far from the mean. Another is that
+our observations range from 0 to 6, and so in a sense 10 is ``out
+of the range'' of our experience. .
+\item Suppose you just found out that your research assistant does not understand
+numbers. He uses the word ``billion'' when he really means ``million''.
+What changes will you need to make in your handling of this data and
+the result?
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

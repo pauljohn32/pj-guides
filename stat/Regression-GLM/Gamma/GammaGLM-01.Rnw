@@ -1,0 +1,1052 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression-GLM/Gamma//}}
+\makeatother
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newenvironment{lyxcode}
+{\par\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+
+
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{GLM with a Gamma-distributed Dependent Variable}
+
+
+\author{Paul E. Johnson}
+
+\maketitle
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+options(SweaveHooks=list(fig=function() par(ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=10)
+@
+
+
+\section{Introduction}
+
+I started out to write about why the Gamma distribution in a GLM is
+useful. 
+
+In the end, I've found it difficult to find an example which proves
+that is true. If you fit a GLM with the correct link and right-hand
+side functional form, then using the Normal (or Gaussian) distributed
+dependent variable instead of a Gamma will probably not result in
+disaster. 
+
+However, I did find out something really important, something which
+is mentioned in Myers, Montgomery, and Vining at several points, but
+I did not appreciate it until now. The GLM really is different than
+OLS, even with a Normally distributed dependent variable. Using OLS
+with ``manually transformed'' data leads to horribly wrong parameter
+estimates. 
+
+Let $y_{i}$ be the dependent variable with mean $\mu_{i}$. Your
+theory is that the link is the ``inverse'' $g(\mu_{i})=1/\mu_{i}$
+or the ``natural log'' $g(\mu_{i})=ln(\mu_{i})$. The OLS and GLM
+estimates will differ for any nonlinear link function, and for any
+right hand side. For example, put what you want in place of $g(\mu_{i})$
+in your theory: 
+\[
+ln(\mu_{i})=f(X_{i},b)=b_{0}+b_{1}/x_{i}
+\]
+\\
+or
+
+\[
+1/\mu_{i}=f(X_{i},b)=b_{0}+b_{1}/x_{i}
+\]
+then you estimate a Generalized Linear model with a Gamma distribution
+with
+\begin{lyxcode}
+\inputencoding{latin9}\begin{lstlisting}
+glm(y~I(1/x), family = Gamma(link="log"))
+\end{lstlisting}
+\inputencoding{utf8}
+\end{lyxcode}
+or
+
+\inputencoding{latin9}\begin{lstlisting}
+glm(y~I(1/x), family = Gamma(link="inverse")).
+\end{lstlisting}
+\inputencoding{utf8}
+
+If you mistakenly use a Normal, as in
+
+\inputencoding{latin9}\begin{lstlisting}
+glm(y~I(1/x), family = gaussian(link="log"))
+\end{lstlisting}
+\inputencoding{utf8}
+
+or 
+
+\inputencoding{latin9}\begin{lstlisting}
+glm(y~I(1/x),family = gaussian(link = "inverse"))
+\end{lstlisting}
+\inputencoding{utf8}
+
+then the estimated b's from the Gamma and Normal models will probably
+be similar. If your dependent variable is truly Gamma, the Gaussian
+is ``wrong'' on a variety of levels, but the predicted values are
+``about right.''
+
+However, if you think you can just transform the variables yourself
+and run this through an OLS program, as in 
+
+\inputencoding{latin9}\begin{lstlisting}
+lm(ln(y)~I(1/x))
+\end{lstlisting}
+\inputencoding{utf8}
+
+or
+
+\inputencoding{latin9}\begin{lstlisting}
+lm(I(1/y)~I(1/x))
+\end{lstlisting}
+\inputencoding{utf8}
+
+then the parameter estimates will be far from the mark. That happens
+because you have not transformed the expected values, but rather the
+observed values. 
+
+The only time that the GLM and OLS estimates line up is when the link
+function is the ``identity'' function
+
+\inputencoding{latin9}\begin{lstlisting}
+glm(y~I(1/x), family = Gamma(link = identity))
+\end{lstlisting}
+\inputencoding{utf8}
+
+will be similar to the OLS estimates from
+
+\inputencoding{latin9}\begin{lstlisting}
+lm(y~I(1/x))
+\end{lstlisting}
+\inputencoding{utf8}
+
+What do I conclude from this? You can't stay with your old friend
+OLS. You really must learn and understand the GLM. My feeling then
+is similar to the comment attributed to NBA great Bill Russell: ``They
+scheduled the game. We have to play. We might as well win.'' If you
+have to learn the GLM anyway, and you use it, you might as well use
+the correct distribution while you are doing it.
+
+
+\section{Review the Gamma Handout}
+
+The Gamma handout is available in the Distributions folder of my web
+site.
+
+To review briefly, let the shape parameter be $\alpha_{i}$ and scale
+be $\beta_{i}$. For the i'th case being considered, we are acting
+as though there are individualized parameters for each case. It is
+annoying to keep all of this indexed by $i$ , but sometimes it pays
+off. The probability density of observing a particular value $y_{i}$
+given parameters $\alpha_{i}$ and $\beta_{i}$ is
+
+\[
+f(y_{i})=\frac{1}{\beta_{i}^{\alpha_{i}}\Gamma(\alpha_{i})}y_{i}^{(\alpha_{i}-1)}e^{-(y_{i}/\beta_{i})}\, y_{i,}\alpha_{i},\beta_{i}>0
+\]
+
+
+and
+\[
+E(y_{i})=\alpha_{i}*\beta_{i}
+\]
+
+
+\[
+Var(y_{i})=\alpha_{i}*\beta_{i}^{2}
+\]
+
+
+Regression with the gamma model is going to use input variables $X_{i}$
+and coefficients to make a prediction about the mean of $y_{i}$,
+but in actuality we are really focused on the scale parameter $\beta_{i}$.
+This is so because we assume that $\alpha_{i}$ is the same for all
+observations, and so variation from case to case in $\mu_{i}=\beta_{i}\alpha$
+is due simply to variation in $\beta_{i}$. The shape parameter is
+just a multiplier (which is equal to the inverse of the ``dispersion
+parameter'' $\phi$ that is defined for all distributions that are
+members of the exponential family). 
+
+
+\section{Note the linkage between mean and variance}
+
+The ratio of the mean to the variance is a constant--the same no matter
+how large or small the mean is. As a result, when the expected value
+is small--near zero--the variance is small as well. Conversely, when
+the expected value is larger, the observed scores are less predictable
+in absolute terms.
+\[
+\frac{Var(y_{i})}{E(y_{i})}=\frac{\alpha_{i}\beta_{i}^{2}}{\alpha_{i}\beta_{i}}=\beta_{i}
+\]
+
+
+If your Gamma variable has an expected value of $100$, the variance
+has to be $100\cdot\beta_{i}$. Strange, but true.
+
+The so-called coefficient of variation, which is used in introductory
+statistics as a summary of variability, is the ratio of standard deviation
+to mean. It is also a constant
+\[
+CV=\frac{\sqrt{Var(y_{i})}}{E(y_{i})}=\frac{\sqrt{\alpha_{i}\cdot\beta_{i}^{2}}}{\alpha_{i}\beta_{i}}=\frac{\sqrt{\alpha_{i}}\beta_{i}}{\alpha_{i}\beta_{i}}=\frac{1}{\sqrt{\alpha_{i}}}
+\]
+
+
+If your Gamma variable's expected value is 100, the standard deviation
+is $100/\sqrt{\alpha_{i}}$.
+
+It seems odd (surprising, interesting, possibly mistaken) to me that
+the ratio $Var/E$ depends on $\beta_{i}$ but the ratio of $StdDev/E$
+depends on $\alpha_{i}$.
+
+The relationship between mean and variance here is different than
+some other distributions because it is ``adjustable''. In contrast,
+the Poisson or Negative Binomial distributions have no such tuning
+parameter.
+
+
+\section{Gamma as a member of the Exponential Family}
+
+In order to treat this as the basis for a Generalized Linear Model,
+you act as though $\alpha$is a known feature, the same for all observations.
+So we don't need to write subscripts on $\alpha$. Then we treat $\beta_{i}$--the
+scale parameter--as the parameter of interest. That is what we are
+trying to predict.
+
+Recall the exponential family has this form, $exp[(y_{i}\cdot\theta_{i}-c(\theta_{i}))/\phi+h(y_{i},\phi)$.
+Rearrange the density for the Gamma as follows: 
+
+\[
+exp\{-y_{i}/\beta_{i}+(\alpha-1)ln(y_{i})-ln[\beta_{i}^{alpha}]-ln[\Gamma(\alpha)]\}
+\]
+
+
+\[
+exp\{-y_{i}/\beta_{i}+(\alpha-1)ln(y_{i})-\alpha ln[\beta_{i}]-ln[\Gamma(\alpha)]\}
+\]
+\[
+exp\{-y_{i}/\beta_{i}-\alpha ln[\beta_{i}]+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+
+Now a sneaky math guy trick appears. ``Guess'' that the natural
+parameter is
+
+\[
+\theta_{i}=-\frac{1}{\alpha\beta_{i}}
+\]
+\\
+Consequently, 
+\[
+\frac{-1}{\beta_{i}}=\theta_{i}\alpha
+\]
+\\
+and
+
+\[
+\beta_{i}=-\frac{1}{\theta_{i}\alpha}
+\]
+Using those findings in the previous expression, 
+
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{1}{\theta_{i}\alpha})-\alpha ln(\alpha)+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{\alpha}{\theta_{i}\alpha})+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+
+\[
+exp\{\alpha y_{i}\theta_{i}-\alpha ln(-\frac{1}{\theta_{i}})+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+
+\[
+exp\{\alpha(y_{i}\theta_{i}-ln(-\frac{1}{\theta_{i}}))+(\alpha-1)ln(y_{i})-ln[\Gamma(\alpha)]\}
+\]
+
+
+That was quite a lot of work to find out that $\alpha=1/\phi$ and
+that $c(\theta_{i})=ln(-1/\theta_{i})$. But if we re-arrange just
+one more time, we find the Gamma in the form of the exponential density.
+\[
+exp\{\frac{y_{i}\theta_{i}-ln(-1/\theta_{i})}{\phi}+(\frac{1-\phi}{\phi})ln(y_{i})-ln[\Gamma(\phi^{-1})]\}
+\]
+ 
+
+Then you can use the GLM Facts described on my GLM handout \#1.
+
+GLM Fact \#1 states that $\mu_{i}=dc(\theta_{i})/d\theta_{i}$, and
+so that implies the Gamma's $\mu_{i}$ is
+\[
+\frac{dc(\theta_{i})}{d\theta_{i}}=\frac{dln(-1/\theta_{i})}{d\theta_{i}}=-\frac{dln(\theta_{i})}{d\theta_{i}}=-\frac{1}{\theta_{i}}=\alpha_{i}\beta_{i}
+\]
+\\
+GLM Fact \#2 states that $V(\mu_{i})=d^{2}c(\theta_{i})/d\theta_{i}^{2}$,
+and so, in this case, 
+\[
+V(\mu_{i})=\frac{d}{d\theta_{i}^{2}}(-1/\theta)=\frac{1}{\theta_{i}^{2}}=\mu^{2}=(\alpha\beta_{i})^{2}
+\]
+ \\
+These findings are internally consistent with what we know already
+(or can check in textbooks). 
+
+Recall from the GLM notes that the observed variance of $y_{i}$ has
+two components: .
+\[
+Var(y_{i})=\phi_{i}V(\mu_{i})
+\]
+ For the Gamma, we already know that $E(y_{i})=\mu_{i}=\alpha*\beta$
+and $Var(y_{i})=\alpha*\beta^{2}$. The variance function is $V(\mu_{i})=\mu_{i}^{2}=\alpha^{2}*\beta^{2}$,
+and the dispersion parameter $\phi_{i}$ must be equal to the reciprocal
+of the shape parameter $1/\alpha$. You can easily verify that all
+of these separate pieces work together in a logical way: 
+\[
+Var(y_{i})=\phi_{i}V(\mu)=\phi_{i}\cdot a^{2}\beta^{2}
+\]
+\[
+=\alpha\beta^{2}\, where\,\phi_{i}=\frac{1}{\alpha}
+\]
+
+
+Keep in mind, then, that when the GLM routine estimates dispersion--$\phi$--it
+is estimating the reciprocal of the shape parameter.
+
+
+\section{The Reciprocal is the Canonical Link}
+
+The canonical link for the GLM with a Gamma-distributed dependent
+variable is the reciprocal, $1/\mu_{i}$. That means that the expected
+value of your observed $y_{i}$, ($E(y_{i})=\mu_{i})$, is related
+to your input variables as, for example,
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}x1_{i}
+\]
+
+
+Which obviously implies
+\[
+\mu_{i}=\frac{1}{b_{0}+b_{1}x1_{i}}
+\]
+
+
+Plot that! In Figure \ref{cap:Reciprocal-Link}, you see there is
+some serious potential for funny business with this function.
+
+\begin{figure}
+\caption{Reciprocal Link\label{cap:Reciprocal-Link}}
+
+
+\begin{center}
+
+<<1,fig=T,echo=F>>=
+par (mfrow=c(2,2))
+
+xseq <- seq(0,20,by=0.05)
+
+plot(xseq,1/(3+ .25 * xseq),main="1/(3+0.25*x)",type="l")
+
+plot(xseq,1/(3-0.25 * xseq),main="1/(3-0.25*x)",type="l")
+
+plot(xseq,1/(-5+.25*xseq),main="1/(-5+0.25*x)",type="l")
+
+plot(xseq,1/(-5-.25*xseq),main="1/(-5-0.25*x)",type="l")
+
+@
+
+\end{center}
+\end{figure}
+
+
+
+\section{Why would you want a Gamma-distributed dependent variable?}
+
+This is a difficult question. Theoretically, the Gamma should be the
+right choice when the dependent variable is real-valued on a range
+from $0$ to $\infty.$ And the Gamma is suitable when you suspect
+the linkage between mean and variance is ``fixed''. If you expect
+a small value of $y_{i}$, you should also expect only a small amount
+of variability in observed values. Conversely, if you expect a huge
+value of $y_{i}$, you should expect a lot of variability.
+
+However, after some testing, I have developed some doubts about the
+need to change from a model based on the Normal distribution to a
+model based on the Gamma. The Gamma may be ``theoretically right''
+but there are several cases in which the old ``theoretically wrong''
+Normal OLS model seems to do about as well. 
+
+This is especially true if the Gamma parameters are tuned so that
+the distribution is symmetrical, but even when it is pretty badly
+skewed, I find the OLS predictions are as good.
+
+However, I find some cases where using the GLM with a Gamma distribution
+has a dramatic impact. The differences hinge on the functional form
+being investigated. 
+
+So I've prepared some vignettes.
+
+
+\section{Reciprocal Relationship: $\mu_{i}=b_{o}+b_{1}/x_{i}$}
+
+Some simulated data is presented in Figure\ref{cap:Gamma-DV}. The
+line represents the ``true'' value of $\mu_{i}$, the expected value
+of the dependent variable.
+
+\begin{figure}
+\caption{Gamma Dependent Variable $\mu_{i}=1+65/x_{i},$shape=$1.5$\label{cap:Gamma-DV}}
+
+
+\begin{center}
+
+<<2,fig=T, echo=F,height=8,width=6.5>>=
+set.seed(223456)
+
+xseq<- seq(3, 20, length.out=800)
+
+yobs <- vector()
+
+mu <- vector()
+
+for ( i in 1:800){
+
+  mu[i] <- 1 + 65 / xseq[i]
+
+  yobs[i] <- rgamma(1, shape=1.5, scale=mu[i]/1.5)
+
+}
+
+plot(xseq,yobs,type="n",main="Gamma DV, mu= 1 + 65/x",xlab="x",ylab="y")
+
+points(xseq,yobs,pch=16,cex=0.25)
+
+lines(xseq,mu, lty=1,lwd=3)
+
+@
+
+\end{center}
+\end{figure}
+
+
+
+\subsection{GLM fit for the Reciprocal Model}
+
+The Generalized Linear Model can be fit with the ``identity'' link
+with these commands. 
+
+<<>>=
+
+agam <- glm(yobs ~ I(1/xseq), family = Gamma(link = "identity"), control = glm.control(maxit=100),start=c(1,65))
+
+library(MASS)
+
+myshape <- gamma.shape(agam)
+
+gampred <- predict(agam,type="response", se=T, dispersion=1/myshape$alpha)
+
+@
+
+(Side note about estimating dispersion: This uses the MASS library's
+function gamma.shape to calculate a more precise estimate of the gamma
+distribution's shape parameter, which is equal to the reciprocal of
+the GLM's dispersion $\alpha=1/\phi$. This is useful because the
+estimate of the dispersion offered by the default GLM summary command
+does not take into account the special information about the dispersion
+that can be calculated by using the Gamma distribution. Not all GLMs
+have a model-specific, enhanced way to estimate dispersion.)
+
+<<echo=T>>=
+summary(agam,dispersion=1/myshape$alpha)
+
+@
+
+
+\subsection{Linear Model Fit with the Normal Distribution}
+
+Suppose you make the mistaken assumption that this data is Normally
+distributed. The default settings of the glm estimator in R lead to
+estimates for a Normally distributed dependent variable with the identity
+link. 
+
+<<>>=
+lmmod <- glm(yobs~ I(1/xseq))
+
+lmpred <- predict(lmmod, se=T)
+
+@
+
+We have asked predict for the standard errors because they are useful
+for plots shown below.
+
+<<>>=
+summary(lmmod)
+
+@
+
+Please note that you get the same parameter estimate if you put the
+same relationship through the ordinarly least squares regression procedure,
+lm.
+
+<<>>=
+lmmod1a <- lm ( yobs~I(1/xseq))
+
+summary(lmmod1a)
+
+@
+
+
+\subsection{Is the Normal Model ``Just as Good''?}
+
+No, of course it isn't. It is the wrong model. But if you mistakenly
+used OLS, would you make a major mistake? In this test case, the answer
+is no. 
+\begin{enumerate}
+\item The parameter estimates from the two models are ``about the same.'' 
+
+
+\[
+Gamma\, GLM:\hat{\mu}_{i}=0.77+67.72/x_{i}
+\]
+
+
+
+\[
+Normal\, GLM:\hat{\mu}_{i}=0.37+71.60/x_{i}
+\]
+
+
+\item Consequently, the predicted values from the two models are ``about
+the same.''
+
+
+\begin{figure}
+\caption{Fitted Models for Gamma Dependent Variable\label{cap:Fitted-Models-1}}
+
+
+\begin{center}
+
+<<3,fig=T,echo=F,height=8,width=6.5>>=
+plot(xseq,yobs,type="n", xlab="x",ylab="y")
+
+points(xseq,yobs,pch=16,cex=0.25)
+
+lines(xseq,lmpred$fit,lty=2,lwd=5,col="purple")
+
+lines(xseq,gampred$fit, lty=3, lwd=5, col="red")
+
+@
+
+\end{center}
+
+\end{figure}
+
+
+
+Consider the plotted lines in Figure \ref{cap:Fitted-Models-1}. It
+is difficult to distinguish the two lines representing the predicted
+values. I had a hard time believing that the two lines could actually
+be so close to one another, so I printed out the first 10 observations
+of the two models:
+
+
+<<>>=
+
+cbind(glmGamma=gampred$fit[1:10],glmNormal=lmpred$fit[1:10])
+
+@
+
+
+The plotted estimates of the means, along with the ``confidence intervals''
+, are illustrated in Figure \ref{cap:Predicted-Values-1}.
+
+
+\begin{figure}
+\caption{Predicted Values from glm with Gamma and Gaussian Distributions\label{cap:Predicted-Values-1}}
+
+
+<<fig=T,height=8,width=6.5>>=
+par(mfcol=c(2,1))
+
+plot(xseq,gampred$fit,type="l",xlab="x",ylab="y", main="Gamma, link=identity")
+
+lines(xseq, gampred$fit+2*gampred$se,lty=2,col="green")
+
+lines(xseq, gampred$fit-2*gampred$se,lty=2,col="green")
+
+plot(xseq,lmpred$fit,type="l",xlab="x",ylab="y", main="Gaussian, link=identity")
+
+lines(xseq, lmpred$fit+2*lmpred$se,lty=2,col="green")
+
+lines(xseq, lmpred$fit-2*lmpred$se,lty=2,col="green")
+
+@
+\end{figure}
+
+
+\item If you (mistakenly) choose models by T statistics, you will be wrong.
+
+
+It upsets me when students say one model is ``more significant''
+to mean that a model has coefficients with bigger t values. In this
+case, the t value for the coefficient of $1/x_{i}$ in the Normal
+model is $17.76$, while the comparable value from the Gamma fit is
+$12.42$. That does not mean the Normal model is better, for many
+reasons. The fact is that these tests assume you have chosen the correct
+model and then estimate on the variability of the $\hat{b}$ based
+on your specification. They do not constitute a way to choose between
+two models.
+
+\item The Deviance is different: Gamma looks significantly better.
+
+
+The residual deviance of the Gamma fit is 599.11 on 798 degrees of
+freedom, and the Akaike Information Criterion is 4765. The residual
+deviance of the Normal model is 43992 on 798 degrees of freedom, and
+the AIC is 5482. The model with the smaller AIC is preferred.
+
+\end{enumerate}
+
+\section{Michaelson-Morley model: $\mu_{i}=x_{i}/(b_{1}+b_{0}x_{i})$}
+
+In several fields, scholars have proposed a model with this functional
+form:
+\[
+\mu_{i}=\frac{x_{i}}{b_{1}+b_{0}x_{i}}
+\]
+\\
+Note: the numbering of the coeffients is not mistaken. 
+
+Write it like this and you see why the reciprocal link (the canonical
+link) makes sense:
+
+\[
+\frac{1}{\mu_{i}}=\frac{b_{1}+b_{0}x_{i}}{x_{i}}
+\]
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+
+
+Write it like this and it should remind you of a logistic regression.
+\[
+\mu_{i}=\frac{1}{b_{0}+b_{1}(1/x_{i})}
+\]
+\\
+One should graph that. For $x_{i}=0,$ this is undefined (just as
+Gamma density is undefined). For very small values of $x_{i}$, say
+0.001, you can see the expected value is a very small number. As $x_{i}$
+gets bigger and bigger, the expected value tends to $1/b_{0}$.
+
+Variants of this are known in ecology, biochemistry, and physics.
+In R, one finds it discussed as the Michaelson-Morley model. 
+
+A hypothetical example of Gamma distributed data with $\mu_{i}=x_{i}/(3+0.25x_{i})$
+with the Gamma shape parameter equal to $1.5$ is presented in Figure
+\ref{cap:Gamma-Dependent-2}.
+
+\begin{figure}
+\caption{Gamma Dependent Variable $\mu_{i}=x_{i}/(3+0.25x_{i})$\label{cap:Gamma-Dependent-2}}
+
+
+<<fig=T, echo=F,height=8,width=6.5>>=
+set.seed(223456)
+
+xseq <- seq(3, 20, length.out=800)
+
+yobs2 <- vector()
+
+mu2 <- vector()
+
+for ( i in 1:800){
+
+  mu2[i] <- xseq[i]/(3 + 0.25 * xseq[i])
+
+  yobs2[i] <- rgamma(1, shape=1.5, scale=mu2[i]/1.5)
+
+}
+
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+
+points(xseq,yobs2,pch=16,cex=0.25)
+
+lines(xseq, mu2, lty=1,lwd=3)
+
+@
+\end{figure}
+
+
+
+\subsection{GLM fit with a Gamma Variable and Log Link\label{sub:GLM-Gamma2}}
+
+If one algebraically re-arranged the model as
+
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+\\
+then one would have to transform the input variable in the regression
+model, but the glm procedure will handle the transformation of the
+left hand side. One should write the glm formula as
+
+\[
+y~I(1/x)
+\]
+\\
+but specify the link as the ``inverse'', so that the left hand side
+is $y_{i}$ is transformed.
+
+The glm procedure to fit a Gamma distributed dependent variable of
+this sort is:
+
+<<echo=T>>=
+agam2<-glm(yobs2~ I(1/xseq), family=Gamma(link="inverse"), control=glm.control(maxit=100),start=c(2,4))
+
+library(MASS)
+
+myshape2 <- gamma.shape(agam2)
+
+gampred2 <- predict(agam2,type="response", se=T, dispersion=1/myshape2$alpha)
+
+@
+
+This uses the MASS library's gamma.shape method to get a better estimate
+of the dispersion parameter, which is then used in making predictions
+and also in preparing the summary output. The estimate of the dispersion
+coefficient affects the standard errors, but not the estimates of
+the $b$'s.
+
+<<echo=T>>=
+summary(agam2, dispersion=1/myshape2$alpha)
+
+@
+
+
+\subsection{What if you used OLS?\label{sub:OLS-2}}
+
+You can translate this into a form that looks like an ordinary regression
+model: just ``tack on an error term'' (recall OLS: expected value
+of 0, constant variance):
+\[
+\frac{1}{y_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}+e_{i}
+\]
+\\
+and create transformed variables $1/y_{i}$ and $1/x_{i}$ and estimate
+this with OLS. How gauche. 
+
+<<>>=
+
+lmmod2 <- lm(I(1/yobs2)~I(1/xseq))
+
+lmpred2 <- predict(lmmod2, se=T)
+
+@
+
+There are a number of reasons why you should not do that. It violates
+the usual OLS assumptions. It assumes the mismatch between the expected
+and observed is of a very peculiar sort, $E(e_{i})=0$ and constant
+variance. 
+
+The most important reason why you should not fit these parameters
+with OLS is that the resulting parameter estimates are grossly wrong.
+
+<<echo=T>>=
+summary(lmmod2)
+
+@
+
+Note, the predicted values from this model are presented on a reciprocal
+scale, so the predicted values must be transformed as $1/predicted$
+in order to be plotted on the scale of the original, untranformed
+data.
+
+\begin{figure}
+\caption{Fitted Models for $\mu=x_{i}/(3+.25x_{i})$ with a Gamma Distributed
+Variable}
+
+
+\begin{center}
+
+<<fig=T,echo=F,height=8,width=6.5>>=
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+
+points(xseq,yobs2,pch=16,cex=0.25)
+
+lines(xseq,1/lmpred2$fit,lty=2,lwd=2,col="purple")
+
+lines(xseq,gampred2$fit, lty=5, lwd=3, col="red")
+
+legend(.2*max(xseq),.7*max(yobs2), legend=c("lm-Normal","glm-Gamma"), lty=c(2,5),col=c("purple","red"))
+
+@
+
+\end{center}
+
+\end{figure}
+
+
+\begin{figure}
+\caption{Predicted Values from glm-Gamma and lm-Normal}
+
+
+<<fig=T,height=8,width=6.5>>=
+par(mfcol=c(2,1))
+
+plot(xseq,gampred2$fit,type="l",xlab="x",ylab="y", main="Gamma, link=inverse")
+
+lines(xseq, gampred2$fit+2*gampred$se,lty=2,col="green")
+
+lines(xseq, gampred2$fit-2*gampred$se,lty=2,col="green")
+
+plot(xseq,1/lmpred2$fit,type="l",xlab="x",ylab="y", main="")
+
+ypsem<- lmpred2$fit-1.96*lmpred$se
+
+ypsep<- lmpred2$fit+1.96*lmpred$se
+
+lines(xseq, 1/ypsem,lty=2,col="green")
+
+lines(xseq, 1/ypsep,lty=2,col="green")
+
+@
+\end{figure}
+
+
+
+\subsection{But did you really need the Gamma in the glm?\label{sub:GLM-Normal2}}
+
+Here we are back to the main question: is it the functional form that
+is the source of the trouble, or is it the assumed statistical distribution. 
+
+The reason that the OLS estimation fails so dramatically is that all
+of the $y_{i}$ values are transformed. We really only wanted to represent
+the transformation $1/\mu_{i}$, but in the lm framework, doing os
+requires us to transform the observe values $1/y_{i}$. We really
+want only to model the transformation of the mean and GLM does that.
+
+Now we can use glm with a Gaussian distribution but with an inverse
+link. And, unlike the model discussed in the previous section, there
+IS a difference between using lm and glm on the same data. 
+
+To estimate the model with GLM, 
+\[
+\frac{1}{\mu_{i}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+ the following R commands are used:
+
+<<>>=
+
+lmmod3 <- glm(yobs2 ~ I(1/xseq), family=gaussian(link="inverse"))
+
+summary(lmmod3)
+
+@
+
+Note that the parameter estimates coincide with the GLM-Gamma estimates
+of the earlier analysis. Figure \ref{cap:GLM2-fit3} plots the predicted
+values for the glm models fit with the Normal and Gamma distributions.
+The predicted values once-again coincide in these two models fit with
+glm. 
+
+\begin{figure}
+\caption{Fitted Models for $\mu=x_{i}/(3+.25x_{i})$ with a Gamma Distributed
+Variable\label{cap:GLM2-fit3}}
+
+
+\begin{center}
+
+<<fig=T,echo=F,height=8,width=6.5>>=
+lmpred3 <- predict(lmmod3, se=T, type="response")
+
+plot(xseq,yobs2,type="n",xlab="x",ylab="y")
+
+points(xseq,yobs2,pch=16,cex=0.15)
+
+lines(xseq,lmpred3$fit,lty=2,lwd=6,col="purple")
+
+lines(xseq,gampred2$fit, lty=5, lwd=3, col="red")
+
+legend(.2*max(xseq),.7*max(yobs2), legend=c("glm-Normal","glm-Gamma"), lty=c(2,5),col=c("purple","red"))
+
+@
+
+\end{center}
+
+\end{figure}
+
+
+
+\subsection{In the end, its all about the deviance}
+
+The residual deviance for the GLM-Gamma model in section \ref{sub:GLM-Gamma2}
+was 599.09 on 798 degrees of freedom with an AIC of 2479.4. The GLM-Normal
+model has deviance of 2156.6 and the AIC was 3069.6.
+
+
+\section{How does Gamma GLM fix that?}
+
+You might have noticed that the Gamma is a two-parameter distribution.
+However, it is not necessary to know $\alpha$ before doing the estimates
+of the slope coefficients. After fitting the slope coefficients, then
+the dispersion can be estimated (similar in the way OLS estimates
+the slopes and then the variance of the error term). 
+
+If your theory stated the M-M relationship, 
+\[
+\mu_{i}=\frac{x_{i}}{b_{1}+b_{0}x_{i}}
+\]
+\\
+you would re-arrange like so
+\[
+\frac{1}{\mu_{i{}}}=b_{0}+b_{1}\frac{1}{x_{i}}
+\]
+\\
+So your link function is the inverse function (reciprocal). If $y_{i}$
+is distributed as a Gamma with that mean, then the R glm procedure
+would be invoked as
+\begin{lyxcode}
+glm(y\textasciitilde{}I(1/x),family=Gamma(link='inverse'))
+\end{lyxcode}
+It is necessary to ``manually'' transform the right hand side. You
+are completely free to use any formula you like. This specifies $1/x$
+in order to match the M-M model. As long as your formula is additive
+on the right hand side, one can make any legitimate transformations,
+such as logs, squares, square roots, sines, or cosines. However, it
+is not necessary to transform the left hand side in the formula. That
+is taken care of by specifying the link as the inverse.
+
+The inverse is the canonical link, but R's glm will fit models that
+specify the log or identity links. Thus one could theorize that $y_{i}$
+is Gamma-distibuted and that its mean is related to the input variables
+as 
+\[
+log(\mu_{i})=b_{0}+b_{1}x_{i}
+\]
+\\
+This implies, of course, that you think the relationship between your
+linear predictor $\eta_{i}$ and the mean of $y_{i}$ is exponential
+\[
+\mu_{i}=exp[b_{0}+b_{1}x_{i}]
+\]
+
+
+Or one can have a simple linear relationship with the identity link
+
+\[
+\mu_{i}=b_{0}+b_{1}x_{i}
+\]
+
+\end{document}

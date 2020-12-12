@@ -1,0 +1,1472 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/CategoricalPredictors//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle,basicstyle=\small
+}
+\usetheme{Antibes}
+% or ...
+
+\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.85}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Categorical 1]{Categorical Predictors 1 }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{2014}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}\begin{frame}
+\frametitle{Introduction}
+
+\tableofcontents{}
+\begin{itemize}
+\item Basics: Before I get too carried away
+\item Categorical Coding: Which Dummy is Right for you?
+\item Differences among approaches are Superficial
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Basics}
+
+
+\lyxframeend{}\subsection{Dichotomy}
+
+\begin{frame}[containsverbatim]
+\frametitle{Let's Talk About Sex}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Sex is coded ``M'' for male or ``F'' for female
+\item ``manually'' create two dummy variables, ``femd'' and ``maled''
+\item These are numeric, 0 or 1 (or maybe -1 and 1).
+\item In SAS (or Stata), one then fits a model using ``femd'' or ``maled''
+as a predictor. 
+\end{itemize}
+
+\column{6cm}
+
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+id &
+constant &
+sex &
+femd &
+maled\tabularnewline
+\hline 
+\hline 
+1 &
+1 &
+M &
+0 &
+1\tabularnewline
+\hline 
+2 &
+1 &
+F &
+1 &
+0\tabularnewline
+\hline 
+3 &
+1 &
+F &
+1 &
+0\tabularnewline
+\hline 
+4 &
+1 &
+M &
+0 &
+1\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+$\vdots$ &
+\tabularnewline
+\hline 
+\end{tabular}
+
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{What will R do if...}
+\begin{itemize}
+\item 
+\begin{lstlisting}
+lm (y ~ sex)
+\end{lstlisting}
+ fits 
+
+\begin{itemize}
+\item (implicitly) asks for an intercept, plus 
+\item an ``intercept shift'' parameter for a contrast variable for males
+it calls ``sexM''. 
+\item R automatically creates a ``contrast'' variable, a 0, 1 ``dummy''
+variable for male
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Example: statusquo support in the 1988 Chile Data}
+
+<<chile20, echo=T, include=F, eval=F>>=
+library(car)
+mod1 <- lm(statusquo ~ sex, data=Chile)
+summary(mod1)
+@
+
+\input{plots/t-chile20.tex}
+
+<<chile21, echo=F, include=F>>=
+<<chile20>>
+@
+
+<<chile22, results=tex, echo=F, include=F>>=
+library(rockchalk)
+outreg(mod1, tight=FALSE, showAIC=FALSE)
+@
+
+\input{plots/t-chile22.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Sex Contrast Default and Interpretation}
+\begin{itemize}
+\item R's design matrix that looks like this: 
+\begin{equation}
+X=\begin{array}{cc}
+constant & sexM\\
+1 & 1\\
+1 & 0\\
+1 & 0\\
+ & \vdots
+\end{array}
+\end{equation}
+
+\item Why ``M''? Female becomes ``baseline'' (in the intercept) because
+it is alphabetically first (can customize that)
+\item Same effect as user-created ``maled'' variable.
+\item fitted intercept represents the effect of ``being human'' (or ``being
+in the data set'')
+\item $\hat{b}_{1}sexM$; the ``difference'' effect that distinguishes
+males from other humans
+\item Model's predicted value is $\widehat{statusquo_{i}}=\hat{b}_{0}+\hat{b}_{1}sexM$,
+so for Females predict $\hat{b}_{0}$ and for males predict $\hat{b}_{0}+\hat{b}_{1}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Regression Equivalent to a "t-test for means"}
+
+The ``t test for means'' calculates the averages within groups and
+calculates a t value for the difference. 
+
+<<chile10, include=T, echo=T>>=
+by(Chile$statusquo, Chile$sex, mean, na.rm = TRUE)
+t.test(statusquo ~ sex, var.equal=TRUE, data=Chile) 
+@
+
+Note the Regression intercept and slope re-produce means as predicted
+values.
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Multichotomy (Polychotomy?)}
+
+\begin{frame}[containsverbatim]
+\frametitle{Occupation in the wages data set}
+\begin{itemize}
+\item As provided, wages has occupation coded as a numeric variable. 
+\item %
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+1 &
+2 &
+3 &
+4 &
+5 &
+6\tabularnewline
+\hline 
+\hline 
+Management &
+Sales &
+Clerical &
+Service &
+Professional &
+Other\tabularnewline
+\hline 
+\end{tabular}
+\end{itemize}
+\end{frame}
+
+<<wages00, include=F, echo=T>>=
+library(rockchalk)
+dat <- read.table("/home/pauljohn/ps/SVN-guides/stat/DataSets/wages/wages.txt", header=T, sep="") 
+colnames(dat) <- tolower(colnames(dat))
+dat$racef <- factor(dat$race, labels=c("Other", "Hispanic","White")) 
+dat$occupationf <- factor(dat$occupation, labels=c("Management", "Sales", "Clerical", "Service", "Professional", "Other")) 
+dat$marrf <- factor(dat$marr, levels=c("Unmarried","Married"))
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{See Why it is Wrong to treat that as Numeric, Right?}
+
+<<wages10, include=F, echo=T>>=
+mod1 <- lm(wage ~ occupation, data=dat) 
+@
+
+<<wages10B, include=F, echo=F, results=tex>>=
+outreg(mod1, tight=F, showAIC=F)
+@
+
+\begin{Sinput}
+mod1 <- lm(wage ~ occupation, data=dat) 
+\end{Sinput}
+
+\input{plots/t-wages10B.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interpret that Termplot}
+
+<<wages10C,fig=T,include=F, echo=T>>=
+termplot(mod1, terms=c("occupation"), partial=T, se=T)
+@
+
+\includegraphics[width=10cm]{plots/t-wages10C}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recode, Treat Occupation as A Categorical Variable}
+\begin{itemize}
+\item Create a new ``factor'' variable occupationf, that assigns labels
+to the categories.
+\item When there are 6 occupational categories, the usual approach creates
+5 ``dummy variables''
+\item In R, those 5 dummy variables are created automatically, called ``treatment
+contrasts''
+\item ``first'' level of factor (or designated level) is excluded, and
+rest of levels are ``dummied up''
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is R Doing with "occupationf"?}
+\begin{itemize}
+\item R's system of ``factor'' variables is intended to make this ``automatic''.
+Regression procedures create ``contrasts'' ``on the fly''. 
+\item The factor ``occupationf'' is converted thus
+\end{itemize}
+<<wages25A, echo=F, include=F>>=
+contrasts(dat$occupationf)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-wages25A}
+\begin{itemize}
+\item So the fitted model for 6 categories is
+\begin{equation}
+\widehat{wages}_{i}=\hat{b}_{0}+\hat{b}_{1}Sales_{i}+\hat{b}_{2}Clerical_{i}+\hat{b}_{3}Service_{i}+\hat{b}_{4}Professional_{_{i}}+\hat{b}_{5}Other_{i}
+\end{equation}
+
+\item Maybe I should make this easier to remember
+\end{itemize}
+\begin{eqnarray*}
+\widehat{wages}_{i} & = & \hat{b}_{0}+\hat{b}_{Sales}Sales_{i}+\hat{b}_{Clerical}Clerical_{i}
+\end{eqnarray*}
+\[
++\hat{b}_{Service}Service_{i}+\hat{b}_{Prof}Professional_{_{i}}+\hat{b}_{Other}Other_{i}
+\]
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fitted Regression Model with Categorical Predictor}
+
+<<wages20, include=F, echo=T>>=
+mod2 <- lm(wage ~ occupationf, data=dat) 
+@
+
+<<wages20B, include=F, echo=F, results=tex>>=
+outreg(mod2, tight=F, showAIC=F)
+@
+
+\input{plots/t-wages20B.tex}
+
+Management is the ``baseline''. Calculate Predicted Values:
+
+$\hat{y}_{Management}=\hat{b}_{0}=12.704$~~~~~$\hat{y}_{Sales}=\hat{b}_{0}+\hat{b}_{Sales}=12.704-5.11=7.59$
+
+$\hat{y}_{Service}=12.704-6.167=6.537$
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interpret that Termplot}
+
+<<wages20C,fig=T,include=F, include=F, echo=T>>=
+termplot(mod2, terms=c("occupationf"), partial=T, se=T)
+@
+
+\includegraphics[width=10cm]{plots/t-wages20C}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Contrasts: }
+\begin{itemize}
+\item The default treats the ``lowest'' score--the first ``level''--as
+a ``baseline'' category. 
+
+\begin{itemize}
+\item Meaning: There is no ``dummy'' variable for that. It is ``in''
+the intercept.
+\end{itemize}
+\item All other categories are compared against that one.
+\end{itemize}
+<<wages25B, echo=F, include=F>>=
+levels(dat$occupationf)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Does the occupationf "Belong" in the Model}
+\begin{itemize}
+\item Obviously Yes: ``occupationf'' makes a difference--some categories
+matter
+\item Formally test with F test, where null is that none of the differences
+are non-zero. 
+\begin{equation}
+H_{0}:\hat{b}_{Sales\,}=\hat{b}_{Clerical}=\hat{b}_{Service}=\hat{b}_{Professional}=\hat{b}_{Other}=0
+\end{equation}
+
+\item Compare the fitted model against a model that has only the intercept 
+\item That's the F test that is reported with most regression models.
+\end{itemize}
+<<wages25C, echo=T, include=F>>=
+summary(mod2)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-wages25C}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Does the occupationf "Belong" in the Model}
+\begin{itemize}
+\item R's anova function provides a conventional ``analysis of variance
+table''.
+\end{itemize}
+<<wages25D, echo=T, include=F>>=
+anova(mod2, test="F")
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-wages25D}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Simplify the Coding}
+
+\begin{frame}
+\frametitle{But Do We Really Need All Those Parameters?}
+\begin{itemize}
+\item Glance at the estimated slope coefficients.
+\item I suspect the middle 3 categories have ``about the same'' effect
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Hypothesis Testing Procedure}
+\begin{itemize}
+\item F test
+\item $H_{0}:$ $b_{sales}=b_{service}=b_{clerical}$
+\item Estimate ``full'' or ``unrestricted'' model with all of the category
+dummies included
+\item Estimate ``partial'' or ``restricted'' model with restriction
+imposed.
+\item Compare the fit, F test indicates whether estimates $\hat{b}_{sales},$
+$\hat{b}_{service}$, $\hat{b}_{clerical},$ are ``statistically
+significantly different'' from one another.
+\item Slang: is ``predictive power'' lost by restriction?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Test $\hat{b}_{Sales}=\hat{b}_{Clerical}=\hat{b}_{Service}$}
+\begin{itemize}
+\item Testing the restriction that the wage effect for three groups is achieved
+by recoding occupationf variable
+\item All ``Sales'' ``Clerical'' and ``Service'' observations re-coded
+1 on new category ``sales/clerical/service''
+\end{itemize}
+<<wages30,include=F,echo=T>>=
+occlev <- levels(dat$occupationf)
+dat$occupationf2 <- dat$occupationf
+dat$occupationf2[dat$occupationf2 %in% occlev[2:4]] <- occlev[2]
+
+levels(dat$occupationf2)[2] <- "sales/clerk/serv"
+with(dat, table(occupationf2, occupationf))
+mod3 <- lm(wage ~ occupationf2, data=dat)
+@
+
+<<wages30B, include=F, echo=F, results=tex>>=
+outreg(mod3, tight=F, showAIC=F)
+@
+
+\input{plots/t-wages30B.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{And the F test result is (drumroll please)}
+
+<<wages30D, echo=T, include=F>>=
+anova(mod3, mod2, test="F")
+@
+
+\input{plots/t-wages30D.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{What if I merge "Management" and "Professional"?}
+\begin{itemize}
+\item Appears to me $\hat{y}_{Professional}$ and $\hat{y}_{Management}$
+are not all that different.
+\item Suppose $H_{o}:$$b_{Professional}=0$ and $b_{sales}=b_{service}=b_{clerical}$
+\item Then we create an even simpler variable, which leads to 2 ``dummy''
+variables
+\end{itemize}
+<<wages40, include=F, echo=T>>=
+dat$occupationf2[dat$occupationf2 %in% occlev[5]] <- occlev[1] 
+levels(dat$occupationf2)[1] <- "manag/prof"
+dat$occupationf2 <- dat$occupationf2[, drop=T]
+@
+
+<<wages40A, include=F, echo=F>>=
+contrasts(dat$occupationf2)
+@\def\Sweavesize{\scriptsize}
+\input{plots/t-wages40A}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{And the Regression on that Simpler Set of Contrasts is}
+
+<<wages40B, include=F, echo=F>>=
+mod4 <- lm(wage ~ occupationf2, data=dat)
+@
+
+<<wages40C, include=F, echo=F, results=tex>>=
+outreg(mod4, tight=F, showAIC=F)
+@
+
+\input{plots/t-wages40C.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{And The F Test says}
+\begin{itemize}
+\item Compare the ``full'' fitted model with all 5 category differences
+estimated
+\item With the restricted model
+\end{itemize}
+<<wages40D, echo=T, include=F>>=
+anova( mod4, mod2,  test="F")
+@
+
+\input{plots/t-wages40D.tex}
+
+Conclusion: Does not appear the model with 3 categories (intercept
++ 2 group contrasts) has a worse statistical fit.
+
+\end{frame}
+
+
+\lyxframeend{}\section{Coding Schemes}
+
+
+\lyxframeend{}\subsection{G-1 is Over-rated}
+
+\begin{frame}[containsverbatim]
+\frametitle{What To Do with a G-Category Nominal Variable?}
+\begin{itemize}
+\item If there are G categories, 
+\item Texts usually say ``regression can provide parameter estimates for
+G-1 categories''
+\item Strinctly Speaking, that's wrong. 
+
+\begin{itemize}
+\item It is only true if you include an Intercept in your regression
+\item Drop the intercept, you can have G category estimates!
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lets Talk About Sex (again!)}
+\begin{itemize}
+\item Recall, the data has a categorical ``sex'' (M or F) and we can create
+``dummy'' variables for females and males.
+\end{itemize}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+id &
+constant &
+sex &
+femd &
+maled\tabularnewline
+\hline 
+\hline 
+1 &
+1 &
+M &
+0 &
+1\tabularnewline
+\hline 
+2 &
+1 &
+F &
+1 &
+0\tabularnewline
+\hline 
+3 &
+1 &
+F &
+1 &
+0\tabularnewline
+\hline 
+4 &
+1 &
+M &
+0 &
+1\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+$\vdots$ &
+\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item You agree, don't you, that:
+
+\begin{itemize}
+\item We get essentially the same model if we fit a dummy variable for ``female''
+or for ``male'', right?
+\item $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}\cdot femd_{i}$ treats ``male''
+as baseline and $\hat{b}_{1}$ is the difference for females
+\item $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}\cdot maled_{i}$ treats ``female''
+as baseline and $\hat{b}_{1}$is the difference for males
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\subsection{You Want G Parameters? You Got It!}
+
+\begin{frame}
+\frametitle{Drop the Intercept? Intriguing!}
+\begin{itemize}
+\item Drop the intercept? G categories -> G parameter estimates
+\item lm(y \textasciitilde{} -1 + sex) : fits no intercept, estimates parameters
+for both males and females
+\begin{equation}
+\begin{array}{cc}
+sexF & sexM\\
+0 & 1\\
+1 & 0
+\end{array}
+\end{equation}
+
+\item And that is ``essentially the same model'' as either of the others.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Problem comes back to Multicollinearity}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item See why you can't estimate this:
+\end{itemize}
+
+\begin{lstlisting}
+lm(y~femd+maled)
+\end{lstlisting}
+
+\begin{itemize}
+\item R automatically inserts an ``intercept'' coefficient for you, so
+this is really
+\end{itemize}
+
+\begin{lstlisting}
+lm(y~1+femd+maled)
+\end{lstlisting}
+
+\begin{itemize}
+\item Leading to the design matrix on right: perfect collinearity between
+constant, femd and maled
+\end{itemize}
+
+\column{6cm}
+
+
+\begin{tabular}{|c|c|c|}
+\hline 
+constant &
+femd &
+maled\tabularnewline
+\hline 
+\hline 
+1 &
+0 &
+1\tabularnewline
+\hline 
+1 &
+1 &
+0\tabularnewline
+\hline 
+1 &
+1 &
+0\tabularnewline
+\hline 
+1 &
+0 &
+1\tabularnewline
+\hline 
+\end{tabular}
+
+\end{topcolumns}%{}
+\begin{itemize}
+\item Your options: 
+
+\begin{itemize}
+\item include a constant and either femd or maled
+\item remove the constant and estimate femd and maled
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Better Check that with the Chile Data}
+\begin{itemize}
+\item Traditional model, sexM
+\end{itemize}
+<<chile30M, echo=T, eval=F, include=F>>=
+chile1M <- lm(statusquo ~ sex, data=Chile)
+@
+
+\input{plots/t-chile30M}
+\begin{itemize}
+\item Traditional model, sexF
+\end{itemize}
+<<chile30F, echo=T, eval=F, include=F>>=
+Chile$sex <- relevel(Chile$sex, ref="M")
+chile1F <- lm(statusquo ~ sex, data=Chile)
+@
+
+\input{plots/t-chile30F}
+\begin{itemize}
+\item No Intercept Model
+\end{itemize}
+<<chile30NI, echo=T, eval=F, include=F>>=
+chile1NI <- lm(statusquo ~ -1 + sex, data=Chile)
+@
+
+\input{plots/t-chile30NI.tex}
+
+<<chile31, echo=F, include=F>>=
+<<chile30M>>
+<<chile30F>>
+<<chile30NI>>
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{3 Fits Side By Side}
+
+<<chile32, results=tex, echo=F, include=F>>=
+outreg(list(chile1M, chile1F, chile1NI), modelLabels=c("M","F","No Int."), tight=TRUE, showAIC=FALSE)
+@
+
+\input{plots/t-chile32.tex}
+
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Vital: The Predicted Values Are IDENTICAL!}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+<<chile40, fig=T, include=FALSE, height=5, width=4>>=
+termplot(chile1F, partial.resid=TRUE, se=TRUE, ylabs="Statusquo Support")
+@
+\begin{lstlisting}
+chile1F <- lm(statusquo ~ sex, data=Chile)
+\end{lstlisting}
+
+
+\includegraphics[width=5cm]{plots/t-chile40}
+
+\column{6cm}
+
+<<chile45, fig=T, include=FALSE, height=5, width=4>>=
+termplot(chile1NI, partial.resid=TRUE, se=TRUE, ylabs=c("Statusquo Support"))
+@ 
+\begin{lstlisting}
+chile1NI <- lm(statusquo ~ -1 + sex, data=Chile)
+\end{lstlisting}
+
+
+\includegraphics[width=5cm]{plots/t-chile45}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I mean Predictions are Completely IDENTICAL! Check the first few cases}
+
+<<chile50,echo=T,include=F>>=
+head(predict(chile1F))
+@
+
+\input{plots/t-chile50}
+
+<<chile51,echo=T,include=F>>=
+head(predict(chile1NI))
+@
+
+\input{plots/t-chile51}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Same True With G Categories}
+
+\begin{frame}[containsverbatim]
+\frametitle{So, if a Categorical IV has 5 "levels" (as R would call them)}
+\begin{itemize}
+\item We can estimate 4 parameters for levels and 1 for intercept
+\item Or we can suppress intercept and estimate 5 parameters for 5 levels
+\end{itemize}
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Treatment Contrasts=="dummy" codes}
+\begin{itemize}
+\item Colloquial: Dummy Variable Coding
+\item R calls this ``treatment contrasts''
+\end{itemize}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline 
+id &
+Religion &
+Rel.Cath &
+Rel.Prot &
+Rel.Musl &
+Rel.Hindu &
+Rel.Other\tabularnewline
+\hline 
+\hline 
+1 &
+Cath &
+1 &
+0 &
+0 &
+0 &
+0\tabularnewline
+\hline 
+2 &
+Prot &
+0 &
+1 &
+0 &
+0 &
+0\tabularnewline
+\hline 
+3 &
+Musl &
+0 &
+0 &
+1 &
+0 &
+0\tabularnewline
+\hline 
+4 &
+Hindu &
+0 &
+0 &
+0 &
+1 &
+0\tabularnewline
+\hline 
+5 &
+Other &
+0 &
+0 &
+0 &
+0 &
+1\tabularnewline
+\hline 
+6 &
+$\vdots$ &
+ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Regression with Treatment Contrasts}
+\begin{itemize}
+\item $\hat{y}_{i}\sim\hat{b}_{0}+\hat{b}_{1}Rel.Prot_{i}+\hat{b}_{2}Rel.Musl_{i}+\hat{b}_{3}Rel.Hindu_{i}+\hat{b}_{4}Rel.Other_{i}$
+\item ``Catholic'' is ``left out?'' Not really
+\item Predicted value for members of 
+
+\begin{itemize}
+\item Catholic is $\hat{b}_{0}$
+\item Protestant is $\hat{b}_{0}+\hat{b}_{1}$
+\item Muslim is $\hat{b}_{0}+\hat{b}_{2}$
+\item Hindu is $\hat{b}_{0}+\hat{b}_{3}$
+\item Other is $\hat{b}_{0}+\hat{b}_{4}$
+\end{itemize}
+\item Interpret individual coefficients
+
+\begin{itemize}
+\item $\hat{b}_{1}$ : difference in predicted value for Protestant (as
+opposed to Catholic).
+\item $\hat{b}_{2}$ : difference in predicted value for Muslim (as compared
+against Catholic)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Any Group Can Serve as the Baseline}
+\begin{itemize}
+\item Can make ``Hindu'' the baseline group.
+\item All estimates treat Hindu as ``baseline'' and other estimates are
+differences in prediction against Hindu category
+\item Model predictions and fit indices are still IDENTICAL to other ``Catholic
+baseline'' model.
+\item If there are no other predictors in the model, the $\hat{b}_{j}'s$
+are simply related to the observed group means (since predicted value
+is ``mean'' of $y$ for category members).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Remember $\hat{y}$ is the same, no matter how you code these Predictor Contrasts}
+\begin{itemize}
+\item Changing ``dummy codes'' or ``baseline group'' alters the $\hat{b}$
+estimates
+\item It does not alter the essential meaning of the model
+\item Like saying ``I am average in height'' and ``my height is the average
+plus 0'' or ``my height is 36 inches plus one-half of the average''
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Effects Coding}
+
+\begin{frame}[containsverbatim]
+\frametitle{Effects Coding (Unweighted)}
+\begin{itemize}
+\item Terminology is ``new to me'' in Cohen, et al.
+\item Re-code the religion variable like so (for ``omitted'' category,
+put -1 all the way across)
+\end{itemize}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline 
+id &
+Religion &
+Rel.Cath &
+Rel.Prot &
+Rel.Musl &
+Rel.Hindu &
+Rel.Other\tabularnewline
+\hline 
+\hline 
+1 &
+Cath &
+-1 &
+-1 &
+-1 &
+-1 &
+-1\tabularnewline
+\hline 
+2 &
+Prot &
+0 &
+1 &
+0 &
+0 &
+0\tabularnewline
+\hline 
+3 &
+Musl &
+0 &
+0 &
+1 &
+0 &
+0\tabularnewline
+\hline 
+4 &
+Hindu &
+0 &
+0 &
+0 &
+1 &
+0\tabularnewline
+\hline 
+5 &
+Other &
+0 &
+0 &
+0 &
+0 &
+1\tabularnewline
+\hline 
+6 &
+$\vdots$ &
+ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item Called ``sum-to-zero'' contrasts in other contexts.
+\item We will fit a regression that does not include \emph{Rel.Cath}
+
+
+$\hat{y}_{i}\sim\hat{b}_{0}+\hat{b}_{1}Rel.Prot_{i}+\hat{b}_{2}Rel.Musl_{i}+\hat{b}_{3}Rel.Hindu_{i}+\hat{b}_{4}Rel.Other_{i}$
+
+\item Still get $\hat{b}$'s as comparisons, but now comparing against a
+different baseline.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Design Matrix}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+The ``design matrix'':
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+Const &
+Cath &
+P &
+M &
+H &
+Oth\tabularnewline
+\hline 
+\hline 
+1 &
+-1 &
+-1 &
+-1 &
+-1 &
+-1\tabularnewline
+\hline 
+1 &
+0 &
+1 &
+0 &
+0 &
+0\tabularnewline
+\hline 
+1 &
+0 &
+0 &
+1 &
+0 &
+0\tabularnewline
+\hline 
+1 &
+0 &
+0 &
+0 &
+1 &
+0\tabularnewline
+\hline 
+1 &
+0 &
+0 &
+0 &
+0 &
+1\tabularnewline
+\hline 
+$\vdots$ &
+ &
+ &
+ &
+ &
+\tabularnewline
+\hline 
+\end{tabular}
+
+But ``Cath'' is omitted from the fitted report
+
+\column{6cm}
+\begin{itemize}
+\item Every ``row'' gets 
+
+\begin{itemize}
+\item a $1$ for its ``own'' group
+\item Except Catholics, who get $-1$ 
+\end{itemize}
+\item The $-1$ basically ``pushes'' the estimated intercept
+\item The other coefficients adjust accordingly to produce same predicted
+values.
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Where does the Intercept get pushed to?}
+\begin{itemize}
+\item Answer: Intercept=mean of group means on $y$
+\begin{equation}
+\hat{b}_{0}=\frac{1}{5}\{\bar{Y}_{1}+\bar{Y}_{2}+\bar{Y}_{3}+\bar{Y}_{4}+\bar{Y}_{5}\}
+\end{equation}
+
+\item Called ``unweighted effects coding'' because the means of the groups
+are averaged, no matter how many observations there are in each group.
+\item In order to believe that, I had to run some examples.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Chile Regions: First get the means}
+\begin{itemize}
+\item The mean values of ``statusquo'' for the regions are
+\end{itemize}
+<<chile110, include=F, echo=F>>=
+library(car)
+agg1 <- aggregate(Chile$statusquo, by=list(region=Chile$region), mean, na.rm=T)
+agg1
+@
+
+\input{plots/t-chile110.tex}
+\begin{itemize}
+\item Now calculate the ``mean of the means'' (no weights)
+\end{itemize}
+<<chile145, echo=F, include=F>>=
+(munweighted <- mean(agg1$x))
+@
+
+\input{plots/t-chile145.tex}
+
+0.076 is a ``magic number''. Watch out for it later
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Suppress the Intercept: Estimate 5 Params for 5 Regions}
+
+<<chile120, include=F, echo=T, results=tex>>=
+modr1 <- lm( statusquo ~ -1 + region, data=Chile)
+outreg(modr1, tight=FALSE, showAIC=F)
+@
+
+\input{plots/t-chile120.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Include the Intercept, Estimate (default) Treatment Contrasts}
+
+<<chile130, include=F, echo=T, results=tex>>=
+modr2 <- lm( statusquo ~ region, data=Chile, x=T, y=T)
+outreg(modr2, tight=FALSE, showAIC=F)
+@
+
+\input{plots/t-chile130.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Those Default Contrasts Were }
+
+\def\Sweavesize{\scriptsize}
+<<chile135A, echo=T, include=F>>=
+contrasts(Chile$region)
+@
+
+\input{plots/t-chile135A.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ask R to use "sum-to-zero" contrasts (aka Unweighted Effects)}
+
+\def\Sweavesize{\scriptsize}
+<<chile135B, echo=T, include=F>>=
+options(contrasts=c("contr.sum", "contr.poly"))
+contrasts(Chile$region)
+@
+
+\input{plots/t-chile135B.tex}
+\begin{itemize}
+\item Note, the default makes the ``last'' category, SA, the reference
+category. Will have to fix that later.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Fitted model with Effects Contrasts}
+
+<<chile140, include=F, echo=T>>=
+modr3 <- lm( statusquo ~ region, data=Chile)
+@
+
+<<chile140B, results=tex, include=F, echo=F>>=
+outreg(modr3, tight=FALSE, showAIC=F)
+@
+
+\input{plots/t-chile140B.tex}
+\begin{itemize}
+\item Unfortunately, we lose the region labels here, but they are 1=C, 2=M,
+3=N, 4=S
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I Had Trouble figuring this Out}
+\begin{itemize}
+\item Some patience required :)
+\item Note the Effects Coding intercept is 0.076, same as ``mean of category
+means''
+\end{itemize}
+<<chile142, echo=F, include=F, eval=F>>=
+#agg1 <- aggregate(Chile$statusquo, by=list(region=Chile$region), mean, na.rm=T)
+agg1
+@
+
+\input{plots/t-chile142.tex}
+\begin{itemize}
+\item Calculate the difference between the observed means and 0.076 
+\end{itemize}
+<<chile147, include=F, echo=F>>=
+agg1$diff <- agg1$x - munweighted
+agg1
+@
+
+\input{plots/t-chile147.tex}
+
+Note those differences exactly reproduce the $\hat{b}$ estimates
+from the unweighted effects model.
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{I wish C were the Omitted Category}
+\begin{itemize}
+\item Create a new factor ``region2'' in which levels are ordered (M,
+N, S, SA, C)
+\item That forces values for cases in C to -1 for all contrasts
+\end{itemize}
+<<chile140C,echo=F, include=F>>=
+Chile$region2 <- factor(Chile$region, levels=c("M","N","S","SA","C"))
+modr4 <- lm( statusquo ~ region2, data=Chile)
+@
+
+<<chile140D, echo=F,include=F>>=
+contrasts(Chile$region2)
+@
+
+\input{plots/t-chile140D}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Re-fit with "C" as the reference}
+
+<<chile141D, results=tex, include=F, echo=F>>=
+outreg(modr4, tight=FALSE, showAIC=F)
+@
+
+\input{plots/t-chile141D.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interpretation benefit to the $\hat{b}$'s}
+\begin{itemize}
+\item One can scan down the parameter estimates to see if one category is
+above the unweighted mean
+\item Unclear to me why one would want to do that, but one can, if one wants
+to
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{But they are all Fundamentally the same}
+
+\begin{tabular}{|c|c|c|}
+\hline 
+\begin{minipage}[t]{3.5cm}%
+No Intercept
+
+\small
+<<echo=F,results=tex>>=
+outreg(modr1, tight=T,showAIC=F)
+@%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+Treatment
+
+\small
+<<echo=F,results=tex>>=
+outreg(modr2, tight=T,showAIC=F)
+@%
+\end{minipage} &
+\begin{minipage}[t]{3.5cm}%
+Effects
+
+\small
+<<echo=F,results=tex>>=
+outreg(modr4, tight=T,showAIC=F)
+@%
+\end{minipage}\tabularnewline
+\hline 
+\end{tabular}
+
+\end{frame}
+
+<<chile164, echo=T, include=F>>=
+pmr1 <- aggregate(predict(modr1), by=list(region=modr1$model$region), mean)
+pmr2 <- aggregate(predict(modr2), by=list(region=modr2$model$region), mean)
+pmr3 <- aggregate(predict(modr3), by=list(region=modr3$model$region), mean)
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{Predicted Values for all Rows are Identical. Same, Equivalent, Interchangeable}
+
+<<chile167.5,echo=T, include=F>>=
+dat <-data.frame(pmr1,pmr2,pmr3)
+dat <- dat[ ,c(1,2,4,6)]
+colnames(dat) <- c("region", "NoInt", "Treatment", "Effects")
+@
+\begin{itemize}
+\item Note predicted values for all regions are same
+\end{itemize}
+<<chile167.6, echo=F, include=F>>=
+dat
+@
+
+\input{plots/t-chile167.6.tex}
+\begin{itemize}
+\item R's ``all.equal'' verifies that the predictions for each row in
+data are same.
+\end{itemize}
+<<chile169, echo=T, include=F>>=
+all.equal(predict(modr1), predict(modr2), predict(modr3))
+@
+
+\input{plots/t-chile169.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Standard Errors of the $\hat{b}$ Only Appear to Differ}
+\begin{itemize}
+\item The standard errors are different, but
+\item That's only because they are estimating different things!
+\item $Std.Err.(\hat{b})$ varies because each model reports an estimate
+of a different value
+\item The No Intercept model estimates a ``total effect'' value for each
+region
+\item The Treatment Contrast model estimates 
+
+\begin{itemize}
+\item one ``total effect'' for baseline 
+\item difference for each region against baseline
+\end{itemize}
+\item Effects Contrasts estimate
+
+\begin{itemize}
+\item one unweighted mean
+\item differences for each region against that
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Consider Region S}
+\begin{itemize}
+\item No Intercept model $\hat{b}_{S}=0.165$, $Std.Err(\hat{b}_{S})=0.037$
+\item Treatment Contrasts, $\hat{b}_{S}=0.195$, $Std.Err(\hat{b}_{s})=0.055$
+\item Effects Contrasts, $\hat{b}_{S}=0.089$, $Std.Err.(\hat{b}_{S})=0.039$
+\item From Treatment, can re-construct estimate for ``total S region effect''
+\begin{equation}
+\hat{b}_{0}+\hat{b}_{S}\, with\, Std.Err.(\sqrt{Var(\hat{b}_{0})+Var(\hat{b}_{S})+2Cov(\hat{b}_{0},\hat{b}_{S})})
+\end{equation}
+
+
+\begin{itemize}
+\item Inserting values from the Covariance of the $\hat{b}$ from Treatment
+gives $0.037$
+\end{itemize}
+\item Do same with Effects Contrasts, get standard error of $0.037$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{My "Take Away" Message}
+\begin{itemize}
+\item Regression is a ``vehicle'' with which to calculate predicted values
+\item Many equivalent ``design matrices'' can be used to calculate same
+predicted values
+\item Comfort with one method or its estimates b's drives the selection
+of one's approach. There is no ``real'' methodological difference
+between the two.
+\item Often choose approach so that ``free t-tests'' with regression output
+are testing the most meaningful questions.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+\end{frame}
+\end{document}

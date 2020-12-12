@@ -1,0 +1,2865 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/Multicollinearity//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Multicollinearity in Regression }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{2014}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Multicollinearity}
+\begin{itemize}
+\item There's a small R program persp-multicollinearity-1.R. It is available
+with this document and can be used to experiment with 3-D illustrations.
+\end{itemize}
+\end{frame}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+
+\lyxframeend{}\section{Definitions}
+
+
+\lyxframeend{}\lyxframe{What is Multi Collinearity?}
+\begin{itemize}
+\item Definition: Multicollineary exists if it is possible to calculate
+the value of one IV using a linear formula that combines the other
+IV's.
+\item Note. It is not the same as ``bivariate correlation'' among x's.
+
+
+The word has ``multi'' for a reason! It is not \emph{bi-collinearity}!
+
+\item Pearson correlation matrix not best way to check for multicollinearity. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Perfect Multicollinearity}
+\begin{itemize}
+\item Example: If a model has IV's $X1_{i}$ and $X2_{i}$ and $X3_{i}$,
+perfect MC would exist if one could find constants $k_{0}$, $k_{1}$
+and $k_{2}$ such that 
+\end{itemize}
+\[
+X3_{i}=k_{0}+k_{1}X1_{i}+k_{2}X2_{i}
+\]
+
+\begin{itemize}
+\item If you put the same variable in a regression with two different names,
+what do you get? The estimation process for the model should crash
+and complain to you. Perfect multicollinearity!
+\item Silly mistakes: Put in ``gender'' (=Male Female) and ``sex'' (=Man
+Woman) and ``biologically capable of giving birth'' (=Yes No) in
+the same model. 
+\item Those variables cannot be differentiated from one another.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{(ImPerfect?) Multicollinearity}
+\begin{itemize}
+\item If you put variables in a model that are similar, but not identical,
+then you have multicollinearity.
+\item It is not ``perfect'' (perfectly bad), but it is still (imperfectly)
+bad.
+\item In a model with 10 IV, that means it is possible to predict (at least)
+one IV from others with some weighted formula
+\end{itemize}
+\[
+X10_{i}=k_{0}+k_{1}X1_{i}+k_{2}X2_{i}+k_{3}X3_{i}+\ldots+k_{9}X9_{i}
+\]
+
+\begin{itemize}
+\item If $R_{x10.x1...x9}^{2}$ is high, then $x10_{i}$ has ``not much
+separate variation'', it cannot be distinguished from the others.
+AND the others cannot be distinguished from it.
+\end{itemize}
+
+\lyxframeend{}
+
+<<include=F,echo=F>>=
+
+library(rockchalk)
+set.seed(23232)
+
+mcGraph1 <- function (x1, x2, y, theta=0, phi=15){
+  x1range <- magRange(x1, 1.25)
+  x2range <- magRange(x2, 1.25)
+  yrange <- magRange(y, 1.5)
+  
+  zZero <- outer( plotSeq(x1range, l=5), plotSeq(x2range, l=5), function( a,b) { a*b*0 + yrange[1] } )
+  
+  res <- persp(x=plotSeq(x1range, l=5), y= plotSeq(x2range, l=5), z=zZero, zlim=yrange, lwd=1, xlab="x1",ylab="x2",zlab="y", theta=theta, phi=phi)
+  
+  yMinimum <- rep(yrange[1] , length(x1))
+  mypoints1 <- trans3d (x1, x2, yMinimum, pmat = res )
+  points( mypoints1, pch = 16, col= "blue")
+}
+
+
+
+mcGraph2 <- function(x1,x2,y, shrinky=1, theta=0, phi=15){
+  x1range <- magRange(x1, 1.25)
+  x2range <- magRange(x2, 1.25)
+  yrange <- magRange(y, 1.5)
+  
+##
+  zZero <- outer( plotSeq(x1range, l = 5), plotSeq(x2range, l = 5), function( a,b) { a*b*0 + yrange[1] } )
+
+  res <- persp(x = plotSeq(x1range, l = 5), y = plotSeq(x2range, l = 5), z = zZero, zlim = yrange, lwd = 1, xlab = "x1", ylab = "x2", zlab = "y", theta = theta, phi=phi)
+  
+  mypoints1 <- trans3d ( x1, x2 ,yrange[1], pmat = res )
+  newy <- shrinky * (y - yrange[1]) + yrange[1]
+  mypoints2 <- trans3d ( x1 , x2 , newy , pmat = res )
+  points( mypoints2, pch = 1, col= "blue")
+  points( mypoints1, pch = 16, col=gray(0.8))
+  
+  mypoints2s <- trans3d ( x1, x2, (0.8)*newy, pmat =res )
+  arrows ( mypoints1$x , mypoints1$y , mypoints2s$x , mypoints2s$y , col="red" , lty = 2, lwd=0.3, length=0.05)
+}
+
+
+
+
+mcGraph3 <- function(x1, x2, y, theta = 0, phi = 15){
+  x1range <- magRange(x1, 1.25)
+  x2range <- magRange(x2, 1.25)
+  yrange <- magRange(y, 1.5)
+  
+  
+  zZero <- outer( plotSeq(x1range, l = 5), plotSeq(x2range, l = 5), function( a, b) { a*b*0 + yrange[1] } )
+  
+  
+  res <- persp(x = plotSeq(x1range, l = 5), y = plotSeq(x2range, l = 5), z = zZero, zlim = yrange, lwd = 1, xlab = "x1", ylab = "x2", zlab = "y", theta = theta, phi = phi)
+  
+  mypoints1 <- trans3d( x1, x2, yrange[1], pmat = res )
+  
+  mypoints2 <- trans3d( x1, x2, y, pmat = res )
+  points( mypoints2, pch = 1, col = "blue")
+  points( mypoints1, pch = 16, col = gray(0.8))
+ 
+  m1 <- lm( y ~ x1 + x2)
+  # summary (m1)
+ 
+  x1seq <- plotSeq (x1range, length = 20)
+  x2seq <- plotSeq (x2range , length = 20)
+  
+  zplane <- outer ( x1seq, x2seq, function(a, b) { predict(m1,
+    newdata = data.frame( x1 = a, x2 = b ))} )
+  
+  for( i in 1:length(x1seq) ){
+    lines(trans3d(x1seq[i], x2seq, zplane[i,], pmat = res), lwd = 0.3)
+  }
+  for( j in 1:length(x2seq) ){
+    lines(trans3d(x1seq, x2seq[j], zplane[,j], pmat = res), lwd = 0.3)
+  }
+  
+  mypoints4 <- trans3d (x1 , x2 , fitted(m1) , pmat =res )
+##  points(mypoints4)
+  
+	newy <- ifelse(fitted(m1) < y, fitted(m1)+ 0.8*(y-fitted(m1)),
+	fitted(m1) + 0.8 * (y-fitted(m1)))
+  mypoints2s <- trans3d ( x1, x2, newy, pmat =res )
+  
+  arrows ( mypoints4$x , mypoints4$y , mypoints2s$x , mypoints2s$y , col = "red" , lty = 4, lwd = 0.3, length = 0.05)
+  m1
+}
+
+genCorrelatedData <- function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1){ 
+  require(MASS)
+  corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
+  sigma <- diag(sds) %*% corr.mat %*% diag(sds)
+  x.mat <-  mvrnorm(n = N, mu = means, Sigma = sigma)
+  y = 0 + 0.2* x.mat[,1] + 0.2 * x.mat[,2] + stde*rnorm (N, m = 0, s = 1)
+  dat <- data.frame(x.mat, y)
+  names(dat) <- c("x1", "x2", "y")
+  dat
+}
+@
+
+\begin{frame}
+\frametitle{Illustration in 3 Dimensions}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+<<mc1-1, include=F, fig=T, echo=F, results=tex>>=
+## Create data with x1 and x2 correlated at 0.10
+dat <- genCorrelatedData(rho=0, stde=7)
+mod1 <- mcGraph1(dat$x1, dat$x2, dat$y, theta=-30, phi=8)
+@
+\begin{itemize}
+\item No values drawn yet for dependent variable
+\item Please notice dispersion in the x1-x2 plane
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc1-1.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-1, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.0, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-1.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-2, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.05, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-2.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-3, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.1, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-3.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-4, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.2, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-4.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-5, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.3, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-5.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-6, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.4, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-6.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-7, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.5, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-7.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-8, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.6, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-8.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-9, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.7, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-9.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-10, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.80, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-10.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-11, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.90, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-11.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Watch Data Cloud Develop}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-13, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-13.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-20, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 20)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-20.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-21, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 40)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-21.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-22, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 60)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-22.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-23, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 80)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-23.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-24, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 100)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-24.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-50, fig=T, echo=F, include=F,results=tex>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -30)
+outreg(mod1, tight=FALSE)
+@
+
+\small
+\input{plots/t-mc-2-50}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-50.pdf}
+
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-51, fig=T, echo=F, include=F,results=tex>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=0)
+outreg(mod1, tight=FALSE)
+@
+
+\small
+\input{plots/t-mc-2-50}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-51.pdf}
+
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-52, fig=T, echo=F, include=F,results=tex>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=-10)
+outreg(mod1, tight=FALSE)
+@
+
+\small
+\input{plots/t-mc-2-52}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-52.pdf}
+
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Severe Collinearity: r(x1,x2)=0.9}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+<<mc3-1, include=F, fig=T, echo=F, results=tex>>=
+## Create data with x1 and x2 correlated at 0.10
+rm(dat)
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod2 <- mcGraph1(dat2$x1, dat2$x2, dat2$y, theta=20, phi=8)
+@
+\begin{itemize}
+\item Nearly linear dispersion in the x1-x2 plane
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc3-1.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cloud Is More like Data Tube}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<mc-3-2, fig=T, echo=F, include=F>>=
+mod <- mcGraph2(dat2$x1, dat2$x2, dat2$y, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-3-2.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cloud Is More like Data Tube}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<mc-3-3, fig=T, echo=F, include=F, results=tex>>=
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-3-3}
+\begin{itemize}
+\item plane does not sit as ``comfortably''
+\item greater standard errors
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-3-3.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\section{Effects of MC:}
+
+
+\lyxframeend{}\lyxframe{Symptom \#1: Weak Hypothesis Tests.}
+\begin{itemize}
+\item MC inflates the variance $Var(\hat{b}_{1})$ and the estimated variance,
+$\widehat{Var(\hat{\beta}_{1})}$, and its square root, the $std.err.(\hat{\beta}_{1})$.
+\end{itemize}
+Suppose $H_{0}:b=0.$ 
+\begin{itemize}
+\item MC makes t-statistics smaller, since $t=\frac{\widehat{b}}{std.err(\widehat{b})}$ 
+\item Find a book that gives the formula for the $s.e.(\hat{\beta})$ for
+a model with a few independent variables. It should be easy to see
+that as the variables become more similar, then the $s.e(\hat{\beta})$
+gets bigger.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Warning Sign: Mismatch of F and t tests}
+\begin{itemize}
+\item Standard output: ``no significant(ly different from zero) t statistics''
+\item But the F statisticis is significant, or there is a really big $R^{2}$
+\end{itemize}
+
+\lyxframeend{}\lyxframe{You Did Not Do Something Wrong!}
+\begin{itemize}
+\item Suppose Nature used this formula:
+\begin{equation}
+y_{i}=1.1+4.4\, x1_{i}+2.1\, x2_{i}+e_{i},\,\, e_{i}\sim N(0,\sigma_{e}^{2})
+\end{equation}
+
+\item You estimate the correct formula, with the right variables:
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}
+\end{equation}
+
+\item If it ``just so happens'' that high levels of $x1_{i}$ are observed
+in the same cases in which we also observe $x2_{i}$, then we have
+trouble estimating $\beta_{1}$ and $\beta_{2}$.
+\item The ``other things equal'' theory cannot be explored with this data. 
+\item Do they love you because you are beautiful? Or because you are clever?
+Or modest? Or because you are a good listener?
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}
+\frametitle{Multicollinearity Causes High Variance in Slope Estimates}
+\begin{itemize}
+\item Here's my demonstration plan.
+\item First, I'll draw data from not-correlated independent variables
+
+\begin{itemize}
+\item fit regressions (remember the ``true'' slopes are 0.2
+\item draw the 3d regression planes
+\end{itemize}
+\item I'll do that, say, 20 times. In class, I might run the script that
+does this 500 times so we can ``really see'' it. But that would
+make this PDF too large.
+\item After that, I will repeat the process, but with data that is multi-correlated.
+If the demonstration works properly, the reader should see that the
+fitted models are more stable when there is no collinearity than when
+there is collinearity.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-1, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-1}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 1
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-1.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-2, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-2}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 2
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-2.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-3, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-3}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 3
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-3.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-4, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-4}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 4
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-4.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-5, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-5}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 5
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-5.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-6, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-6}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 6
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-6.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-7, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-7}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 7
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-7.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-8, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-8}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 8
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-8.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-9, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-9}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 9
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-9.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-10, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-10}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 10
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-10.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-11, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-11}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 11
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-11.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-12, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-12}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 12
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-12.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-13, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-13}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 13
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-13.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-14, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-14}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 14
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-14.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-15, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-15}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 15
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-15.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-16, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-16}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 16
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-16.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-17, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-17}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 17
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-17.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-18, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-18}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 18
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-18.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-19, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-19}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 19
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-19.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression with Uncorrelated Predictors}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-4-20, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-4-20}
+\begin{itemize}
+\item $r_{x1,x2}=0.0$
+\item Sample 20
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-4-20.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Change Gears Now!}
+\begin{itemize}
+\item You should see that the planes are more-or-less ``the same'', the
+sampling process is not causing wild fluctuations.
+\item Those had no correlation between $x1_{i}$ and $x2_{i}$.
+\item Now, repeat with high correlation between those variables. The plane
+will wobble a lot more.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-1, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-1}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 1
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-1.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-2, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-2}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 2
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-2.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-3, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-3}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 3
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-3.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-4, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-4}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 4
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-4.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-5, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-5}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 5
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-5.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-6, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-6}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 6
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-6.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-7, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-7}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 7
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-7.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-8, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-8}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 8
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-8.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-9, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-9}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 9
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-9.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-10, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-10}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 10
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-10.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-11, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-11}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 11
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-11.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-12, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-12}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 12
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-12.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-13, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-13}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 13
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-13.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-14, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-14}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 14
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-14.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-15, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-15}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 15
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-15.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-16, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-16}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 16
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-16.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-17, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-17}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 17
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-17.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-18, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-18}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 18
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-18.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-19, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-19}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 19
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-19.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{High Collinearity Causes Unstable Estimates}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-5-20, fig=T, echo=F, include=F, results=tex>>=
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+outreg(mod, tight=F)
+@
+
+
+\small
+\input{plots/t-mc-5-20}
+\begin{itemize}
+\item $r_{x1,x2}=0.9$
+\item Sample 20
+\end{itemize}
+
+\column{10cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-5-20.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Symptom 2: ``Bouncing B's'' }
+\begin{itemize}
+\item If there is NO COLLINEARITY, estimates of slopes do not change when
+variables are put in and removed from the model.
+\item If there IS COLLINEARITY, the estimate of each $\hat{\beta}_{j}$
+depends on all of the data for all of the variables. 
+\item Slope estimates ``jump around'' when variables are inserted and
+removed from the model.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Omitted Variable Bias}
+\begin{itemize}
+\item If the Right fitted model is
+\end{itemize}
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}
+\end{equation}
+
+\begin{itemize}
+\item But you fit
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}
+\end{equation}
+
+\item Then the estimate of $\hat{\beta}_{1}$is ``biased'' because $x1_{i}$
+``gets credit'' for the effect of $x2_{i}$.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Formula to Demonstrate Effect of Collinearity with 2 IVs}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item The simple one-input regression
+\begin{equation}
+y_{i}=c_{0}+c_{1}x1_{i}+u_{i}
+\end{equation}
+
+\item The two-input regression
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+e_{i}
+\end{equation}
+
+\item The auxiliary regression 
+\begin{equation}
+x2_{i}=d_{0}+d_{1}x1_{i}+v_{i}
+\end{equation}
+
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item The following summarizes the effect of excluding $x2_{i}$
+\begin{equation}
+\hat{c}_{1}=\hat{\beta}_{1}+\hat{\beta}_{2}\cdot\hat{d}_{1}
+\end{equation}
+
+\item If you leave out $x2_{i}$, the estimate $\hat{c}_{1}$ is a ``biased''
+estimate of the slope $\hat{\beta}_{1}$. 
+\item Equivalently, Here's how the $\hat{\beta}_{1}$ ``jumps'' when $x2_{i}$
+is added to the model 
+\end{itemize}
+
+\begin{equation}
+\hat{\beta}_{1}=\hat{c}_{1}-\hat{\beta}_{2}\cdot\hat{d}_{1}
+\end{equation}
+
+
+\end{topcolumns}%{}
+
+\lyxframeend{}\lyxframe{Suppressor Variables}
+\begin{itemize}
+\item In practice, it usually seems that, leaving a variable out makes the
+$b$'s (and $t$'s) of the included variables ``bigger''.
+\item Not logically necessary, however. A ``Suppressor'' variable is one
+that makes $\hat{\beta}$ from another variable become greater when
+the suppressor is included in the model. (Leaving out the other ``suppresses''
+$\hat{\beta}$). 
+\item Including a variable may make the estimated coefficients bigger for
+both variables.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Example: Heaven and Hell}
+\begin{itemize}
+\item in rockchalk, dataset religion crime is described
+
+\begin{itemize}
+\item ``The data national-level summary indicators of public opinion about
+the existence of heaven and hell as well as the national rate of violent
+crime.''
+\end{itemize}
+\item Special thanks to the anonymous data donor
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Crime is not a function of the belief in Heaven}
+
+<<hell10, include=F, echo=F, results=tex>>=
+data(religioncrime)
+mod1 <- lm(crime ~ heaven, data=religioncrime)	
+outreg(mod1)
+@
+
+\input{plots/t-hell10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{See?}
+
+<<hell15, include=F, echo=F, fig=T>>=
+plot(crime ~ heaven, data=religioncrime)	
+abline(mod1)
+@
+
+\includegraphics[width=10cm]{plots/t-hell15}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Crime is not a function of the belief in Hell}
+
+<<hell20, include=F, echo=F, results=tex>>=
+mod2 <- lm(crime ~ hell, data=religioncrime)	
+outreg(mod2)
+@
+
+\input{plots/t-hell20.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{See?}
+
+<<hell25, include=F, echo=F, fig=T>>=
+plot(crime ~ hell, data=religioncrime)	
+abline(mod2)
+@
+
+\includegraphics[width=10cm]{plots/t-hell25}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{But Heaven and Hell Both Affect Crime}
+
+<<hell30, include=F, echo=F, results=tex>>=
+mod3 <- lm(crime ~ heaven + hell, data=religioncrime)	
+outreg(mod3)
+@
+
+\input{plots/t-hell30.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Visualize that ...}
+
+<<hell50, fig=T, include=F, echo=F>>=
+with(religioncrime,      rockchalk::mcGraph1(heaven, hell, crime)      )	
+@
+
+\includegraphics[width=10cm]{plots/t-hell50.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Visualize that ...}
+
+<<hell60, fig=T, include=F, echo=F>>=
+with(religioncrime,      
+rockchalk::mcGraph2(heaven, hell, crime) )
+@
+
+\includegraphics[width=10cm]{plots/t-hell60.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Visualize that ...}
+
+<<hell70, fig=T, include=F, echo=F>>=
+  mod1 <- with(religioncrime,      rockchalk::mcGraph3(heaven, hell, crime))
+@
+
+\includegraphics[width=10cm]{plots/t-hell70.pdf}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Diagnosis: How to Detect MC}
+
+
+\lyxframeend{}\lyxframe{The Bivariate Correlation Matrix}
+\begin{itemize}
+\item A simple, but not completely informative approach
+\item cor(x) shows pearson correlations
+\item does not demonstrate the \uline{multi in multi-collinearity}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Putting the ``Multi'' in Multicollinearity }
+\begin{itemize}
+\item Regress Each Predictor on all of the others (creates $k$ fitted models)
+\end{itemize}
+\begin{equation}
+Auxiliary\, Regression\, j:\,\,\widehat{xj_{i}}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\ldots exclude\, j'th\ldots+xk_{i}
+\end{equation}
+
+\begin{itemize}
+\item Cohen's notation for the $R^{2}$ from that fit is $R_{xj.x2,x3,\ldots,(j),\ldots,k}^{2}$
+\item I write $R_{j}^{2}$: $R^{2}$ from the $j'th$ auxiliary regression
+\item Intuition: $1-R_{j}^{2}$ indicates magnitude of $xj$'s separate
+effect. 
+
+\begin{itemize}
+\item if $1-R_{j}^{2}$ is almost 0, it means the other variables can predict
+$xj$ almost perfectly
+\end{itemize}
+\item ``Tolerance'' is a name for $1-R_{j}^{2}$ (according to Cohen,
+et al). 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Variance Inflation Factor }
+\begin{itemize}
+\item Weird but true. The true variance of $\hat{\beta}_{j}$ can be re-organized
+thusly:
+
+
+\begin{equation}
+Var(\hat{\beta}_{j})=\frac{\sigma_{e}^{2}}{(1-R_{j}^{2})\sum(xj_{i}-\overline{xj})^{2}}
+\end{equation}
+
+\begin{itemize}
+\item $R_{j}^{2}$ is R-square from regressing $xj$ on all other predictors
+in auxiliary regression.
+\item Note denominator: Product of
+
+\begin{itemize}
+\item tolerance, $(1-R_{j}^{2})$ 
+\item the sum of squares for the $j'th$ variable 
+\end{itemize}
+\item Test question: If your $\widehat{Var(\hat{\beta}_{j})}$ is huge,
+what changes would you like to make in your data so as to make it
+smaller?
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Variance inflation factor (page 2)}
+\begin{itemize}
+\item Re-write the variance formula like so
+\end{itemize}
+\begin{equation}
+Var(\hat{\beta}_{j})=\frac{\sigma_{e}^{2}}{(1-R_{j}^{2})\sum(xj_{i}-\overline{xj})^{2}}=\frac{1}{(1-R_{j}^{2})}\times\frac{\sigma_{e}^{2}}{\sum(xj_{i}-\overline{xj})^{2}}
+\end{equation}
+
+\begin{itemize}
+\item See why the first term is called a ``variance inflation factor''?
+\end{itemize}
+\begin{equation}
+VIF_{j}=\frac{1}{1-R_{j}^{2}}
+\end{equation}
+
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{mcDiagnose in rockchalk package: Hell!}
+
+<<hell100, include=F, echo=T>>=
+mcDiagnose(mod3)
+@
+
+\input{plots/t-hell100}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Section Summary}
+
+
+\lyxframeend{}\lyxframe{Big Take-Away Points (So Far)}
+
+Fit your model with all of the variables your theory leads you to
+include
+\begin{itemize}
+\item $\hat{\beta}$'s are still unbiased.
+\item If $std.err.(\hat{\beta}$) is small, and t's are ``good'', don't
+worry about it.
+\item MC between two variables (or within a block of variables) need not
+affect estimates of other coefficients.
+\end{itemize}
+
+\lyxframeend{}\section{Solutions}
+
+
+\lyxframeend{}\lyxframe{I: Do nothing: }
+\begin{itemize}
+\item acknowledge problem
+\item Can do F test for groups of variables
+\end{itemize}
+
+\lyxframeend{}\lyxframe{II: Get More Diverse Data!}
+\begin{itemize}
+\item Gather more data, so the X's are not so intercorrelated. 
+\item This is the best and only truly meaningful solution.
+\item In research planning, be conscious of MC dangers
+\end{itemize}
+
+\lyxframeend{}\lyxframe{III: Combine Variables Into An Index }
+\begin{itemize}
+\item Begin with a set of variables that are almost the same, and then they
+combine them by adding them or calculating an average.
+\item Best when variables are ``conceptually related''.
+\item Better still if they are thought of as multiple measures of the same
+thing.
+\item Poor person's ``structural equation model''
+\end{itemize}
+
+\lyxframeend{}\lyxframe{More Sophisticated way to Create an Index: Principal Components}
+\begin{itemize}
+\item Definition: principal component is an ``underlying variable'' (unmeasured
+variable) that is related to the observed $X1$, $X2,$$X3$, $X4$. 
+\item PCs can be ``extracted'' from the data and used as predictors. 2
+PCs might effectively summarize 4 X's.
+\item Some authors very enthusiastic about it, some find components difficult
+to understand.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{PC's Require Matrix Notation}
+\begin{itemize}
+\item Center variables so they are in ``deviations form''(So $X1_{i}=x1_{i}-\bar{x}$,
+if $x1_{i}$ was the ``original'' data.) 
+\item Let's reproduce 4 $X$'s with 2 PCs, called $Z1$and $Z2$. The theory
+is that:
+\[
+\left[\begin{array}{cccc}
+X1 & X2 & X3 & X4\end{array}\right]=\begin{array}{cc}
+\left[\begin{array}{cc}
+Z1 & Z2\end{array}\right] & A\end{array}+\left[\begin{array}{cccc}
+u1 & u2 & u3 & u4\end{array}\right]
+\]
+
+
+\begin{itemize}
+\item $u1,$$u2,$$u3,u4$ are columns of random errors, $E[u_{j}]=0$ 
+\item $a$ is a matrix of weights (actually, ``eigenvalues'' of X). 
+\begin{equation}
+A=\left[\begin{array}{cccc}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}
+\end{array}\right]
+\end{equation}
+
+\end{itemize}
+\item Two PCs might effectively ``reproduce'' the $X$'s like this:
+\end{itemize}
+\begin{tabular}{cccc}
+$X1_{i}=a_{11\,}Z1_{i}+a_{21}\, Z2_{i}+u1_{i}$ &
+ &
+ &
+$X2_{i}=a_{12\,}Z1_{i}+a_{22}\, Z2_{i}+u2_{i}$\tabularnewline
+$X3_{i}=a_{13\,}Z1_{i}+a_{23}\, Z2_{i}+u3{}_{i}$ &
+ &
+ &
+$X4{}_{i}=a_{14\,}Z1_{i}+a_{24}\, Z2_{i}+u1_{i}$\tabularnewline
+\end{tabular}
+
+
+\lyxframeend{}\lyxframe{Substantive Interpretation of PCs}
+\begin{itemize}
+\item Suppose the ``city'' level IVs are like this:
+
+\begin{itemize}
+\item $X1$ number of children in public school
+\item $X2$ number of teachers in public schools
+\item $X3$ number of employees in city government
+\item $X4$ number of desks owned by city
+\end{itemize}
+\item The first 2 go together, the last 2 go together
+\end{itemize}
+
+\lyxframeend{}\lyxframe{How Would that Look In PC Output?}
+\begin{itemize}
+\item Search for pattern in matrix of a's.
+\[
+\left[\begin{array}{cccc}
+X1 & X2 & X3 & X4\end{array}\right]=\begin{array}{cc}
+\left[\begin{array}{cc}
+Z1 & Z2\end{array}\right] & \left[\begin{array}{cccc}
+.5 & .5 & 0.0 & 0.0\\
+0.0 & 0.0 & .5 & .5
+\end{array}\right]\end{array}
+\]
+
+\item This example makes it very clear. 
+
+\begin{itemize}
+\item PC $Z1$ is driving the predictions for $X1$ and $X2$, 
+\item PC $Z2$ is driving $X3$ and $X4$.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{PCA: Math Facts}
+\begin{enumerate}
+\item By design, the columns $Z1$ and $Z2$ give the ``best possible''
+linear prediction of the values of the X's.
+\item Can add more PCs if desired.
+\item The PCs $Z1$and $Z2$ are uncorrelated w/each other (orthogonal).
+So if we remove the $X's$ from the regression model, and we use the
+$Z's$ instead, then our ``inputs'' are not intercorrelated any
+more.
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Greene Does Not Endorse PC}
+
+The leading econometrics text, William Greene, \emph{Econometric Analysis},
+5th ed (p. 58)
+\begin{quote}%{}
+The problem here is that if the original model in the form $y=X\beta+\epsilon$
+were correct, then it is unclear what one is estimating when one regresses
+$y$ on some set of linear combinations of the columns of $X$. Algebraically,
+it is simple; at least for the principal components case, in which
+we regress $y$ on $Z=XC_{L}$to obtain $d$, it follows that $E(d)=\delta=C_{L}C'_{L}\beta$.
+In an economic context, if $\beta$ has an interpretation, then it
+is unlikely that $\delta$ will. (How do we interpret the price elasticity
+plus minus twice the income elasticity?) 
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{Cohen, et al., also Reluctant}
+
+A leading text, Cohen, et al, Applied Multiple Regression/Correlation
+Analysis for the Behavioral Sciences, 3rd ed (p. 429)
+\begin{quote}%{}
+Unfortunately, however, these $\tilde{\beta_{i}}$ are only rarely
+interpretable. The component scores are linear combinations of the
+original IVs and will not typically have a clear meaning.... On the
+positive side, dropping components that account for small proportions
+of variance eliminates major sources of multicollinearity. The result
+is that the back transformed regression coefficients, $\beta_{i},$for
+the original IVs will be biased, but will be more robust to small
+changes in the data set than are the original OLS estimates.
+\end{quote}%{}
+
+\lyxframeend{}\lyxframe{IV: Ridge Regression }
+\begin{itemize}
+\item Adding information adds efficiency.
+\item See Practical Regression and Anova using R by Julian Faraway (in R
+contributed documentation on \url{http://www.r-project.org})
+\item Instead of using the OLS estimator
+\[
+\hat{\beta}^{OLS}=(X'X)^{-1}X'y\,\,\,\,\, Var(\hat{\beta}^{OLS})=\sigma_{e}^{2}(X'X)^{-1}
+\]
+Insert a scalar value, $\lambda$, known as the ``ridge constant,''
+to create an adjusted estimator:
+\end{itemize}
+\[
+\hat{\beta}^{ridge}=(X'X+\lambda I)^{-1}X'y\,\,\,\,\, Var(\hat{\beta}^{ridge})=\sigma_{e}^{2}(X'X+\lambda I)^{-1}
+\]
+
+\begin{itemize}
+\item Ameliorates multicollinearity. If a small value of $\lambda$ is used,
+then, of course, the estimates are not far from the $\hat{\beta}^{ols}$. 
+\end{itemize}
+This estimator is known to be biased, but it is also known to havelower
+variance than the OLS estimator. 
+
+
+\lyxframeend{}\lyxframe{Evaluating Biased Estimators}
+\begin{itemize}
+\item Suppose we want the smallest squared-error
+\[
+E[(\hat{\beta}-b)^{2}]
+\]
+
+\item Assert: That is 
+\[
+E[(\hat{\beta}-b)^{2}]=(E[\hat{\beta}-b])^{2}+E[(\hat{\beta}-E(\hat{\beta}))^{2}]
+\]
+
+\end{itemize}
+which is
+\[
+E[(\hat{\beta}-b)^{2}]=bias\, of\, estimator^{2}+variance\, of\, estimator
+\]
+
+
+
+\lyxframeend{}\section{Appendices}
+
+
+\lyxframeend{}\subsection{The Matrix Math of Multicollinearity}
+
+
+\lyxframeend{}\lyxframe{OLS Estimators}
+\begin{itemize}
+\item The OLS estimator is
+\[
+\hat{\beta}=(X'X)^{-1}X'Y\,\,\,\,\,\,\,\,\,\,\,\,\,\widehat{V(\hat{\beta})}=\widehat{\sigma_{e}^{2}}*(X'X)^{-1}
+\]
+
+
+
+$\widehat{\sigma_{e}^{2}}$ estimated variance of the error term,
+also known as the MeanSquareError.
+
+\item The slope and variance estimates require us to calculate:
+\[
+(X'X)^{-1}
+\]
+
+\item Perfect multicollinearity: $(X'X)^{-1}$ cannot be calculated-- $(X'X)$
+cannot be ``inverted.'' 
+\item In practice, multicollinearity is not severe enough to prevent calculations.
+But it does make the estimated variances larger.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Here is an analogy with ordinary numbers. }
+\begin{itemize}
+\item Take $X=0$. Then the inverse, $X^{-1}$is undefined. $X$ cannot
+be inverted.
+\item Suppose instead $X=0.0000000001$. Now the inverse of $X$ does exist,
+but it is some HUGE number, $X^{-1}=\frac{1}{0.0000000001}=10^{9}$. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Inverse of a Matrix}
+\begin{itemize}
+\item Recall that $(X'X)^{-1}$ is a matrix defined in the following way:
+\[
+(X'X)*(X'X)^{-1}=I=\begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+0 & 0 & ... & 0 & 0 & 0\\
+0 & 0 & ... & ... & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 1
+\end{array}
+\]
+
+\item If X is an nxp matrix, then X' is pxn, and so the product (X'X) is
+pxp. (X'X) is square.
+\item If $(X'X)$ cannot be inverted, it means that there are 2 or more
+redundant rows in $(X'X)$. Some computer programs will give the error
+``the model is not full rank.'' If ``rank'' of $(X'X)$ is smaller
+than p, then it means there are redundant rows. 
+\item Usually, in practice, the cross product matrix $(X'X)$ can still
+be inverted, however, the values in $(X'X)^{-1}$ are HUGE. 
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\subsection{What is $(X'X)^{-1}$ Like?}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Envision $(X'X)$ and $(X'X)^{-1}$}
+\begin{itemize}
+\item I kept wondering what the matrix $(X'X)^{-1}$ would look like, so
+here's an example. 
+\item Suppose
+\[
+X=\left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & X1_{3} & X2_{3}\\
+1 & X1_{4} & X2_{4}\\
+\dots & \dots & \dots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right]
+\]
+
+\item The first column is the ``y intercept'' and there are 2 variables.
+\item $X'X$. The product of X transpose and X
+\end{itemize}
+\[
+X'X=\left[\begin{array}{cccccc}
+1 & 1 & 1 & 1 & \vdots & 1\\
+X1_{1} & X1_{2} & X1_{3} & X1_{4} & \vdots & X1_{N}\\
+X2_{1} & X2_{2} & X2_{3} & X2_{4} &  & X2_{N}
+\end{array}\right]\left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & X1_{3} & X2_{3}\\
+1 & X1_{4} & X2_{4}\\
+\dots & \dots & \dots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right]
+\]
+
+
+\begin{equation}
+X'X=\left[\begin{array}{ccc}
+N & \sum X1_{i} & \sum X2_{i}\\
+\sum X1_{i} & \sum X1_{i}^{2} & \sum X1_{i}\cdot X2_{i}\\
+\sum X2_{i} & \sum X1_{i}\cdot X2_{i} & \sum X2_{i}^{2}
+\end{array}\right]\label{eq:XprimeX}
+\end{equation}
+
+\begin{itemize}
+\item We want to know $(X'X)^{-1}$ in order to calculate $\hat{\beta}$
+and $Var(\hat{\beta})$. 
+\item From matrix algebra: the inverse of a matrix can be written as the
+product of the determinant, $det(X'X)$, and a matrix called the adjoint
+$adj(X'X)$. (Consult any linear algebra textbook, such as Howard
+Anton, \textit{Elementary Linear Algebra, 3ed}, New York, John Wiley,
+1980, p. 80). The formula is:
+\[
+(X'X)^{-1}=\frac{1}{det(X'X)}adj(X'X)
+\]
+
+\item The determinant of the 3x3 matrix (\ref{eq:XprimeX}) is 
+\end{itemize}
+\begin{equation}
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum X2_{i}^{2}\right)+2\left(\sum X1_{i}\right)\cdot\left(\sum X2_{i}\right)\cdot\left(\sum X1_{i}\cdot X2_{i}\right)\\
+det(X'X) & = & -\left(\sum X2_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot X2_{i}\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X2_{i}^{2}\right)
+\end{array}\label{eq:detX'X}
+\end{equation}
+
+
+If that determinant is equal to $0$, then the inverse is not defined. 
+\begin{itemize}
+\item If you mistakenly put in two identical columns, so $X1_{i}=X2_{i}$,
+the determinant is 0. Replace $X2_{i}$ by $X1_{i}$:
+\[
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum X1_{i}^{2}\right)\\
+ &  & +2\left(\sum X1_{i}\right)\cdot\left(\sum X1\right)\cdot\left(\sum X1_{i}\cdot X1_{i}\right)\\
+det(X'X) & = & -\left(\sum X1_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot X1_{i}\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X1_{i}^{2}\right)
+\end{array}
+\]
+
+\end{itemize}
+\[
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)^{2}+2\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X1_{i}^{2}\right)\\
+ & = & -N\cdot\left(\sum X1_{i}^{2}\right)^{2}-2\left(\sum X1_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)
+\end{array}
+\]
+
+
+The terms with plus signs are exactly counterbalanced by negative
+signs, and so $det(X'X)=0$ if two redundant variables are included.
+When there are 2 redundant columns, there can be no linear regression
+analysis.
+
+What if 2 columns are not exactly the same, but instead just ``similar''
+or ``correlated''. 
+\[
+X2_{i}=X1_{i}+\gamma_{i}
+\]
+
+
+\begin{equation}
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum(X1_{i}+\gamma_{i})^{2}\right)\\
+ &  & +2\left(\sum X1_{i}\right)\cdot\left(\sum(X1_{i}+\gamma_{i})\right)\cdot\left(\sum X1_{i}\cdot(X1_{i}+\gamma_{i})\right)\\
+det(X'X) & = & -\left(\sum(X1_{i}+\gamma_{i})\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot(X1_{i}+\gamma_{i})\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum(X1_{i}+\gamma_{i})^{2}\right)
+\end{array}\label{eq:detX'X2}
+\end{equation}
+
+
+The intuition: if $\gamma_{i}=0$, $det(X'X)=0.$
+
+If $\gamma_{i}$ is small--$X2_{i}$ is redundant with $X1_{i}$--
+then this determinant will be small. 
+
+\end{frame}
+
+\include{1_home_pauljohn_SVN_SVN-guides_stat_Regression____earity_Multicollinearity-1-lecture-problems}
+
+
+\lyxframeend{}
+\end{document}

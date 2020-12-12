@@ -1,0 +1,1302 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 11
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Cross Sectional Time Series #1
+\layout Author
+
+Paul Johnson <pauljohn@ku.edu>
+\layout Standard
+
+Suppose your dependent variable is Normally distributed.
+ What are you supposed to do?
+\layout Section
+
+The Longitudinal Data Problem
+\layout Standard
+
+Longitudinal data sets include repeated observations on each of many units,
+ such as nations, states, counties, or cities.
+\layout Standard
+
+So we use 2 subscripts for data, the first refers to the unit --or 
+\begin_inset Quotes eld
+\end_inset 
+
+cluster
+\begin_inset Quotes erd
+\end_inset 
+
+--the second to the time.
+ A vector of coefficients is 
+\begin_inset Formula $b$
+\end_inset 
+
+ and the dependent variable is 
+\begin_inset Formula $y_{it}$
+\end_inset 
+
+ and the set of independent variables observed for each country and time
+ is 
+\begin_inset Formula $x_{it}$
+\end_inset 
+
+.
+ The model looks something like:
+\layout Standard
+
+
+\begin_inset Formula \[
+\begin{array}{cccccc}
+y_{11} &  & x_{11}b & + & e_{11}\\
+y_{12} &  & x_{12}b & + & e_{12}\\
+y_{13} &  & x_{13}b & + & e_{13}\\
+\ldots &  &  & +\\
+y_{1T} &  & x_{1T}b & + & e_{1T}\\
+y_{21} & = & x_{21}b & + & e_{21}\\
+y_{22} &  & x_{22}b & + & e_{22}\\
+\ldots &  &  & +\\
+y_{2T} &  & x_{2T}b & + & e_{2T}\\
+y_{31} &  & x_{31}b & + & e_{31}\\
+y_{32} &  & x_{32}b & + & e_{32}\\
+\ldots &  &  & +\\
+y_{3T} &  & x_{3T}b & + & e_{3T}\\
+\\\end{array}\]
+
+\end_inset 
+
+
+\layout Standard
+
+What is the variance of the error term? And how do deviations from the assumptio
+ns that underly OLS affect the results of our analysis?
+\layout Standard
+
+We ordinarily break that down in several steps.
+ 
+\layout Standard
+
+First, in the longitudinal analysis literature, it is common to assume the
+ variance/covariance matrix is 
+\begin_inset Quotes eld
+\end_inset 
+
+block diagonal
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ That means there can be correlations of error terms within each cluster,
+ but the observations of the clusters are not influenced by events in other
+ clusters.
+ In the i'th unit, at the j'th time, the variance is 
+\begin_inset Formula $\sigma_{ij}^{2}$
+\end_inset 
+
+ and the covariance of errors within that unit at times s and t is 
+\begin_inset Formula $\sigma_{ist}^{2}=E(e_{is},e_{it})$
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var(e)=\left[\begin{array}{ccccccccccccc}
+\sigma_{11}^{2} &  & ... & \sigma_{11T}^{2} & 0 & 0 & 0 & 0 & 0 & 0 &  & 0 & 0\\
+\sigma_{112}^{2} &  & ... & \sigma_{12T} & 0 & 0 & 0 & 0 & 0 & 0 &  & 0 & 0\\
+ &  & ... & \vdots & 0 & 0 & 0 & 0 & 0 & 0 &  & 0 & 0\\
+\sigma_{11T}^{2} &  & ... & \sigma_{1TT}^{2} & 0 & 0 & 0 & 0 & 0 & 0 &  & 0 & 0\\
+0 &  & 0 & 0 & \sigma_{21}^{2} & ... & \sigma_{21T}^{2} & 0 & 0 & 0 &  & 0 & 0\\
+0 &  & 0 & 0 & \vdots &  & \vdots & 0 & 0 & 0 &  & 0 & 0\\
+0 &  & 0 & 0 & \sigma_{21T}^{2} & ... & \sigma_{2T}^{2} & 0 & 0 & 0 &  & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & \sigma_{31}^{2} & ... & \sigma_{31T}^{2} &  & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & \vdots & \ddots & \vdots &  & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & \sigma_{31T}^{2} &  & \sigma_{3T} &  & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & \ddots & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 &  & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 &  & \vdots\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 &  & \sigma_{N(T-1)}^{2} & \sigma_{N(T-1)T}^{2}\\
+0 &  & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 &  & \sigma_{N(T-1)T}^{2} & \sigma_{NT}^{2}\end{array}\right]\label{eq:longitudinal1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Sometimes a symbol such as 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ is used instead of 
+\begin_inset Formula $Var(e)$
+\end_inset 
+
+.
+\layout Standard
+
+It is often easier to think of this matrix as a block-diagonal matrix in
+ which each unit's error terms are intercorrelated according to the variance/cov
+ariance matrix 
+\begin_inset Formula $V_{j}$
+\end_inset 
+
+, which is 
+\begin_inset Formula $TxT$
+\end_inset 
+
+.
+ 
+\begin_inset Formula \begin{equation}
+Var(e)=\Omega=\left[\begin{array}{ccccc}
+V_{1} &  &  &  & 0\\
+ & V_{2}\\
+ &  & V_{3}\\
+ &  &  & \ddots\\
+0 &  &  &  & V_{N}\end{array}\right]\label{eq:longitudinal2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Second, the next big simplifying assumption is often that these submatrices
+ are of a common sort.
+ They may be assumed to be identical, or to differ according to just one
+ or two coefficients.
+ Let's suppose that the blocks have exactly the SAME correlation structure,
+ 
+\begin_inset Formula $V$
+\end_inset 
+
+.
+ 
+\begin_inset Formula \begin{equation}
+\Omega=\left[\begin{array}{cccccc}
+V &  &  &  &  & 0\\
+ & V\\
+ &  & V\\
+ &  &  & \ddots\\
+ &  &  &  & V\\
+0 &  &  &  &  & V\end{array}\right]\label{eq:Omega}\end{equation}
+
+\end_inset 
+
+
+\layout Section
+
+Detours into matrix algebra
+\layout Standard
+
+The data matrix 
+\begin_inset Formula $X$
+\end_inset 
+
+ is a 
+\begin_inset Quotes eld
+\end_inset 
+
+stack
+\begin_inset Quotes erd
+\end_inset 
+
+ of smaller matrices, one for each cluster.
+ Suppose there is an intercept and 3 variables to be estimated:
+\begin_inset Formula \[
+X=\left[\begin{array}{c}
+X_{1}\\
+X_{2}\\
+X_{3}\\
+\vdots\\
+X_{N-1}\\
+X_{N}\end{array}\right]=\left[\begin{array}{cccc}
+1 & x1_{11} & x2_{11} & x3_{11}\\
+1 & x1_{12} & x2_{12} & x3_{12}\\
+1 & x1_{1T} & x2_{1T} & x3_{1T}\\
+1 & x1_{21} & x2_{21} & x3_{21}\\
+1 & x1_{22} & x2_{22} & x3_{22}\\
+1 & x1_{23} & x2_{23} & x3_{23}\\
+1 & x1_{31} & x2_{31} & x3_{31}\\
+1\\
+1\\
+1 & x1_{N(T-1)} & x2_{N(T-1)} & x3_{N(T-1)}\\
+1 & x1_{NT} & x2_{NT} & x3_{NT}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+Similarly, the vector of observations:
+\begin_inset Formula \[
+y=\left[\begin{array}{c}
+y_{11}\\
+y_{12}\\
+\vdots\\
+y_{1T}\\
+y_{21}\\
+\vdots\\
+y_{2T}\\
+\vdots\\
+y_{N1}\\
+\vdots\\
+y_{NT}\\
+\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+Because the data is so obviously separable into clumps, there are some special
+ elements from matrix algebra that arise.
+\layout Subsection
+
+Kronecker product
+\layout Standard
+
+The expression (
+\begin_inset LatexCommand \ref{eq:Omega}
+
+\end_inset 
+
+) can be written more compactly if we use the notation of the 
+\begin_inset Quotes eld
+\end_inset 
+
+Kronecker product
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\otimes$
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Formula \[
+I\otimes V\]
+
+\end_inset 
+
+The Kronecker product means that one takes each term in the first matrix
+ and multiplies it by the ENTIRE second matrix and then puts the result
+ in place of the element of the first matrix.
+ Since 
+\begin_inset Formula $I$
+\end_inset 
+
+ is the identity matrix
+\begin_inset Formula \[
+I=\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 1\end{array}\right]\]
+
+\end_inset 
+
+ 
+\newline 
+It is quite easy to imagine what 
+\begin_inset Formula $\otimes$
+\end_inset 
+
+ is doing.
+ Take each element of the 
+\begin_inset Formula $I$
+\end_inset 
+
+ matrix, multiply it by the matrix 
+\begin_inset Formula $V$
+\end_inset 
+
+.
+ The result is either 
+\begin_inset Formula $1*V=V$
+\end_inset 
+
+ or 
+\begin_inset Formula $0*V=0$
+\end_inset 
+
+.
+ When that result is put into the identity matrix in place of the 
+\begin_inset Formula $0$
+\end_inset 
+
+ or the 
+\begin_inset Formula $1$
+\end_inset 
+
+, then the result is 
+\begin_inset LatexCommand \ref{eq:Omega}
+
+\end_inset 
+
+ in the short form or the larger thing in the matrix above it.
+ 
+\layout Standard
+
+One often sees the Kronecker product defined as:
+\begin_inset Formula \[
+A\otimes B=\left[\begin{array}{cccc}
+a_{11}B & a_{12}B & \cdots & a_{1n}B\\
+a_{21}B & a_{22}B & \cdots & a_{2n}B\\
+\vdots\\
+a_{m1}B & a_{m2}B &  & a_{mn}B\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+Where A is an 
+\begin_inset Formula $m\times n$
+\end_inset 
+
+ matrix
+\begin_inset Formula \[
+A=\left[\begin{array}{cccc}
+a_{11} & a_{12} & \cdots & a_{1m}\\
+a_{21} & a_{22} & \cdots & a_{2m}\\
+\vdots &  &  & \vdots\\
+a_{m1} & a_{m2} & \cdots & a_{mn}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+Some authors use the Kronecker product a lot, others use the nature of the
+ block-diagonal matrix in order to simplify their findings.
+\layout Subsection
+
+The inverse of a block-diagonal matrix.
+\layout Standard
+
+The inverse of a block-diagonal matrix is made-up of the inverses of the
+ individual cluster matrices:
+\layout Standard
+
+
+\begin_inset Formula \[
+\Omega^{-1}=\left[\begin{array}{ccccc}
+V_{1}^{-1} & 0 & 0 & 0 & 0\\
+0 & V_{2}^{-1} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & V_{N-1}^{-1} & 0\\
+0 & 0 & 0 & 0 & V_{N}^{-1}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Subsection
+
+The cross-product of a block-diagonal matrix
+\layout Standard
+
+The product 
+\begin_inset Formula $X'X$
+\end_inset 
+
+ is the block-diagonal matrix made up of products of the individual cluster
+ matrices.
+\layout Standard
+
+
+\begin_inset Formula \[
+X'X=\left[\begin{array}{ccccc}
+X'_{1}X_{1} & 0 & 0 & 0 & 0\\
+0 & X'_{2}X_{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & 0 & 0\\
+0 & 0 & 0 & X'_{N-1}X_{N-1} & 0\\
+0 & 0 & 0 & 0 & X'_{N}X_{N}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Behold: The information matrix.
+\layout Standard
+
+
+\begin_inset Formula \[
+X'\Omega^{-1}X=\sum_{i=1}^{N}X_{i}'V_{i}^{-1}X_{i}\]
+
+\end_inset 
+
+
+\layout Section
+
+Recall OLS
+\layout Standard
+
+Assume:
+\layout Enumerate
+
+
+\begin_inset Formula $\hat{y}=Xb+e$
+\end_inset 
+
+
+\layout Enumerate
+
+Homoskedasticity and no autocorrelation: 
+\begin_inset Formula $Var(e)=\sigma^{2}I$
+\end_inset 
+
+
+\layout Enumerate
+
+
+\begin_inset Formula $E(e)=0$
+\end_inset 
+
+
+\layout Standard
+
+which implies 
+\begin_inset Formula $\hat{y}=X\hat{b}$
+\end_inset 
+
+
+\layout Standard
+
+The sum of squared errors:
+\layout Standard
+
+
+\begin_inset Formula $SS(\hat{b})=$
+\end_inset 
+
+
+\begin_inset Formula $(y-\hat{y})'(y-\hat{y})=(y-X\hat{b})(y-X\hat{b})$
+\end_inset 
+
+
+\layout Standard
+
+From elementary calculus, 
+\begin_inset Formula $\frac{\partial}{\partial b}(bx)=x$
+\end_inset 
+
+.
+ The same is true of matrices,
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial\hat{b}}(X\hat{b})=X\label{eq:derivXb}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The derivative of SS wrt 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial SS}{\partial\hat{b}}=-2\left[\frac{\partial\hat{y}}{\partial b}\right]^{'}(y-\hat{y})=-2X'(y-X\hat{b})=0\label{eq:OLSScore1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This uses the fact stated in 
+\begin_inset LatexCommand \ref{eq:derivXb}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The constant 
+\begin_inset Formula $-2$
+\end_inset 
+
+ gets 
+\begin_inset Quotes eld
+\end_inset 
+
+divided away
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ As a result, the first order condition is the same as the 
+\begin_inset Quotes eld
+\end_inset 
+
+score equation
+\begin_inset Quotes erd
+\end_inset 
+
+ in maximum likelihood:
+\begin_inset Formula \begin{equation}
+X'(y-\hat{y})=X'(y-X\hat{b})=0\label{eq:OLSScore2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The solution for the best OLS estimator:
+\layout Standard
+
+
+\begin_inset Formula $\hat{b}=(X'X)^{-1}X'y$
+\end_inset 
+
+
+\layout Standard
+
+and the variance/covariance matrix of the b's is estimated by
+\layout Standard
+
+
+\begin_inset Formula $Var(\hat{b})=\sigma^{2}(X'X)^{-1}$
+\end_inset 
+
+
+\layout Standard
+
+If you don't know 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+ estimate it from the residuals on the regression line.
+ The Mean Square Error is estimate of 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+ 
+\layout Standard
+
+
+\begin_inset Formula $\hat{\sigma}^{2}=\frac{e'*e}{T-M}=\frac{(sum.of.squared.resituals)}{(N.of.cases)-(N.of.elements.in.b)}$
+\end_inset 
+
+
+\layout Section
+
+Recall GLS/WLS
+\layout Standard
+
+Check my GLS handout.
+ Basically:
+\layout Standard
+
+If your assumptions about 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ are violated, there is a fix.
+ 
+\layout Standard
+
+Recall that, unless you employ a fix, the estimates of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ are inefficient and the estimates of 
+\begin_inset Formula $Var(\hat{b})$
+\end_inset 
+
+ are simply wrong.
+ 
+\layout Standard
+
+If we know what 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ is, the solution from WLS/GLS is a weighted regression.
+ Use 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ in the Sum of Squared formula to weight observations so that 
+\begin_inset Quotes eld
+\end_inset 
+
+high variance
+\begin_inset Quotes erd
+\end_inset 
+
+ cases have less weight.
+ 
+\begin_inset Formula \begin{equation}
+SS(\hat{b})=(y-\hat{y})\Omega^{-1}(y-\hat{y})\label{eq:SSGLS}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The GLS equivalent of the OLS equation 
+\begin_inset LatexCommand \ref{eq:OLSScore1}
+
+\end_inset 
+
+ is:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial SS}{\partial\hat{b}}=-2\left[\frac{\partial\hat{y}}{\partial\hat{b}}\right]^{'}\Omega^{-1}(y-\hat{y})=-2X'\Omega^{-1}(y-X\hat{b})=0\label{eq:GLSScore1}\end{equation}
+
+\end_inset 
+
+
+\newline 
+This reduces to:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\left[\frac{\partial\hat{y}}{\partial\hat{b}}\right]^{'}\Omega^{-1}(y-\hat{y})=X'\Omega^{-1}(y-X\hat{b})=0\label{eq:GLSScore2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The estimator ends up being a close parallel to the OLS solution for 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula $\hat{b}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y$
+\end_inset 
+
+
+\layout Standard
+
+and the variance of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is:
+\layout Standard
+
+
+\begin_inset Formula $Var(\hat{b})=(X'\Omega^{-1}X)^{-1}$
+\end_inset 
+
+
+\layout Section
+
+Recall 
+\begin_inset Quotes eld
+\end_inset 
+
+robust
+\begin_inset Quotes erd
+\end_inset 
+
+ variance matrix estimates
+\layout Standard
+
+The White-Huber estimate of the standard error is a 
+\begin_inset Quotes eld
+\end_inset 
+
+heteroskedasticity consistent
+\begin_inset Quotes erd
+\end_inset 
+
+ estimate of the standard error of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+.
+ Look at the end of my GLS handout, where the robust estimate is stated
+ in equation 15.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var_{hc0}(b)=(X'X)^{-1}X'\{\widehat{Var[e]}\} X(X'X)^{-1}\label{eq:WhiteRobustVarb1}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+Var_{hc0}(b)=(X'X)^{-1}X'\{ diag[\widehat{e}\cdot\widehat{e}']\} X(X'X)^{-1}\label{eq:WhiteRobustVarb2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The middle part is an 
+\begin_inset Quotes eld
+\end_inset 
+
+empirical estimate
+\begin_inset Quotes erd
+\end_inset 
+
+ of the variance of the error terms.
+\layout Standard
+
+
+\begin_inset Formula \[
+\widehat{Var(e)}=diag[\widehat{e}\cdot\widehat{e}']=\left[\begin{array}{ccccccc}
+\widehat{e}_{1}^{2} &  &  &  &  &  & 0\\
+ & \widehat{e}_{2}^{2}\\
+ &  & \widehat{e}_{3}^{2}\\
+ &  &  & \ddots\\
+\\ &  &  &  &  & \widehat{e}_{N-1}^{2}\\
+0 &  &  &  &  &  & \widehat{e}_{N}^{2}\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+In White's original paper, he assumes there is no autocorrelation, we are
+ looking only at the main diagonal.
+\layout Section
+
+Normally distributed variables, PCSE, and what not
+\layout Standard
+
+There is a separate handout called CXTS-PSCE that details the meaning and
+ importance of the 
+\begin_inset Quotes eld
+\end_inset 
+
+panel corrected standard error
+\begin_inset Quotes erd
+\end_inset 
+
+ as proposed in Beck & Katz (American Political Science Review, 1995)
+\layout Section
+
+Longitudinal with Normal Data: FGLS returns?
+\layout Standard
+
+Suppose we assume the error term satisfies the core assumption of longitudinal
+ data analysis, which is that the observations within clusters are correlated
+ with each other, but are not affected by observations in other clusters.
+ 
+\layout Subsection
+
+As the Song says, 
+\begin_inset Quotes eld
+\end_inset 
+
+If you knew Omega, like I know Omega, Oh, Oh, Oh what a Matrix...
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+The GLS and the Maximum Likelihood approaches lead to the same conclusion.
+ Suppose 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ is as specified in expression 
+\begin_inset LatexCommand \ref{eq:longitudinal2}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Remember we are thinking of 
+\begin_inset Formula $y$
+\end_inset 
+
+ as a 
+\begin_inset Quotes eld
+\end_inset 
+
+stacked column
+\begin_inset Quotes erd
+\end_inset 
+
+ of observations on clusters, 
+\begin_inset Formula $y_{1}$
+\end_inset 
+
+, 
+\begin_inset Formula $y_{2}$
+\end_inset 
+
+, ..., 
+\begin_inset Formula $y_{N}$
+\end_inset 
+
+.
+ And 
+\begin_inset Formula $X$
+\end_inset 
+
+ is a stacked matrix of observations on clusters, and so forth.
+\layout Standard
+
+The Score equations are
+\begin_inset Formula \[
+\frac{\partial lnL}{\partial\hat{b}}=X'\Omega^{-1}(y-X\hat{b})\]
+
+\end_inset 
+
+
+\newline 
+Because we assume the clusters are separable, this can be written as a sum
+ of within-cluster results:
+\layout Standard
+
+
+\begin_inset Formula \[
+=\sum_{i=1}^{N}X_{i}'V_{i}^{-1}(y_{i}-X_{i}\hat{b})=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+Solve that for 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ , figure out an estimator for 
+\begin_inset Formula $Var(\hat{b})$
+\end_inset 
+
+, and all the work is done.
+\layout Standard
+
+
+\begin_inset Formula \[
+\hat{b}=(X'\Omega^{-1}X)^{-1}X'\Omega^{-1}y\]
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=(\sum_{i=1}^{N}X_{i}'V_{i}^{-1}X_{i})^{-1}(\sum_{i=1}^{N}X_{i}'V_{i}^{-1}y_{i})\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \[
+Var(\hat{b})=(X'\Omega^{-1}X)^{-1}=\left(\sum_{i=1}^{N}X_{i}'V_{i}^{-1}X_{i}\right)^{-1}\]
+
+\end_inset 
+
+
+\layout Subsection
+
+FGLS: If you don't know Omega
+\layout Standard
+
+I'm looking at Dobson (2002, p.
+ 200).
+ Repeat:
+\layout Standard
+
+Estimate the parameters 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ 
+\layout Standard
+
+calculate the residuals, 
+\layout Standard
+
+estimate 
+\begin_inset Formula $\hat{\Omega}$
+\end_inset 
+
+
+\layout Standard
+
+recalculate the 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+.
+\layout Standard
+
+There are some standard suggestions for 
+\begin_inset Quotes eld
+\end_inset 
+
+working models
+\begin_inset Quotes erd
+\end_inset 
+
+ of 
+\begin_inset Formula $V_{i}$
+\end_inset 
+
+, such as
+\layout Standard
+
+1.
+ Exchangeable
+\layout Standard
+
+
+\begin_inset Formula \[
+V_{i}=\sigma^{2}\left[\begin{array}{cccccc}
+1 & \rho & \cdots & \rho & \rho & \rho\\
+\rho & 1 &  &  & \rho & \rho\\
+ &  & 1 &  &  & \rho\\
+\vdots &  &  & \ddots\\
+\rho & \rho\\
+\rho & \rho & \rho &  &  & 1\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+2.
+ AR(1)
+\layout Standard
+
+
+\begin_inset Formula \[
+V_{i}=\sigma^{2}\left[\begin{array}{cccccc}
+1 & \rho & \rho^{2} & \cdots & \rho^{T-2} & \rho^{T-1}\\
+\rho & 1 &  &  & \rho^{T-3} & \rho^{T-2}\\
+ &  & 1 &  &  & \rho^{T-3}\\
+\vdots &  &  & \ddots\\
+\rho^{T-2} & \rho^{T-3}\\
+\rho^{T-1} & \rho^{T-2} & \rho^{T-3} &  &  & 1\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Standard
+
+3.
+ Unstructured
+\begin_inset Formula \[
+V_{i}=\sigma^{2}\left[\begin{array}{cccccc}
+1 & \rho_{12} & \cdots & \rho_{1(T-2)} & \rho_{1(T-1)} & \rho_{1T}\\
+\rho_{21} & 1 &  &  & \rho_{2(T-1)} & \rho_{2(T)}\\
+ &  & 1 &  &  & \rho_{3(T)}\\
+\vdots &  &  & \ddots\\
+\rho_{(T-1)1} & \rho_{(T-1)2}\\
+\rho_{T1} & \rho_{(T-1)1} & \rho_{(T-2)1} &  &  & 1\end{array}\right]\]
+
+\end_inset 
+
+
+\layout Subsection
+
+Watch out for those nonrobust standard errors!
+\layout Standard
+
+Liang and Zeger (1986) pioneered the quasi-likelihood/GEE approach to longitudin
+al data analysis.
+ Their robust estimator of the variance/covariance matrix of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ is stated on their p.
+ 15.
+ If one puts the linear model with Normally distributed error term into
+ that framework, then the Z&L expression simplifies radically (because 
+\begin_inset Formula $\theta_{ij}=\eta_{ij}$
+\end_inset 
+
+, so
+\begin_inset Formula $\Delta_{i}=I$
+\end_inset 
+
+).
+ The simplified version for Normally distributed dependent variables with
+ the identity link is stated in Dobson, 2002, p.
+ 200
+\begin_inset Formula \[
+V(\hat{b})=\left(X'\hat{\Omega}X\right)^{-1}\left(\sum_{i=1}^{N}X_{i}'V_{i}^{-1}\left((y_{i}-X_{i}\hat{b})(y_{i}-X_{i}\hat{b})'\right)V_{i}^{-1}X_{i}\right)\left(X'\hat{V}X\right)\]
+
+\end_inset 
+
+
+\layout Section
+
+What if there are 
+\begin_inset Quotes eld
+\end_inset 
+
+random effects
+\begin_inset Quotes erd
+\end_inset 
+
+ at the unit level?
+\layout Standard
+
+Suppose there is some effect at the level of the unit.
+\begin_inset Formula \[
+y_{it}=c+\gamma_{i}+X_{it}b+e_{it}\]
+
+\end_inset 
+
+
+\layout Standard
+
+There are many different names for models that attempt to take this into
+ account.
+ Here are some:
+\layout Itemize
+
+variance components model
+\layout Itemize
+
+mixed model (because some coefficients are random and some are fixed)
+\layout Itemize
+
+hierarchical linear model
+\layout Standard
+
+Suppose that the random effect 
+\begin_inset Formula $\gamma_{i}$
+\end_inset 
+
+ is Normally distributed with variance 
+\begin_inset Formula $\sigma_{\gamma}^{2}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+From an econometric standpoint, this turns into a problem of heteroskedasticity,
+ because the unobserved unit-level error term 
+\begin_inset Formula $\gamma_{i}$
+\end_inset 
+
+ is dissolved into the unobserved individual level error term 
+\begin_inset Formula $e_{it}$
+\end_inset 
+
+.
+ A GLS approach can be used to deal with the heteroskedasticity.
+\layout Standard
+
+There is a separate handout CXTS-ECM that investigates these as error components
+ models.
+\layout Standard
+
+In the longitudinal data analysis literature, such as the Diggle, et al
+ book (which is authoritative), they treat this as a maximum likelilhood
+ problem, one which is thought of as a 'conditional' problem.
+ It is conditional in the sense that we would first like to know the value
+ of 
+\begin_inset Formula $\gamma_{i}$
+\end_inset 
+
+ and then we think of the impact of 
+\begin_inset Formula $X_{it}b$
+\end_inset 
+
+ as 
+\begin_inset Quotes eld
+\end_inset 
+
+above and beyond
+\begin_inset Quotes erd
+\end_inset 
+
+ that random intercept.
+ That's the sense in which our understanding of 
+\begin_inset Formula $y_{it}$
+\end_inset 
+
+ is conditional on 
+\begin_inset Formula $\gamma_{i}$
+\end_inset 
+
+.
+\layout Standard
+
+I'm struck by the wide variety of terminology and approaches to these models.
+\layout Section
+
+What if there are Fixed Effects at the unit level
+\layout Standard
+
+The famous 
+\begin_inset Quotes eld
+\end_inset 
+
+least squares dummy variables
+\begin_inset Quotes erd
+\end_inset 
+
+ model.
+ Blech!
+\layout Section
+
+What if the dependent variable is not normal, or the link function is not
+ the identity function, or both?
+\layout Standard
+
+Recall the GLM.
+ It deals with nonNormal variables and wild link functions.
+\layout Standard
+
+But it does not directly translate to deal with a longitudinal data exercise.
+\layout Standard
+
+Part of the problem is that, up to this point, our discussion of the longitudina
+l model has followed the old econometric tradition of talking about the
+ distribution of an 
+\begin_inset Quotes eld
+\end_inset 
+
+error term.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+In most GLM applications, there is no such thing as an 
+\begin_inset Quotes eld
+\end_inset 
+
+error term.
+\begin_inset Quotes erd
+\end_inset 
+
+ In the GLM, we talk directly about 
+\begin_inset Formula $y$
+\end_inset 
+
+ being distributed as Poisson or Gamma.
+\layout Standard
+
+Since the GLM does not have an error term, it is not obvious where one should
+ fit in intercorrelated errors!
+\layout Standard
+
+Liang and Zeger (1986) proposed a modeling strategy that they called GEE,
+ Generalized Estimating Equations.
+ GEE is an extension of the 
+\begin_inset Quotes eld
+\end_inset 
+
+quasi-likelihood
+\begin_inset Quotes erd
+\end_inset 
+
+ approach to estimation.
+ Suppose for each cluster there is a covariance matrix for the observed
+ values of 
+\begin_inset Formula $y$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+I'm writing the GEE details down in a separate handout, but I want to point
+ out the continuity with the GLS model.
+ 
+\layout Standard
+
+The GEE is defined as the solution to an equation that looks like a hybrid
+ between the Score equation from the Quasi-likelihood model and the Score
+ from the GLS in 
+\begin_inset LatexCommand \ref{eq:GLSScore1}
+
+\end_inset 
+
+.
+ Suppose the estimated mean vector is 
+\begin_inset Formula $\hat{\mu}$
+\end_inset 
+
+.
+\begin_inset Formula \[
+\left[\frac{\partial\hat{\mu}}{\partial\hat{b}}\right]^{'}\Omega^{-1}(y-\hat{\mu})=0\]
+
+\end_inset 
+
+
+\newline 
+That's just like the GLS score equation, because it has a weight matrix
+ 
+\begin_inset Formula $\Omega$
+\end_inset 
+
+ in the middle.
+ But it is different from GLS 
+\begin_inset Formula $\left[\frac{\partial\hat{\mu}}{\partial\hat{b}}\right]^{'}$
+\end_inset 
+
+ does not resolve to a simple thing like 
+\begin_inset Formula $X'$
+\end_inset 
+
+.
+\layout Standard
+
+And its different from the GLM, because it has 
+\begin_inset Formula $\Omega^{-1}$
+\end_inset 
+
+.
+ 
+\the_end

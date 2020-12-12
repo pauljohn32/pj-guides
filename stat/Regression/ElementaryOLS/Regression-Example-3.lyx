@@ -1,0 +1,4067 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% For Sweavel
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+
+\mode<presentation>
+
+\usetheme{Antibes}
+
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots3", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots3/t,split=T,ae=F,height=5,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=90, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(4.1, 4.1, 1, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+##pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+##par(mar=pjmar, ps=11)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=11)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Elementary Regression Example
+\end_layout
+
+\begin_layout Itemize
+This one focuses on the use of a dichotmous predictor, public or private
+ schools
+\end_layout
+
+\begin_layout Itemize
+Along the way, it runs into some data importation/coding problems.
+\end_layout
+
+\begin_layout Itemize
+You can see the README here, along with the data
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/DataSets/USNewsCollege
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+US News College Ratings Data
+\end_layout
+
+\begin_layout BeginFrame
+Get Data For Regression
+\end_layout
+
+\begin_layout Standard
+This data is provided as 
+\begin_inset Quotes eld
+\end_inset
+
+raw
+\begin_inset Quotes erd
+\end_inset
+
+ numbers, with no variable names.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (file.exists("USNewsCollege.rds")){
+\end_layout
+
+\begin_layout Plain Layout
+
+  dat <- readRDS("USNewsCollege.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+}else{
+\end_layout
+
+\begin_layout Plain Layout
+
+ dat <- read.table(url("http://pj.freefaculty.org/guides/stat/DataSets/USNewsColleg
+e/USNewsCollege.csv"), header = FALSE, sep=",")
+\end_layout
+
+\begin_layout Plain Layout
+
+mynames <- c("fice", "name", "state", "private", "avemath", "aveverb", "avecomb"
+, "aveact", "fstmath", "trdmath", "fstverb", "trdverb", "fstact", "trdact",
+ "numapps", "numacc", "numenr", "pctten", "pctquart", "numfull", "numpart",
+ "instate", "outstate", "rmbrdcst", "roomcst", "brdcst", "addfees", "bookcst",
+ "prsnl","pctphd", "pctterm", "stdtofac", "pctdonat", "instcst", "gradrate")
+\end_layout
+
+\begin_layout Plain Layout
+
+  colnames(dat) <- mynames
+\end_layout
+
+\begin_layout Plain Layout
+
+  saveRDS(dat, file = "USNewsCollege.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+README says...
+\end_layout
+
+\begin_layout Quotation
+Data are from the 1995 U.S.
+ News report on American colleges and universities.
+ They include demographic information on tuition, room & board costs, SAT
+ or ACT scores, application/acceptance rates, student/faculty ratio, graduation
+ rate, and more.
+ The dataset is used for the 1995 Data Analysis Exposition, sponsored by
+ the Statistical Graphics Section of the American Statistical Association.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What Do We Have?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn10, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+str(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{So Many Variables, so Little Time}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What does summarize report?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+tiny}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn20, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+summarize(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Create a factor variable "schtype"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Recode private from numeric 1-2 to a new factor variable called 
+\begin_inset Quotes eld
+\end_inset
+
+schtype
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn21, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$schtype <- factor(dat$private, levels = c("1","2"), labels = c("public","pri
+vate"))
+\end_layout
+
+\begin_layout Plain Layout
+
+## Proofread
+\end_layout
+
+\begin_layout Plain Layout
+
+table(dat$schtype, dat$private, exclude = NULL)
+\end_layout
+
+\begin_layout Plain Layout
+
+levels(dat$schtype)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Keep the numeric variables gradrate, instcst, stdtofac, aveact, instate,
+ outstate
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn22, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[ , c("gradrate", "instcst", "stdtofac", "aveact", "instate",
+ "outstate", "schtype")]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Subset Public and Private For Comparison}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn25, fig=T, include=F, echo=T, width=7, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol = c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(datpublic$gradrate, prob = TRUE, breaks = 50, main = "Public Graduation
+ Rates", xlab = "Graduation Rates")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(datprivate$gradrate, prob = TRUE, breaks = 50, main = "Private Graduate
+ Rates", xlab = "Graduation Rates")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-usn25.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Subset Public and Private For Comparison}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+How did he do that?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn25.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note levels(dat$schtype)[1] == 
+\begin_inset Quotes eld
+\end_inset
+
+public
+\begin_inset Quotes erd
+\end_inset
+
+.
+ I prefer to choose by levels(dat$schtype)[1], rather than 
+\begin_inset Quotes eld
+\end_inset
+
+private
+\begin_inset Quotes erd
+\end_inset
+
+, seems less typo-prone
+\end_layout
+
+\begin_layout Itemize
+I explicitly create subsets, and named separately for clarity.
+ You'll find a lot of different ways to do this
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lapply(levels(dat$schtype), function(x) hist(dat$gradrate[dat$schtype ==
+ x], prob = TRUE, breaks = 50, main= paste(x, "Graduation Rates"), xlab
+ = "Graduation Rates"))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+hist(dat[dat$schtype == levels(dat$schtype)[1], "gradrate"], prob = TRUE,
+ breaks = 50, main="Public Graduation Rates", xlab = "Graduation Rates")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Should we correct the data for private schools?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Obvious data entry error: Some graduation rates are over 100.
+\end_layout
+
+\begin_layout Standard
+Lets trim them out of the data, and re-create the public/private subsets
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn26, fig=T, include=F, echo=T, width=7, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[ dat$gradrate <= 100, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(datpublic$gradrate, prob = TRUE, breaks = 50, main = "Public Graduation
+ Rates")
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(datprivate$gradrate, prob = TRUE, breaks = 50, main = "Private Graduate
+ Rates")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn26.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-usn26.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Grab Some Summary Stats I Might Need Later}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+summary(dat) would be a nice start, but the output hard to manage.
+ So Build own summary:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn30, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summarize(datpublic)
+\end_layout
+
+\begin_layout Plain Layout
+
+summarize(datprivate)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Describe the variable schtype}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn31, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(t1 <- table(dat$schtype))
+\end_layout
+
+\begin_layout Plain Layout
+
+prop.table(t1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Conduct T-test on Graduation Rate Difference}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The default t.test in R will use 
+\begin_inset Quotes eld
+\end_inset
+
+Welch corrected
+\begin_inset Quotes erd
+\end_inset
+
+ estimate of the standard error
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn35a, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+t.test(gradrate ~ schtype, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But it used to assume the variances in the 2 groups are equal
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn35b, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+t.test(gradrate ~ schtype, data = dat, var.equal = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Keep an eye on this latter set of estimates, compare to the lm output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regress Graduate Rates on the Dichotomy "schtype"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm (gradrate ~ schtype, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks, containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Check "model.matrix" To See What R Did to "schtype"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+head(model.matrix(mod1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=TRUE, showAIC=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+Estimated Intercept
+\end_layout
+
+\begin_layout Itemize
+Estimated Slope
+\end_layout
+
+\begin_layout Itemize
+Standard Error of Intercept Estimate (estimated standard deviation of intercept
+ estimator)
+\end_layout
+
+\begin_layout Itemize
+Standard Error of Slope Estimate (estimated standard deviation of slope
+ estimator)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Hypothesis Test for Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Theory: 
+\begin_inset Formula $gradrate_{i}=c_{0}+c_{1}"contrast\, for\, private"+u_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $c_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ are real-valued constants, 
+\begin_inset Formula $E[u_{i}]=0$
+\end_inset
+
+, 
+\begin_inset Formula $Var[u_{i}]=E[u_{i}^{2}]=\sigma_{u}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The Null Hypothesis: 
+\begin_inset Formula $H_{0}:c_{1}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ is approximately Normal, So create T test:
+\end_layout
+
+\begin_layout Itemize
+The critical value of t is:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> qt( c(0.025, 0.975), df=90)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] -1.986675  1.986675
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Conclusion: 
+\begin_inset Quotes eld
+\end_inset
+
+The estimate 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ is statistically significantly different from 0.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence Intervals for Intercept and Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+confint(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Supposing the model's theory is correct, we believe 
+\end_layout
+
+\begin_layout Itemize
+the estimated slope 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ would be between 0.0079 and 0.125 in 95% of repeated samples from same process
+\end_layout
+
+\begin_layout Itemize
+the probability that the true slope 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ is in that range is 0.95.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Draw Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can force R to plot schtype as if it were a numeric variable
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn60, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$schnum <- as.numeric(dat$schtype) - 1
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ schnum, data = dat, xlab = "Private or Public?", ylab =
+ "Graduation Rate")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn60.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But is that a meaningful line?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn60.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The termplot Draws Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn65, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+termplot(mod1, terms = c("schtype"), partial = TRUE, se = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn65.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn65.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Perhaps a Box Plot is a Better Way to Look at this}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+plot notices 
+\begin_inset Quotes eld
+\end_inset
+
+schtype
+\begin_inset Quotes erd
+\end_inset
+
+ is a factor and it creates a boxplot.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn70, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab =
+ "Graduation Rate")
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But 
+\begin_inset Quotes eld
+\end_inset
+
+abline(mod1)
+\begin_inset Quotes erd
+\end_inset
+
+ draws a line in the wrong place
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn70.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn70.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A word about Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With only two 
+\begin_inset Quotes eld
+\end_inset
+
+levels
+\begin_inset Quotes erd
+\end_inset
+
+ of private, there are only two unique predicted values.
+ The predict function will run, and apply to each row of data, but it just
+ generates the same thing over and over.
+\end_layout
+
+\begin_layout Standard
+Run this to see whats going on.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+bp1 <- predict(mod1, interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+head(bp1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A Word about Predicted Values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So we could just create a new small data set and get predictions for it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn71, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- data.frame(schtype = factor(c("public", "private"), levels = c("public",
+ "private")))
+\end_layout
+
+\begin_layout Plain Layout
+
+gradratehat <- predict(mod1, interval = "conf", newdata = newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf <- cbind(gradratehat, newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+newdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn71.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But The Predicted Value Lines Still Look Stupid, IMHO}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn75, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#newdf <- data.frame(schtype = levels(dat$schtype))
+\end_layout
+
+\begin_layout Plain Layout
+
+#newdf$schtype <- relevel(newdf$schtype, "public") ###WOW:  problem required
+ this
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab =
+ "Graduation Rate", ylim = range(dat$gradrate, na.rm = TRUE))
+\end_layout
+
+\begin_layout Plain Layout
+
+gradratehat <- predict(mod1, interval="conf", newdata=newdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(gradratehat[ , 1] ~ schtype, data = newdf, col = "black", lty = 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(gradratehat[ , 2] ~ schtype, data = newdf, col = "red", lty = 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(gradratehat[ , 3] ~ schtype, data = newdf, col = "red", lty = 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn75.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn75.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Maybe A boxplot with the Predicted Values Marked In?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn80, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ schtype, data = dat, xlab = "Private or Public?", ylab =
+ "Graduation Rate", ylim = range(dat$gradrate, na.rm = TRUE)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+points(gradratehat[ , 1] ~ as.numeric(schtype), data = newdf, pch = "x",
+ col = "red", cex = 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+arrows(x0 = as.numeric(newdf$schtype), y0 = gradratehat[ , 2],x1=as.numeric(newdf$
+schtype),  y1 = gradratehat[ , 3], col = "green", angle = 90, code = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+text( c(30,25) ~ c( 1.5, 1.5), pos = 1, adj = 2, label = c("x: Predicted Value",
+ "Green brackets 95% CI"), cex = 0.8, col = c("red", "green"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn80.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Boxes center on the median, not the mean (predicted values), thus a little
+ mismatch.
+\end_layout
+
+\begin_layout Standard
+This whole exercise is just making me feel stupider and stupider
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn80.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{That Considered Just One Categorical Predictor}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This lecture is about one-predictor regressions, so I can't get too fancy
+\end_layout
+
+\begin_layout Itemize
+But I'd like to explore the idea that we might find a different relationship
+ between 2 variables when we compare the public and private school datasets
+\end_layout
+
+\begin_layout Itemize
+When we later turn to multiple regression, we'll see different==better ways
+ to do this, but this is not a bad start.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Consider Instructional Spending}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn100, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ instcst, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn100.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn100.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Consider Instructional Spending as a Predictor of gradrate}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn110, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- lm(gradrate ~ instcst, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(mod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn110.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Problem 1 Obvious}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn115, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(mod2, plotx = "instcst", interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn115.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn115.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{A Few Big Spenders Just Don't Fit}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In a real study, I wouldn't throw out those cases without a lot more checking
+\end_layout
+
+\begin_layout Itemize
+I'd consider making a model that 
+\begin_inset Quotes eld
+\end_inset
+
+bends
+\begin_inset Quotes erd
+\end_inset
+
+ through the data
+\end_layout
+
+\begin_layout Itemize
+Right now, however, lets just focus on the schools for which the data has
+ instcst < 25000.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn130, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod3 <- lm(gradrate ~ instcst, data = dat, subset = instcst < 25000)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(mod3, plotx = "instcst", interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn130.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fitted when Instructional Spending < 
+\backslash
+$25,000}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn130.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod3, tight = TRUE, showAIC = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+Identify
+\end_layout
+
+\begin_layout Itemize
+Estimated Intercept & Slope
+\end_layout
+
+\begin_layout Itemize
+Estimated Standard Errors
+\end_layout
+
+\begin_layout Itemize
+Estimate of error term's standard deviation)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Rescale instcst to 1000s of dollars}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Because the instcst variable is in dollars, the coefficients are very small
+\end_layout
+
+\begin_layout Itemize
+To make them more readable, lets rescale instcst
+\end_layout
+
+\begin_layout Itemize
+From now on, instcstP1000 = instcst / 1000
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fitted Model for Instructional Spending}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn160, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$instcstP1000 <- dat$instcst/1000
+\end_layout
+
+\begin_layout Plain Layout
+
+mod3 <- lm(gradrate ~ instcstP1000, data = dat, subset = instcstP1000 <
+ 25)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn160.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Results with instcstP1000}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+3cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn161, echo=F, include = F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod3, tight=TRUE, showAIC=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots3/t-usn161}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn162, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(mod3, plotx="instcstP1000", interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=7cm]{plots3/t-usn162.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Hypothesis Test for Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Theory: 
+\begin_inset Formula $gradrate_{i}=\beta_{0}+\beta_{1}instcst+e_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $\beta_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+ are real-valued constants, 
+\begin_inset Formula $E[e_{i}]=0$
+\end_inset
+
+, 
+\begin_inset Formula $Var[e_{i}]=E[e_{i}^{2}]=\sigma_{e}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The Null Hypothesis: 
+\begin_inset Formula $H_{0}:\beta_{1}=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+ is approximately Normal, So create T test:
+\end_layout
+
+\begin_layout Itemize
+The critical value of t is:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> qt( c(0.025, 0.975), df=90)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] -1.986675  1.986675
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Conclusion: 
+\begin_inset Quotes eld
+\end_inset
+
+The estimate 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+ is statistically significantly different from 0.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence Intervals for Intercept and Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+confint(mod3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Supposing the model's theory is correct, we believe 
+\end_layout
+
+\begin_layout Itemize
+We believe the true value of 
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+ between 
+\begin_inset Quotes eld
+\end_inset
+
+lwr
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+upr
+\begin_inset Quotes erd
+\end_inset
+
+ with probability 0.95
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Should we Subset the Data?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Previous estimate pooled Public and Private Institutions
+\end_layout
+
+\begin_layout Itemize
+If the relationships are different for the two types of schools, we have
+ biased estimates of the effects
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Confidence Intervals for Intercept and Slope}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<subset10, echo=T, include=F, fig=T, height = 5, width = 9>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- dat[dat$instcstP1000 < 25, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+datpublic  <- dat[dat$schtype %in% levels(dat$schtype)[1], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+datprivate <- dat[dat$schtype %in% levels(dat$schtype)[2], ]
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ instcstP1000, data = datpublic, main = "Public", xlab =
+ "Instructional Cost/1000", ylab = "Graduation Rate")
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ instcstP1000, data = datprivate, main = "Private", xlab
+ = "Instructional Cost/1000", ylab = "Graduation Rate")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots3/t-subset10.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Superimpose and Color Code the 2 Types}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn150, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ instcstP1000, data = dat, col = schtype, xlab = "Instructional
+ Cost/1000", ylab = "Graduation Rate", pch = c("o","+")[dat$schtype])
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend = levels(dat$schtype), col = c(1,2), pch = c("o","+"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn150.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Fit separate regressions, and superimpose the predicted values}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn170, fig=T, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(gradrate ~ instcstP1000, data = dat, subset = instcstP1000 < 25, pch
+ = c("o","+")[schtype], col = schtype)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3byPrivate <- by(dat, dat$schtype, function(subdat){m1 <- lm(gradrate ~
+ instcstP1000, data = subdat)})
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m3byPrivate[[1]], col = 1); abline(m3byPrivate[[2]], col = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend = levels(dat$schtype), col = c(1,2),  pch = c("o",
+ "+"), lty=c(1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=8cm]{plots3/t-usn170.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Look at the Fits, Side by Side}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<usn175, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("Public" = m3byPrivate[[1]], "Private" =  m3byPrivate[[2]]),
+  tight=TRUE, showAIC=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Look forward to Multiple Regression}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This is not satisfactory.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+We have no rigorous way to say the intercept and slope for the 2 school
+ types are 
+\begin_inset Quotes eld
+\end_inset
+
+statistically significantly different
+\begin_inset Quotes erd
+\end_inset
+
+ from each other.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+But don't you wish you could say 
+\begin_inset Quotes eld
+\end_inset
+
+the slopes are the same
+\begin_inset Quotes erd
+\end_inset
+
+, but 
+\begin_inset Quotes eld
+\end_inset
+
+the intercepts are different
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Itemize
+Those comparisons will have to wait, because they require the 
+\begin_inset Quotes eld
+\end_inset
+
+multiple
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset Quotes eld
+\end_inset
+
+multiple regression
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

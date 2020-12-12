@@ -1,0 +1,5346 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{20pt}
+
+\usepackage{latexsym}
+\usepackage{graphicx}
+
+\usepackage{psfig}
+\usepackage{color}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize 12
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 1
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+GLM (Generalized Linear Model) #1 (version 9)
+\layout Author
+
+Paul Johnson
+\layout Standard
+
+This handout describes the basics of estimating the Generalized Linear Model:
+ the exponential distribution, familiar examples, the maximum likelihood
+ estimation process, and iterative re-weighted least squares.
+ The first version of this handout was prepared as lecture notes on Jeff
+ Gill's handy book, 
+\emph on 
+Generalized Linear Models: A Unified Approach
+\emph default 
+ (Sage, 2001).
+ In 2004 and 2006, I revised in light of 
+\layout Itemize
+
+Myers, Montgomery and Vining, Generalized Linear Models with 
+\emph on 
+Applications in Engineering and the Sciences 
+\emph default 
+(Wiley, 2002), 
+\layout Itemize
+
+Annette J.
+ Dobson, 
+\emph on 
+An Introduction to Generalized Linear Models, 2ed
+\emph default 
+, (Chapman and Hall, 2002)
+\layout Itemize
+
+Wm.
+ Venables and Brian Ripley, 
+\emph on 
+Modern Applied Statistics with S, 4ed (2004)
+\emph default 
+ 
+\layout Itemize
+
+P.
+ McCullagh and J.A.
+ Nelder, 
+\emph on 
+Generalized Linear Models, 2ed 
+\emph default 
+(Chapman & Hall, 1989).
+\layout Itemize
+
+D.
+ Firth, 
+\begin_inset Quotes eld
+\end_inset 
+
+Generalized Linear Models,
+\begin_inset Quotes erd
+\end_inset 
+
+ in D.V.
+ Hinkley, N.
+ Reid and E.J.
+ Snell, Eds, 
+\emph on 
+Statistical Theory and Modeling
+\emph default 
+ (Chapman and Hall, 1991).
+\layout Standard
+
+This version has some things that remain only to explain (to myself and
+ others) the approach in Gill, but most topics are now presented with a
+ more general strategy.
+ 
+\layout Standard
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Motivating idea.
+\layout Subsection
+
+Consider anecdotes
+\layout Subsubsection
+
+linear model
+\layout Standard
+
+We already know 
+\begin_inset Formula \begin{equation}
+y_{i}=X_{i}b+e_{i}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+where 
+\begin_inset Formula $X_{i}$
+\end_inset 
+
+ is a row vector of observations and b is a column vector of coefficients.
+ The error term is assumed Normal with a mean of 0 and variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset 
+
+.
+\layout Standard
+
+Now think of it a different way.
+ Suppose that instead of predicting 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, we predict the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+ So put the 
+\begin_inset Quotes eld
+\end_inset 
+
+linear predictor
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ into the Normal distribution where you ordinarily expect to find the mean:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{i}\sim N(X_{i}b,\sigma^{2})\label{eq:OLSNormal}\end{equation}
+
+\end_inset 
+
+
+\newline 
+In the GLM literature, they often tire of writing 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ or such, and they start using (for 
+\begin_inset Quotes eld
+\end_inset 
+
+shorthand
+\begin_inset Quotes erd
+\end_inset 
+
+) the Greek letter 
+\begin_inset Quotes eld
+\end_inset 
+
+eta.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+\eta_{i}=X_{i}b\label{eq:eta}\end{equation}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+logit/probit model
+\layout Standard
+
+We already studied logit and probit models.
+ We know that we can think of the 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ part, the systematic part, as the input into a probability process that
+ determines whether the observation is 1 or 0.
+ We might write
+\begin_inset Formula \begin{equation}
+y_{i}\sim B(\Phi(X_{i}b))\end{equation}
+
+\end_inset 
+
+ where 
+\begin_inset Formula $\Phi$
+\end_inset 
+
+ stands for a cumulative distribution of some probability model, such as
+ a cumulative Normal or cumulative Logistic model, and 
+\begin_inset Formula $B$
+\end_inset 
+
+ is some stupid notation I just threw in to denote a 
+\begin_inset Quotes eld
+\end_inset 
+
+binary
+\begin_inset Quotes erd
+\end_inset 
+
+ process, such as a Bernoulli distribution (or a Binomial distribution).
+ Use the Greek letter 
+\begin_inset Formula $\pi_{i}$
+\end_inset 
+
+ to represent the probability that 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ equals 1, 
+\begin_inset Formula $\pi_{i}=\Phi(X_{i}b)$
+\end_inset 
+
+.
+ For the Logistic model, 
+\begin_inset Formula \begin{equation}
+\pi_{i}=\frac{1}{1+exp(-X_{i}b)}=\frac{exp(X_{i}b)}{1+e(X_{i}b)}\end{equation}
+
+\end_inset 
+
+
+\newline 
+which is the same thing as:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+ln\left[\frac{\pi_{i}}{1-\pi_{i}}\right]=X_{i}b\end{equation}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Poisson
+\layout Standard
+
+We also now know about the Poisson model, where we can calculate the impact
+ of 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ on the probability of a certain outcome according to the Poisson model.
+ Check back on my Poisson notes if you can't remember, but it was basically
+ the same thing, where we said we are taking the impact of the input to
+ be 
+\begin_inset Formula $exp(X_{i}b),$
+\end_inset 
+
+ or 
+\begin_inset Formula $e^{X_{i}b},$
+\end_inset 
+
+ and then we assert:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+y_{i}\sim Poisson(e^{X_{i}b})\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+The exponential family unites these examples
+\layout Standard
+
+In these examples, there is a general pattern.
+ We want to predict something about y, and we use 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ to predict it.
+ We estimate the b's and try to interpret them.
+ How far can a person stretch this metaphor?
+\layout Standard
+
+According to Firth (1991), Nelder and Wedderburn (1972) were the first to
+ identify a general scheme, the Generalized Linear Model (GLM).
+ The GLM ties together a bunch of modeling anecdotes.
+\layout Subsection
+
+Simplest Exponential Family: one parameter 
+\layout Standard
+
+The big idea of the GLM is that 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+is drawn from one of the many members of the 
+\begin_inset Quotes eld
+\end_inset 
+
+exponential family of distributions.
+\begin_inset Quotes erd
+\end_inset 
+
+ In that family, one finds the Normal, Poisson, Negative Binomial, exponential,
+ extreme value distribution, and many others.
+ 
+\layout Standard
+
+Depending on which book you read, this is described either in a simple,
+ medium, or really general form.
+ The simple form is this (as in Dobson, 2000, p.
+ 44).
+ Note the property that the effects of 
+\begin_inset Formula $y$
+\end_inset 
+
+ and 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ are very
+\shape smallcaps 
+ SEPARABLE
+\shape default 
+:
+\begin_inset Formula \begin{equation}
+prob(y_{i}|\theta_{i})=f(y_{i}|\theta_{i})=s(\theta_{i})\cdot t(y_{i})\cdot exp\{ a(y_{i})\cdot b(\theta_{i})\}\label{eq:Dobson1}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Dobson says that if 
+\begin_inset Formula $a(y)=y$
+\end_inset 
+
+, then we have the so-called 
+\series bold 
+canonical form
+\series default 
+ (canonical means 
+\begin_inset Quotes eld
+\end_inset 
+
+standard
+\begin_inset Quotes erd
+\end_inset 
+
+):
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+prob(y_{i}|\theta_{i})=f(y_{i}|\theta_{i})=s(\theta_{i})\cdot t(y_{i})\cdot exp\{ y_{i}\cdot b(\theta_{i})\}\label{eq:canonical1}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Note we've got 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ (the thing we observe), and an unknown parameter for each observation,
+ 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+.
+\layout Description
+
+
+\begin_inset Formula $b(\theta)$
+\end_inset 
+
+ in Dobson, the function 
+\begin_inset Formula $b(\theta)$
+\end_inset 
+
+ is called the 
+\begin_inset Quotes eld
+\end_inset 
+
+natural parameter
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\layout Description
+
+
+\begin_inset Formula $\theta$
+\end_inset 
+
+ In other treatments, they assume 
+\begin_inset Formula $b(\theta)=\theta$
+\end_inset 
+
+, so 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ itself is the 
+\begin_inset Quotes eld
+\end_inset 
+
+natural parameter
+\begin_inset Quotes erd
+\end_inset 
+
+ (see comments below).
+\layout Description
+
+
+\begin_inset Formula $s(\theta)$
+\end_inset 
+
+ a function that depends on 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ but NOT on 
+\begin_inset Formula $y$
+\end_inset 
+
+
+\layout Description
+
+
+\begin_inset Formula $t(y)$
+\end_inset 
+
+ a function that depends on 
+\begin_inset Formula $y$
+\end_inset 
+
+ but NOT on 
+\begin_inset Formula $\theta$
+\end_inset 
+
+.
+\layout Standard
+
+This is the simplest representation.
+ 
+\layout Standard
+
+Following Dobson, rearrange like so:
+\begin_inset Formula \begin{equation}
+f(y_{i}|\theta_{i})=exp\{ y\cdot b(\theta_{i})+ln[s(\theta_{i})]+ln[t(y_{i})]\}\label{eq:Dobson2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+And re-label again:
+\begin_inset Formula \begin{equation}
+f(y_{i}|\theta_{i})=exp\{ y_{i}\cdot b(\theta_{i})-c(\theta_{i})+d(y_{i})\}\label{eq:Dobson4}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Most treatments assume that 
+\begin_inset Formula $b(\theta_{i})=\theta_{i}$
+\end_inset 
+
+.
+ So one finds
+\begin_inset Formula \begin{equation}
+f(y_{i}|\theta_{i})=exp\{ y\cdot\theta_{i}-c(\theta_{i})+d(y_{i})\label{eq:FinalSimple}\end{equation}
+
+\end_inset 
+
+ 
+\layout Standard
+
+Many books relabel of these functions 
+\begin_inset Formula $b(\theta)$
+\end_inset 
+
+, 
+\begin_inset Formula $c(\theta)$
+\end_inset 
+
+, and 
+\begin_inset Formula $d(y_{i})$
+\end_inset 
+
+.
+ It is a serious source of confusion.
+\layout Subsection
+
+More General Exponential Family: introducing a dispersion parameter
+\layout Standard
+
+We want to include a parameter similar to the 
+\begin_inset Quotes eld
+\end_inset 
+
+standard deviation,
+\begin_inset Quotes erd
+\end_inset 
+
+ an indicator of 
+\begin_inset Quotes eld
+\end_inset 
+
+dispersion
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+scale
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Consider this reformulation of the exponential family (as in Firth (1991)):
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i})=exp\left\{ \frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\right\} \label{eq:expfamily1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The new element here is 
+\begin_inset Formula $\phi_{i}$
+\end_inset 
+
+ (the Greek letter 
+\begin_inset Quotes eld
+\end_inset 
+
+phi
+\begin_inset Quotes erd
+\end_inset 
+
+, pronounced 
+\begin_inset Quotes eld
+\end_inset 
+
+fee
+\begin_inset Quotes erd
+\end_inset 
+
+).
+ That is a 
+\begin_inset Quotes eld
+\end_inset 
+
+dispersion parameter.
+\begin_inset Quotes erd
+\end_inset 
+
+ If 
+\begin_inset Formula $\phi_{i}=1$
+\end_inset 
+
+, then this formula reduces to the canonical form seen earlier in 
+\begin_inset LatexCommand \ref{eq:canonical1}
+
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The critical thing, once again, is that the natural parameter 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ and the observation 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ appear in a particular way.
+\layout Section
+
+GLM: the linkage between 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ and 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+
+\layout Standard
+
+In all these models, one writes that the observed 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ depends on a probability process, and the probability process takes an
+ argument 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ which (through a chain of reasoning) reflects the input 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Terms
+\layout Standard
+
+In order to qualify as a generalized linear model, the probability process
+ has to have a certain kind of formula.
+ 
+\layout Standard
+
+Most sources on the GLM use this set of symbols:
+\layout Description
+
+
+\begin_inset Formula $\eta_{i}=X_{i}b$
+\end_inset 
+
+ 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+ is the 
+\begin_inset Quotes eld
+\end_inset 
+
+linear predictor
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Description
+
+
+\begin_inset Formula $\mu_{i}=E(y_{i})$
+\end_inset 
+
+ the expected value (or mean) of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+\layout Description
+
+
+\begin_inset Formula $\eta_{i}=g(\mu_{i})$
+\end_inset 
+
+ the link function, 
+\begin_inset Formula $g()$
+\end_inset 
+
+, translates between the linear predictor and the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+ It is assumed to be monotonically increasing in 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+\layout Description
+
+
+\begin_inset Formula $g^{-1}(\eta_{i})=\mu_{i}$
+\end_inset 
+
+ the inverse link function, 
+\begin_inset Formula $g^{-1}()$
+\end_inset 
+
+, gives the mean as a function of the linear predictor
+\layout Standard
+
+The only difficult problem is to connect these ideas to the observed 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Think of a sequence
+\begin_inset LatexCommand \label{sub:sequenceEMTF}
+
+\end_inset 
+
+
+\layout Itemize
+
+
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $X_{i}$
+\end_inset 
+
+ and 
+\begin_inset Formula $b$
+\end_inset 
+
+ (think of that as a function also called 
+\begin_inset Formula $\eta_{i}(X_{i},b)$
+\end_inset 
+
+)
+\layout Itemize
+
+
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+ (via the inverse of the link function, 
+\begin_inset Formula $\partial\mu_{i}/\partial\eta_{i}=g^{-1}(\eta_{i})$
+\end_inset 
+
+
+\layout Itemize
+
+
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ (via some linkage that is distribution specific; but below I will call
+ it 
+\begin_inset Formula $q()$
+\end_inset 
+
+)
+\layout Itemize
+
+
+\begin_inset Formula $f(y_{i}|\theta_{i})$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+
+\layout Standard
+
+In this sequence, the only 
+\begin_inset Quotes eld
+\end_inset 
+
+free choice
+\begin_inset Quotes erd
+\end_inset 
+
+ for the modeler is 
+\begin_inset Formula $g()$
+\end_inset 
+
+.
+ The others are specified by the assumption of linearity in 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ and the mathematical formula of the probability distribution.
+\layout Section
+
+About the Canonical link
+\layout Standard
+
+Recall that the link translates between 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ (the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+) and the linear predictor.
+\begin_inset Formula \begin{equation}
+\eta_{i}=g(\mu_{i})\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+The canonical link is chosen so that 
+\begin_inset Formula $\theta_{i}=\eta_{i}$
+\end_inset 
+
+.
+\layout Standard
+
+Use of the canonical link simplifies the maximum likelihood analysis (by
+ which we find estimates of the b's).
+ 
+\layout Standard
+
+If you consider the idea of the sequence that translates 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ into 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ as described in section 
+\begin_inset LatexCommand \ref{sub:sequenceEMTF}
+
+\end_inset 
+
+, notice that a very significant simplifying benefit is obtained by the
+ canonical link.
+ 
+\layout Standard
+
+But the simplification is costly.
+ If we are to end up with 
+\begin_inset Formula $\theta_{i}=\eta_{i}$
+\end_inset 
+
+, that means there is a major restriction on the selection of the link function,
+ because whatever happens in 
+\begin_inset Formula $g^{-1}(\eta_{i})$
+\end_inset 
+
+ to translate 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+ into 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ has to be exactly undone by the  translation from 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ into 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+McCullagh and Nelder state that the canonical link should not be used if
+ it contradicts the substantive ideas that motivate a research project.
+ In their experience, however, the canonical link is often substantively
+ acceptable.
+\layout Subsection
+
+Declare 
+\begin_inset Formula $\theta_{i}=q(\mu_{i}).$
+\end_inset 
+
+
+\begin_inset LatexCommand \label{sub:thetaEqQ}
+
+\end_inset 
+
+
+\layout Standard
+
+I will invent a piece of terminology now! Henceforth, this is Johnson's
+ 
+\begin_inset Formula $q$
+\end_inset 
+
+.
+ (Only kidding.
+ You can just call it 
+\begin_inset Formula $q$
+\end_inset 
+
+.) Consider  
+\begin_inset Formula $\theta_{i}=q(\mu_{i})$
+\end_inset 
+
+.
+ (I chose the letter 
+\begin_inset Formula $q$
+\end_inset 
+
+ because, as far as I know, it is not used for anything important.) 
+\layout Standard
+
+The function 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+ is not something we choose in the modeling process.
+ Rather, it is a feature dictated by the probability distribution.
+\layout Standard
+
+If we had the canonical link, 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+ would have the exact opposite effect of 
+\begin_inset Formula $g^{-1}(\eta_{i})$
+\end_inset 
+
+.
+ That is to say, the link 
+\begin_inset Formula $g()$
+\end_inset 
+
+ must be chosen so that:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\eta_{i}=q(g^{-1}(\eta_{i}))\label{eq:qginverse}\end{equation}
+
+\end_inset 
+
+
+\newline 
+One can reach that conclusion by taking the following steps.
+\layout Itemize
+
+By definition, 
+\begin_inset Formula $\mu_{i}=g^{-1}(\eta_{i})$
+\end_inset 
+
+, which is the same as saying 
+\begin_inset Formula $\eta_{i}=g(\mu_{i})$
+\end_inset 
+
+.
+\layout Itemize
+
+The GLM framework assumes that a mapping exists between 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ and 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ I'm just calling it by a name, 
+\begin_inset Formula $q$
+\end_inset 
+
+: 
+\begin_inset Formula $\theta_{i}=q(\mu_{i})$
+\end_inset 
+
+
+\layout Itemize
+
+If you connect the dots, you find:
+\begin_inset Formula \begin{equation}
+\eta_{i}=g(\mu_{i})=\theta_{i}=q(\mu_{i})\label{eq:q3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+In other words, the function 
+\begin_inset Formula $g()$
+\end_inset 
+
+ is the same as the function 
+\begin_inset Formula $q()$
+\end_inset 
+
+ if the link is canonical.
+ So if you find 
+\begin_inset Formula $q()$
+\end_inset 
+
+ you have found the canonical link.
+\layout Subsection
+
+How can you find 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+?
+\layout Standard
+
+For convenience of the reader, here's the canonical family definition:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i})=exp\left\{ \frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\right\} \label{eq:expfamily1copy}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+A result detailed below in section 
+\begin_inset LatexCommand \ref{sub:ApplyTheMLFacts}
+
+\end_inset 
+
+ is that the average of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is equal to the derivative of 
+\begin_inset Formula $c()$
+\end_inset 
+
+.
+ This is the finding I label 
+\begin_inset Quotes eld
+\end_inset 
+
+GLM Fact #1
+\begin_inset Quotes erd
+\end_inset 
+
+: 
+\begin_inset Formula \begin{equation}
+\mu_{i}=\frac{dc(\theta_{i})}{d\theta_{i}}\label{eq:mueqdc}\end{equation}
+
+\end_inset 
+
+ That means that the 
+\begin_inset Quotes eld
+\end_inset 
+
+mysterious function
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+ is the value you find by calculating 
+\begin_inset Formula $dc/d\theta_{i}$
+\end_inset 
+
+ and then re-arranging so that 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ is a function of 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Perhaps notation gets in the way here.
+ If you think of 
+\begin_inset Formula $dc/d\theta_{i}$
+\end_inset 
+
+ as just an ordinary function, using notation like 
+\begin_inset Formula $\mu_{i}=c'(\theta_{i})$
+\end_inset 
+
+, then it is (perhaps) easier to think of the inverse (or opposite, denoted
+ by 
+\begin_inset Formula $^{-1}$
+\end_inset 
+
+) transformation, applied to 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+:
+\begin_inset Formula \begin{eqnarray}
+\theta_{i} & = & [c']^{-1}(\mu_{i})\label{eq:mucinverse}\end{eqnarray}
+
+\end_inset 
+
+The conclusion, then, is that 
+\begin_inset Formula $q(\mu_{i})=[c']^{-1}(\mu_{i})$
+\end_inset 
+
+ and the canonical link are the same.
+\layout Standard
+
+Just to re-state the obvious, if you have the canonical family representation
+ of a distribution, the canonical link can be found by calculating 
+\begin_inset Formula $c'(\theta_{i})$
+\end_inset 
+
+ and then solving for 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+.
+\layout Subsection
+
+Maybe you think I'm presumptuous to name that thing 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+.
+\layout Standard
+
+There is probably some reason why the textbooks don't see the need to define
+ 
+\begin_inset Formula $\theta_{i}=q(\mu_{i})$
+\end_inset 
+
+ and find the canonical link through my approach.
+ Perhaps it makes sense only to me (not unlikely).
+\layout Standard
+
+Perhaps you prefer the approach mentioned by Firth (p.62).
+ Start with expression 
+\begin_inset LatexCommand \ref{eq:mueqdc}
+
+\end_inset 
+
+.
+ Apply 
+\begin_inset Formula $g()$
+\end_inset 
+
+ to both sides:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+g(\mu_{i})=g\left[\frac{dc(\theta_{i})}{d\theta_{i}}\right]\label{eq:mucinverse2}\end{equation}
+
+\end_inset 
+
+
+\newline 
+And from the definition of the canonical link function,
+\begin_inset Formula \begin{equation}
+\theta_{i}=\eta_{i}=g(\mu_{i})=g\left[\frac{dc(\theta_{i})}{d\theta_{i}}\right]\label{eq:mucinverse3}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+As Firth observes, for a canonical link, one must choose 
+\begin_inset Formula $g()$
+\end_inset 
+
+ so that it is the inverse of 
+\begin_inset Formula $\frac{dc(\theta_{i})}{d\theta_{i}}$
+\end_inset 
+
+.
+ That is, whatever 
+\begin_inset Formula $dc(\theta_{i})/d\theta_{i}$
+\end_inset 
+
+ does to the input variable 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+, the link 
+\begin_inset Formula $g()$
+\end_inset 
+
+ has to exactly reverse it, because we get 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ as the end result.
+ If 
+\begin_inset Formula $g$
+\end_inset 
+
+ 
+\begin_inset Quotes erd
+\end_inset 
+
+undoes
+\begin_inset Quotes erd
+\end_inset 
+
+ the derivative, then it will be true that
+\begin_inset Formula \begin{equation}
+\eta_{i}=g(\mu_{i})=\theta_{i}\label{eq:mucinverse4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+That's the canonical link, of course.
+ Eta equals theta.
+\layout Subsection
+
+Canonical means convenient, not mandatory
+\layout Standard
+
+In many books, one finds that the authors are emphatic about the need to
+ use the canonical link.
+ Myers, Montgomery, and Vining are a agnostic on the matter, acknowledging
+ the simplifying advantage of the canonical link but also working out the
+ maximum likelihood results for non-canonical links (p.
+ 165).
+\layout Section
+
+Examples of Exponential distributions (and associated canonical links)
+\layout Standard
+
+We want to end up with a dependent variable that has a distribution that
+ fits within the framework of 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Normal
+\layout Standard
+
+The Normal is impossibly easy! The canonical link 
+\begin_inset Formula \[
+g(\mu_{i})=\mu_{i}\]
+
+\end_inset 
+
+ Its especially easy because the Normal distribution has a parameter named
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ which happens also to equal the expected value.
+ So, if you have the formula for the Normal, there's no need to do any calculati
+on to find its mean.
+ It is equal to the parameter 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+\layout Subsubsection
+
+Massage 
+\begin_inset Formula $N(\mu_{i},\sigma_{i}^{2})$
+\end_inset 
+
+ into canonical form of the exponential family
+\layout Standard
+
+Recall the Normal is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i};\mu_{i},\sigma_{i}^{2})=\frac{1}{\sqrt{2\pi\sigma_{i}^{2}}}e^{-\frac{1}{2\sigma_{i}^{2}}(y_{i}-\mu_{i})^{2}}\label{eq:Normal}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+=\frac{1}{\sqrt{2\pi\sigma_{i}^{2}}}e^{-\frac{1}{2\sigma^{2}}(y_{i}^{2}+\mu_{i}^{2}-2y_{i}\mu_{i})}\label{eq:Normal2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+=\frac{1}{\sqrt{2\pi\sigma_{i}^{2}}}e^{\left[\frac{y_{i}\mu_{i}}{\sigma^{2}}-\frac{\mu_{i}^{2}}{2\sigma^{2}}-\frac{y_{i}^{2}}{2\sigma^{2}}\right]}\label{eq:Normal3}\end{equation}
+
+\end_inset 
+
+ Next recall that
+\begin_inset Formula \begin{equation}
+ln\left[\frac{1}{\sqrt{2\pi\sigma_{i}^{2}}}\right]=ln\left[(2\pi\sigma_{i}^{2})^{-1/2}\right]\label{eq:Normal4}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \[
+=-\frac{1}{2}ln(2\pi\sigma_{i}^{2})\]
+
+\end_inset 
+
+ In addition, recall that
+\begin_inset Formula \begin{equation}
+A\cdot e^{x}=e^{x+ln(A)}\label{eq:Normal5}\end{equation}
+
+\end_inset 
+
+So that means 
+\begin_inset LatexCommand \ref{eq:Normal3}
+
+\end_inset 
+
+ can be reduced to:
+\begin_inset Formula \begin{equation}
+exp\left[\frac{y_{i}\cdot\mu_{i}}{\sigma_{i}^{2}}-\frac{\mu_{i}^{2}}{2\sigma_{i}^{2}}-\frac{y_{i}^{2}}{2\sigma_{i}^{2}}-\frac{1}{2}ln(2\pi\sigma_{i}^{2})\right]\label{eq:Normal7}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+That fits easily into the general form of the exponential family in 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+.
+ The dispersion parameter 
+\begin_inset Formula $\phi_{i}=\sigma_{i}^{2}$
+\end_inset 
+
+.
+\layout Subsubsection
+
+The Canonical Link function is the identity link 
+\layout Standard
+
+Match up expression 
+\begin_inset LatexCommand \ref{eq:Normal7}
+
+\end_inset 
+
+ against the canonical distribution 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+.
+ Since the numerator of the first term in 
+\begin_inset LatexCommand \ref{eq:Normal7}
+
+\end_inset 
+
+ is 
+\begin_inset Formula $y_{i}\cdot\mu_{i}$
+\end_inset 
+
+, that means the Normal mean parameter 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ is playing the role of 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+.
+ As a result, 
+\begin_inset Formula \begin{equation}
+\theta_{i}=\mu_{i}\label{eq:NormCanon1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The function 
+\begin_inset Formula $q(\mu_{i})$
+\end_inset 
+
+ that I introduced above is trivially simple, 
+\begin_inset Formula $\theta_{i}=\mu_{i}=q(\mu_{i})$
+\end_inset 
+
+.
+ Whatever 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ you put in, you get the same thing back out.
+ 
+\layout Standard
+
+If you believed the result in section 
+\begin_inset LatexCommand \ref{sub:thetaEqQ}
+
+\end_inset 
+
+ , then you know that 
+\begin_inset Formula $g()$
+\end_inset 
+
+ is the same as 
+\begin_inset Formula $q()$
+\end_inset 
+
+.
+ So the canonical link is the 
+\series bold 
+identity link
+\series default 
+, 
+\begin_inset Formula $g(\mu)=\mu.$
+\end_inset 
+
+
+\layout Standard
+
+You arrive at the same conclusion through the route suggested by equation
+ 
+\begin_inset LatexCommand \ref{eq:mucinverse3}
+
+\end_inset 
+
+.
+ Note that the exponential family function 
+\begin_inset Formula $c(\theta)$
+\end_inset 
+
+ corresponds to 
+\begin_inset Formula \begin{equation}
+c(\theta_{i})=\frac{1}{2}\mu_{i}^{2}\label{eq:NormCanon2}\end{equation}
+
+\end_inset 
+
+ and
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{dc(\theta_{i})}{d\theta_{i}}=c'(\theta_{i})=\mu_{i}\label{eq:NormCanon3}\end{equation}
+
+\end_inset 
+
+ You 
+\begin_inset Quotes eld
+\end_inset 
+
+put in 
+\begin_inset Formula $\theta_{i}"$
+\end_inset 
+
+ and you 
+\begin_inset Quotes eld
+\end_inset 
+
+get back
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ The reverse must also be true.
+ If you have the inverse of 
+\begin_inset Formula $c'(\theta_{i})$
+\end_inset 
+
+, which was called 
+\begin_inset Formula $[c']^{-1}$
+\end_inset 
+
+ before, you know that 
+\begin_inset Formula \begin{equation}
+[c']^{-1}(\mu_{i})=\theta_{i}\label{eq:NormCanon4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+As Firth observed, the canonical link is such that 
+\begin_inset Formula $g(\mu_{i})=[c']^{-1}(\theta_{i})$
+\end_inset 
+
+.
+ Since we already know from 
+\begin_inset Formula $\theta_{i}=\mu_{i}$
+\end_inset 
+
+, this means that 
+\begin_inset Formula $[c']^{-1}$
+\end_inset 
+
+ must be the identity function, because
+\begin_inset Formula \begin{equation}
+\mu_{i}=\theta_{i}=[c']^{-1}(\theta_{i})\label{eq:NormCanon5}\end{equation}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+We reproduced the same old OLS, WLS, and GLS
+\layout Standard
+
+We can think of the linear predictor as fitting directly into the Normal
+ mean.
+ That is to say, the 
+\begin_inset Quotes eld
+\end_inset 
+
+natural parameter
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ is equal to the mean parameter 
+\begin_inset Formula $\mu$
+\end_inset 
+
+, and the mean equals the linear predictor:
+\begin_inset Formula \[
+\theta_{i}=\mu_{i}=\eta_{i}=X_{i}b\]
+
+\end_inset 
+
+
+\layout Standard
+
+In other words, the model we are fitting is 
+\begin_inset Formula $y\sim N(\eta_{i},\sigma_{i}^{2})$
+\end_inset 
+
+ or 
+\begin_inset Formula $y\sim N(X_{i}b,\sigma_{i}^{2})$
+\end_inset 
+
+.
+\layout Standard
+
+This is the Ordinary Least Squares model if you assume that 
+\begin_inset Formula \[
+i.\,\,\sigma_{i}^{2}=\sigma^{2}\, for\, all\, i\]
+
+\end_inset 
+
+ and
+\begin_inset Formula \[
+ii.\,\, Cov(y_{i},y_{j})=0\, for\, all\, i\neq j\]
+
+\end_inset 
+
+
+\layout Standard
+
+If you keep assumption 
+\begin_inset Formula $ii$
+\end_inset 
+
+ but drop 
+\begin_inset Formula $i$
+\end_inset 
+
+, then this implies Weighted Least Squares.
+\layout Standard
+
+If you drop both 
+\begin_inset Formula $i$
+\end_inset 
+
+ and 
+\begin_inset Formula $ii$
+\end_inset 
+
+, then you have Generalized Least Squares.
+\layout Subsection
+
+Poisson.
+\layout Standard
+
+Consider a Poisson dependent variable.
+ It is tradition to refer to the single important parameter in the Poisson
+ as 
+\begin_inset Formula $\lambda$
+\end_inset 
+
+, but since we know that 
+\begin_inset Formula $\lambda$
+\end_inset 
+
+ is equal to the mean of the variable, let's make our lives simple by using
+ 
+\begin_inset Formula $\mu$
+\end_inset 
+
+ for the parameter.
+ For an individual 
+\begin_inset Formula $i$
+\end_inset 
+
+, 
+\begin_inset Formula \begin{equation}
+f(y_{i}|\mu_{i})=\frac{e^{-\mu_{i}}\mu_{i}^{y_{i}}}{y_{i}!}\label{eq:Poisson1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The parameter 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ is known to equal the expected value of the Poisson distribution.
+ The variance is equal to 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ as well.
+ As such, it is a 
+\begin_inset Quotes eld
+\end_inset 
+
+one-parameter distribution.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+If you were following along blindly with the Normal example, you would (wrongly)
+ assume that you can use the identity link and just put in 
+\begin_inset Formula $\eta_{i}=X_{i}b$
+\end_inset 
+
+ in place of 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ Strangely enough, if you do that, you would not have a distribution that
+ fits into the canonical exponential family.
+\layout Subsubsection
+
+Massage the Poisson into canonical form
+\layout Standard
+
+Rewrite the Poisson as:
+\begin_inset Formula \[
+f(y_{i}|\mu_{i})=e^{(-\mu_{i}+ln(\mu^{y_{i}})-ln(y_{i}!))}\]
+
+\end_inset 
+
+
+\layout Standard
+
+which is the same as
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i}|\mu)=exp[y_{i}ln(\mu_{i})-\mu_{i}-ln(y_{i}!)]\label{eq:Poisson2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+There is no scale factor (dispersion parameter), so we don't have to compare
+ against the general form of the exponential family, equation 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+.
+ Rather, we can line this up against the simpler form in equation 
+\begin_inset LatexCommand \ref{eq:FinalSimple}
+
+\end_inset 
+
+ 
+\layout Subsubsection
+
+The canonical link is the log
+\layout Standard
+
+In 
+\begin_inset LatexCommand \ref{eq:Poisson2}
+
+\end_inset 
+
+ we have the first term 
+\begin_inset Formula $y_{i}ln(\mu_{i})$
+\end_inset 
+
+, which is not exactly parallel to the exponential family, which requires
+ 
+\begin_inset Formula $y\theta.$
+\end_inset 
+
+ In order to make this match up against the canonical exponential form,
+ note:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\theta_{i}=ln(\mu_{i})\label{eq:PoissonCanon1}\end{equation}
+
+\end_inset 
+
+ So the mysterious function 
+\begin_inset Formula $q()$
+\end_inset 
+
+ is 
+\begin_inset Formula $ln(\mu_{i})$
+\end_inset 
+
+.
+ So the canonical link is 
+\begin_inset Formula \begin{equation}
+g(\mu_{i})=ln(\mu_{i})\label{eq:PoissonCanon2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+You get the same answer if you follow the other route, as suggested by 
+\begin_inset LatexCommand \ref{eq:mucinverse3}
+
+\end_inset 
+
+.
+ Note that in 
+\begin_inset LatexCommand \ref{eq:Poisson2}
+
+\end_inset 
+
+, 
+\begin_inset Formula $c(\theta)=exp(\theta)$
+\end_inset 
+
+ and since
+\begin_inset Formula \begin{equation}
+\mu_{i}=\frac{dc(\theta_{i})}{d\theta_{i}}=exp(\theta_{i})\label{eq:PoissonCanon3}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The inverse function for 
+\begin_inset Formula $exp(\theta_{i})$
+\end_inset 
+
+ is 
+\begin_inset Formula $ln(),$
+\end_inset 
+
+so 
+\begin_inset Formula $[c']^{-1}=ln$
+\end_inset 
+
+, and as a result 
+\begin_inset Formula \begin{equation}
+g(\mu_{i})=[c']^{-1}=ln(\mu_{i})\label{eq:PoissonCanon4}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The Poisson is a 
+\begin_inset Quotes eld
+\end_inset 
+
+one parameter
+\begin_inset Quotes erd
+\end_inset 
+
+ distribution, so we don't have to worry about dispersion.
+ And the standard approach to the modeling of Poisson data is to use the
+ log link.
+\layout Subsubsection
+
+Before you knew about the GLM
+\layout Standard
+
+In the standard 
+\begin_inset Quotes eld
+\end_inset 
+
+count data
+\begin_inset Quotes erd
+\end_inset 
+
+ (Poisson) regression model, as popularized in political science by Gary
+ King in the late 1980s, we assume that the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ follows this Poisson distribution with an expected value of 
+\begin_inset Formula $exp[X_{i}b]$
+\end_inset 
+
+.
+ That is to say, we assume
+\begin_inset Formula \[
+\mu_{i}=exp[X_{i}b]\]
+
+\end_inset 
+
+
+\layout Standard
+
+Put 
+\begin_inset Formula $exp[X_{i}b]$
+\end_inset 
+
+ in place of 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ in expression 
+\begin_inset LatexCommand \ref{eq:Poisson1}
+
+\end_inset 
+
+, and you have the Poisson count model.
+ 
+\begin_inset Formula \begin{equation}
+f(y|X,b)=\frac{e^{-exp[X_{i}b]}[X_{i}b]^{y}}{y!}\label{eq:Poisson1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+When you view this model in isolation, apart from GLM, the justification
+ for using 
+\begin_inset Formula $exp[X_{i}b]$
+\end_inset 
+
+ instead of 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ is usually given by 
+\begin_inset Quotes eld
+\end_inset 
+
+hand waving
+\begin_inset Quotes erd
+\end_inset 
+
+ arguments, contending that 
+\begin_inset Quotes eld
+\end_inset 
+
+we need to be sure the average is 0 or greater, so 
+\begin_inset Formula $exp$
+\end_inset 
+
+ is a suitable transformation
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+we really do think the impact of the input variables is multiplicative and
+ exponential.
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+The canonical link from the GLM provides another justification that does
+ not require quite so much hand waving.
+\layout Subsection
+
+Binomial
+\layout Standard
+
+A binomial model is used to predict the number of successes that we should
+ expect out of a number of tries.
+ The probability of success is fixed at 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+ and the number of tries is 
+\begin_inset Formula $n_{i}$
+\end_inset 
+
+, and the probability of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ successes given 
+\begin_inset Formula $n_{i}$
+\end_inset 
+
+ tries, is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+f(y_{i}|n_{i},p_{i})=\left(\begin{array}{c}
+n_{i}\\
+y_{i}\end{array}\right)p_{i}^{y_{i}}(1-p_{i})^{n_{i}-y_{i}}=\frac{n_{i}!}{y_{i}!(n_{i}-y_{i})!}p_{i}^{y_{i}}(1-p_{i})^{n_{i}-y_{i}}\label{eq:Binomial1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In this case, the role of the mean, 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, is played by the letter 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+.
+ We do that just for variety :)
+\layout Subsubsection
+
+Massage the Binomial into the canonical exponential form
+\layout Standard
+
+I find it a bit surprising that this fits into the same exponential family,
+ actually.
+ But it does fit because you can do this trick.
+ It is always true that
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+x=e^{ln(x)}=exp[ln(x)]\end{equation}
+
+\end_inset 
+
+ Ordinarily, we write the binomial model for the probability of 
+\begin_inset Formula $y$
+\end_inset 
+
+ successes out of 
+\begin_inset Formula $n$
+\end_inset 
+
+ trials 
+\begin_inset Formula \begin{equation}
+\left(\begin{array}{c}
+n\\
+y\end{array}\right)p^{y}(1-p)^{n-y}=\frac{n!}{y!(n-y)!}p^{y}(1-p)^{n-y}\end{equation}
+
+\end_inset 
+
+
+\newline 
+But that can be massaged into the exponential family
+\begin_inset Formula \begin{equation}
+e^{ln\left(\left(\begin{array}{c}
+n\\
+y\end{array}\right)p^{y}(1-p)^{n-y}\right)}=e^{ln\left(\begin{array}{c}
+n\\
+y\end{array}\right)+ln(p^{y})+ln((1-p)^{n-y})}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+=e^{ln\left(\begin{array}{c}
+n\\
+y\end{array}\right)+yln(p)+(n-y)ln(1-p)}=e^{ln\left(\begin{array}{c}
+n\\
+y\end{array}\right)+yln(p)+nln(1-p)-yln(1-p)}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Note that because 
+\begin_inset Formula $ln(a)-ln(b)=ln(\frac{a}{b}$
+\end_inset 
+
+), we have:
+\begin_inset Formula \[
+e^{yln(\frac{p}{1-p})+nln(1-p)+ln\left(\begin{array}{c}
+n\\
+y\end{array}\right)}\]
+
+\end_inset 
+
+this clearly fits within the simplest form of the exponential distribution.
+\begin_inset Formula \begin{equation}
+exp[y_{i}ln(\frac{p_{i}}{1-p_{i}})-(-n_{i}\cdot ln(1-p_{i}))+ln\left(\begin{array}{c}
+n_{i}\\
+y_{i}\end{array}\right)]\label{eq:BinomCanonical}\end{equation}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Suppose 
+\begin_inset Formula $n_{i}=1$
+\end_inset 
+
+
+\layout Standard
+
+The probability of success on a single trial is 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+.
+ Hence, the expected value with one trial is 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+.
+ The expected value of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ when there are 
+\begin_inset Formula $n_{i}$
+\end_inset 
+
+ trials is 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+= 
+\begin_inset Formula $n_{i}\cdot p_{i}$
+\end_inset 
+
+.
+ The parameter 
+\begin_inset Formula $n_{i}$
+\end_inset 
+
+ is a fixed constant for the 
+\begin_inset Formula $i'th$
+\end_inset 
+
+ observation.
+\layout Standard
+
+When we do a logistic regression, we typically think of each observation
+ as one test case.
+ A survey respondent says 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+ or 
+\begin_inset Quotes eld
+\end_inset 
+
+no
+\begin_inset Quotes erd
+\end_inset 
+
+ and we code 
+\begin_inset Formula $y_{i}=1$
+\end_inset 
+
+ or 
+\begin_inset Formula $y_{i}=0.$
+\end_inset 
+
+ If just one test of the random process is run per observation.
+ That means 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is either 0 or 1.
+ 
+\layout Standard
+
+So, in the following, lets keep it simple by fixing 
+\begin_inset Formula $n_{i}=1$
+\end_inset 
+
+.
+ And, in that context, 
+\begin_inset Formula \begin{equation}
+\mu_{i}=p_{i}\label{eq:Binomial3}\end{equation}
+
+\end_inset 
+
+
+\layout Subsubsection
+
+The canonical link is the logit
+\layout Standard
+
+Then eyeball equation 
+\begin_inset LatexCommand \ref{eq:BinomCanonical}
+
+\end_inset 
+
+ against the canonical form 
+\begin_inset LatexCommand \ref{eq:FinalSimple}
+
+\end_inset 
+
+, you see that if you think the probability of a success is 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+, then you have to transform 
+\begin_inset Formula $p_{i}$
+\end_inset 
+
+ so that:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\theta=ln(\frac{p_{i}}{1-p_{i}})\label{eq:Binomial4}\end{equation}
+
+\end_inset 
+
+ Since 
+\begin_inset Formula $p_{i}=\mu_{i}$
+\end_inset 
+
+, then the mysterious function 
+\begin_inset Formula $q()$
+\end_inset 
+
+ is 
+\begin_inset Formula $ln(\frac{\mu_{i}}{1-\mu_{i}})$
+\end_inset 
+
+.
+ That is the 
+\begin_inset Quotes eld
+\end_inset 
+
+canonical link
+\begin_inset Quotes erd
+\end_inset 
+
+ for the Binomial distribution.
+ It is called the 
+\series bold 
+logit link
+\series default 
+ and it maps from the mean of observations, 
+\begin_inset Formula $\mu_{i}=p_{i}$
+\end_inset 
+
+ back to the natural parameter 
+\begin_inset Formula $\theta_{i}.$
+\end_inset 
+
+
+\layout Subsubsection
+
+Before you knew about the GLM, you already knew this
+\layout Standard
+
+That's just the plain old 
+\begin_inset Quotes eld
+\end_inset 
+
+logistic regression
+\begin_inset Quotes erd
+\end_inset 
+
+ equation for a 
+\begin_inset Formula $(0,1)$
+\end_inset 
+
+ dependent variable.
+ The logistic regression is usually introduced either as
+\begin_inset Formula \begin{equation}
+P(y_{i}=1|X_{i},b)=\frac{1}{1+exp(-X_{i}b)}=\frac{exp(X_{i}b)}{1+exp(X_{i}b)}\label{eq:Binomial6}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Or, equivalently, 
+\begin_inset Formula \begin{equation}
+ln\left[\frac{p_{i}}{1-p_{i}}\right]=X_{i}b\label{eq:Binomial7}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+It is easy to see that, if the canonical link is used, 
+\begin_inset Formula $\theta_{i}=\eta_{i}$
+\end_inset 
+
+.
+\layout Subsection
+
+Gamma
+\layout Standard
+
+Gamma is a random variable that is continuous on 
+\begin_inset Formula $(0,+\infty)$
+\end_inset 
+
+.
+ The probability of observing a score 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ depends on 2 parameters, the 
+\begin_inset Quotes eld
+\end_inset 
+
+shape
+\begin_inset Quotes erd
+\end_inset 
+
+ and the 
+\begin_inset Quotes eld
+\end_inset 
+
+scale
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Call the 
+\begin_inset Quotes eld
+\end_inset 
+
+shape
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\alpha$
+\end_inset 
+
+ (same for all observations, so no subscript is used) and the 
+\begin_inset Quotes eld
+\end_inset 
+
+scale
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\beta_{i}$
+\end_inset 
+
+.
+ The probability distribution for the Gamma is
+\begin_inset Formula \begin{equation}
+y_{i}\sim f(\alpha,\beta_{i})=\frac{1}{\beta_{i}^{\alpha}\Gamma(\alpha)}y_{i}^{(\alpha-1)}e^{-y_{i}/\beta_{i}}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The mean of this distribution is 
+\begin_inset Formula $\alpha\beta_{i}$
+\end_inset 
+
+.
+ We use can input variables and parameters to predict a value of 
+\begin_inset Formula $\beta_{i}$
+\end_inset 
+
+, which in turn influences the distribution of observed outcomes.
+ 
+\layout Standard
+
+The canonical link is 
+\begin_inset Formula $1/\mu_{i}$
+\end_inset 
+
+.
+ I have a separate writeup about GammaGLM models.
+\layout Subsection
+
+Other distributions (may fill these in later).
+\layout Description
+
+Pareto 
+\begin_inset Formula $f(y|\theta)=\theta y^{-\theta-1}$
+\end_inset 
+
+
+\layout Description
+
+Exponential 
+\begin_inset Formula $f(y|\theta)=\theta e^{-y\theta}$
+\end_inset 
+
+ or 
+\begin_inset Formula $f(y|\theta)=\frac{1}{\theta}e^{-y/\theta}$
+\end_inset 
+
+ (depending on your taste)
+\layout Description
+
+Negative\SpecialChar ~
+Binomial 
+\begin_inset Formula \[
+f(y|\theta)=\left(\begin{array}{c}
+y+r-1\\
+r-1\end{array}\right)\theta^{r}(1-\theta)^{y}\]
+
+\end_inset 
+
+ r is a known value.
+ 
+\layout Description
+
+Extreme\SpecialChar ~
+Value\SpecialChar ~
+(Gumbel)
+\layout Standard
+
+
+\begin_inset Formula \[
+f(y|\theta)=\frac{1}{\theta}exp\left\{ \frac{(y-\theta)}{\phi}-exp\left[\frac{(y-\theta)}{\phi}\right]\right\} \]
+
+\end_inset 
+
+
+\layout Section
+
+Maximum likelihood.
+ How do we estimate these beasts?
+\layout Standard
+
+The parameter fitting process should maximize the probability that the model
+ fits the data.
+ 
+\layout Subsection
+
+Likelihood basics
+\layout Standard
+
+According to classical maximum likelihood theory, one should calculate the
+ probability of observing the whole set of data, for observations i=1,...,N,
+ given a particular parameter:
+\begin_inset Formula \[
+L(\theta|X_{1},...,X_{N})=f(X_{1}|\theta)\cdot f(X_{2}|\theta)\cdot...\cdot f(X_{N}|\theta)\]
+
+\end_inset 
+
+
+\layout Standard
+
+The log of the likelihood function is easier to work with, and maximizing
+ that is logically equivalent to maximizing the likelihood.
+\layout Standard
+
+Remember 
+\begin_inset Formula $ln(exp(x))=x$
+\end_inset 
+
+? 
+\layout Standard
+
+With the more general form of exponential distribution, equation 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+, the log likelihood for a single observation equals:
+\begin_inset Formula \[
+l_{i}(\theta_{i},\phi_{i}|y_{i})=log\left\{ exp\left[\frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\right]\right\} \]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+=\frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\label{eq:lnGenCanonical}\end{equation}
+
+\end_inset 
+
+ The dispersion parameter 
+\begin_inset Formula $\phi_{i}$
+\end_inset 
+
+ is often treated as a 
+\series bold 
+nuisance parameter
+\series default 
+.
+ It is estimated separately from the other parameters, the ones that affect
+ 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Bring the 
+\begin_inset Quotes eld
+\end_inset 
+
+regression coefficients
+\begin_inset Quotes erd
+\end_inset 
+
+ back in: 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $b$
+\end_inset 
+
+
+\layout Standard
+
+Recall the comments in section 
+\begin_inset LatexCommand \ref{sub:sequenceEMTF}
+
+\end_inset 
+
+ which indicated that we can view the problem at hand as a sequence of transform
+ations.
+ The log likelihood contribution of a particular case 
+\begin_inset Formula $lnL_{i}$
+\end_inset 
+
+=
+\begin_inset Formula $l_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+, and 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, and 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ depends on 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+, and 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+depends on 
+\begin_inset Formula $b$
+\end_inset 
+
+.
+ So you'd have to think of some gnarly thing like
+\layout Standard
+
+
+\begin_inset Formula \[
+l_{i}(b)=f(\theta_{i}(\mu_{i}(\eta_{i}(b))))\]
+
+\end_inset 
+
+
+\layout Standard
+
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+chain rule
+\begin_inset Quotes erd
+\end_inset 
+
+ for derivatives applies to a case where you have a 
+\begin_inset Quotes eld
+\end_inset 
+
+function of a function of a function...
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ In this case it implies, as noted in McCullagh and Nelder (p.
+ 41), that the score equation for a coefficient 
+\begin_inset Formula $b_{k}$
+\end_inset 
+
+ as
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{\partial l_{i}}{\partial\theta_{i}}\frac{\partial\theta_{i}}{\partial\mu_{i}}\frac{\partial\mu_{i}}{\partial\eta_{i}}\frac{\partial\eta_{i}}{\partial b_{k}}\label{eq:UGeneral}\end{equation}
+
+\end_inset 
+
+The letter 
+\begin_inset Formula $U$
+\end_inset 
+
+ is a customary (very widely used) label for the score equations.
+ It is necessary to simultaneously solve 
+\begin_inset Formula $p$
+\end_inset 
+
+ of these 
+\series bold 
+score equations
+\series default 
+ (one for each of the 
+\begin_inset Formula $p$
+\end_inset 
+
+ parameters being estimated):
+\layout Standard
+
+
+\begin_inset Formula \begin{eqnarray*}
+\frac{\partial l}{\partial b_{1}} & =U_{1} & =0\\
+\frac{\partial l}{\partial b_{2}} & =U_{2} & =0\\
+ & \vdots & =0\\
+\frac{\partial l}{\partial b_{p}} & =U_{p} & =0\end{eqnarray*}
+
+\end_inset 
+
+
+\layout Standard
+
+That assumptions linking 
+\begin_inset Formula $b$
+\end_inset 
+
+ to 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ reduces the number of separate coefficients to be estimated quite dramatically.
+ We started out with 
+\begin_inset Formula $\theta=(\theta_{1},\theta_{2},...,\theta_{N})$
+\end_inset 
+
+ natural location parameters, one for each case, but now there are just
+ 
+\begin_inset Formula $p$
+\end_inset 
+
+ coefficients in the vector 
+\begin_inset Formula $b$
+\end_inset 
+
+.
+ 
+\layout Section
+
+Background information necessary to simplify the score equations
+\layout Subsection
+
+Review of ML handout #2
+\layout Standard
+
+When you maximize something by optimally choosing an estimate 
+\begin_inset Formula $\hat{\theta}$
+\end_inset 
+
+, take the first derivative with respect to 
+\begin_inset Formula $\theta$
+\end_inset 
+
+ and set that result equal to zero.
+ Then solve for for 
+\begin_inset Formula $\theta$
+\end_inset 
+
+.
+ The 
+\series bold 
+score function
+\series default 
+ is the first derivative of the log likelihood with respect to the parameter
+ of interest.
+\layout Standard
+
+If you find the values which maximize the likelihood, it means the score
+ function has to equal zero, and there is some interesting insight in that
+ (Gill, p.22).
+\layout Standard
+
+From the general theory of maximum likelihood, as explained in the handout
+ ML#2, it is true that:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+ML\, Fact\,\#1:\,\, E\left[\frac{\partial l_{i}}{\partial\theta_{i}}\right]=0\label{eq:MLFact1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+and
+\begin_inset Formula \begin{equation}
+ML\, Fact\,\#2:\,\, E\left[\frac{\partial^{2}l_{i}}{\partial\theta_{i}^{2}}\right]=-Var\left[\frac{\partial l_{i}}{\partial\theta_{i}}\right]\label{eq:MLFact2}\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+GLM Facts 1 and 2
+\begin_inset LatexCommand \label{sub:ApplyTheMLFacts}
+
+\end_inset 
+
+
+\layout Standard
+
+GLM Facts 1 & 2 are--almost invariably--stated as simple facts in textbooks,
+ but often they are not explained in detail (see Gill, p.
+ 23, McCullagh and Nelder 1989 p.
+ 28; Firth 1991, p.
+ 61 and Dobson 2000, p.
+ 47-48).
+ 
+\layout Subsubsection
+
+GLM Fact #1: 
+\layout Standard
+
+For the exponential family as described in 
+\begin_inset LatexCommand \ref{eq:expfamily1}
+
+\end_inset 
+
+, the following is true.
+\begin_inset Formula \begin{equation}
+GLM\, Fact\,\#1:\,\, E(y_{i})=\mu_{i}=\frac{dc(\theta_{i})}{d\theta_{i}}\label{eq:GLMFact1}\end{equation}
+
+\end_inset 
+
+
+\newline 
+In words, 
+\begin_inset Quotes eld
+\end_inset 
+
+the expected value of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is equal to the derivative of 
+\begin_inset Formula $c(\theta_{i})$
+\end_inset 
+
+ with respect to 
+\begin_inset Formula $\theta_{i}.$
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+ In Firth, the notation for 
+\begin_inset Formula $dc(\theta_{i})/d\theta_{i}$
+\end_inset 
+
+ is 
+\begin_inset Formula $\dot{c}(\theta_{i})$
+\end_inset 
+
+.
+ In Dobson, it is 
+\begin_inset Formula $c'(\theta_{i})$
+\end_inset 
+
+.
+\layout Standard
+
+The importance of this result is that if we are given an exponential distributio
+n, we can calculate its mean by differentiating the 
+\begin_inset Formula $c()$
+\end_inset 
+
+ function.
+\layout Standard
+
+Proof.
+\layout Standard
+
+Take the first derivative of 
+\begin_inset Formula $l_{i}$
+\end_inset 
+
+(equation 
+\begin_inset LatexCommand \ref{eq:lnGenCanonical}
+
+\end_inset 
+
+) with respect to 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+and you find:
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{i}}{\partial\theta_{i}}=\frac{1}{\phi_{i}}\left[y_{i}-\frac{dc(\theta_{i})}{d\theta_{i}}\right]\label{eq:GLMFact1.1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is the 
+\begin_inset Quotes eld
+\end_inset 
+
+score
+\begin_inset Quotes erd
+\end_inset 
+
+ of the i'th case.
+ Apply the expected value operator to both sides, and taking into account
+ ML Fact #1 stated above (
+\begin_inset LatexCommand \ref{eq:MLFact1}
+
+\end_inset 
+
+), the whole thing is equal to 0:
+\begin_inset Formula \begin{equation}
+E\left[\frac{\partial l_{i}}{\partial\theta_{i}}\right]=\frac{1}{\phi_{i}}\left[E[y_{i}]-E\left[\frac{dc(\theta_{i})}{d\theta_{i}}\right]\right]=0\label{eq:GLMFact1.2}\end{equation}
+
+\end_inset 
+
+which implies
+\begin_inset Formula \begin{equation}
+E[y_{i}]=E\left[\frac{dc(\theta_{i})}{d\theta_{i}}\right]\label{eq:GLMFact1.3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Two simplifications immediately follow.
+ First, by definition, 
+\begin_inset Formula $E[y_{i}]=\mu$
+\end_inset 
+
+.
+ Second, because 
+\begin_inset Formula $c(\theta_{i})$
+\end_inset 
+
+ does not depend on 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, then 
+\begin_inset Formula $dc/d\theta_{i}$
+\end_inset 
+
+ is the same for all values of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, and since the expected value of a constant is just the constant (recall
+ 
+\begin_inset Formula $E(A)=A),$
+\end_inset 
+
+ then
+\begin_inset Formula \begin{equation}
+E\left[\frac{dc(\theta_{i})}{d\theta_{i}}\right]=\frac{dc(\theta_{i})}{d\theta_{i}}\label{eq:GLMFact1.4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+As a result, expression 
+\begin_inset LatexCommand \ref{eq:GLMFact1.3}
+
+\end_inset 
+
+ reduces to
+\begin_inset Formula \begin{equation}
+\mu_{i}=\frac{dc(\theta_{i})}{d\theta_{i}}\label{eq:GLMFact1.5}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+And the proof is finished!
+\layout Subsubsection
+
+GLM Fact #2: The Variance function appears!
+\layout Standard
+
+The second ML fact (
+\begin_inset LatexCommand \ref{eq:MLFact2}
+
+\end_inset 
+
+), leads to a result about the variance of y as it depends on the mean.
+ The variance of y is 
+\begin_inset Formula \begin{equation}
+GLM\, Fact\#2:\,\, Var(y_{i})=\phi_{i}\cdot\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}=\phi_{i}V(\mu_{i})\label{eq:GLMFact2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The variance of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ breaks into two parts, one of which is the dispersion parameter 
+\begin_inset Formula $\phi_{i}$
+\end_inset 
+
+ and the other is the so-called 
+\begin_inset Quotes eld
+\end_inset 
+
+variance function
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $V(\mu_{i}$
+\end_inset 
+
+).
+ This can be found in McCullagh & Nelder (1989, p.
+ 29; Gill, p.
+ 29; or Firth p.
+ 61).
+\layout Standard
+
+Note 
+\begin_inset Formula $V(\mu_{i})$
+\end_inset 
+
+ this does not mean the variance of 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ It means the 
+\begin_inset Quotes eld
+\end_inset 
+
+variance as it depends on 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ The variance of observed 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ combines the 2 sorts of variability, one of which is sensitive to the mean,
+ one of which is not.
+ which represents the impact of, the second derivative of 
+\begin_inset Formula $c(\theta_{i})$
+\end_inset 
+
+, sometimes labeled 
+\begin_inset Formula $\ddot{c}(\theta_{i})$
+\end_inset 
+
+ or 
+\begin_inset Formula $c''(\theta_{i})$
+\end_inset 
+
+, times the scaling element 
+\begin_inset Formula $\phi_{i}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Proof.
+\layout Standard
+
+Apply the variance operator to 
+\begin_inset LatexCommand \ref{eq:GLMFact1.1}
+
+\end_inset 
+
+.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var\left[\frac{\partial l}{\partial\theta_{i}}\right]=\frac{1}{\phi_{i}^{2}}Var\left[y-\frac{dc}{d\theta_{i}}\right]\label{eq:GLMFact2.1}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Since (as explained in the previous section) 
+\begin_inset Formula $dc/d\theta_{i}$
+\end_inset 
+
+ is a constant, then this reduces to
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Var\left[\frac{\partial l}{\partial\theta_{i}}\right]=\frac{1}{\phi_{i}^{2}}Var\left[y_{i}\right]\label{eq:GLMFact2.2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Put that result aside for a moment.
+ Take the partial derivative of 
+\begin_inset LatexCommand \ref{eq:GLMFact1.1}
+
+\end_inset 
+
+ with respect to 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+and the result is
+\begin_inset Formula \begin{equation}
+\frac{\partial^{2}l_{i}}{\partial\theta_{i}^{2}}=\frac{1}{\phi_{i}}\left[\frac{\partial y_{i}}{\partial\theta_{i}}-\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\right]\label{eq:GLMFact2.3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+I wrote this out term-by-term in order to draw your attention to the fact
+ that 
+\begin_inset Formula $\frac{\partial y_{i}}{\partial\theta_{i}}=0$
+\end_inset 
+
+ because 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is treated as a constant this point.
+ So the expression reduces to:
+\begin_inset Formula \begin{equation}
+\frac{\partial^{2}l_{i}}{\partial\theta_{i}^{2}}=-\frac{1}{\phi_{i}}\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:GLMFact2.4}\end{equation}
+
+\end_inset 
+
+And, of course, it should be trivially obvious (since the expected value
+ of a constant is the constant) that
+\begin_inset Formula \begin{equation}
+E\left[\frac{\partial^{2}l_{i}}{\partial\theta_{i}^{2}}\right]=-\frac{1}{\phi_{i}}\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:GLMFact2.4b}\end{equation}
+
+\end_inset 
+
+
+\newline 
+At this point, we use ML Fact #2, and replace the left hand side with 
+\begin_inset Formula $-Var[\frac{\partial l_{i}}{\partial\theta_{i}}]$
+\end_inset 
+
+, which results in 
+\begin_inset Formula \begin{equation}
+Var[\frac{\partial l_{i}}{\partial\theta_{i}}]=\frac{1}{\phi_{i}}\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:GLMFact2.5}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Next, put to use the result stated in expression (
+\begin_inset LatexCommand \ref{eq:GLMFact2.2}
+
+\end_inset 
+
+).
+ That allows the left hand side to be replaced:
+\begin_inset Formula \begin{equation}
+\frac{1}{\phi_{i}^{2}}Var\left[y_{i}\right]=\frac{1}{\phi_{i}}\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:GLMFact2.6}\end{equation}
+
+\end_inset 
+
+ 
+\newline 
+and the end result is:
+\begin_inset Formula \begin{equation}
+Var[y_{i}]=\phi_{i}\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:GLMFact2.7}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The Variance function, 
+\begin_inset Formula $V(\mu)$
+\end_inset 
+
+, is defined as
+\begin_inset Formula \begin{equation}
+V(\mu_{i})=\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}=c''(\theta_{i})\label{eq:VarFunction}\end{equation}
+
+\end_inset 
+
+ The relabeling amounts to
+\begin_inset Formula \[
+Var(y_{i})=\phi_{i}V(\mu_{i})\]
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Variance functions for various distributions
+\layout Standard
+
+Firth observes that the variance function characterizes the members in this
+ class of distributions, as in:
+\layout Description
+
+Normal 
+\begin_inset Formula $V(\mu)=1$
+\end_inset 
+
+
+\layout Description
+
+Poisson 
+\begin_inset Formula $V(\mu)=\mu$
+\end_inset 
+
+
+\layout Description
+
+Binomial 
+\begin_inset Formula $V(\mu)=\mu(1-\mu)$
+\end_inset 
+
+
+\layout Description
+
+Gamma 
+\begin_inset Formula $V(\mu)=\mu^{2}$
+\end_inset 
+
+
+\layout Section
+
+Score equations for the model with a noncanonical link.
+\layout Standard
+
+Our objective is to simplify this in order to calculate the 
+\begin_inset Formula $k$
+\end_inset 
+
+ parameter estimates in 
+\begin_inset Formula $\hat{b}=(\hat{b}_{1},\hat{b}_{2},\ldots,\hat{b}_{k})$
+\end_inset 
+
+ that solve the score equations (one for each parameter):
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{\partial l_{i}}{\partial\theta_{i}}\frac{\partial\theta_{i}}{\partial\mu_{i}}\frac{\partial\mu_{i}}{\partial\eta_{i}}\frac{\partial\eta_{i}}{\partial b_{k}}=0\label{eq:noncanloglike2}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The 
+\begin_inset Quotes eld
+\end_inset 
+
+big result
+\begin_inset Quotes erd
+\end_inset 
+
+ that we want to derive is this:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{\phi_{i}V(\mu_{i})g'(\mu_{i})}\left[y_{i}-\mu_{i}\right]x_{ik}=0\label{eq:UNonCanonical2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+That's a 
+\begin_inset Quotes eld
+\end_inset 
+
+big result
+\begin_inset Quotes erd
+\end_inset 
+
+ because because it looks 
+\begin_inset Quotes eld
+\end_inset 
+
+almost exactly like
+\begin_inset Quotes erd
+\end_inset 
+
+ the score equation from Weighted (or Generalized) Least Squares.
+\layout Subsection
+
+How to simplify expression 
+\begin_inset LatexCommand \ref{eq:noncanloglike2}
+
+\end_inset 
+
+.
+\layout Enumerate
+
+Claim: 
+\begin_inset Formula $\partial l/\partial\theta=[y_{i}-\mu_{i}]/\phi_{i}$
+\end_inset 
+
+ .
+ This is easy to show.
+ Start with the general version of the exponential family:
+\begin_deeper 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+l(\theta_{i}|y_{i})=\frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\label{loglik}\end{equation}
+
+\end_inset 
+
+ Differentiate:
+\layout Standard
+
+
+\begin_inset Formula \begin{eqnarray}
+\frac{\partial l_{i}}{\partial\theta_{i}} & = & \frac{1}{\phi_{i}}\left[y_{i}-\frac{dc(\theta_{i})}{d\theta_{i}}\right]\label{eq:PartialDlTheta}\end{eqnarray}
+
+\end_inset 
+
+
+\layout Standard
+
+Use GLM Fact #1,
+\begin_inset Formula $\mu_{i}=dc(\theta_{i})/d\theta_{i}$
+\end_inset 
+
+.
+ 
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{i}}{\partial\theta_{i}}=\frac{1}{\phi_{i}}\left[y_{i}-\mu_{i}\right]\label{eq:Derivltheta}\end{equation}
+
+\end_inset 
+
+
+\newline 
+This is starting to look familiar, right? Its the difference between the
+ observation and its expected (dare we say, predicted?) value.
+ A residual, in other words.
+\end_deeper 
+\layout Enumerate
+
+Claim: 
+\begin_inset Formula $\frac{\partial\theta_{i}}{\partial\mu_{i}}=\frac{1}{V(\mu)}$
+\end_inset 
+
+
+\begin_deeper 
+\layout Standard
+
+Recall GLM Fact #1, 
+\begin_inset Formula $\mu_{i}=dc/d\theta_{i}$
+\end_inset 
+
+.
+ Differentiate 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ with respect to 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\mu_{i}}{\partial\theta_{i}}=\frac{d^{2}c(\theta_{i})}{d\theta_{i}^{2}}\label{eq:DmuDtheta}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In light of GLM Fact #2,
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\mu_{i}}{\partial\theta_{i}}=\frac{Var(y_{i})}{\phi_{i}}\label{eq:NonCanonical01}\end{equation}
+
+\end_inset 
+
+
+\newline 
+And 
+\begin_inset Formula $Var(y_{i})=\phi_{i}\cdot V(\mu),$
+\end_inset 
+
+ so 
+\begin_inset LatexCommand \ref{eq:DmuDtheta}
+
+\end_inset 
+
+ reduces to
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\mu_{i}}{\partial\theta_{i}}=V(\mu_{i})\label{eq:NonCanonical02}\end{equation}
+
+\end_inset 
+
+
+\newline 
+For continuous functions, it is true that 
+\begin_inset Formula \begin{equation}
+\frac{\partial\theta_{i}}{\partial\mu_{i}}=\frac{1}{\frac{\partial\mu_{i}}{\partial\theta_{i}}}\label{eq:NonCanonical03}\end{equation}
+
+\end_inset 
+
+
+\newline 
+and so the conclusion is
+\begin_inset Formula \begin{equation}
+\frac{\partial\theta_{i}}{\partial\mu_{i}}=\frac{1}{V(\mu_{i})}\label{eq:NonCanonical04}\end{equation}
+
+\end_inset 
+
+
+\end_deeper 
+\layout Enumerate
+
+Claim: 
+\begin_inset Formula $\partial\eta_{i}/\partial b_{k}=x_{ik}$
+\end_inset 
+
+ 
+\begin_deeper 
+\layout Standard
+
+This is a simple result because we are working with a linear model!
+\layout Standard
+
+The link function indicates 
+\layout Standard
+
+
+\begin_inset Formula \[
+\eta_{i}=X_{i}b=b_{1}x_{i1}+...+b_{p}x_{ip}\]
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\eta_{i}}{\partial b_{k}}=x_{ik}\label{eq:DerivEtaB}\end{equation}
+
+\end_inset 
+
+
+\end_deeper 
+\layout Subsubsection*
+
+The Big Result: Put these claims together to simplify 
+\begin_inset LatexCommand \ref{eq:noncanloglike2}
+
+\end_inset 
+
+
+\layout Standard
+
+There is one score equation for each parameter being estimated.
+ Insert the results from the previous steps into 
+\begin_inset LatexCommand \ref{eq:noncanloglike2}
+
+\end_inset 
+
+.
+ (See, eg, McCullagh & Nelder, p.
+ 41, MM&V, p.
+ 331, or Dobson, p.
+ 63).
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{\phi_{i}V(\mu_{i})}\left[y_{i}-\mu_{i}\right]\frac{\partial\mu_{i}}{\partial\eta_{i}}x_{ik}=0\end{equation}
+
+\end_inset 
+
+
+\newline 
+Note 
+\begin_inset Formula $\partial\mu_{i}/\partial\eta_{i}$
+\end_inset 
+
+ = 
+\begin_inset Formula $1/g'(\mu_{o})$
+\end_inset 
+
+ because
+\begin_inset Formula \begin{equation}
+\frac{\partial\mu_{i}}{\partial\eta_{i}}=\frac{1}{\frac{\partial\eta_{i}}{\partial\mu_{i}}}=\frac{1}{g'(\mu_{i})}\end{equation}
+
+\end_inset 
+
+
+\newline 
+As a result, we find:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{\phi_{i}V(\mu_{i})g'(\mu_{i})}\left[y_{i}-\mu_{i}\right]x_{ik}=0\label{eq:UNonCanonical2b}\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+The Big Result in matrix form
+\layout Standard
+
+In matrix form, 
+\begin_inset Formula $y$
+\end_inset 
+
+ and 
+\begin_inset Formula $\mu$
+\end_inset 
+
+are column vectors and X is the usual data matrix.
+ So
+\begin_inset Formula \begin{equation}
+X'W(y-\mu)=0\label{eq:UNonCanonicalSystem1}\end{equation}
+
+\end_inset 
+
+ The matrix 
+\begin_inset Formula $W$
+\end_inset 
+
+ is NxN square, but it has only diagonal elements 
+\begin_inset Formula $\frac{1}{\phi_{i}}\frac{1}{V(\mu_{i})}\frac{\partial\mu_{i}}{\partial\eta_{i}}$
+\end_inset 
+
+.
+ More explicitly, 
+\begin_inset LatexCommand \ref{eq:UNonCanonicalSystem1}
+
+\end_inset 
+
+ would be: 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{cccc}
+x_{11} & x_{21} & \cdots & x_{N1}\\
+\\x_{1p} & x_{2p} &  & x_{Np}\end{array}\right]\left[\begin{array}{cccc}
+\frac{1}{\phi_{i}V(\mu_{1})}\frac{\partial\mu_{i}}{\partial\eta_{i}} & 0 & \cdots & 0\\
+0 & \frac{1}{\phi_{2}V(\mu_{2})}\frac{\partial\mu_{2}}{\partial\eta_{2}} & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & 0 & \frac{1}{\phi_{N}V(\mu_{N})}\frac{\partial\mu_{N}}{\partial\eta_{N}}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\mu_{1}\\
+y_{2}-\mu_{2}\\
+\vdots\\
+y_{N}-\mu_{N}\end{array}\right]=\left[\begin{array}{c}
+0\\
+0\\
+\vdots\\
+0\end{array}\right]\label{eq:UNonCanonical4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+There are 
+\begin_inset Formula $p$
+\end_inset 
+
+ rows here, each one representing one of the score equations.
+\layout Standard
+
+The matrix equation in 
+\begin_inset LatexCommand \ref{eq:UNonCanonicalSystem1}
+
+\end_inset 
+
+ implies
+\begin_inset Formula \begin{equation}
+X'Wy=X'\mu\label{eq:UNonCanonical 5}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The problem remains to find estimate of 
+\begin_inset Formula $b$
+\end_inset 
+
+ so that these equations are satisfied.
+\layout Section
+
+Score equations for the Canonical Link
+\layout Standard
+
+Recall we want to solve this score equation.
+\layout Standard
+
+
+\begin_inset Formula \[
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{\partial l_{i}}{\partial\theta_{i}}\frac{\partial\theta_{i}}{\partial\mu_{i}}\frac{\partial\mu_{i}}{\partial\eta_{i}}\frac{\partial\eta_{i}}{\partial b_{k}}=0\]
+
+\end_inset 
+
+
+\layout Standard
+
+The end result will be the following
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{\phi_{i}}\left[y_{i}-\mu_{i}\right]x_{ik}=0\label{eq:UCanonical2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Usually it is assumed that the dispersion parameter is the same for all
+ cases.
+ That means 
+\begin_inset Formula $\phi$
+\end_inset 
+
+ is just a scaling factor that does not affect the calculation of optimal
+ 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+.
+ So this simplifies as
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\left[y_{i}-\mu_{i}\right]x_{ik}=0\label{eq:UCanonical2a}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+I know of two ways to show that this result is valid.
+ The first approach follows the same route that was used for the noncanonical
+ case.
+\layout Subsection
+
+Proof strategy 1
+\layout Enumerate
+
+Claim 1:
+\begin_deeper 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{\partial l_{i}}{\partial\theta_{i}}\frac{\partial\eta_{i}}{\partial b_{k}}\label{eq:UCanonical}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is true because the canonical link implies that
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\theta_{i}}{\partial\mu_{i}}\frac{\partial\mu_{i}}{\partial\eta_{i}}=1\label{eq:assertion}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Because the canonical link is chosen so that 
+\begin_inset Formula $\theta_{i}=\eta_{i}$
+\end_inset 
+
+, then it must be that 
+\begin_inset Formula $\partial\theta/\partial\eta=1$
+\end_inset 
+
+ and 
+\begin_inset Formula $\partial\eta/\partial\theta=1$
+\end_inset 
+
+.
+ If you just think of the derivatives in 
+\begin_inset LatexCommand \ref{eq:assertion}
+
+\end_inset 
+
+ as fractions and rearrange the denominators, you can arrive at the right
+ conclusion (but I was cautioned by calculus professors at several times
+ about doing things like that without exercising great caution).
+\layout Standard
+
+It is probably better to remember my magical 
+\begin_inset Formula $q$
+\end_inset 
+
+, where 
+\begin_inset Formula $\theta_{i}=q(\mu_{i})$
+\end_inset 
+
+, and note that 
+\begin_inset Formula $\mu_{i}=g^{-1}(\eta_{i})$
+\end_inset 
+
+, so expression 
+\begin_inset LatexCommand \ref{eq:assertion}
+
+\end_inset 
+
+ can be written 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial q(\mu_{i})}{\partial\mu_{i}}\frac{\partial g^{-1}(\eta_{i})}{\partial\eta_{i}}\label{eq:assertion2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+In the canonical case, 
+\begin_inset Formula $\theta_{i}=q(\mu_{i})=g(\mu_{i})$
+\end_inset 
+
+, and also 
+\begin_inset Formula $\mu_{i}=g^{-1}(\eta_{i})=q^{-1}(\eta)$
+\end_inset 
+
+.
+ Recall the definition of the link function includes the restriction that
+ it is a monotonic function.
+ For monotonic functions, the derivative of the inverse is (here I cite
+ my first year calculus book: Jerrold Marsden and Alan Weinstein, 
+\emph on 
+Calculus,
+\emph default 
+ Menlo Park, CA: Benjamin-Cummings, 1980, p.
+ 224):
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial g^{-1}(\eta_{i})}{\partial\eta_{i}}=\frac{\partial q^{-1}(\eta_{i})}{\partial\eta_{i}}=\frac{1}{\frac{\partial q(\mu_{i})}{\partial\eta_{i}}}\label{eq:assertion3}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Insert that into expression 
+\begin_inset LatexCommand \ref{eq:assertion2}
+
+\end_inset 
+
+ and you see that the assertion in 
+\begin_inset LatexCommand \ref{eq:assertion}
+
+\end_inset 
+
+ is correct.
+\end_deeper 
+\layout Enumerate
+
+Claim 2: Previously obtained results allow a completion of this exercise.
+\begin_deeper 
+\layout Standard
+
+The results of the proof for the noncanonical case can be used.
+ Equations 
+\begin_inset LatexCommand \ref{eq:Derivltheta}
+
+\end_inset 
+
+ and 
+\begin_inset LatexCommand \ref{eq:DerivEtaB}
+
+\end_inset 
+
+ indicate that we can replace 
+\begin_inset Formula $\partial l_{i}/\partial\theta_{i}$
+\end_inset 
+
+ with 
+\begin_inset Formula $\frac{1}{\phi_{i}}\left[y_{i}-\mu_{i}\right]$
+\end_inset 
+
+and 
+\begin_inset Formula $\partial\eta_{i}/\partial b_{k{}}$
+\end_inset 
+
+ with 
+\begin_inset Formula $x_{ik}$
+\end_inset 
+
+.
+ 
+\end_deeper 
+\layout Subsection
+
+Proof Strategy 2.
+\layout Standard
+
+Begin with the log likelihood of the exponential family.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+l(\theta_{i}|y_{i})=\frac{y_{i}\theta_{i}-c(\theta_{i})}{\phi_{i}}+h(y_{i},\phi_{i})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Step 1.
+ Recall 
+\begin_inset Formula $\theta_{i}=\eta_{i}=X_{i}b$
+\end_inset 
+
+:
+\begin_inset Formula \begin{equation}
+l(\theta_{i}|y_{i})=\frac{y_{i}\cdot X_{i}b-c(X_{i}b)}{\phi_{i}}+h(y_{i},\phi_{i})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+We can replace 
+\begin_inset Formula $\theta_{i}$
+\end_inset 
+
+ by 
+\begin_inset Formula $X_{i}b$
+\end_inset 
+
+ because the definition of the canonical link (
+\begin_inset Formula $\theta_{i}=\eta_{i}$
+\end_inset 
+
+) and the model originally stated 
+\begin_inset Formula $\eta_{i}=X_{i}b$
+\end_inset 
+
+.
+\layout Standard
+
+Step 2.
+ Differentiate with respect to 
+\begin_inset Formula $b_{k}$
+\end_inset 
+
+ to find the 
+\begin_inset Formula $k'th$
+\end_inset 
+
+ score equation
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{i}}{\partial b_{k}}=\frac{y_{i}x_{i}-c'(X_{i}b)x_{ik}}{\phi_{i}}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The chain rule is used.
+ 
+\begin_inset Formula \begin{equation}
+\frac{dc(X_{i}b)}{db_{k}}=\frac{dc(X_{i}b)}{d\theta_{k}}\frac{dX_{i}b}{db_{k}}=c'(X_{i}b)x_{ik}\end{equation}
+
+\end_inset 
+
+Recall GLM Fact #1, which stated that 
+\begin_inset Formula $c'(\theta_{i})=\mu_{i}$
+\end_inset 
+
+.
+ That implies
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=\frac{y_{i}x_{ik}-\mu_{i}x_{ik}}{\phi_{i}}\end{equation}
+
+\end_inset 
+
+
+\newline 
+and after re-arranging
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=\frac{1}{\phi_{i}}[y_{i}-\mu_{i}]x_{ik}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+There is one of the score equations for each of 
+\begin_inset Formula $p$
+\end_inset 
+
+ the parameters.
+ The challenge is to choose a vector of estimates 
+\begin_inset Formula $\hat{b}=(\hat{b}_{1},\hat{b}_{2},\ldots,\hat{b}_{k-1},\hat{b}_{p})$
+\end_inset 
+
+ that simultaneously solve all equations of this form.
+\layout Subsection
+
+The Matrix form of the Score Equation for the Canonical Link
+\layout Standard
+
+In matrix form, the 
+\begin_inset Formula $k$
+\end_inset 
+
+ equations would look like this:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{ccccccc}
+x_{11} & x_{21} & x_{31} & \cdots &  & x_{(N-1)1} & x_{N1}\\
+x_{12} & x_{22} &  &  &  &  & x_{N2}\\
+x_{13} & x_{23} &  &  &  &  & x_{N3}\\
+\vdots &  &  &  &  &  & \vdots\\
+x_{1p} & x_{2p} &  & \cdots &  & x_{(N-1)p} & x_{Np}\end{array}\right]\left[\begin{array}{cccc}
+\frac{1}{\phi_{1}} & 0 & 0 & 0\\
+0 & \frac{1}{\phi_{2}} & 0 & 0\\
+\vdots &  & \ddots & \vdots\\
+0 & 0 & 0 & \frac{1}{\phi_{N}}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\mu_{1}\\
+y_{2}-\mu_{2}\\
+y_{3}-\mu_{3}\\
+\\\vdots\\
+y_{(N-1)}-\mu_{(N-1)}\\
+y_{N}-\mu_{N}\end{array}\right]=\left[\begin{array}{c}
+0\\
+0\\
+0\\
+0\\
+\vdots\\
+0\\
+0\end{array}\right]\label{eq:CanonicalSystem1}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+MM&V note that we usually assume 
+\begin_inset Formula $\phi_{i}$
+\end_inset 
+
+ is the same for all cases.
+ If it is a constant, it disappears from the problem.
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{ccccccc}
+x_{11} & x_{21} & x_{31} & \cdots &  & x_{(N-1)1} & x_{N1}\\
+x_{12} & x_{22} &  &  &  &  & x_{N2}\\
+x_{13} & x_{23} &  &  &  &  & x_{N3}\\
+\vdots &  &  &  &  &  & \vdots\\
+x_{1p} & x_{2p} &  & \cdots &  & x_{(N-1)p} & x_{Np}\end{array}\right]\left[\begin{array}{c}
+y_{1}-\mu_{1}\\
+y_{2}-\mu_{2}\\
+y_{3}-\mu_{3}\\
+\\\vdots\\
+y_{(N-1)}-\mu_{(N-1)}\\
+y_{N}-\mu_{N}\end{array}\right]=\left[\begin{array}{c}
+0\\
+0\\
+0\\
+0\\
+\vdots\\
+0\\
+0\end{array}\right]\label{eq:CanonicalSystem2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Assuming 
+\begin_inset Formula $\phi_{i}=\phi$
+\end_inset 
+
+, the matrix form is as follows.
+ 
+\begin_inset Formula $y$
+\end_inset 
+
+ and 
+\begin_inset Formula $\mu$
+\end_inset 
+
+ are column vectors and 
+\begin_inset Formula $X$
+\end_inset 
+
+ is the usual data matrix.
+ So this amounts to:
+\begin_inset Formula \begin{equation}
+\frac{1}{\phi}X'(y-\mu)=X'(y-\mu)=0\label{eq:CanonicalSystem2}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+X'y=X'\mu\end{equation}
+
+\end_inset 
+
+ Although this appears to be not substantially easier to solve than the
+ noncanonical version, it is in fact quite a bit simpler.
+ In this expression, the only element that depends on 
+\begin_inset Formula $b$
+\end_inset 
+
+ is 
+\begin_inset Formula $\mu$
+\end_inset 
+
+.
+ In the noncanonical version, we had both 
+\begin_inset Formula $W$
+\end_inset 
+
+ and 
+\begin_inset Formula $\mu$
+\end_inset 
+
+ that were sensitive to 
+\begin_inset Formula $b$
+\end_inset 
+
+.
+\layout Section
+
+ML Estimation: Newton-based algorithms.
+\begin_inset LatexCommand \label{sub:IWLS}
+
+\end_inset 
+
+
+\layout Standard
+
+The problem outlined in 
+\begin_inset LatexCommand \ref{eq:UNonCanonical2}
+
+\end_inset 
+
+ or 
+\begin_inset LatexCommand \ref{eq:CanonicalSystem1}
+
+\end_inset 
+
+ is not easy to solve for optimal estimates of 
+\begin_inset Formula $b$
+\end_inset 
+
+.
+ The value of the mean, 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ depends on the unknown coefficients, 
+\begin_inset Formula $b$
+\end_inset 
+
+, as well as the values of the 
+\begin_inset Formula $X$
+\end_inset 
+
+'s, the 
+\begin_inset Formula $y$
+\end_inset 
+
+'s, and possibly other parameters.
+ And in the noncanonical system, there is the additional complication of
+ the weight matrix 
+\begin_inset Formula $W$
+\end_inset 
+
+.
+ There is no 
+\begin_inset Quotes eld
+\end_inset 
+
+closed form
+\begin_inset Quotes erd
+\end_inset 
+
+ solution to the problem.
+\layout Standard
+
+
+\size larger 
+The Bottom Line: we need to find the roots of the score functions.
+ 
+\layout Standard
+
+Adjust the estimated values of the 
+\begin_inset Formula $b$
+\end_inset 
+
+'s so that the score functions equal to 0.
+\layout Standard
+
+The general approach for iterative calculation is as follows:
+\begin_inset Formula \[
+b^{t+1}=b^{t}+Adjustment\,\]
+
+\end_inset 
+
+
+\layout Standard
+
+The Newton and Fisher scoring methods differ only slightly, in the choice
+ of the 
+\begin_inset Formula $Adjustment$
+\end_inset 
+
+.
+\layout Subsection
+
+Recall Newton's method
+\layout Standard
+
+Review my Approximations handout and Newton's method.
+ One can approximate a function 
+\begin_inset Formula $f()$
+\end_inset 
+
+ by the sum of its value at a point and a linear projection (
+\begin_inset Formula $f'$
+\end_inset 
+
+ means derivative of 
+\begin_inset Formula $f$
+\end_inset 
+
+):
+\begin_inset Formula \begin{equation}
+f(b^{t+1})=f(b^{t})+(b^{t+1}-b^{t})f'(b^{t})\label{eq:NewtonMethod1}\end{equation}
+
+\end_inset 
+
+This means that the value of 
+\begin_inset Formula $f$
+\end_inset 
+
+ at 
+\begin_inset Formula $b^{t+1}$
+\end_inset 
+
+ is approximated by the value of 
+\begin_inset Formula $f$
+\end_inset 
+
+ at 
+\begin_inset Formula $b^{t}$
+\end_inset 
+
+ plus an approximating increment.
+\layout Standard
+
+The Newton algorithm for root finding (also called the Newton-Raphson algorithm)
+ is a technique that uses Netwon's approximation insight to find the roots
+ of an first order equation.
+ If this is a score equation (first order condition), we want the left hand
+ size to be zero, that means that we should adjust the parameter estimate
+ so that
+\begin_inset Formula \begin{equation}
+0=f(b^{t})+(b^{t+1}-b^{t})f'(b^{t})\label{eq:NewtonMethod2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+or
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+b^{t+1}=b^{t}-\frac{f(b^{t})}{f'(b^{t})}\label{eq:NewtonMethod3}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This gives us an 
+\series bold 
+iterative procedure
+\series default 
+ for recalculating new estimates of 
+\begin_inset Formula $b.$
+\end_inset 
+
+
+\layout Subsection
+
+Newton-Raphson method with several parameters
+\layout Standard
+
+The Newton approach to approximation is the basis for both the Newton-Raphson
+ algorithm and the Fisher 
+\begin_inset Quotes eld
+\end_inset 
+
+method of scoring.
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\layout Standard
+
+Examine formula 
+\begin_inset LatexCommand \ref{eq:NewtonMethod3}
+
+\end_inset 
+
+.
+ That equation holds whether 
+\begin_inset Formula $b$
+\end_inset 
+
+ is a single scalar or a vector, with the obvious exception that, in a vector
+ context, the denominator is thought of as the inverse of a matrix, 
+\begin_inset Formula $1/f'(b)=[f'(b)]^{-1}.$
+\end_inset 
+
+ Note that 
+\begin_inset Formula $f(b)$
+\end_inset 
+
+ is a column vector of 
+\begin_inset Formula $p$
+\end_inset 
+
+ derivatives, one for each variable in the vector 
+\begin_inset Formula $b$
+\end_inset 
+
+ (it is called a 'gradient').
+ And the 
+\begin_inset Formula $f'(b)$
+\end_inset 
+
+ is the matrix of second derivatives.
+ For a three-parameter problem, for example:
+\begin_inset Formula \begin{equation}
+f(b_{1},b_{2,},b_{3})=\left[\begin{array}{c}
+\frac{\partial l(b|y)}{\partial b_{1}}\\
+\frac{\partial l(b|y)}{\partial b_{2}}\\
+\frac{\partial l(b|y)}{\partial b_{3}}\end{array}\right]\label{eq:f}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+f'(b_{1},b_{2,},b_{3})=\left[\frac{\partial^{2}l}{\partial b\partial b'}\right]=\left[\begin{array}{ccc}
+\frac{\partial^{2}l(b|y)}{\partial b_{1}^{2}} & \frac{\partial^{2}l(b|y)}{\partial b_{1}\partial b_{2}} & \frac{\partial^{2}l(b|y)}{\partial b_{1}\partial b_{3}}\\
+\frac{\partial^{2}l(b|y)}{\partial b_{1}\partial b_{2}} & \frac{\partial^{2}l(b|y)}{\partial b_{2}^{2}} & \frac{\partial^{2}l(b|y)}{\partial b_{2}\partial b_{3}}\\
+\frac{\partial^{2}l(b|y)}{\partial b_{1}\partial b_{3}} & \frac{\partial^{2}l(b|y)}{\partial b_{2}\partial b_{3}} & \frac{\partial^{2}l(b|y)}{\partial b_{3}^{2}}\end{array}\right]\label{eq:fprime}\end{equation}
+
+\end_inset 
+
+That matrix of second derivatives is also known as the Hessian.
+ By custom, it is often called 
+\begin_inset Formula $H$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+The Newton-Raphson algorithm at step 
+\begin_inset Formula $t$
+\end_inset 
+
+ updates the estimate of the parameters in this way:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+b^{t+1}=b^{t}-\left[\frac{\partial^{2}l(b^{t}|y)}{\partial b\partial b'}\right]^{-1}\left[\frac{\partial l(b^{t}|y)}{\partial b}\right]\label{eq:NewtonMethod4}\end{equation}
+
+\end_inset 
+
+
+\newline 
+If you want to save some ink, write 
+\begin_inset Formula $b^{t+1}=b^{t}-H^{-1}f(b)$
+\end_inset 
+
+ or 
+\begin_inset Formula $b^{t+1}=b^{t}-H^{-1}\partial l/\partial b$
+\end_inset 
+
+.
+\layout Standard
+
+We have the negative of the Hessian matrix in this formula.
+ From the basics of matrix calculus, if 
+\begin_inset Formula $H$
+\end_inset 
+
+ is 
+\begin_inset Quotes eld
+\end_inset 
+
+negative semi-definite,
+\begin_inset Quotes erd
+\end_inset 
+
+ it means we are in the vicinity of a local maximum in the likelihood function.
+ The iteration process will cause the likelihood to increase with each re-calcul
+ation.
+ (Note, saying 
+\begin_inset Formula $H$
+\end_inset 
+
+ is negative definite is the same as saying that 
+\begin_inset Formula $-H$
+\end_inset 
+
+ is not positive definite).
+ In the vicinity of the maximum, all will be well, but when the likelihood
+ is far from maximal, it may not be so.
+ 
+\layout Standard
+
+The point of caution here is that the matrix 
+\begin_inset Formula $H^{-1}$
+\end_inset 
+
+ is not always going to take the estimate of the new parameter in 
+\begin_inset Quotes eld
+\end_inset 
+
+the right direction
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ There is nothing that guarantees the matrix is negative semi-definite,
+ assuring that the fit is 
+\begin_inset Quotes eld
+\end_inset 
+
+going down
+\begin_inset Quotes erd
+\end_inset 
+
+ the surface of the likelihood function.
+\layout Subsection
+
+Fisher Scoring
+\layout Standard
+
+R.A.
+ Fisher was a famous statistician who pioneered much of the maximum likelihood
+ theory.
+ In his method of scoring, instead of the negative Hessian, one should instead
+ use the information matrix, which is the negative of the expected value
+ of the Hessian matrix.
+\begin_inset Formula \begin{equation}
+I(b)=-E\left[\frac{\partial^{2}l(b^{t}|y)}{\partial b\partial b'}\right]\label{eq:Information}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The matrix 
+\begin_inset Formula $E[\partial^{2}l/\partial b\partial b']$
+\end_inset 
+
+ is always negative semi-definite, so it has a theoretical advantage over
+ the Newton-Raphson approach.
+ (
+\begin_inset Formula $-E[\partial^{2}l/\partial b\partial b']$
+\end_inset 
+
+ is positive semi-definite).
+\layout Standard
+
+There are several different ways to calculate the information matrix.
+ In Dobson's 
+\emph on 
+An Introduction to Generalized Linear Models
+\emph default 
+, 2ed, the following strategy is used.
+ The item in the j'th row, k'th column of the information matrix is known
+ to be
+\begin_inset Formula \begin{equation}
+I_{jk}(b)=E[U(b_{j})U(b_{k})]\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+I should track down the book where I read that this is one of three ways
+ to calculate the expected value of the Hessian matrix in order to get the
+ Information.
+ Until I remember what that was, just proceed.
+ Fill in the values of the score equations 
+\begin_inset Formula $U(b_{j})$
+\end_inset 
+
+ and 
+\begin_inset Formula $U(b_{k})$
+\end_inset 
+
+ from the previous results:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+E[[\sum_{i=1}^{N}\frac{y_{i}-\mu_{i}}{\phi V(\mu_{i})g'(\mu_{i})}x_{ij}][\sum_{l=1}^{N}\frac{y_{l}-\mu_{l}}{\phi V(\mu_{l})g'(\mu_{l})}x_{lk}]\end{equation}
+
+\end_inset 
+
+
+\newline 
+That gives 
+\begin_inset Formula $N\times N$
+\end_inset 
+
+ terms in a sum, but almost all of them are 0.
+ 
+\begin_inset Formula $E[(y_{i}-\mu_{i})(y_{l}-\mu_{l})]=0$
+\end_inset 
+
+ if 
+\begin_inset Formula $i\neq l$
+\end_inset 
+
+, since the cases are statistically independent.
+ That collapses the total to N terms,
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\sum_{i=1}^{N}\frac{E(y_{i}-\mu_{i})^{2}}{[\phi V(\mu_{i})g'(\mu_{i})]^{2}}x_{ij}x_{ik}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The only randomly varying quantity is 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, so the denominator is already reduced as far as it can go.
+ Recall that the definition of the variance of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+ is equal to the numerator, 
+\begin_inset Formula $Var(y_{i})=E(y_{i}-\mu_{i})^{2}$
+\end_inset 
+
+ and 
+\begin_inset Formula $Var(y_{i})=\phi V(\mu_{i})$
+\end_inset 
+
+, so we can do some rearranging and end up with
+\begin_inset Formula \begin{equation}
+\sum_{i=1}^{N}\frac{1}{\phi V(\mu)[g'(\mu_{i})]^{2}}x_{ij}x_{ik}\end{equation}
+
+\end_inset 
+
+
+\newline 
+which is the same as
+\begin_inset Formula \begin{equation}
+\sum_{i=1}^{N}\frac{1}{\phi V(\mu)}\left(\frac{\partial\mu_{i}}{\partial\eta_{i}}\right)x_{ij}x_{ik}\end{equation}
+
+\end_inset 
+
+
+\newline 
+The part that includes the 
+\begin_inset Formula $X$
+\end_inset 
+
+ data information can be separated from the rest.
+ Think of the not-
+\begin_inset Formula $X$
+\end_inset 
+
+ part as a weight.
+\layout Standard
+
+Using matrix algebra, letting 
+\begin_inset Formula $x_{j}$
+\end_inset 
+
+ represent the 
+\begin_inset Formula $j'th$
+\end_inset 
+
+ column from the data matrix 
+\begin_inset Formula $X$
+\end_inset 
+
+,
+\begin_inset Formula \begin{equation}
+I_{jk}(b)=x_{j}'Wx_{k}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The Fisher Information Matrix is simply compiled by filling in all of its
+ elements in that way, and the whole information matrix is
+\begin_inset Formula \begin{equation}
+I(b)=X'WX\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+The Fisher scoring equations, using the information matrix, are
+\begin_inset Formula \begin{equation}
+b^{t+1}=b^{t}+\left[I(b^{t})\right]^{-1}U(b^{t})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Get rid of the inverse on the right hand side by multiplying through on
+ the left by 
+\begin_inset Formula $I(b^{t})$
+\end_inset 
+
+:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+I(b^{t})b^{t+1}=I(b^{t})b^{t}+U(b^{t})\end{equation}
+
+\end_inset 
+
+
+\newline 
+Using the formulae that were developed for the information matrix and the
+ score equation, the following is found (after about 6 steps, which Dobson
+ wrote down clearly):
+\begin_inset Formula \begin{equation}
+X'WXb^{t+1}=X'Wz\end{equation}
+
+\end_inset 
+
+
+\newline 
+The reader should become very alert at this point because we have found
+ something that should look very familiar.
+ The previous equation is the VERY RECOGNIZABLE normal equation in regression
+ analysis.
+ It is the matrix equation for the estimation of a weighted regression model
+ in which 
+\begin_inset Formula $z$
+\end_inset 
+
+ is the dependent variable and 
+\begin_inset Formula $X$
+\end_inset 
+
+ is a matrix of input variables.
+ That means that a computer program written to do regression can be put
+ to use in calculating the 
+\begin_inset Formula $b$
+\end_inset 
+
+ estimates for a GLM.
+ One simply has to obtain the 
+\begin_inset Quotes eld
+\end_inset 
+
+new
+\begin_inset Quotes erd
+\end_inset 
+
+ (should I say 
+\begin_inset Quotes eld
+\end_inset 
+
+constructed
+\begin_inset Quotes erd
+\end_inset 
+
+) variable 
+\begin_inset Formula $z$
+\end_inset 
+
+ and run regressions.
+ Over and over.
+\layout Standard
+
+The variable 
+\begin_inset Formula $z$
+\end_inset 
+
+ appears here after some careful re-grouping of the right hand side.
+ It is something of a magical value, appearing as if by accident (but probably
+ not an accident in the eyes of the experts).
+ The column vector 
+\begin_inset Formula $z$
+\end_inset 
+
+ has individual elements equal to the following (
+\begin_inset Formula $t$
+\end_inset 
+
+ represents calculations made at the 
+\begin_inset Formula $t$
+\end_inset 
+
+'th iteration).
+\begin_inset Formula \begin{equation}
+z_{i}=x_{i}'b^{t}+(y_{i}-\mu_{i}^{t})\left(\frac{\partial\eta_{i}^{t}}{\partial\mu_{i}}\right)\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Since 
+\begin_inset Formula $\eta_{i}=x_{i}'b^{t}$
+\end_inset 
+
+, this is
+\begin_inset Formula \begin{equation}
+z_{i}=\eta_{i}^{t}+(y_{i}-\mu_{i}^{t})\left(\frac{\partial\eta_{i}^{t}}{\partial\mu_{i}}\right)\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This is a Newtonian approximation formula.
+ It gives an approximation of the linear predictor's value, starting at
+ the point 
+\begin_inset Formula $(\mu_{i}^{t},\eta_{i}^{t}$
+\end_inset 
+
+) and moving 
+\begin_inset Quotes eld
+\end_inset 
+
+horizontally
+\begin_inset Quotes erd
+\end_inset 
+
+ by the distance 
+\begin_inset Formula $(y_{i}-\mu_{i}^{t})$
+\end_inset 
+
+.
+ The variable 
+\begin_inset Formula $z_{i}$
+\end_inset 
+
+ essentially represents our best guess of what the unmeasured 
+\begin_inset Quotes eld
+\end_inset 
+
+linear predictor
+\begin_inset Quotes erd
+\end_inset 
+
+ is for a case in which the observed value of the dependent variable is
+ 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+ The estimation uses 
+\begin_inset Formula $\mu_{i}^{t}$
+\end_inset 
+
+, our current estimate of the mean corresponding to 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, with the link function to make the approximation.
+ 
+\layout Subsubsection
+
+General blithering about Fisher Scoring and ML
+\layout Standard
+
+I have encountered a mix of opinion about 
+\begin_inset Formula $H$
+\end_inset 
+
+ and 
+\begin_inset Formula $I$
+\end_inset 
+
+ and why some authors emphasize 
+\begin_inset Formula $H$
+\end_inset 
+
+ and others emphasize 
+\begin_inset Formula $I$
+\end_inset 
+
+.
+ In the general ML context, the Information matrix is more difficult to
+ find because it requires us to calculate the expected value, which depends
+ on a complicated distribution.
+ That is William Greene's argument 
+\emph on 
+(Econometric Analysis,
+\emph default 
+ 5th edition, p.
+ 939).
+ He claims that most of the time the Hessian itself, rather than its expected
+ value, is used in practice.
+ In the GLM, however, we have special structure--the exponential family--which
+ simplifies the problem.
+ 
+\layout Standard
+
+In a general ML context, many excellent books argue in favor of using Fisher's
+ information matrix rather than the Hessian matrix.
+ This approach is called 
+\begin_inset Quotes eld
+\end_inset 
+
+Fisher scoring
+\begin_inset Quotes erd
+\end_inset 
+
+ most of the time, but the terminology is sometimes ambiguous.
+ Eugene Demidenko's 
+\emph on 
+Mixed Models: Theory and Applications 
+\emph default 
+(New York: Wiley, 2004).
+ Demidenko outlines several reasons to prefer the Fisher approach.
+ In the present context, this is the most relevant (p.
+ 86):
+\layout Quote
+
+The negative Hessian matrix, 
+\begin_inset Formula $-\partial^{2}l/\partial\theta^{2}$
+\end_inset 
+
+, or 
+\emph on 
+empirical
+\emph default 
+ information matrix, may not be positive definite (more precisely, not nonnegati
+ve definite) especially when the current approximation is far from the MLE.
+ When this happens, the NR algorithm slows down or even fails.
+ On the contrary, the 
+\emph on 
+expected 
+\emph default 
+information matrix, used in the FS algorithm, is always positive definite...
+\layout Standard
+
+Incidentally, it does not matter if we use the ordinary N-R algorithm or
+ Fisher scoring with the canonical link in a GLM.
+ The expected value of the Hessian equals the observed value when a canonical
+ link is used.
+ McCullagh & Nelder observe that
+\begin_inset Formula $-H$
+\end_inset 
+
+ equals 
+\begin_inset Formula $I$
+\end_inset 
+
+.
+\layout Standard
+
+The reader might want to review the ML theory.
+ The Variance/Covariance matrix of the estimates of 
+\begin_inset Formula $b$
+\end_inset 
+
+ is correctly given by the inverse of 
+\begin_inset Formula $I(b)$
+\end_inset 
+
+.
+ As mentioned in the comparison of 
+\begin_inset Formula $I$
+\end_inset 
+
+ and 
+\begin_inset Formula $H$
+\end_inset 
+
+, my observation is that, in the general maximum likelihood problem, 
+\begin_inset Formula $I(b)$
+\end_inset 
+
+ can't be calculated, so an approximation based on the observed second derivativ
+es is used.
+ It is frequently asserted that the approximations are almost as good.
+\layout Standard
+
+I have found several sources which claim that the Newton-Raphson method
+ will lead to slightly different estimates of the Variance/Covariance matrix
+ of 
+\begin_inset Formula $b$
+\end_inset 
+
+ than the Fisher scoring method.
+\layout Section
+
+Alternative description of the iterative approach: IWLS 
+\layout Standard
+
+The glm() procedure in R's stat library uses a routine called 
+\begin_inset Quotes eld
+\end_inset 
+
+Iterated Weighted Least Squares.
+\begin_inset Quotes erd
+\end_inset 
+
+ As the previous section should indicate, the calculating algorithm in the
+ N-R/Fisher framework will boil down to the iterated estimation of a weighted
+ least squares problem.
+ The interesting thing, in my opinion, is that McCullagh & Nelder prefer
+ to present the IWLS as their solution strategy.
+ Comprehending IWLS as the solution requires the reader to make some truly
+ heroic mental leaps.
+ Neverhtheless, the IWLS approach is a frequent starting place.
+ After describing the IWLS algorithm, McCullagh & Nelder then showed that
+ IWLS is equivalent to Fisher scoring.
+ I don't mean simply equivalent in estimates of the 
+\begin_inset Formula $b$
+\end_inset 
+
+'s, but in fact algorithmically equivalent.
+ I did not understand this argument on first reading, but I do now.
+ The two approaches are EXACTLY THE SAME.
+ Not just similar.
+ Mechanically identical.
+\layout Standard
+
+I wonder if the following is true.
+ I 
+\emph on 
+believe
+\emph default 
+ that it probably is.
+ In 1972, they had good algorithms for calculating weighted least squares
+ problems, but not such good access to maximum likelihood software.
+ So McCullagh and Nelder sought an estimating procedure for their GLM that
+ would use existing tools.
+ The IWLS approach is offered as a calculating algorithm, and then in the
+ following section, McCullagh & Nelder showed that if one were to use Fisher
+ scoring, one would arrive at the same iterative calculations.
+ 
+\layout Standard
+
+Today, there are good general purpose optimization algorithms for maximum
+ likelihood that could be used to calculate GLM estimates.
+ One could use them instead of IWLS, probably.
+ The algorithm would not be so obviously tailored to the substance of the
+ problem, and a great deal of insight would be lost.
+ 
+\layout Standard
+
+If you study IWLS, it makes your mental muscles stronger and it also helps
+ you to see how all of the different kinds of regression 
+\begin_inset Quotes eld
+\end_inset 
+
+fit together
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Subsection
+
+Start by remembering OLS and GLS
+\layout Standard
+
+Remember the estimators from linear regression in matrix form:
+\begin_inset Formula \[
+\begin{array}{cccc}
+OLS &  &  & WLS\, and\, GLS\\
+\hat{y}=X\hat{b} &  &  & \hat{y}=X\hat{b}\\
+minimize\,(y-\hat{y})'(y-\hat{y}) &  &  & minimize\,(y-\hat{y})'W(y-\hat{y})\\
+\\\hat{b}=(X'X)^{-1}X'y &  &  & \hat{b}=(X'WX)^{-1}X'Wy\\
+Var(\hat{b})=\sigma^{2}(X'X)^{-1} & \,\,\,\,\,\,\,\,\,\,\, &  & Var(\hat{b})=\sigma^{2}(X'WX)^{-1}\end{array}\]
+
+\end_inset 
+
+
+\newline 
+
+\layout Subsection
+
+Think of GLM as a least squares problem
+\layout Standard
+
+Something like this would be nice as an objective function:
+\begin_inset Formula \begin{equation}
+Sum\, of\, Squares\,\sum(\mu_{i}-\hat{\mu}_{i})^{2}\end{equation}
+
+\end_inset 
+
+If we could choose 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+ to make the predicted mean fit most closely against the true means, life
+ would be sweet!
+\layout Standard
+
+But recall in the GLM that we don't get to observe the mean, so we don't
+ have 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+ to compare against 
+\begin_inset Formula $\hat{\mu}_{i}$
+\end_inset 
+
+.
+ Rather we just have observations gathered from a distribution.
+ In the case of a logit model, for example, we do not observe 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, but rather we observe 
+\begin_inset Formula $1$
+\end_inset 
+
+ or 
+\begin_inset Formula $0$
+\end_inset 
+
+.
+ In the Poisson model, we observe count values, not 
+\begin_inset Formula $\lambda_{i}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Maybe we could think of the problem as a way of making the linear predictor
+ fit most closely against the observations:
+\begin_inset Formula \[
+Sum\, of\, Squares\,\sum(\eta_{i}-\hat{\eta}_{i})^{2}\]
+
+\end_inset 
+
+
+\layout Standard
+
+We certainly can calculate 
+\begin_inset Formula $\hat{\eta}_{i}=\hat{b}_{0}+\hat{b}_{1}\cdot x_{11}$
+\end_inset 
+
+.
+ But we can't observe 
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+, the 
+\begin_inset Quotes eld
+\end_inset 
+
+true value
+\begin_inset Quotes erd
+\end_inset 
+
+ of the linear predictor, any more than we can observe the 
+\begin_inset Quotes eld
+\end_inset 
+
+true mean
+\begin_inset Quotes erd
+\end_inset 
+
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+.
+ 
+\layout Standard
+
+And, for that matter, if we could observe either one, we could just use
+ the link function 
+\begin_inset Formula $g$
+\end_inset 
+
+ to translate between the two of them.
+\layout Standard
+
+We can approximate the value of the unobserved linear predictor, however,
+ by making an educated guess.
+ Recall Newton's approximation scheme, where we approximate an unknown value
+ by taking a known value and then projecting toward the unknown.
+ If we--somehow magically--knew the mean value for a particular case, 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, then we would use the link function to figure out what the linear predictor
+ should be:
+\layout Standard
+
+
+\begin_inset Formula \[
+\eta_{i}=g(\mu_{i})\]
+
+\end_inset 
+
+If we want to know the linear predictor at some neighboring value, say 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+, we could use Newton's approximation method and calculate an approximation
+ of 
+\begin_inset Formula $g(y_{i})$
+\end_inset 
+
+ as
+\begin_inset Formula \begin{equation}
+\widetilde{g(y}_{i})=g(\mu_{i})+(y_{i}-\mu_{i})\cdot g'(\mu_{i})\end{equation}
+
+\end_inset 
+
+The symbol 
+\begin_inset Formula $\widetilde{g(y}_{i})$
+\end_inset 
+
+ means 
+\begin_inset Quotes eld
+\end_inset 
+
+approximate value of the linear predictor
+\begin_inset Quotes erd
+\end_inset 
+
+ and we could call it 
+\begin_inset Formula $\widetilde{\eta_{i}}$
+\end_inset 
+
+.
+ However, possibly because publishers don't like authors to use lots of
+ expensive symbols, we instead use the letter 
+\begin_inset Formula $z_{i}$
+\end_inset 
+
+ to refer to that approximated value of the linear predictor.
+ 
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+z_{i}=g(\mu_{i})+(y_{i}-\mu_{i})\cdot g'(\mu_{i})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+If we use that estimate of the linear predictor, then we could think of
+ the GLM estimation process as a process of calculating 
+\begin_inset Formula $\hat{\eta}_{i}=\hat{b}_{0}+\hat{b}_{1}x_{1}+\ldots$
+\end_inset 
+
+ to minimize:
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+Sum\, of\, Squares\,\sum(z_{i}-\hat{\eta}_{i})^{2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+This should help you see the basic idea that the IWLS algorithm is exploiting.
+ 
+\layout Standard
+
+The whole exercise here is premised on the idea that you know the mean,
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, and in real life, you don't.
+ That's why an iterative procedure is needed.
+ Make a guess for 
+\begin_inset Formula $\mu_{i}$
+\end_inset 
+
+, then make an estimate for 
+\begin_inset Formula $z_{i}$
+\end_inset 
+
+, and repeat.
+\layout Subsection
+
+The IWLS algorithm.
+ 
+\layout Enumerate
+
+Begin with 
+\begin_inset Formula $\mu_{i}^{0}$
+\end_inset 
+
+, starting estimates of the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+.
+\layout Enumerate
+
+Calculate a new variable 
+\begin_inset Formula $z_{i}^{0}$
+\end_inset 
+
+ (this is to be used as an 
+\begin_inset Quotes eld
+\end_inset 
+
+approximate
+\begin_inset Quotes erd
+\end_inset 
+
+ value of the response variable
+\begin_inset Formula $\eta_{i}$
+\end_inset 
+
+).
+\begin_inset Formula \begin{equation}
+z_{i}^{0}=g(\mu_{i}^{0})+(y_{i}-\mu_{i}^{0})g'(\mu_{i}^{0})\end{equation}
+
+\end_inset 
+
+
+\newline 
+Because 
+\begin_inset Formula $\eta_{i}^{0}=g(\mu_{i}^{0})$
+\end_inset 
+
+, sometimes we write
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+z_{i}^{0}=\eta_{i}^{0}+(y_{i}-\mu_{i}^{0})g'(\mu_{i}^{0})\label{eq:zapprox}\end{equation}
+
+\end_inset 
+
+ This is a Newton-style first-order approximation.
+ It estimates the linear predictor's value that corresponds to the observed
+ value of 
+\begin_inset Formula $y_{i}$
+\end_inset 
+
+-- starting at the value of the 
+\begin_inset Formula $g(\mu_{i}^{0})$
+\end_inset 
+
+ and adding the increment implied by moving the distance 
+\begin_inset Formula $(y_{i}-\mu_{i}^{0})$
+\end_inset 
+
+ with the slope 
+\begin_inset Formula $g'(\mu_{i})$
+\end_inset 
+
+.
+\layout Standard
+
+If 
+\begin_inset Formula $g(\mu_{i}^{0})$
+\end_inset 
+
+ is undefined, such as 
+\begin_inset Formula $ln(0)$
+\end_inset 
+
+, then some workaround is required.
+\layout Standard
+
+3.
+ Estimate 
+\begin_inset Formula $b^{0}$
+\end_inset 
+
+ by weighted least squares, minimizing the squared distances
+\begin_inset Formula \begin{equation}
+\sum w_{i}^{0}(z_{i}^{0}-\eta_{i})^{2}=\sum w_{i}^{0}(z_{i}^{0}-X\widehat{b^{0}})^{2}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Information on the weights is given below.
+ The superscript 
+\begin_inset Formula $w_{i}^{0}$
+\end_inset 
+
+ is needed because the weights have to be calculated at each step, just
+ as 
+\begin_inset Formula $z^{0}$
+\end_inset 
+
+ and 
+\begin_inset Formula $b^{0}$
+\end_inset 
+
+ must be re-calculated.
+\layout Standard
+
+In matrix form, this is
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+b^{0}=(X'W^{0}X)^{-1}X'W^{0}z^{0}\label{eq:IWLS10}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+4.
+ Use 
+\begin_inset Formula $b^{0}$
+\end_inset 
+
+ to calculate 
+\begin_inset Formula $\eta^{1}=X_{i}b^{0}$
+\end_inset 
+
+ and then calculate a new estimate of the mean as 
+\begin_inset Formula \begin{equation}
+\mu_{i}^{1}=g^{-1}(\eta_{i}^{1})\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+5.
+ Repeat step 1, replacing 
+\begin_inset Formula $\mu^{0}$
+\end_inset 
+
+ by 
+\begin_inset Formula $\mu^{1}$
+\end_inset 
+
+.
+ 
+\layout Subsection
+
+Iterate until convergence
+\layout Standard
+
+Repeat that process again and again, until the change from one iteration
+ to the next is very small.
+ A common tolerance criterion is 
+\begin_inset Formula $10^{-6}$
+\end_inset 
+
+, as in
+\begin_inset Formula \begin{equation}
+\frac{b^{t+1}-b^{t}}{b^{t}}<10^{-6}\end{equation}
+
+\end_inset 
+
+
+\newline 
+When the iteration stops, the parameter estimate of 
+\begin_inset Formula $b$
+\end_inset 
+
+ is found.
+ 
+\layout Subsection
+
+The Variance of 
+\begin_inset Formula $\hat{b}$
+\end_inset 
+
+.
+\layout Standard
+
+When the iteration stops, the parameter estimate of 
+\begin_inset Formula $b$
+\end_inset 
+
+ is found.
+ The 
+\begin_inset Formula $Var(b)$
+\end_inset 
+
+ from the last stage is used, so
+\begin_inset Formula \begin{equation}
+Var(b)=(X'WX)^{-1}\end{equation}
+
+\end_inset 
+
+
+\layout Subsection
+
+The weights in step 3.
+\layout Standard
+
+Now, about the weights in the regression.
+ If you set the weights to equal this value
+\begin_inset Formula \begin{equation}
+w_{i}=\frac{1}{\phi V(\mu_{i})[g'(\mu_{i})]^{2}}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Then the IWLS algorithm is identical to Fisher scoring.
+\layout Subsection
+
+Big insight from the First Order Condition
+\layout Standard
+
+The first order conditions, the 
+\begin_inset Formula $k$
+\end_inset 
+
+ score equations of the fitting process at each step, are
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l}{\partial b_{k}}=U_{k}=\sum_{i=1}^{N}\frac{1}{\phi_{i}V(\mu_{i})[g'(\mu_{i})]^{2}}\left[z_{i}-\eta_{i}\right]x_{ik}=0\label{eq:UNonCanonical5}\end{equation}
+
+\end_inset 
+
+
+\newline 
+In a matrix, the weights are seen as 
+\begin_inset Formula \begin{equation}
+W=\left[\begin{array}{ccccc}
+\frac{1}{\phi_{1}V(\mu_{1})[g'(\mu_{1})]^{2}} & 0 & 0 & 0 & 0\\
+0 & \frac{1}{\phi_{1}V(\mu_{2})[g'(\mu_{2})]^{2}} & 0 & 0 & 0\\
+\vdots &  & \ddots &  & \vdots\\
+0 & 0 & 0 & \frac{1}{\phi_{N-1}V(\mu_{N-1})[g'(\mu_{N-1})]^{2}} & 0\\
+0 & 0 & 0 & 0 & \frac{1}{\phi_{N}V(\mu_{N})[g'(\mu_{N})]^{2}}\end{array}\right]\label{eq:IWLS_W}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+Next, 
+\begin_inset LatexCommand \ref{eq:UNonCanonical5}
+
+\end_inset 
+
+ the first order condition is written with matrices as
+\begin_inset Formula \begin{equation}
+X'W[z-\eta]=0\label{eq:IWLS2}\end{equation}
+
+\end_inset 
+
+ Recall the definition of 
+\begin_inset Formula $\eta=Xb$
+\end_inset 
+
+, so 
+\begin_inset Formula \begin{equation}
+X'W[z-Xb]=0\label{eq:IWLS3}\end{equation}
+
+\end_inset 
+
+
+\begin_inset Formula \begin{equation}
+X'Wz=X'WXb\label{eq:IWLS4}\end{equation}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset Formula \begin{equation}
+b=(X'WX)^{-1}X'Wz\label{eq:IWLS5}\end{equation}
+
+\end_inset 
+
+
+\newline 
+Wow! That's just like the WLS formula! We are 
+\begin_inset Quotes eld
+\end_inset 
+
+regressing 
+\begin_inset Formula $z$
+\end_inset 
+
+ on 
+\begin_inset Formula $X$
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\the_end

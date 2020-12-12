@@ -1,0 +1,782 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Regression/StandardizedBeta//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.85}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Betas]{Betas: Standardized Variables in Regression}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2014]{2014}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Introduction}
+
+
+\lyxframeend{}\lyxframe{Problem}
+\begin{itemize}
+\item Regression pops out slope estimates
+\item How can we make sense of them?
+\item Can an ``automatic'' standardization of variables help?
+\end{itemize}
+
+\lyxframeend{}\section{Interpreting $\hat{\beta}_{j}$'s}
+
+
+\lyxframeend{}\lyxframe{Get Existential: What is Regression?}
+\begin{itemize}
+\item You theorize:
+\end{itemize}
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+...+\beta_{k}xk_{i}+e_{i}\,\,\,\,\,\, i=1,...,N\label{ols}
+\end{equation}
+
+\begin{itemize}
+\item and through \_\_\_\_\_\_\_\_\_\_ procedure, you make estimates $\hat{\beta}_{j}$
+with which to calculate predicted values:
+\end{itemize}
+\begin{equation}
+\widehat{y}_{i}=\widehat{\beta}_{0}+\widehat{\beta}_{1}x1_{i}+\widehat{\beta}_{2}x2_{i}+...+\widehat{\beta}_{k}xk_{i}\,\,\,\,\,\, i=1,...,N\label{predict}
+\end{equation}
+
+\begin{itemize}
+\item Everything else we do should be understood through this lens.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Yes, But What Do You DO with a Regression?}
+\begin{itemize}
+\item Compare 2 cases, with inputs $(x1_{0},x2_{0},\ldots,xk_{0})$ and
+$(x1_{1},x2_{1},\dots,xk_{1})$ 
+\item The predicted values $\widehat{y_{0}}$ and $\widehat{y_{1}}$ are
+different, some of the $x's$ matter
+\item The focus is on developing substantively interesting comparisons!
+\item We'd like to narrow our attention down, to concentrate on one predictor
+at a time. 
+
+\begin{itemize}
+\item $(x1_{0},x2_{0},\ldots,xk_{0})$ and $(x1_{0},x2_{1},\dots,xk_{0})$
+\item They only differ on $x2$, so the difference between predictions must
+be attributable to the change from $x2_{0}$ to $x2_{1}$. 
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Substantively Interesting $x2_{0}$ and $x2_{1}$}
+\begin{itemize}
+\item $\hat{\beta}_{j}$ are ``partial regression coefficients''.
+\item Linear formula: ``other things equal, a 1 unit increase in $x2_{i}$
+causes an estimated $\hat{\beta}_{2}$ unit increase in the predicted
+value of $y_{i}$''.
+\item No reason to say researcher can only compare variables by changing
+``one unit at a time''
+\item Know the problem's context, pick interesting values of $x2_{0}$ and
+$x2_{1}$ for comparison. 
+
+\begin{itemize}
+\item x2 represents ``last year school'', $x2_{0}=$8th grade, $x2_{1}=$high
+school 
+\item x2 represents income, $x2_{0}=$\$10,000, $x2_{1}=$ \$100,000
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Linear and Continuous X's: $\hat{\beta}$}
+\begin{itemize}
+\item Maybe the calculus says it best:
+\[
+\frac{\partial y}{\partial x2}=\hat{\beta}_{2}
+\]
+
+\item But there's no ``absolute scale'' for $\hat{\beta}_{2}$. 
+
+\begin{itemize}
+\item If $x's$ or $y$ are numerically re-scaled, then the coefficients
+will change too.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Rescale Variables: Standardization}
+
+
+\lyxframeend{}\lyxframe{Recall Effect of Fiddling with X's}
+\begin{itemize}
+\item If one re-scales $x2_{i}$, replacing it with $k\cdot x2_{i}$, then
+the regression coefficient is re-scaled to $\frac{1}{k}\hat{\beta}_{2}$.
+\item If one adds or subtracts from $x2_{i}$, $\hat{\beta}_{2}$ is not
+changed, but the intercept $\hat{\beta}_{0}$ does change.
+\item Both multiplication and addition are apparently ``harmless''.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Consider Fiddling with $y$}
+\begin{itemize}
+\item What happens if one multiplies $y_{i}$ by $2$?
+
+\begin{itemize}
+\item doubles all the $\hat{\beta}'s$. That seems obvious.
+\end{itemize}
+\item What happens if $y_{i}$ has something added or subtracted?
+
+\begin{itemize}
+\item $\hat{\beta}_{0}$ changes
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Occupational Prestige Data from car}
+
+<<prestige10, echo=T, include=F>>=
+library(car)
+Prestige$income <- Prestige$income/10
+presmod1 <- lm(prestige ~ income + education + women, data = Prestige)
+@
+
+\input{plots/t-prestige10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{My Professionally Acceptable Regression Table}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+
+<<prestige100,fig=T, echo=F, include=F, height=6, width=9, results=tex>>=
+library(rockchalk)
+outreg(presmod1, tight = FALSE)
+@
+
+
+\input{plots/t-prestige100}
+
+
+\column{6cm}
+\begin{itemize}
+\item We are superficial, don't know much about the ``Prestige'' dataset
+\item How do we know what the slopes for income or women mean?
+\item Can they be compared?
+\end{itemize}
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{predictOMatic (mostly defaults)}
+
+<<>>=
+predictOMatic(presmod1, predVals = "margins", divider = "quantile")
+@
+
+<<>>=
+predictOMatic(presmod1, predVals = "margins", divider = "std.dev.")
+@
+
+<<>>=
+predictOMatic(presmod1, predVals = "auto", divider = "quantile")
+@
+
+<<>>=
+predictOMatic(presmod1, predVals = "auto", divider = "std.dev.")
+@
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{One School of Thought: Get Inside the Data}
+\begin{itemize}
+\item Generally preferred by economists or political scientists (possibly
+statisticians)
+\item Why are you trying to compare the effects of ``women'' and ``income''?
+\item Learn More About Your Data, look for meaningful comparison cases
+\item Make a predicted value table. rockchalk::predictOMatic does that
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Standardized Data}
+
+
+\lyxframeend{}\lyxframe{Another School of Thought: Try to Convert Variables to a Common Metric}
+\begin{itemize}
+\item Preferred by psychologists (and many sociologists)
+\item A standardized variable is calculated like so:
+\end{itemize}
+\[
+standardized\, y_{i}=\frac{y_{i}-Observed\, mean\mbox{\ensuremath{(y_{i})}}}{Observed\, Std.Dev.(y_{i})}
+\]
+
+\begin{itemize}
+\item I'm not calling that a ``Z score'' because $Z$ score presumes we
+know the TRUE mean and standard deviation
+\item By definition, all standardized variables have a mean of 0 and a standard
+deviation of 1. See why?
+\item What is the common metric with standardized variables? (I'm asking,
+seriously)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Use Standardized Variables in Regression}
+\begin{itemize}
+\item Replace $y_{i}$ and $X1_{i}$ and $X2_{i}$ and $X3_{i}$ by standardized
+variables
+\item A standardized regression is like so:
+\begin{equation}
+\left(\frac{y_{i}-\bar{y}}{s_{y}}\right)=\beta_{1}^{st}\left(\frac{X1_{i}-\overline{X1}}{s_{X1}}\right)+\beta_{2}^{st}\left(\frac{X2_{i}-\overline{X2}}{s_{X2}}\right)+\beta_{3}^{st}\left(\frac{X3_{i}-\overline{X3}}{s_{X3}}\right)+u_{i}\label{standardized}
+\end{equation}
+
+\item The estimated coefficients $\beta^{st}$ are called ``standardized
+regression coefficients'' 
+\item Coefficients we discussed until now are un-standardized parameter
+estimates, which in past I have labeled as $b_{j}$, just to avoid
+confusion with ``Betas'' slang
+\item If ALL variables are standardized, then the intercept is 0, I didn't
+even bother to write it in
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Standardize the Numeric Data}
+\begin{itemize}
+\item Unlike SPSS, R does not make standardization easy or automatic (not
+an oversight, probably).
+\end{itemize}
+<<prestige10st, echo=T, include=F>>=
+stPrestige <- Prestige
+stPrestige$income <- scale(stPrestige$income)
+stPrestige$education <- scale(stPrestige$education) 
+stPrestige$women <- scale(stPrestige$women)  
+stPrestige$prestige <- scale(stPrestige$prestige)
+presmod1st <- lm(prestige ~ income + education + women, data = stPrestige)
+summary(presmod1st)
+@
+
+\input{plots/t-prestige10st}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{standardize function in rockchalk will automate this}
+
+Recall: presmod1 <- lm(prestige \textasciitilde{} income + education
++ women, data = Prestige)
+
+standardize() will scan the model, rescale the variables, and give
+back what you want.
+
+<<prestige15, echo=T, include=F>>=
+pres1st <- standardize(presmod1)
+summary(pres1st)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-prestige15}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Side By Side: UnStandardized and Standardized Regression Estimates}
+
+<<prestige20, echo=F, include=F, results=tex>>=
+outreg(list(presmod1, presmod1st), tight=F, modelLabels=c("Unstandardized","Standardized"))
+@
+
+\input{plots/t-prestige20}
+
+Force yourself to stop and try to interpret those parameters
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Notice something interesting about the t statistics}
+
+<<prestige30, echo=F, include=F>>=
+round(cbind(summary(presmod1)$coefficients[ ,c(1,3)], summary(pres1st)$coefficients[, c(1,3)]),2)
+@
+
+\input{plots/t-prestige30}
+
+The estimated t values are identical, unstandardized on left and standardized
+on the right.
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Why Do Some People Like Standardized Coefficients?}
+
+I'm an outsider, looking in. It seems like
+
+They seek an easy comparison, like ``a one standard deviation rise
+in X1 causes a $\widehat{\beta}_{1}^{st}$-standard-deviation-increase
+in y.'' 
+
+So, if X1 is measured in ``dollars'' and y is measured in pounds
+of elephant fat per cubic yard of shipping container, or ``bushels
+of wheat per year'', the standardization TRIES to make them comparable.
+
+
+\lyxframeend{}\lyxframe{Translate between $\beta$ and $\beta^{st}$}
+\begin{itemize}
+\item How does the beta, say $\beta_{1}^{st}$ differ from the unstandardized
+coefficient, $\beta_{1}$?
+\item Answer: its a rescaled value (recall my theme on rescaled predictors?)
+\end{itemize}
+\[
+\beta_{1}^{st}=\frac{s_{X1}}{s_{y}}\hat{\beta}_{1}
+\]
+
+
+You can prove this to yourself by multiplying \ref{standardized}
+by $s_{y}$
+
+\begin{equation}
+\left(y_{i}-\bar{y}\right)=\beta_{1}\left[\frac{s_{y}}{s_{X1}}\right]\left(X1_{i}-\overline{X1}\right)+\beta_{2}s_{y}\left(\frac{X2_{i}-\overline{X2}}{s_{X2}}\right)+\beta_{3}s_{y}\left(\frac{X3_{i}-\overline{X3}}{s_{X3}}\right)+u_{i}\label{standardized2}
+\end{equation}
+
+
+
+\lyxframeend{}\lyxframe{Does Standardization Make education, income, and women Comparable?}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+ &
+education &
+income &
+women &
+prestige\tabularnewline
+\hline 
+\hline 
+Min.  &
+6.380 &
+61.1 &
+0.000 &
+14.80\tabularnewline
+\hline 
+1st Qu &
+8.445 &
+410.6 &
+3.592 &
+35.23\tabularnewline
+\hline 
+Median &
+10.540 &
+593.0 &
+13.600 &
+43.60\tabularnewline
+\hline 
+Mean &
+10.738 &
+679.8 &
+28.979 &
+46.83\tabularnewline
+\hline 
+3rd Qu &
+12.648 &
+818.7 &
+52.203 &
+59.27\tabularnewline
+\hline 
+Max &
+15.970 &
+2587.9 &
+97.510 &
+87.20\tabularnewline
+\hline 
+Std. Dev. &
+2.73 &
+424.59 &
+31.72 &
+17.20\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{What about non-normal variables?}
+\begin{itemize}
+\item Part of the motivation for standardization is the ``normality''
+of many observed variables.
+\item We develop an intuition for the mean as a center point, and that a
+standard deviation is a step across ``about'' 34\% of the observations. 
+\item A two standard deviation change in a variable would be a huge step,
+from average to the edge.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Review education}
+
+<<Prest10e, fig=T, include=F>>=
+hist(Prestige$education, prob = TRUE,  xlab = "education (car::Prestige)", main = "")
+lines(density(Prestige$education))
+@
+
+\includegraphics[width=10cm]{plots/t-Prest10e}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Review income}
+
+<<Prest10i, fig=T, include=F>>=
+hist(Prestige$income, prob = TRUE, xlab = "income (car::Prestige)", main = "")
+lines(density(Prestige$income))
+@
+
+\includegraphics[width=10cm]{plots/t-Prest10i}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Review women}
+
+<<Prest10w, fig=T, include=F>>=
+hist(Prestige$women, prob = TRUE, xlab = "women (car::Prestige)", main = "")
+lines(density(Prestige$women ))
+@
+
+\includegraphics[width=10cm]{plots/t-Prest10w}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Suppose there's a Categorical Predictor "type"}
+\begin{itemize}
+\item Recall that R creates ``dummy variables''
+\item A 3 category predictor \{bc, prof, wc\} will be converted to dummy
+variables
+\item When we standardize education and income, should we standardize typeprof
+and typewc as well?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Suppose there's a Categorical Predictor "type"}
+\begin{itemize}
+\item Step 1. Imagine fitting the model with unstandardized coefficients.
+\begin{Sinput}
+presmod2 <- lm(prestige ~ income + education + women + type, data=stPrestige)
+\end{Sinput}
+\item Step 2. Standardize. If we want to ``norm'' the coefficients to
+become comparable, should we Standardize
+
+\begin{itemize}
+\item all of the variables, 
+\item or just the numeric ones?
+\end{itemize}
+\item SPSS historically standardized all of the variables, even 0, 1 variables
+like ``male'' or ``female''.
+\item If we must standardize, lets only bother with numeric variables.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{In rockchalk, meanCenter can be used}
+
+The ordinary, nothing standardized regression is:
+
+\begin{lstlisting}
+presmod1 <- lm(prestige ~ income + education + women + type, data = Prestige)
+\end{lstlisting}
+
+\begin{itemize}
+\item This use of the meanCenter function will standardize all numeric predictors
+and re-fit the regression
+
+
+\begin{Sinput}
+presmod2mc <- meanCenter(presmod1, centerDV = TRUE, centerOnlyInteractors = FALSE, standardize = TRUE)
+\end{Sinput}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare the factor's estimates with the Standardized Numeric Variables}
+
+<<prestige200, echo=F, include=F, results=tex>>=
+library(car)
+presmod2 <- lm(prestige ~ income + education + women + type, data = Prestige)
+presmod2st <- lm(prestige ~ income + education + women + type, data = stPrestige)
+outreg(list(presmod2, presmod2st), tight = FALSE, modelLabels = c("Unstandardized", "Partly Standardized"))
+@
+
+\input{plots/t-prestige200}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{If you really want to Standardize everything}
+\begin{itemize}
+\item R will resist you when you want to convert the model and get standardized
+coefficients. Its not easy to get the dummy variables out and smooth
+them over. 
+\item Persuading R to do this is tough, so I wrote standardize() in rockchalk
+can handle it. Note the output scolds you for doing this.
+
+
+<<prestige220, echo=T, include=F>>=
+presmod3st <- standardize(presmod2)
+summary(presmod3st)
+@
+
+\end{itemize}
+\def\Sweavesize{\scriptsize}
+\input{plots/t-prestige220}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Standardized Categorical Predictors Too}
+
+<<prestige250, echo=F, include=F, results=tex>>=
+outreg(list(presmod2, presmod2st, presmod3st), tight = F, modelLabels = c("Unstandardized", "Standardized (except type)", "All Standardized"))
+@
+
+\small
+\input{plots/t-prestige250}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Note the summary stats in the stantardize output}
+\begin{itemize}
+\item And the musical question is, DO YOU GAIN INSIGHT BY STANDARDIZING
+the categorical variables?
+\item Do you really think there is any way to formalize a comparison of
+$Sex\in\{0,1\}$ and income in dollars?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Here's my answer}
+\begin{enumerate}
+\item Consider standardizing a dichotomous variable. What does ``the mean''
+mean? 
+
+
+Run this in R to test your understanding. Create a variable ``male''
+equal to 0 or 1
+
+
+\begin{lstlisting}
+male <- rbinom(1000, 1, p = 0.55)
+mean(male)
+sd(male)
+\end{lstlisting}
+
+
+
+When I ran that, I got male as a string of 0's and 1's with a mean
+of male is 0.542 and the standard deviation of 0.49.
+
+
+If you like standardized variables, tell me what a one standard deviation
+in male means to you?
+
+\item ``A one standard deviation increase in male raises the ``average
+male'' from 0.542 to 1.04.'' 
+\item ``A two standard deviation increase in male results in change from
+0.542 to 1.53''
+\item Can you then put that to use in interpreting a regression model?
+\end{enumerate}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{More Problems: unknown $\sigma$.}
+
+Gary King's fine essay ``How not to lie with statistics'' explores
+many other flaws in the use of standardized coefficients. I'll summarize
+a couple of the points I found most persuasive. 
+\begin{enumerate}
+\item Problem: We estimate by the sample standard deviation, $s_{X1}$,
+$s_{X2}$ . But we act ``as if'' they were ``true'' values. (We
+don't know $\sigma_{X1}$ , $\sigma_{X2}$, ...)
+
+\begin{enumerate}
+\item Suppose unstandardized $\beta_{1}=\beta_{2}$. Two variables have
+same effect. And they are measured on the same scale. 
+\item If observed std.dev. are different, $s_{x1}\neq s_{x2}$, that will
+cause $\beta_{1}^{st}$ and $\beta_{2}^{st}$ to differ.
+\end{enumerate}
+\item Along those lines, take a subset of the data. Even if the relationship
+is the same, the $\beta^{st}$ will flop about because estimated standard
+deviations change.. 
+
+
+betas are not comparable across regressions. and they are not comparable
+within regressions. 
+
+\end{enumerate}
+
+\lyxframeend{}\lyxframe{Different y variances are a Problem Too}
+\begin{itemize}
+\item Suppose we have two groups of respondents, and the same slopes apply
+to both
+\end{itemize}
+\begin{eqnarray}
+group\,1:\, y_{i} & = & \beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+e1_{i},\,\, e1_{i}\sim N(0,\sigma_{e1}^{2})\\
+group\,2:\, y_{i} & = & \beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+e2_{i},\,\, e2_{i}\sim N(0,\sigma_{e2}^{2})
+\end{eqnarray}
+
+\begin{itemize}
+\item This is a case of ``Heteroskedasticity''. 
+\item Note only the error variances differ, so we expect the regression
+coefficients should be similar. Standardization of $y_{i}$ has a
+multiplier effect across the whole line, so all of the coefficients
+will shrink or expand
+\item If we standardize the $y$ data, we will cause the $\beta^{st}$ estimates
+to flop about.
+\item Standardization complicates problem of comparing coefficients across
+groups.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+\include{0_home_pauljohn_SVN_SVN-guides_stat_Regression_StandardizedBeta_Standardized-1-lecture-problems}
+
+
+\lyxframeend{}
+\end{document}

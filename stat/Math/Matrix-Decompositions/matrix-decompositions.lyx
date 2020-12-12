@@ -1,0 +1,2495 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Matrix Decompositions
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Date
+December 2012
+\end_layout
+
+\begin_layout Section
+Background
+\end_layout
+
+\begin_layout Standard
+In order to understand these notes, you should have some experience with
+ matrix algebra.
+ Perhaps not an entire semester or year of matrix algebra is necessary,
+ but comfort with columns, rows, and their multiplication, is assumed.
+\end_layout
+
+\begin_layout Standard
+I assume you know about 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+inner products
+\begin_inset Quotes erd
+\end_inset
+
+ of vectors.
+\end_layout
+
+\begin_layout Itemize
+matrix multiplication (which is actually conducted by calculating the inner
+ products of the rows and columns of the matrices).
+ 
+\end_layout
+
+\begin_layout Itemize
+the transpose of a vector converts a row into a column (and vice versa)
+\end_layout
+
+\begin_layout Itemize
+the transpose of a matrix is a 
+\begin_inset Quotes eld
+\end_inset
+
+reflection
+\begin_inset Quotes erd
+\end_inset
+
+ of that matrix on its main diagonal.
+\end_layout
+
+\begin_layout Standard
+Other than that, I try to define the terms as I go.
+\end_layout
+
+\begin_layout Section*
+Inverse and Identity
+\end_layout
+
+\begin_layout Standard
+Recall that an inverse of 
+\begin_inset Formula $X$
+\end_inset
+
+ is matrix 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+ such that 
+\begin_inset Formula 
+\begin{equation}
+X\, X^{-1}=I
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $I$
+\end_inset
+
+ , the 
+\begin_inset Quotes eld
+\end_inset
+
+identity matrix
+\begin_inset Quotes erd
+\end_inset
+
+, is a matrix of 
+\begin_inset Formula $1$
+\end_inset
+
+'s and 
+\begin_inset Formula $0$
+\end_inset
+
+'s, 
+\begin_inset Formula 
+\begin{equation}
+I=\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you could grab the first row of 
+\begin_inset Formula $X$
+\end_inset
+
+, and the first column of 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+, the inner product of row and column would be 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ And the product of that first row with any other column of 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+ will be 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section*
+Disregard some Elementary Linear Algebra
+\end_layout
+
+\begin_layout Standard
+In statistics, we often need to calculate the inverse of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ We do that in order to 
+\begin_inset Quotes eld
+\end_inset
+
+solve
+\begin_inset Quotes erd
+\end_inset
+
+ a system or 
+\begin_inset Quotes eld
+\end_inset
+
+calculate
+\begin_inset Quotes erd
+\end_inset
+
+ some statistic.
+ 
+\end_layout
+
+\begin_layout Standard
+In elementary matrix algebra, we see a matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ and vectors 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+Ax=b
+\end{equation}
+
+\end_inset
+
+solved by the introduction of an inverse matrix 
+\begin_inset Formula $A^{-1}$
+\end_inset
+
+, a matrix such that 
+\begin_inset Formula $A^{-1}A=I.$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{-1}Ax & = & A^{-1}b\\
+Ix & = & A^{-1}b\\
+x & = & A^{-1}b
+\end{eqnarray*}
+
+\end_inset
+
+It is almost instinctual to think that, if we need to calculate 
+\begin_inset Formula $x$
+\end_inset
+
+, we multiply 
+\begin_inset Formula $A^{-1}b$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In theoretical treatments of statistics, that way of thinking is prevalent.
+ We write about inverting matrices, but usually do not concern ourself with
+ how that is actually done.
+ And we don't worry about the problem of accuracy in digital computers.
+ Or how long the calculations might take.
+ Or whether or not we have memory to store the matrices that are required
+ for calculations.
+\end_layout
+
+\begin_layout Standard
+Here's the danger.
+ Inverting a matrix might be time consuming AND inaccurate.
+ Calculating the determinant of a matrix is famously inaccurate.
+ Calculations to optimize model fits will generally be geared to stop looking
+ for improvements when the changes in the results between steps is on the
+ order of 
+\begin_inset Formula $0.0000001$
+\end_inset
+
+, or 
+\begin_inset Formula $10^{-7}$
+\end_inset
+
+.
+ Numerical inaccuracy creates 'wobble' in parameter estimates, so that algorithm
+s might seem to 
+\begin_inset Quotes eld
+\end_inset
+
+converge
+\begin_inset Quotes erd
+\end_inset
+
+ when they are not in fact finished, or they go on calculating trying to
+ adapt to noise in the calculations when the results are actually good enough.
+\end_layout
+
+\begin_layout Standard
+To avoid those problems, we use matrix decomposition tricks.
+ Those tricks are the main topic I'm trying to cover in these notes.
+ (But it seems I'm wasting more and more time writing down general matrix
+ blather than I intended.)
+\end_layout
+
+\begin_layout Subsection*
+Regression Application
+\end_layout
+
+\begin_layout Standard
+In regression treatments, we are often told we need to calculate the inverse
+ of a product, 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+, where 
+\begin_inset Formula $X$
+\end_inset
+
+ is a data matrix of predictors.
+ 
+\end_layout
+
+\begin_layout Standard
+The product 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is called the 
+\begin_inset Quotes eld
+\end_inset
+
+normal matrix
+\begin_inset Quotes erd
+\end_inset
+
+ because of the important role it plays in regression analysis and the solution
+ of the 
+\begin_inset Quotes eld
+\end_inset
+
+normal equations.
+\begin_inset Quotes erd
+\end_inset
+
+ In multiple regression, if the data generating process is 
+\begin_inset Formula $y=X\beta+e$
+\end_inset
+
+, then the predictive model we work with is 
+\begin_inset Formula $X\hat{\beta}$
+\end_inset
+
+, where 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is the choice of an optimal estimate.
+ The best estimate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is usually expressed as the vector that minimizes of squared errors 
+\begin_inset Formula $(y-X\hat{\beta})^{T}(y-X\hat{\beta})$
+\end_inset
+
+.
+ Using calculus, the first order conditions for the solution are a system
+ of linear equations: 
+\begin_inset Formula 
+\begin{equation}
+(X^{T}X)\hat{\beta}=X^{T}y\label{eq:normal}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+or, if we could invert 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+, we could get 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+by itself
+\begin_inset Quotes erd
+\end_inset
+
+ by:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(X^{T}X)^{-1}(X^{T}X)\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+I\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the surface, it seems, we need to invert 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ to calculate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If we are doing math with pencils and papers, we might be tempted to actually
+ calculate the product, and then attempt to invert it.
+ It is more tempting to write computer code that way.
+ I've recently learned this is a mistake.
+ I just got an email from an expert on optimization who looked at some code
+ and warned me 
+\begin_inset Quotes eld
+\end_inset
+
+don't calculate 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ and then invert it.
+ That's inaccurate.
+ And unnecessary.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Inverting 
+\begin_inset Formula $(X^{T}X)$
+\end_inset
+
+ is ONE way to estimate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+, but it is not the most accurate way.
+ 
+\end_layout
+
+\begin_layout Standard
+Regression software was written with inverse routines in the 1960s and 1970s,
+ but progress in numerical linear algebra has led to a series of approaches
+ that are more accurate and dependable.
+ Instead, software uses methods that try to decompose the matrix in order
+ to solve equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:normal"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Before I forget, a few comments about 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+.
+ Suppose 
+\begin_inset Formula $X$
+\end_inset
+
+ is the data frame, which has one row per respondent and one column per
+ parameter to be estimated, so its 
+\begin_inset Formula $N\, x\, p$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is a square matrix.
+ It is smaller than 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ It is 
+\begin_inset Formula $p\, x\, p$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+cross products matrix
+\begin_inset Quotes erd
+\end_inset
+
+, or a 
+\begin_inset Quotes eld
+\end_inset
+
+variance-covariance matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is a symmetric matrix (same values above and below the main diagonal).
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is positive semi definite, meaning that for any vector 
+\begin_inset Formula $w$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+w^{T}\, X^{T}X\, w\mbox{\geq}0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+That's like saying that the sum of squares of (
+\begin_inset Formula $Xw$
+\end_inset
+
+) is always positive, which seems 
+\begin_inset Quotes eld
+\end_inset
+
+intuitive and obvious
+\begin_inset Quotes erd
+\end_inset
+
+.
+ However, in matrix algebra, lots of 
+\begin_inset Quotes eld
+\end_inset
+
+intuitive and obvious
+\begin_inset Quotes erd
+\end_inset
+
+ ideas are not correct, so this one bears pointing out.
+\end_layout
+
+\begin_layout Standard
+Background: call 
+\begin_inset Formula $w^{T}w$
+\end_inset
+
+ the sum of squares of 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ Note that 
+\begin_inset Formula $Xw$
+\end_inset
+
+ is a column vector.
+ The sum of squares of 
+\begin_inset Formula $Xw$
+\end_inset
+
+ would be 
+\begin_inset Formula 
+\begin{multline}
+(Xw)^{T}Xw\\
+w^{T}X^{T}Xw
+\end{multline}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence, 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is positive semi-definite.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Although 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is smaller than 
+\begin_inset Formula $X$
+\end_inset
+
+, we are afraid of calculating it.
+ First, it is an expensive calculation.
+ Multiplying 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ requires 
+\begin_inset Formula $N\, x\, N$
+\end_inset
+
+ multiplications (each element of each row with each element of each column).
+ Second, it is an inaccurate calculation, in the sense that the floating
+ point approximation implicit in each digital calculation of each individual
+ product is 
+\begin_inset Quotes eld
+\end_inset
+
+congealed
+\begin_inset Quotes erd
+\end_inset
+
+ into 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+.
+ Hence the advice 
+\begin_inset Quotes eld
+\end_inset
+
+don't invert the normal matrix.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Misty Water-Colored Memories (of Linear Algebra)
+\end_layout
+
+\begin_layout Standard
+To understand why decompositions are helpful, it is necessary to remember
+ these facts from fundamental linear algebra.
+\end_layout
+
+\begin_layout Subsubsection
+Transpose of a product.
+\end_layout
+
+\begin_layout Standard
+The transpose of a product is the product of the transposed the individual
+ matrices, in reverse order.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(XY)^{T}=Y^{T}X^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(X^{T}X)^{T}=X^{T}X
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, if a matrix can be decomposed into a product of smaller matrices,
+ then we can 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ with that product.
+ Another claim along those lines is the following.
+\end_layout
+
+\begin_layout Subsubsection
+Inverse of a product.
+\end_layout
+
+\begin_layout Standard
+The inverse of a product is the product of the inverses of the individual
+ matrices, in reverse order.
+\begin_inset Formula 
+\begin{equation}
+(XY)^{-1}=Y^{-1}X^{-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+(XYZA)^{-1}=A^{-1}Z^{-1}Y^{-1}X^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Orthogonal Matrices.
+\end_layout
+
+\begin_layout Standard
+Here's the big result: The inverse of an orthogonal matrix is its transpose.
+ If you know that already, skip to the next section.
+ Otherwise, labor on.
+\end_layout
+
+\begin_layout Standard
+Here's what orthogonal means.
+ Take any column.
+ Calculate the inner product of that column with itself.
+ (That's a sum of squares, incidentally).
+ If the matrix is orthogonal, the result will be 1.
+ Explicitly, for any column 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ , 
+\begin_inset Formula $x_{i}^{T}\cdot x_{i}=1$
+\end_inset
+
+.
+ And if one takes two different columns, their inner product is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\begin_inset Formula $x_{i}^{T}\cdot x_{j}=0$
+\end_inset
+
+ if 
+\begin_inset Formula $i\neq j$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If that property holds for each column, then the definition of orthogonality
+ boils down to the statement that
+\begin_inset Formula 
+\begin{equation}
+X^{T}X=I.
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+A reader should work out a little example to verify that.
+ Given a column 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, the product 
+\begin_inset Formula $x_{i}^{T}x_{i}=1$
+\end_inset
+
+, while the product of one column with another column, 
+\begin_inset Formula $x_{i}^{T}\cdot x_{j}$
+\end_inset
+
+ is 0.
+ 
+\end_layout
+
+\begin_layout Standard
+Orthogonal matrices have many special properties.
+ Here's a big one.
+\end_layout
+
+\begin_layout Standard
+Orthogonal matrices are very easy to invert.
+ An inverse is as easy to get as a transpose.
+\end_layout
+
+\begin_layout Standard
+Multiply 
+\begin_inset Formula $(X^{T}X)$
+\end_inset
+
+ on the right by 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+(X^{T}X)X^{-1} & = & I\, X^{-1}\nonumber \\
+X^{T}(XX^{-1}) & = & X^{-1}\\
+X^{T} & = & X^{-1}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Surprise! The inverse of an orthogonal matrix is equal to its transpose.
+\end_layout
+
+\begin_layout Standard
+There's no digital danger in calculating the inverse of an orthogonal matrix.
+ The inverse is REALLY EASY to calculate--its just a transpose.
+ It barely even counts as calculation, in my opinion.
+ Its book-keeping.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Transpose of an Inverse equals Inverse of Transpose
+\end_layout
+
+\begin_layout Standard
+I can't remember why I know this is true, but
+\begin_inset Formula 
+\begin{equation}
+\left(X^{T}\right)^{-1}=\left(X^{-1}\right)^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Triangular Matrices.
+ 
+\end_layout
+
+\begin_layout Standard
+A triangular matrix has 
+\begin_inset Formula $0$
+\end_inset
+
+'s below or above the main diagonal.
+\begin_inset Formula 
+\begin{eqnarray}
+\left[\begin{array}{ccccc}
+x_{11} & x_{12} & x_{13} & x_{14} & x_{15}\\
+0 & x_{22} & x_{23} & x_{24} & x_{25}\\
+0 & 0 & x_{33} & x_{34} & x_{35}\\
+0 & 0 & 0 & x_{44} & x_{45}\\
+0 & 0 & 0 & 0 & x_{55}
+\end{array}\right] &  & \left[\begin{array}{ccccc}
+x_{11} & 0 & 0 & 0 & 0\\
+x_{21} & x_{22} & 0 & 0 & 0\\
+x_{31} & x_{32} & x_{33} & 0 & 0\\
+x_{41} & x_{42} & x_{43} & x_{44} & 0\\
+x_{51} & x_{52} & x_{53} & x_{54} & x_{55}
+\end{array}\right]\\
+upper\, triangular &  & lower\, triangular\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall from the first week of matrix algebra that solving a linear system
+ by Gaussian elimination requires us to calculate weighted row sums in order
+ to arrive at an upper triangular matrix, and from there we 
+\begin_inset Quotes eld
+\end_inset
+
+backsolve
+\begin_inset Quotes erd
+\end_inset
+
+ to obtain the solution of a linear system.
+\end_layout
+
+\begin_layout Standard
+The main benefit of triangular matrices is that they reduce the number of
+ computations necessary to carry out matrix multiplication.
+ 
+\end_layout
+
+\begin_layout Section
+Decomposition: The Big idea
+\end_layout
+
+\begin_layout Standard
+Inverting matrices is time consuming and inaccurate.
+ We want to avoid it.
+ 
+\end_layout
+
+\begin_layout Standard
+Decomposition approaches help.
+ Perhaps we get results more quickly, but not always.
+ But we do get them more accurately.
+ And sometimes there is theoretical insight in the re-formulation of problems
+ by matrix decomposition.
+ 
+\end_layout
+
+\begin_layout Standard
+Suppose we could decompose 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ That means re-write 
+\begin_inset Formula $X$
+\end_inset
+
+ as a product of separate matrices.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X=VDU^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the inverse of a product rule, 
+\begin_inset Formula 
+\begin{equation}
+X^{-1}=U^{T^{-1}}D^{-1}V^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We could simplify it further if we had some 
+\begin_inset Quotes eld
+\end_inset
+
+special knowledge
+\begin_inset Quotes erd
+\end_inset
+
+ about 
+\begin_inset Formula $V$
+\end_inset
+
+, 
+\begin_inset Formula $D$
+\end_inset
+
+, and 
+\begin_inset Formula $U$
+\end_inset
+
+.
+ If the structures of 
+\begin_inset Formula $U$
+\end_inset
+
+, 
+\begin_inset Formula $D$
+\end_inset
+
+, and 
+\begin_inset Formula $V$
+\end_inset
+
+ were somehow simple and manageable, then we would be avoiding a lot of
+ computation.
+ 
+\end_layout
+
+\begin_layout Standard
+There are MANY different types of matrix decomposition.
+ It can almost make your head spin.
+\end_layout
+
+\begin_layout Section
+SVD: The Singular Value Decomposition
+\end_layout
+
+\begin_layout Standard
+Mandel, John.
+ (Feb.
+ 1982).
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Use of The Singular Value Decomposition in Regression Analysis.
+\begin_inset Quotes erd
+\end_inset
+
+ The American Statistician 36(1): 15-24.
+\end_layout
+
+\begin_layout Standard
+The SVD is on my mind this week because I've just spent about 30 hours writing
+ code to optimize the calculation of the SVD to try to accelerate an R program.
+ The SVD can play an important role in the calculation of ordinary inverses,
+ but it is truly vital in calculation of estimates for principal components
+ analysis as well as the 
+\begin_inset Quotes eld
+\end_inset
+
+generalized
+\begin_inset Quotes erd
+\end_inset
+
+ (Moore-Penrose) inverse for non-square or singular matrices.
+ 
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $X$
+\end_inset
+
+ is an 
+\begin_inset Formula $m\, x\, n$
+\end_inset
+
+ matrix.
+ 
+\begin_inset Formula $X=VDU^{T}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+singular value decomposition of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+\begin_inset Quotes erd
+\end_inset
+
+ There's a theorem that shows that such a decomposition always exists.
+\end_layout
+
+\begin_layout Standard
+Those individual pieces have magic properties.
+ 
+\end_layout
+
+\begin_layout Standard
+1.
+ D is 
+\begin_inset Formula $m\, x\, n$
+\end_inset
+
+.
+ But it has a very simple structure.
+ It has a diagonal matrix 
+\begin_inset Quotes eld
+\end_inset
+
+tucked
+\begin_inset Quotes erd
+\end_inset
+
+ into its top, and the bottom is padded with 0's.
+ It 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+D=\left[\begin{array}{ccccc}
+\lambda_{1} & 0 & 0 & 0 & 0\\
+0 & \lambda_{2} & 0 & 0 & 0\\
+0 & 0 & \lambda_{3} & 0 & 0\\
+0 & 0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 0 & \lambda_{n}\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sometimes, the last values of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ are zero, so we may have the right columns of 
+\begin_inset Formula $D$
+\end_inset
+
+ filled with 
+\begin_inset Formula $0$
+\end_inset
+
+'s.
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $D$
+\end_inset
+
+ is square--because 
+\begin_inset Formula $X$
+\end_inset
+
+ is square--look how easy it would be to get the inverse:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+D^{-1}=\left[\begin{array}{ccccc}
+1/\lambda_{1} & 0 & 0 & 0 & 0\\
+0 & 1/\lambda_{2} & 0 & 0 & 0\\
+0 & 0 & 1/\lambda_{3} & 0 & 0\\
+0 & 0 & 0 & \mbox{\ddots} & 0\\
+0 & 0 & 0 & 0 & 1/\lambda_{n}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The eager reader will anticipate here, noticing the usage of the symbol
+ 
+\begin_inset Formula $\lambda_{m}$
+\end_inset
+
+.
+ That's a hint that these values are familiar, they are eigenvalues, and
+ they are all positive (or 0) if 
+\begin_inset Formula $X$
+\end_inset
+
+ is positive semidefinite.
+\end_layout
+
+\begin_layout Standard
+2.
+ 
+\begin_inset Formula $V$
+\end_inset
+
+ is square, 
+\begin_inset Formula $n\, x\, n$
+\end_inset
+
+.
+ The columns of V are orthogonal with one another.
+ That means for a column i, 
+\begin_inset Formula $v_{i}^{T}v_{i}=1$
+\end_inset
+
+ but otherwise the product of two columns is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ The columns of 
+\begin_inset Formula $V$
+\end_inset
+
+ are the eigenvectors of 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+3.
+ 
+\begin_inset Formula $U$
+\end_inset
+
+ is square, 
+\begin_inset Formula $m\, x\, m$
+\end_inset
+
+ and orthogonal.
+ It is made up of the eigenvectors that correspond to the values 
+\begin_inset Formula $(\lambda_{1},\lambda_{2},\ldots,\lambda_{r})$
+\end_inset
+
+.
+ The columns of 
+\begin_inset Formula $U$
+\end_inset
+
+ are eigenvectors of 
+\begin_inset Formula $XX^{T}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The SVD is something of a 
+\begin_inset Quotes eld
+\end_inset
+
+Swiss army knife
+\begin_inset Quotes erd
+\end_inset
+
+ of matrix algebra.
+ We can use it to decompose a square matrix, one for which we need an inverse,
+ 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+.
+ However, its special power is that it can be used to calculate a generalized
+ inverse of a rectangular, but not square, matrix.
+ A generalized inverse 
+\begin_inset Formula $X^{+}$
+\end_inset
+
+ has the property that 
+\begin_inset Formula $X=(X^{+}X)\, X$
+\end_inset
+
+.
+ It works like an inverse, then.
+ This has various uses in statistical modeling.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's one way to think of the SVD.
+ The 3 matrices multiplied together are equal to X, but we can group them
+ into two sets to obtain some insight
+\begin_inset Formula 
+\begin{equation}
+\, X=(VDU^{T})=(VD)U^{T}\, or\, V(DU^{T})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This insight helps me to understand the statistical method called principal
+ components, for example.
+ Consider the first two terms together, 
+\begin_inset Formula $VD$
+\end_inset
+
+, as a new, better version of X.
+ 
+\begin_inset Formula $VD$
+\end_inset
+
+ has orthogonal (uncorrelated) columns.
+ The matrix 
+\begin_inset Formula $U^{T}$
+\end_inset
+
+ is a weighting transformation that is applied to 
+\begin_inset Formula $VD$
+\end_inset
+
+ in order to generate 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Principal components analysis is built around the idea that we need to understan
+d the column-centered values of the 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix, so the SVD in principal components is actually the SVD of 
+\begin_inset Formula $X-\mu$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+column\, centered\, X=X-\mu=(VD)U^{T}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+I'm grouping together 
+\begin_inset Formula $VD$
+\end_inset
+
+ to try to help the reader see something important.
+ Since the columns of 
+\begin_inset Formula $V$
+\end_inset
+
+ are orthogonal--they are 
+\begin_inset Quotes eld
+\end_inset
+
+uncorrelated
+\begin_inset Quotes erd
+\end_inset
+
+ in the statistical sense.
+ 
+\begin_inset Formula $D$
+\end_inset
+
+ is just a simple weighting factor.
+ So the 
+\begin_inset Formula $VD$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+good
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+uncorrelated
+\begin_inset Quotes erd
+\end_inset
+
+ information from the data set.
+ The SVD distills the information from the centered 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix, setting aside the uncorrelated part 
+\begin_inset Formula $VD$
+\end_inset
+
+ and then taking note that to reproduce 
+\begin_inset Formula $X-\mu$
+\end_inset
+
+, then we multiply by 
+\begin_inset Formula $U^{T}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If you remember that matrix multiplication is done column-by-column, then
+ it may help to remember that 
+\begin_inset Formula $U^{T}$
+\end_inset
+
+ is a set of columns.
+ So we can individually re-produce each column of 
+\begin_inset Formula $X$
+\end_inset
+
+ by multiplying the matrix 
+\begin_inset Formula $VD$
+\end_inset
+
+ by a column of 
+\begin_inset Formula $U^{T}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The calculation so far adds some insight for me, but it does not really
+ 
+\begin_inset Quotes eld
+\end_inset
+
+simplify
+\begin_inset Quotes erd
+\end_inset
+
+ anything.
+ Yet.
+ Now suppose that the matrix D has some really small values on the main
+ diagonal.
+ The values are organized from high to low (top-left to bottom-right).
+ 
+\begin_inset Formula 
+\begin{equation}
+D=\left[\begin{array}{ccccc}
+\lambda_{1}\\
+ & \lambda_{2}\\
+ &  & \lambda_{3}\\
+ &  &  & nearly\,0\\
+ &  &  &  & nearly\,0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If the bottom-right values are 
+\begin_inset Formula $0,$
+\end_inset
+
+ or so small that they can be disregarded, then we might just 
+\begin_inset Quotes eld
+\end_inset
+
+erase
+\begin_inset Quotes erd
+\end_inset
+
+ them, literally set them equal to 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ After that, when we calculate 
+\begin_inset Formula 
+\begin{equation}
+(VD)U^{T}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+we are effectively throwing away the bottom rows of 
+\begin_inset Formula $U^{T}$
+\end_inset
+
+ by giving them zero weight.
+ If we proceed through the matrix 
+\begin_inset Formula $D$
+\end_inset
+
+, setting more and more of the diagonal values to 
+\begin_inset Formula $0,$
+\end_inset
+
+ then we are trying to re-produce 
+\begin_inset Formula $X$
+\end_inset
+
+ by relying on less-and-less information.
+ That's what principal components analysis is all about.
+\end_layout
+
+\begin_layout Section
+QR Decomposition
+\end_layout
+
+\begin_layout Standard
+Although the SVD always works, it is also always computationally intensive.
+ R does not use SVD for ordinary regression, it instead uses the QR decompositio
+n.
+ The SVD is only needed for cases in which the columns of 
+\begin_inset Formula $X$
+\end_inset
+
+ are linearly dependent (collinear).
+\end_layout
+
+\begin_layout Standard
+Until very recently, regression textbooks would just plop out the answer
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+and assume the reader (or a statistical program) would implement calculations
+ to get the right answer.
+ I never thought about it very much, until I started reading the code for
+ R's function lm.fit and I realized there's no matrix inversion going on
+ in there.
+ Its a QR decomposition.
+ On the other hand, for very serious cases, say situations in which we think
+ 
+\begin_inset Formula $X^{T}X$
+\end_inset
+
+ is nearly singular, then we find the SVD is actually put to use, as in
+ the MASS package's code for ridge regression.
+ 
+\end_layout
+
+\begin_layout Standard
+The use of the QR algorithm is not a secret in the R documentation, of course,
+ but I simply ignored it (as I expect most 
+\begin_inset Quotes eld
+\end_inset
+
+users
+\begin_inset Quotes erd
+\end_inset
+
+ do).
+ However, when things go wrong in statistical calculations, then we often
+ have to remember how these calculations are done.
+ 
+\end_layout
+
+\begin_layout Standard
+This is the point at which I would refer the reader to Simon Woods's excellent
+ book, Generalized Additive Models, my favorite stats book.
+ It has an absolutely beautiful explanation of how the QR decomposition
+ is put to use in estimating linear regression models.
+ 
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $X$
+\end_inset
+
+ is 
+\begin_inset Formula $m\, x\, n$
+\end_inset
+
+.
+ The QR decomposition is as follows
+\begin_inset Formula 
+\begin{equation}
+X=Q\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $Q$
+\end_inset
+
+ is square, 
+\begin_inset Formula $R$
+\end_inset
+
+ is upper triangular.
+ And we are encouraged to note that there is a big block of 
+\begin_inset Formula $0$
+\end_inset
+
+'s in the bottom right side.
+\end_layout
+
+\begin_layout Standard
+This is the 
+\begin_inset Quotes eld
+\end_inset
+
+full sized
+\begin_inset Quotes erd
+\end_inset
+
+ version of 
+\begin_inset Formula $QR$
+\end_inset
+
+.
+ 
+\begin_inset Formula $Q$
+\end_inset
+
+ is an orthogonal matrix that is 
+\begin_inset Formula $m\, x\, m$
+\end_inset
+
+ in size.
+ The thing on the right is reminiscent of the center matrix in the SVD.
+ Its an upper griangular 
+\begin_inset Formula $R$
+\end_inset
+
+ in the top, padded by rows and rows of 0's on the bottom.
+ Unlike the SVD, where the top part was diagonal, now the top part is upper
+ triangular.
+ And, unlike 
+\begin_inset Formula $Q$
+\end_inset
+
+, which is a large 
+\begin_inset Formula $m\, x\, m$
+\end_inset
+
+, 
+\begin_inset Formula $R$
+\end_inset
+
+ is only 
+\begin_inset Formula $n$
+\end_inset
+
+ wide.
+ The bottom part of the stack, 
+\begin_inset Formula $\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]$
+\end_inset
+
+, is 
+\begin_inset Formula $m-n$
+\end_inset
+
+ rows of 
+\begin_inset Formula $0$
+\end_inset
+
+'s:
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]=\left[\begin{array}{c}
+\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & r_{14} & r_{1n}\\
+0 & r_{22} & r_{23} & r_{24} & r_{2n}\\
+0 & 0 & r_{33} & r_{34} & r_{3n}\\
+0 & 0 & 0 & \ddots & r_{(m-1)n}\\
+0 & 0 & 0 & 0 & r_{mm}\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{array}\end{array}\right]\mbox{ }
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I called that the 
+\begin_inset Quotes eld
+\end_inset
+
+full sized
+\begin_inset Quotes erd
+\end_inset
+
+ version of QR because we often don't need all that information.
+ The fact that the bottom rows of the right part are all zeros can simplify
+ the whole thing quite a bit.
+ 
+\end_layout
+
+\begin_layout Standard
+Since the multiplication on the right is like this
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X=\left[\begin{array}{ccccccc}
+q_{11} & q_{12} & q_{14} &  &  &  & q_{1m}\\
+q_{21}\\
+\\
+ &  &  & \ddots\\
+\\
+\\
+q_{m1} &  &  &  &  &  & q_{mm}
+\end{array}\right]\left[\begin{array}{c}
+\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & r_{14} & r_{1n}\\
+0 & r_{22} & r_{23} & r_{24} & r_{2n}\\
+0 & 0 & r_{33} & r_{34} & r_{3n}\\
+0 & 0 & 0 & \ddots & r_{(n-1)n}\\
+0 & 0 & 0 & 0 & r_{nn}\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{array}\end{array}\right]\mbox{ }
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+we see readily that the last columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+ don't matter.
+ In the multiplication process, those rows of 
+\begin_inset Formula $0$
+\end_inset
+
+'s on the bottom of 
+\begin_inset Formula $R$
+\end_inset
+
+ end up 
+\begin_inset Quotes eld
+\end_inset
+
+erasing
+\begin_inset Quotes erd
+\end_inset
+
+ the last 
+\begin_inset Formula $m-n$
+\end_inset
+
+ columns of the full sized Q.
+ 
+\end_layout
+
+\begin_layout Standard
+As a result, we might as well throw away those rows of 
+\begin_inset Formula $0'$
+\end_inset
+
+s and the 
+\begin_inset Formula $m-n$
+\end_inset
+
+ columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+ So the more 
+\begin_inset Quotes eld
+\end_inset
+
+petite
+\begin_inset Quotes erd
+\end_inset
+
+ version (
+\begin_inset Formula $Q_{f})$
+\end_inset
+
+ would give
+\begin_inset Formula 
+\begin{equation}
+X=Q_{f}R
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X=\left[\begin{array}{ccccc}
+q_{11} & q_{12} & q_{13} &  & q_{1n}\\
+q_{21} & q_{22} & q_{23} &  & q_{2n}\\
+q_{31} & q_{32}\\
+q_{41} &  &  & \ddots\\
+ & \ddots\\
+\\
+q_{m1} &  &  &  & q_{mn}
+\end{array}\right]\left[\begin{array}{c}
+\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & r_{14} & r_{1n}\\
+0 & r_{22} & r_{23} & r_{24} & r_{2n}\\
+0 & 0 & r_{33} & r_{34} & r_{3n}\\
+0 & 0 & 0 & \ddots & r_{(n-1)n}\\
+0 & 0 & 0 & 0 & r_{nn}
+\end{array}\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the software reports 
+\begin_inset Formula $Q$
+\end_inset
+
+, it will often not report the full sized thing, but rather the smaller
+ 
+\begin_inset Formula $m\, x\, n$
+\end_inset
+
+ 
+\begin_inset Formula $Q_{f}$
+\end_inset
+
+ matrix.
+ (In R, for example, run 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+qr()
+\end_layout
+
+\end_inset
+
+ and then put the result through 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+qr.Q()
+\end_layout
+
+\end_inset
+
+ to extract 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+ The result will be 
+\begin_inset Formula $m\, x\, n$
+\end_inset
+
+, unless the additional argument 
+\begin_inset listings
+lstparams "tabsize=2"
+inline true
+status open
+
+\begin_layout Plain Layout
+
+complete=TRUE
+\end_layout
+
+\end_inset
+
+ is supplied to 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+qr.Q()
+\end_layout
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $X$
+\end_inset
+
+ is a square matrix, of course, then there's no smaller 
+\begin_inset Formula $Q$
+\end_inset
+
+ to deal with.
+ The 
+\begin_inset Formula $Q$
+\end_inset
+
+ matrix will be 
+\begin_inset Formula $m\, x\, m$
+\end_inset
+
+ and 
+\begin_inset Formula $R$
+\end_inset
+
+ will be upper triangular.
+\end_layout
+
+\begin_layout Standard
+How does that help us in a regression analysis? Well, the 
+\begin_inset Quotes eld
+\end_inset
+
+brute force
+\begin_inset Quotes erd
+\end_inset
+
+ instinct in me is to stomp through this like an elephant.
+ We want to calculate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So replace each 
+\begin_inset Formula $X$
+\end_inset
+
+ by the petite 
+\begin_inset Formula $Q_{f}R$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}=((Q_{f}R)^{T}(Q_{f}R))^{-1}(Q_{f}R)^{T}y
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+If we use the rules for inverses and transposes mentioned above, we can
+ algebraically reduce that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{\beta} & = & (R^{T}Q_{f}^{T}Q_{f}R))^{-1}(Q_{f}R)^{T}y\\
+ &  & (R^{T}R)^{-1}R^{T}Q_{f}^{T}y\\
+ &  & R^{-1}R^{T^{-1}}R^{T}Q_{f}^{T}y\\
+ &  & R^{-1}Q_{f}^{T}y
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On pages 15-17, Woods has a more elegant, albeit less obvious, derivation.
+ 
+\end_layout
+
+\begin_layout Standard
+In the ordinary math-based treatment of regression, we find the variance
+ of 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta)}}=\sigma_{e}^{2}(X^{T}X)^{-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The QR algorithm-based estimator is 
+\begin_inset Formula 
+\begin{equation}
+\widehat{Var(\hat{\beta})}=\sigma_{e}^{2}R^{-1}R^{-T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The QR algorithm has been on my mind this week, even though I was working
+ to accelerate code that uses an SVD.
+ An algorithm to use the QR decomposition to accelerate the calculation
+ of generalized inverses was presented in this article:
+\end_layout
+
+\begin_layout Standard
+V.
+ N.
+ Katsikis, D.
+ Pappas, Fast computing of the Moore-Penrose inverse ## matrix, Electronic
+ Journal of Linear Algebra, 17(2008), 637-650.
+\end_layout
+
+\begin_layout Standard
+My R implementation of that function tries to use the fast KPginv method
+ to get a Moore-Penrose inverse, but if that fails, it uses the guaranteed-to-wo
+rk svd() based calculation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mpinv2 <- function(X, tol = sqrt(.Machine$double.eps)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    KPginv <- function(X){
+\end_layout
+
+\begin_layout Plain Layout
+
+        Xdim <- dim(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+        if (Xdim[1] > Xdim[2]){
+\end_layout
+
+\begin_layout Plain Layout
+
+            C <- crossprod(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+            ginv <- solve(C, t(X))
+\end_layout
+
+\begin_layout Plain Layout
+
+        } else {
+\end_layout
+
+\begin_layout Plain Layout
+
+            C <- tcrossprod(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+            G <- solve(C, X)
+\end_layout
+
+\begin_layout Plain Layout
+
+            ginv <- t(G)
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        ginv
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    tryCatch (KPginv(X), error = function(err) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        print("use original mpinv (consider MASS::ginv instead)")
+\end_layout
+
+\begin_layout Plain Layout
+
+        s <- svd(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+        e <- s$d
+\end_layout
+
+\begin_layout Plain Layout
+
+        e[e > tol] <- 1/e[e > tol]
+\end_layout
+
+\begin_layout Plain Layout
+
+        s$v %*% diag(e, nrow = length(e)) %*% t(s$u)
+\end_layout
+
+\begin_layout Plain Layout
+
+    })
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+What's the Point?
+\end_layout
+
+\begin_layout Standard
+When a problem is small, then we can write careless computer code and get
+ right answers more or less quickly.
+ We can invert matrices, without worrying too much.
+\end_layout
+
+\begin_layout Standard
+However, when problems grow in size, we need to exert more care when writing
+ computer programs.
+ I recently learned that one of my colleagues started a calculation in September
+ that did not finish until December.
+ That may be necessary, but I'd have to inspect the code to be sure.
+ He said it took a long time to 
+\begin_inset Quotes eld
+\end_inset
+
+invert some really big matrices
+\begin_inset Quotes erd
+\end_inset
+
+ and my spidey-senses were tingling with the hint of danger.
+ 
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,22 @@
+\begin{Schunk}
+\begin{Sinput}
+ library (gtools)
+ N <- 100       
+ y1 <-seq(0.001, 0.999, length.out=N)
+ y2 <-seq(0.001, 0.999, length.out=N)   
+ z <- matrix (0,N,N) 
+ myz <-function(a1,a2,a3){
+     z <- matrix (NA,N,N)
+     for (i in 1:N) {   
+  
+         for (j in 1:N) {
+           ddirchprob <- ddirichlet( c(y1[i],y2[j],1-y1[i]-y2[j]), c(a1,a2,a3))
+           z[i,j] <- ifelse (y1[i]+y2[j]<1.02, ddirchprob, NA)
+     }
+  } 
+  z
+  }
+ z1 <-myz(1,1,1)
+ persp(y1,y2,z1, theta = 100, phi = 40, xlab="p1", ylab="p2", zlab="probability", ticktype="detailed")
+\end{Sinput}
+\end{Schunk}

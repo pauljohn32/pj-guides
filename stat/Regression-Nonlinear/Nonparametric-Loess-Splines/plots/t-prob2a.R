@@ -1,0 +1,12 @@
+###################################################
+### code chunk number 8: prob2a (eval = FALSE)
+###################################################
+## dat$heightsq <- dat$height * dat$height
+## mod2 <- lm(weight~height + heightsq, data = dat)
+## summary(mod2)
+## heightseq <- seq(min(dat$height), max(dat$height), length.out = 100)
+## weightpred <- predict(mod2, newdata = data.frame(height = heightseq, heightsq = heightseq*heightseq))
+## plot(weight ~ height, data = dat)
+## lines(heightseq, weightpred, lty = 4, col = "red", lwd = 2)
+
+

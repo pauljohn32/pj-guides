@@ -1,0 +1,2572 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Auto Correlation in Regression 
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+Autocorrelation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2012
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2012
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Overview
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout BeginFrame
+Time Series Is Its Own Field of Statistics
+\end_layout
+
+\begin_layout Itemize
+IF you want to study time series data, there is a separate series of courses
+ you should take
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Econometrics, dynamics, panel-data analysis, longitudinal regression analysis
+\end_layout
+
+\begin_layout Itemize
+Purpose of this lecture is to motivate main questions for those additional
+ courses
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Notational changes
+\end_layout
+
+\begin_layout Itemize
+Refer to 
+\begin_inset Quotes eld
+\end_inset
+
+rows of data
+\begin_inset Quotes erd
+\end_inset
+
+ by subscript 
+\begin_inset Formula $t$
+\end_inset
+
+ instead of subscript 
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+some lingering effect of errors at 
+\begin_inset Formula $t-1$
+\end_inset
+
+, 
+\begin_inset Formula $t-2$
+\end_inset
+
+, and so forth
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Autocorrelation in a Nutshell
+\end_layout
+
+\begin_layout Itemize
+Suppose rows and columns are time points.
+ OLS regression assumes 
+\begin_inset Formula 
+\begin{equation}
+Var(e)=E(e\cdot e'|X)=\left[\begin{array}{ccccc}
+\sigma_{e}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{e}^{2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{e}^{2} & 0 & 0\\
+\dots &  & \dots & \dots & 0\\
+0 & 0 & 0 & 0 & \sigma_{e}^{2}
+\end{array}\right]\label{eq:Vare_homo-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note 2 critical simplifications are used
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+All non-diagonal elements are 
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+All diagonal elements are equal to each other
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Autocorrelation in a Nutshell (2)
+\end_layout
+
+\begin_layout Itemize
+Heteroskedasticity throws away simplification #2: allows differing 
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+ values,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & \sigma_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+0 & 0 & 0 & \sigma_{N-1}^{2} & 0\\
+0 & 0 & 0 & 0 & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+but heteroskedasticity still leaves 
+\begin_inset Formula $0$
+\end_inset
+
+'s on all off-diagonal elements
+\end_layout
+
+\begin_layout BeginFrame
+Autocorrelation in a Nutshell (3)
+\end_layout
+
+\begin_layout Itemize
+Autocorrelated errors: there are correlations 
+\begin_inset Quotes eld
+\end_inset
+
+across time
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Var(e)=E[e\cdot e'|X]=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & \sigma_{12} & \sigma_{13} & \ldots & \sigma_{1N}\\
+\sigma_{21} & \sigma_{2}^{2} & \sigma_{23} & \dots & \sigma_{2N}\\
+\sigma_{31} & \sigma_{32} & \ddots & \cdots & \sigma_{3N}\\
+\vdots & \ddots & \ddots & \sigma_{N-1}^{2} & \vdots\\
+\sigma_{N1} & \sigma_{N2} & \ldots &  & \sigma_{N}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\sigma_{21}=Cov(e_{1},e_{2}),$
+\end_inset
+
+ the covariance of the random error across observations on a unit
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Var(e)$
+\end_inset
+
+ is symmetric, because 
+\begin_inset Formula $\sigma_{21}=\sigma_{12}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But otherwise, it can be arbitrarily complicated
+\end_layout
+
+\begin_layout BeginFrame
+Consequences of Ignoring Autocorrelated Errors
+\end_layout
+
+\begin_layout Enumerate
+OLS estimates of the b's are unbiased and consistent
+\end_layout
+
+\begin_layout Enumerate
+OLS gives the wrong (biased) estimates of the standard errors of the b's.
+ Thus the t-tests are bogus.
+ The t-values are bigger than they should be, and you are likely to falsely
+ reject the null hypothesis.
+\end_layout
+
+\begin_layout Enumerate
+OLS is inefficient.
+ There is an alternative estimation procedure (GLS) that gives estimates
+ that are also unbiased and consistent, but also have lower variance.
+\end_layout
+
+\begin_layout BeginFrame
+Spatial Autocorrelation
+\end_layout
+
+\begin_layout Itemize
+Autocorrelation is not just for 
+\begin_inset Quotes eld
+\end_inset
+
+time series
+\begin_inset Quotes erd
+\end_inset
+
+ anymore.
+ 
+\end_layout
+
+\begin_layout Itemize
+Work on spatial autocorrelation has intensified.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Refer to data points in a grid or a map
+\end_layout
+
+\begin_layout Itemize
+Hypothesize that disturbances at one cell may 
+\begin_inset Quotes eld
+\end_inset
+
+disperse
+\begin_inset Quotes erd
+\end_inset
+
+ themselves across other cells.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Time Series Analysis
+\end_layout
+
+\begin_layout BeginFrame
+Consider one unit over time.
+ 
+\end_layout
+
+\begin_layout Itemize
+One time series, 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ affects 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+, for 
+\begin_inset Formula $t=1,2,3,...T$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The simplest model, the one with no complications, is fit with OLS
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{t}=a+b\cdot x_{t}+e_{t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+That's just one of the many possibilities, of course.
+ Consider big horrible looking equation like
+\end_layout
+
+\begin_layout BeginFrame
+Time Series as a Field of Study
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+y_{t} & = & \rho_{1}y_{t-1}+\ldots+\rho_{p}y_{t-p}+a+b_{0}x_{t}+\ldots+b_{m}x_{t-m}+\theta_{0}e_{t}+\theta_{1}e_{t-1}\ldots+\theta_{t-q}e_{t-q}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lagged dependent variables, 
+\begin_inset Formula $y_{t-1}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{t-2}$
+\end_inset
+
+, 
+\begin_inset Formula $\ldots$
+\end_inset
+
+: 
+\begin_inset Quotes eld
+\end_inset
+
+autoregression models
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lagged exogenous variables, 
+\begin_inset Formula $x_{t-1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{t-2}$
+\end_inset
+
+, 
+\begin_inset Formula $\ldots$
+\end_inset
+
+: 
+\begin_inset Quotes eld
+\end_inset
+
+distributed lag models
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lagged error terms, 
+\begin_inset Formula $e_{t-1}$
+\end_inset
+
+, 
+\begin_inset Formula $e_{t-2}$
+\end_inset
+
+, 
+\begin_inset Formula $\ldots$
+\end_inset
+
+: 
+\begin_inset Quotes eld
+\end_inset
+
+autocorrelated error models
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Autoregressive Conditional Heteroskedasticity
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Cross Sectional Time Series
+\end_layout
+
+\begin_layout Itemize
+Original Time Series studies focused on 1 data series, in isolation (psychologis
+ts would say 
+\begin_inset Quotes eld
+\end_inset
+
+idiographic
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Collect several time series.
+ What do you have? Names for same kind of problem:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Pooled Time Series 
+\end_layout
+
+\begin_layout Itemize
+Cross Sectional Time Series 
+\end_layout
+
+\begin_layout Itemize
+Panel Data Analysis 
+\end_layout
+
+\begin_layout Itemize
+Repeated Measures
+\end_layout
+
+\begin_layout Itemize
+Longitudinal Analysis
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Autocorrelated Error: The Love Story Called AR(1)
+\end_layout
+
+\begin_layout Subsection
+Define AR(1)
+\end_layout
+
+\begin_layout BeginFrame
+Focus on 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+: Autocorrelation = 
+\begin_inset Quotes eld
+\end_inset
+
+serially correlated errors
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose we don't have lagged 
+\begin_inset Formula $y$
+\end_inset
+
+'s or 
+\begin_inset Formula $x$
+\end_inset
+
+'s on the right hand side.
+\end_layout
+
+\begin_layout Itemize
+Do allow lagged errors.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{t}=b_{0}+b_{1}x_{t}+e_{t}\label{eq:OLS}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We consider only the distortion caused by lagged error terms, which are
+ often called 
+\begin_inset Quotes eld
+\end_inset
+
+disturbances
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+This is not the same as saying the X is correlated with its own previous
+ values, or that Y is.
+ This only concerns the lingering effects of past 
+\begin_inset Quotes eld
+\end_inset
+
+shocks
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Add an Equation for the Autoregressive Error 
+\end_layout
+
+\begin_layout Itemize
+AR(1), auto regression of order 1:
+\begin_inset Formula 
+\begin{equation}
+e_{t}=\rho e_{t-1}+u_{t}\label{eq:AR1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Error at time 
+\begin_inset Formula $t$
+\end_inset
+
+ includes
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+a portion 
+\begin_inset Formula $\rho$
+\end_inset
+
+ of the previous (unmeasured) error, and
+\end_layout
+
+\begin_layout Itemize
+a new random error, which 
+\begin_inset Quotes eld
+\end_inset
+
+nice
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $E[u_{t}]=0$
+\end_inset
+
+ (unbiased)
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $E[u_{t}^{2}]=\sigma_{u}^{2}$
+\end_inset
+
+ (homoskedastic) and not autocorrelated 
+\begin_inset Formula $E[u_{t},u_{s}]=0$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+AR(2) would introduce 2 lagged errors, as in
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+e_{t}=\rho_{1}e_{t-1}+\rho_{2}e_{t-2}+u_{t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Testing for Autocorrelation
+\end_layout
+
+\begin_layout BeginFrame
+The Durbin Watson Test for AR(1)
+\end_layout
+
+\begin_layout Itemize
+This is only for AR(1).
+ 
+\end_layout
+
+\begin_layout Itemize
+AND it is not correct when there are 
+\begin_inset Quotes eld
+\end_inset
+
+lagged y
+\begin_inset Quotes erd
+\end_inset
+
+ values on the right hand side.
+\end_layout
+
+\begin_layout Itemize
+General rule of thumb: DW should be 
+\begin_inset Quotes eld
+\end_inset
+
+near 2
+\begin_inset Quotes erd
+\end_inset
+
+ in order to reject the possibility that serial correlation exists, which
+ means you affirm the claim 
+\begin_inset Formula $\rho$
+\end_inset
+
+=0.
+\end_layout
+
+\begin_layout BeginFrame
+DW Interpretation
+\end_layout
+
+\begin_layout Itemize
+The theory is 
+\begin_inset Formula $y_{t}=b_{0}+b_{1}x_{t}+e_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $e_{t}=\rho e_{t-1}+u_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $\rho=0,$
+\end_inset
+
+ then this is just the 
+\begin_inset Quotes eld
+\end_inset
+
+regular old OLS model
+\begin_inset Quotes erd
+\end_inset
+
+.
+ So the null hypothesis is 
+\begin_inset Formula $\rho=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+But the DW statistic equals 2 if the null is true.
+ 
+\end_layout
+
+\begin_layout Itemize
+How close to 2 does it have to be? DW comes with 2 diagnostic limits, 
+\begin_inset Formula $d_{l}$
+\end_inset
+
+ and 
+\begin_inset Formula $d_{u}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename dw1.eps
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+DW far from 2 (<
+\begin_inset Formula $d_{l}$
+\end_inset
+
+ or 
+\begin_inset Formula $>4d_{o}$
+\end_inset
+
+) means that the null can be rejected.
+ 
+\end_layout
+
+\begin_layout Standard
+DW very close to 2 (
+\begin_inset Formula $d_{U}<DW<4-d_{U}$
+\end_inset
+
+), null accepted
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $d_{l}$
+\end_inset
+
+ < DW < 
+\begin_inset Formula $d_{u}$
+\end_inset
+
+ (or 
+\begin_inset Formula $4-d_{u}<DW<4-d_{l})$
+\end_inset
+
+, then the test is inconclusive.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.3cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The indeterminacy is due to the possibility that autocorrelation in 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ may be causing the apparent autocorrelation in 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+If Autocorrelation, Then What? GLS!
+\end_layout
+
+\begin_layout BeginFrame
+FGLS: Feasible GLS
+\end_layout
+
+\begin_layout Standard
+A Two Step Estimation Procedure
+\end_layout
+
+\begin_layout Enumerate
+Theorize a correlation structure and 
+\begin_inset Quotes eld
+\end_inset
+
+work out
+\begin_inset Quotes erd
+\end_inset
+
+ an estimate of the error term's variance/covariance matrix.
+\end_layout
+
+\begin_layout Enumerate
+Use Generalized Least Squares to calculate estimates that best fit.
+\end_layout
+
+\begin_layout Enumerate
+Repeat the procedure.
+ The GLS fit -> estimates of the error covariances -> new GLS estimates.
+\end_layout
+
+\begin_layout Subsection
+GLS (In General)
+\end_layout
+
+\begin_layout BeginFrame
+Generalized Least Squares
+\end_layout
+
+\begin_layout Itemize
+Weighted Least Squares weights each error 
+\begin_inset Formula $(y_{t}-\hat{y}_{t})$
+\end_inset
+
+ by 
+\begin_inset Formula $w_{t}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+S(\hat{b})=\sum_{t=1}^{T}W_{t}(y_{t}-\hat{y}_{t})^{2}=\sum_{t=1}^{T}(y_{t}-\hat{y}_{t})w_{t}^{2}(y_{t}-\hat{y}_{t})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Think of that like this: Multiply all 
+\begin_inset Quotes eld
+\end_inset
+
+mix and match combinations
+\begin_inset Quotes erd
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\\
+ & \begin{array}{ccccc}
+(y_{1}-\hat{y}_{1})( & y_{2}-\hat{y}_{2})( & y_{3}-\hat{y}_{3}) & \ldots & (y_{T}-\hat{y}_{T})\end{array}\\
+\begin{array}{c}
+(y_{1}-\hat{y}_{1})\\
+(y_{2}-\hat{y}_{2})\\
+(y_{3}-\hat{y}_{3})\\
+\vdots\\
+(y_{T}-\hat{y}_{T})
+\end{array} & \left[\begin{array}{ccccc}
+w_{1}^{2} & 0 & 0 & 0 & 0\\
+0 & w_{2}^{2} & 0 & 0 & 0\\
+0 & 0 & \ddots & \cdots & 0\\
+\vdots & 0 & 0 & w_{T-1}^{2} & 0\\
+0 & 0 & 0 & 0 & w_{T}^{2}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A sum with only 
+\begin_inset Formula $T$
+\end_inset
+
+ terms--the 
+\begin_inset Formula $0$
+\end_inset
+
+'s in the weight matrix
+\end_layout
+
+\begin_layout BeginFrame
+Generalized Least Squares (cont.)
+\end_layout
+
+\begin_layout Itemize
+The Weight matrix for autocorrelated errors does not have all of those 0's
+\end_layout
+
+\begin_layout Itemize
+So the carry out the 
+\begin_inset Quotes eld
+\end_inset
+
+multiply and add
+\begin_inset Quotes erd
+\end_inset
+
+ exercise:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+ & \begin{array}{ccccc}
+(y_{1}-\hat{y}_{1})( & y_{2}-\hat{y}_{2})( & y_{3}-\hat{y}_{3}) & \ldots & (y_{T}-\hat{y}_{T})\end{array}\\
+\begin{array}{c}
+(y_{1}-\hat{y}_{1})\\
+(y_{2}-\hat{y}_{2})\\
+(y_{3}-\hat{y}_{3})\\
+\vdots\\
+(y_{T}-\hat{y}_{T})
+\end{array} & \left[\begin{array}{ccccc}
+w_{1}^{2} & w_{12} & w_{13} & \ldots & w_{1T}\\
+w_{21} & w_{2}^{2} & w_{23} & \ldots & w_{2T}\\
+w_{31} & w_{32} & \ddots & \cdots & w_{3T}\\
+\vdots & \vdots & \ddots & w_{T-1}^{2} & \vdots\\
+w_{T1} & w_{T2} & w_{T3} & \ldots & w_{T}^{2}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Leads to a sum with 
+\begin_inset Formula $T\times T$
+\end_inset
+
+ terms.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Generalized Least Squares (cont.)
+\end_layout
+
+\begin_layout Itemize
+Horrible, yes? The GLS Sum of Squares is a gigantic tangle if you write
+ it all out
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\mbox{row\,1: }(y_{1}-\hat{y}_{1})w_{1}^{2}(y_{1}-\hat{y}_{1})+(y_{1}-\hat{y}_{1})w_{12}(y_{2}-\hat{y}_{2})+(y_{1}-\hat{y}_{1})w_{13}(y_{3}-\hat{y}_{3})+\\
+\mbox{row\,2: \ensuremath{(y_{2}-\hat{y}_{2})w_{21}(y_{1}-\hat{y}_{1})+(y_{2}-\hat{y}_{2})w_{2}^{2}(y_{2}-\hat{y}_{2})+(y_{2}-\hat{y}_{2})w_{23}(y_{3}-\hat{y}_{3})+}}\nonumber \\
+\ldots\nonumber \\
+\mbox{row\,\ T: \ensuremath{(y_{T}-\hat{y}_{T})w_{T1}(y_{1}-\hat{y}_{1})+(y_{T}-\hat{y}_{T})w_{T2}(y_{2}-\hat{y}_{2})+\ldots+(y_{T}-\hat{y}_{T})w_{T}^{2}(y_{T}-\hat{y}_{T})}}\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\sum_{t=1}^{T}\sum_{s=1}^{T}(y_{t}-\hat{y}_{t})w_{ts}(y_{s}-\hat{y}_{s})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use matrix algebra, this is a lot easier to write down.
+\begin_inset Formula 
+\begin{equation}
+(y-\hat{y})'\, W\,(y-\hat{y})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Generalized Least Squares (cont.)
+\end_layout
+
+\begin_layout Itemize
+A big swirl of computations is involved in deriving the best fitting values
+ of the coefficients.
+\end_layout
+
+\begin_layout Itemize
+The solution looks like
+\begin_inset Formula 
+\begin{equation}
+\hat{b}=(X'WX)^{-1}X'Wy
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+And Then Iterate (Maybe)
+\end_layout
+
+\begin_layout Itemize
+An estimate of 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ begets a new estimate of 
+\begin_inset Formula $W$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then a new estimate of 
+\begin_inset Formula $W$
+\end_inset
+
+ begets a new estimate of 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Repeat until estimates of 
+\begin_inset Formula $\hat{b}$
+\end_inset
+
+ converge.
+\end_layout
+
+\begin_layout Subsection
+Specialized Versions of the GLS Algorithm
+\end_layout
+
+\begin_layout BeginFrame
+Cochrane-Orcutt for AR(1)
+\end_layout
+
+\begin_layout Standard
+The most famous special purpose GLS estimator is the Cochrane-Orcutt procedure
+ for AR(1).
+\end_layout
+
+\begin_layout Description
+Step
+\begin_inset space ~
+\end_inset
+
+1: Get an estimate of 
+\begin_inset Formula $\rho.$
+\end_inset
+
+ To do so, 
+\end_layout
+
+\begin_layout Description
+a) estimate an OLS regression of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ on 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Description
+b) call the residuals 
+\begin_inset Formula $\widehat{e}_{t}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Description
+c) estimate 
+\begin_inset Formula $\rho$
+\end_inset
+
+ in this model:
+\begin_inset Formula 
+\[
+\widehat{e}_{t}=\rho*\widehat{e}_{t-1}+u_{t}
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula $u_{t}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+nice
+\begin_inset Quotes erd
+\end_inset
+
+ error term.
+\end_layout
+
+\begin_layout BeginFrame
+Cochrane-Orcutt (Step 2)
+\end_layout
+
+\begin_layout Description
+Step
+\begin_inset space ~
+\end_inset
+
+2: Use 
+\begin_inset Formula $\hat{\rho}$
+\end_inset
+
+ to create new weighted observed variables
+\begin_inset Formula 
+\begin{equation}
+y_{t}^{*}=y_{t}-\hat{\rho}y_{t-1}\mbox{\,\ and \ensuremath{x_{t}^{*}=x_{t}-\hat{\rho}x_{t-1}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Regress: 
+\begin_inset Formula $y_{t}^{*}$
+\end_inset
+
+ on 
+\begin_inset Formula $x_{t}^{*}$
+\end_inset
+
+.
+ That provides an estimate of 
+\begin_inset Formula $\hat{b}_{1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+And it provides a new set of residuals, so we can repeat step 1, then step
+ 2, and so forth.
+\end_layout
+
+\begin_layout BeginFrame
+Why Calculate 
+\begin_inset Formula $y_{t}^{*}=y_{t}-\rho y_{t-1}$
+\end_inset
+
+and 
+\begin_inset Formula $x_{t}^{*}=x_{t}-\hat{\rho}x_{t-1}$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+That's why Cochrane and Orcutt became famous.
+\end_layout
+
+\begin_layout Itemize
+Restate the assumptions we have already made:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{t}=b_{0}+b_{1}x_{t}+e_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+y_{t-1}=b_{0}+b_{1}x_{t-1}+e_{t-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Multiply through by the unknown constant 
+\begin_inset Formula $\rho$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho y_{t-1}=\rho b_{0}+\rho b_{1}x_{t-1}+\rho e_{t-1}\label{ar1p}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Subtract the third from the first:
+\begin_inset Formula 
+\begin{equation}
+y_{t}-\rho y_{t-1}=b_{0}-\rho b_{0}+b_{1}(x_{t}-\rho x_{t-1})+e_{t-1}-\rho e_{t-1}\label{gendiff}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Why 
+\begin_inset Formula $y_{t}^{*}$
+\end_inset
+
+and 
+\begin_inset Formula $x_{t}^{*}?$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Restate:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{t}-\rho y_{t-1}=b_{0}-\rho b_{0}+b_{1}(x_{t}-\rho x_{t-1})+e_{t-1}-\rho e_{t-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Holy cow! Look at the error term.
+ It is equal to our nice friend 
+\begin_inset Formula $u_{t}$
+\end_inset
+
+.
+\begin_inset Formula 
+\[
+u_{t}=e_{t}-\rho e_{t-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Step 2 is implemented, then, by calculating new variables y* and x* from
+ the obvious equivalents in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "gendiff"
+
+\end_inset
+
+):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+y_{t}^{*}=b_{0}(1-\rho)+b_{1}x_{t}^{*}+...+u_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Derive the Weight Matrix to calculate GLS with Matrices.
+\end_layout
+
+\begin_layout Itemize
+Consider AR(1).
+ : 
+\begin_inset Formula 
+\begin{equation}
+AR(1):\,\, e_{t}=\rho e_{t-1}+u_{t}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Formula $u_{t}$
+\end_inset
+
+ has constant variance 
+\begin_inset Formula $\sigma_{u}^{2}$
+\end_inset
+
+ and it has no autocorrelation, 
+\begin_inset Formula $E(u_{t},u_{t-j})=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+This is the only AR model for which I'd try to derive 
+\begin_inset Formula $Var(e_{t})$
+\end_inset
+
+ term-by term
+\end_layout
+
+\begin_layout Itemize
+Substitute recursively 
+\begin_inset Formula 
+\[
+e_{t}=\rho(\rho e_{t-2}+u_{t-1})+u_{t}=\rho^{2}e_{t-2}+\rho u_{t-1}+u_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+e_{t}=\rho^{2}(\rho e_{t-3}+u_{2})+\rho u_{t-1}+u_{t}=\rho^{3}e_{t-3}+\rho^{2}u_{t-2}+\rho u_{t-1}+u_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Each 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+ is really a 
+\begin_inset Quotes eld
+\end_inset
+
+weighted average
+\begin_inset Quotes erd
+\end_inset
+
+ of past values of 
+\begin_inset Formula $u_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $-1<\rho<1$
+\end_inset
+
+, the past values are 
+\begin_inset Quotes eld
+\end_inset
+
+discounted
+\begin_inset Quotes erd
+\end_inset
+
+, they have less and less weight.
+ 
+\end_layout
+
+\begin_layout Itemize
+For an infinite number of steps into the past (using the geometric series),
+ we find
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+Var(e_{t})=E(e_{t}e_{t})=\sigma_{u}^{2}+\rho^{2}\sigma_{u}^{2}+\rho^{4}\sigma_{u}^{2}+\ldots=\frac{\sigma_{u}^{2}}{1-\rho^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+With some (lots of) patience, we find it is feasible to write out a 
+\begin_inset Quotes eld
+\end_inset
+
+variance-covariance
+\begin_inset Quotes erd
+\end_inset
+
+ matrix for the error terms, 
+\begin_inset Formula $e_{t}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Var(e_{t})=\frac{\sigma_{u}^{2}}{1-\rho^{2}}\left[\begin{array}{cccccc}
+1 & \rho & \rho^{2} & \rho^{3} &  & \rho^{N-1}\\
+\rho & 1 & \rho & \rho^{2} & \rho^{3}\\
+\rho^{2} & \rho & 1 & \rho & \rho^{2} & \rho^{3}\\
+\rho^{3} &  &  & \ddots &  & \rho^{2}\\
+ & \rho^{3} & \rho^{2} & \rho & 1 & \rho\\
+\rho^{N-1} &  & \rho^{3} & \rho^{2} & \rho & 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+The weight matrix 
+\begin_inset Formula $W=Var(e_{t})^{-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Topics for Further Study
+\end_layout
+
+\begin_layout BeginFrame
+Focus on 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+: Distributed Lag Models
+\end_layout
+
+\begin_layout Itemize
+Sometimes people get excited because they think that 
+\begin_inset Quotes eld
+\end_inset
+
+lagged
+\begin_inset Quotes erd
+\end_inset
+
+ values of 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ matter.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{t}=a+b_{0}x_{t}+b_{1}x_{t-1}+u_{t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Its possible somebody wants to add a whole slew of lagged 
+\begin_inset Formula $x$
+\end_inset
+
+'s.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{t}=a+\sum_{j=0}^{m}b_{j}x_{t-j}+u_{t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These are often difficult to estimate (primarily because of multicollinearity).
+ 
+\end_layout
+
+\begin_layout Itemize
+Clever choice of theory can simplify and make estimation possible (Almon
+ lags, for example).
+\end_layout
+
+\begin_layout BeginFrame
+ARIMA modeling.
+\end_layout
+
+\begin_layout Itemize
+AR-I-MA: 
+\begin_inset Quotes eld
+\end_inset
+
+auto regressive - integrated - moving average
+\begin_inset Quotes erd
+\end_inset
+
+ modeling.
+ 
+\end_layout
+
+\begin_layout Itemize
+A time series 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+ is a combination of inputs from its own past and various input variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+The original intention of ARIMA modeling was to isolate trends and predict
+ 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+ without using independent variables as input.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+ARMA means No i 
+\begin_inset Quotes eld
+\end_inset
+
+Integration Component
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+ARMA model, with p lagged 
+\begin_inset Formula $y$
+\end_inset
+
+'s and q lagged errors (
+\begin_inset Formula $e_{t}$
+\end_inset
+
+):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{t}=\rho_{1}y_{t-1}+...+\rho_{p}y_{t-p}+e_{t}+\tau_{1}e_{t-1}+...+\tau_{q}e_{t-q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+How many non-zero 
+\begin_inset Formula $\rho_{j}$
+\end_inset
+
+ coefficients are need? How many 
+\begin_inset Formula $\tau_{j}$
+\end_inset
+
+ are needed? That's the magical, mysterious field of ARIMA modeling for
+ you.
+ Judgment, graphs, tests.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Note that 
+\begin_inset Quotes eld
+\end_inset
+
+autoregressive
+\begin_inset Quotes erd
+\end_inset
+
+ in this context has a different meaning!
+\emph default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The AR part concerns the lagged 
+\begin_inset Formula $y$
+\end_inset
+
+'s.
+ 
+\end_layout
+
+\begin_layout Itemize
+The MA part is the lagged unobserved error.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+More ARIMA notation
+\end_layout
+
+\begin_layout Itemize
+Lag operator notation, 
+\begin_inset Formula 
+\begin{eqnarray}
+y_{t-1} & = & L(y_{t})\\
+y_{t-2} & = & L^{2}(y_{t})\nonumber \\
+y_{t-3} & = & L^{3}(y_{t})
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If you use that notation, then the big model above can be written:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula 
+\begin{equation}
+y_{t}-\rho_{1}L(y_{t})+...+\rho_{p}L^{\rho}(y_{t})=e_{t}+\tau_{1}L(e_{t})+...+\tau_{q}L^{q}(e_{t})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Which is the same as:
+\begin_inset Formula 
+\begin{eqnarray}
+y_{t}(1-\rho_{1}L_{t}+\rho_{p}L^{\rho}) & = & \epsilon_{t}(1+\tau_{1}L+...+\tau_{q}L^{q})
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Observed input variables 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ can be introduced.
+ This is called an ARIMAX model:
+\begin_inset Formula 
+\begin{equation}
+y_{t}=\rho_{1}y_{t-1}+...+\rho_{p}y_{t-p}+\beta_{0}x_{t}+\tau_{0}\epsilon_{t}+\tau_{1}\epsilon_{t}+...+\tau_{q}\epsilon_{t-q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Section
+More ARIMA Material I had laying around
+\end_layout
+
+\begin_layout Plain Layout
+Suppose you have a series of observations, 
+\begin_inset Formula $y_{0},y_{1},y_{2}...y_{T}$
+\end_inset
+
+.
+ You want to know if there is a pattern, or the observations come from some
+ kind of underlying order.
+ Suppose you say they are random:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}$
+\end_inset
+
+
+\begin_inset Formula $\sim f(y)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+This means that 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+is drawn from some distribution f(y).
+ (You specify what...).
+\end_layout
+
+\begin_layout Plain Layout
+Now, suppose somebody else comes along and says 
+\begin_inset Quotes eld
+\end_inset
+
+wait
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If you were correct, then we would say
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}=\varepsilon_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $\varepsilon_{t}\sim f(\varepsilon)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+and that's wrong.
+ Instead, y results from an averaging together of previous input values.
+ So we really need this model:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}=\varepsilon_{t}+\theta_{1}\varepsilon_{t-1}+\theta_{2}\varepsilon_{t-2}$
+\end_inset
+
+ (you can add as many lagged terms as you want)
+\end_layout
+
+\begin_layout Plain Layout
+This is an MA(2) process.
+ The number of MA terms is q in these models.
+\end_layout
+
+\begin_layout Plain Layout
+.
+\end_layout
+
+\begin_layout Plain Layout
+Now, another person says 
+\begin_inset Quotes eld
+\end_inset
+
+hold the phone
+\begin_inset Quotes erd
+\end_inset
+
+.
+ y does not reflect an average of random inputs.
+ It is way too stable for that.
+ Instead, it represents an accumulation of its own past values, as in 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}=\phi_{1}y_{t-1}+\phi_{2}y_{t-2}+\phi_{3}y_{t-3}$
+\end_inset
+
+ (add as many as you want).
+\end_layout
+
+\begin_layout Plain Layout
+This is an AR(3) process.
+\end_layout
+
+\begin_layout Plain Layout
+.
+\end_layout
+
+\begin_layout Plain Layout
+You get an ARMA process if you add the MA and the AR things together, as
+ in:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}=\phi_{1}y_{t-1}+\phi_{2}y_{t-2}+\phi_{3}y_{t-3}+\varepsilon_{t}+\theta_{1}\varepsilon_{t-1}+\theta_{2}\varepsilon_{t-2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+This is ARMA(3,2).
+\end_layout
+
+\begin_layout Plain Layout
+.
+\end_layout
+
+\begin_layout Plain Layout
+Much of the theory of time series analysis is about the problem that trends
+ make it difficult to see what is going on in a time series.
+ It is only meaningful to estimate all these coefficients, according to
+ Box and Jenkins, if the series is 
+\series bold
+stationary
+\series default
+, meaning it has the same expected value across the whole time line.
+ There are several different 
+\begin_inset Quotes eld
+\end_inset
+
+twists
+\begin_inset Quotes erd
+\end_inset
+
+ on the idea.
+\end_layout
+
+\begin_layout Section*
+Quick Notation Note
+\end_layout
+
+\begin_layout Plain Layout
+You have to get a little patient with notation!
+\end_layout
+
+\begin_layout Plain Layout
+L is the backshift operator.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+y_{t-1}=Ly_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+y_{t-2}=L^{2}y_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+And so forth.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+As a result, the above ARMA model is represented thus:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}=\phi_{1}Ly_{t}+\phi_{2}L^{2}y_{t}+\phi_{3}L^{3}y_{t}+\varepsilon_{t}+\theta_{1}L^{1}\varepsilon_{t}+\theta_{2}L^{2}\varepsilon_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+and you might as well write:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{t}-\phi_{1}Ly_{t}-\phi_{2}L^{2}y_{t}-\phi_{3}L^{3}y_{t}=\varepsilon_{t}+\theta_{1}L^{1}\varepsilon_{t}+\theta_{2}L^{2}\varepsilon_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+or
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $(1-\phi_{1}L-\phi_{2}L^{2}-\phi_{3}L^{3})y_{t}=(1+\theta_{1}L^{1}+\theta_{2}L^{2})\varepsilon_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+And you can let the things in parentheses, the polynomials in the lags and
+ coefficients, fall out of view by referring to them as 
+\begin_inset Formula $\phi(L)$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta(L),$
+\end_inset
+
+ so the whole ugly mess becomes:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\phi(L)y_{t}=\theta(L)\varepsilon_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+or, to be really succinct about it, (with stability assumed), write
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+y_{t}=\frac{\theta(L)}{\phi(L)}\varepsilon_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+There's the old cliche, AR(1)=MA(
+\begin_inset Formula $\infty$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Plain Layout
+.
+\end_layout
+
+\begin_layout Section*
+What's that I part about?
+\end_layout
+
+\begin_layout Plain Layout
+Suppose y is not stationary, it has a visible trend, for example.
+ Then the theory goes out the window, and, frankly, it is hard for me to
+ understand why they bothered to work out such a complicated theory of ARMA
+ processes when data is so typically not stationary.
+\end_layout
+
+\begin_layout Plain Layout
+You can make a series stationary by differencing it, i.e.,
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\Delta y_{t}=y_{t}-y_{t-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+A 
+\begin_inset Quotes eld
+\end_inset
+
+unit root
+\begin_inset Quotes erd
+\end_inset
+
+ process, also known as a random walk with drift, is given as
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+y_{t}=y_{t-1}+\delta+e_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+That time series y is not stationary.
+ But if you difference 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+, you can make it stationary.
+ If that resulting series is not stationary, you can difference again:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Delta^{2}y_{t}=(y_{t}-y_{t-1})-(y_{t-1}-y_{t-2})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Note that 
+\begin_inset Formula $\Delta=1-L,$
+\end_inset
+
+ so above we could write
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+(1-L)^{d}y_{t}=\frac{\theta(L)}{\phi(L)}\varepsilon_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+d is the order of the differencing required to get a stationary series.
+\end_layout
+
+\begin_layout Plain Layout
+Fractional Itegration is the (in my opinion) hard to understand notion that
+ d might not have values of 0, 1, or 2, as Box and Jenkins originally assumed,
+ but rather it can be any real number, 0 or greater.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

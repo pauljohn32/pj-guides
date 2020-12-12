@@ -1,0 +1,222 @@
+%% LyX 2.0.5.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=F,ae=F,height=5,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Practice Problems}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Problems}
+\begin{enumerate}
+\item 'Get the ``cystfibr'' dataset from the DataSets folder. Let's predict
+``weight'' from ``height''. (I'm not a medical doctor, I don't
+know that height and weight really should be related. Its just some
+data I have.)
+
+\begin{enumerate}
+\item Fit an OLS model to the linear relationship, make a standard plot.
+
+
+<<prob1a, include=T, echo=T, eval=F>>=
+dat <- read.table("cystfibr.txt", header=T)
+plot(weight ~ height, data = dat) 
+mod1 <- lm(weight ~ height, data = dat)
+summary(mod1)
+abline(mod1)
+@
+
+\item Fit a loess curve to the height-weight data. You can try loess or
+locfit for that. Either way, don't forget you have to decide on the
+``span'' and whether your local regressions are linear or quadratic. 
+
+
+Ordinarily, I'd run a series of commands like
+
+
+<<prob1b, include=T, echo=T, eval=F>>=
+lfit <- loess(weight ~ height, data = dat, span = 0.5, degree = 2, family = "gaussian")
+dat <- dat[order(dat$height) ,]
+lopred <- predict(lfit, newdata = dat) 
+plot(weight ~ height, data = dat) 
+lines(dat$height, lopred)
+abline(mod1, lwd = 0.7, lty=2)
+legend("topleft", legend = c("loess","OLS"), lwd = c(1,0.7), lty = 1:2)
+@
+
+
+I recently learned there is a short-cut to create the scatter with
+loess line, you might try it out. 
+
+
+<<prob1c, include=T, echo=T, eval=F>>=
+with(dat, scatter.smooth( height, weight))
+abline(mod1, lwd = 0.7, lty = 2)
+legend("topleft", legend = c("loess","OLS"), lwd = c(1,0.7), lty = 1:2)
+@
+
+
+I warn you, scatter.smooth does not use the same settings as loess
+by default, so you do need to read the help page if you want the 2
+loess curves to match. I'm not thrilled about that. You might be smarter
+just to use loess by itself.
+
+
+After all that work, here's my simple question. Which would you advocate.
+The OLS fit or the loess fit? What are the best arguments you can
+make for the one you prefer? I don't know that there is a ``right''
+answer for this question, it is open for argument. While I was experimenting
+with this, I found the output of summary(lfit) and summary(mod1) to
+be informative.
+
+\item Let's try a natural spline predictive curve. Here's the way I coded
+it.
+
+
+<<prob1d, include=T, echo=T, eval=F>>=
+mod4 <- lm( weight ~ ns(height, df = 4), data = dat) 
+summary(mod4)
+#dang. Should have sorted dat by height first.
+dat <- dat[order(dat$height), ] 
+mod4pred <- predict(mod4, newdata = dat)
+plot(weight ~ height, data = dat) 
+lines(dat$height, mod4pred, col = green, lty = 4, lwd = 2)
+@
+
+\end{enumerate}
+\item We might as well waste a little more time on the cystfibr height and
+weight data. 
+
+\begin{enumerate}
+\item Fit the quadratic model . If you can plot the predicted values from
+that on the same graph with loess, I bet you'd have something worth
+debating. Would you make an argument in favor of loess or the quadratic
+model? Why?
+
+
+<<prob2a, include=T, echo=T, eval=F>>=
+dat$heightsq <- dat$height * dat$height
+mod2 <- lm(weight~height + heightsq, data = dat)
+summary(mod2)
+heightseq <- seq(min(dat$height), max(dat$height), length.out = 100)
+weightpred <- predict(mod2, newdata = data.frame(height = heightseq, heightsq = heightseq*heightseq))
+plot(weight ~ height, data = dat)
+lines(heightseq, weightpred, lty = 4, col = "red", lwd = 2)
+@
+
+\item I wonder how the quadratic regression changes if you center ``height''.
+Replace it with this.
+
+
+<<prob2b, include=T, echo=T, eval=F>>=
+dat$heightc <- dat$height - mean(dat$height, na.rm = TRUE)
+## same as dat$heightc <- scale(dat$height, scale = FALSE)
+@
+
+
+I wonder 1) how the regression estimates change, when we replace height
+with heightc, 2) whether the plot changes, and 3) whether you think
+there is a meaningful difference in the 2 fits.
+
+\end{enumerate}
+\item In a nutshell, here is a big question. Why would somebody rather have
+a set of predictions from a ``loess smooth'' than a ``natural cubic
+spline'' or a ``smoothing spline.''? 
+
+\begin{enumerate}
+\item All smoothers use ``degrees of freedom'' to calculate predictions,
+in the sense that they use up some of the information.
+\end{enumerate}
+\item I will keep thinking hard for more interesting examples.
+\end{enumerate}
+\end{frame}
+\end{document}

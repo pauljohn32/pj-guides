@@ -1,0 +1,35 @@
+\begin{Schunk}
+\begin{Sinput}
+ plot(bushvote~V023022,data=nes2002, ylim=c(0,1), xlab="V023022: Ideology", ylab="Vote (Bush=1, Gore=0)",main="Predicted Probabilities from Logistic Regression")
+ pp3 <- predict(bushideoglm1, newdata=data.frame(V023022=1:7), se.fit=T)
+ pp3$upr <- pp3$fit + 1.96*pp3$se.fit
+ pp3$lwr <- pp3$fit - 1.96*pp3$se.fit
+ pp3logistic <- lapply(pp3, plogis)
+ pp3logistic
+\end{Sinput}
+\begin{Soutput}
+$fit
+         1          2          3          4          5          6          7 
+0.04744458 0.11430586 0.25060247 0.46423380 0.69185001 0.85331917 0.93778746 
+
+$se.fit
+        1         2         3         4         5         6         7 
+0.5623081 0.5464180 0.5319556 0.5222017 0.5239802 0.5355915 0.5506091 
+
+$residual.scale
+[1] 0.7310586
+
+$upr
+        1         2         3         4         5         6         7 
+0.0752618 0.1567613 0.3005821 0.5077160 0.7304548 0.8849724 0.9573485 
+
+$lwr
+         1          2          3          4          5          6          7 
+0.02957990 0.08222736 0.20647990 0.42128863 0.65036267 0.81477864 0.91009764 
+\end{Soutput}
+\begin{Sinput}
+ lines(1:7, pp3logistic$fit)
+ lines(1:7, pp3logistic$lwr, lty=4)
+ lines(1:7, pp3logistic$upr, lty=4)
+\end{Sinput}
+\end{Schunk}

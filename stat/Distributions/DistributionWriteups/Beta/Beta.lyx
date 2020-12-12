@@ -1,0 +1,1961 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+\usepackage{lmodern}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Beta Distribution
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu> and Matt Beverlin <mbeverlin@ku.edu>
+\end_layout
+
+\begin_layout Date
+June 10, 2013
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=180, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Description
+\end_layout
+
+\begin_layout Standard
+How likely is it that the Communist Party will win the next elections in
+ Russia?
+\end_layout
+
+\begin_layout Standard
+In my view, the probability is 0.33.
+ You may think the chance is 0.22.
+ Your brother thinks the chances are 0.6 and his sister-in-law thinks the
+ chances are 0.1.
+\end_layout
+
+\begin_layout Standard
+People disagree and we would like a way to summarize the chances that a
+ person will say 0.4 or 0.5 or whatnot.
+\end_layout
+
+\begin_layout Standard
+The Beta density function is a very versatile way to represent outcomes
+ like proportions or probabilities.
+ It is defined on the continuum between 0 and 1.
+ There are two parameters which work together to determine if the distribution
+ has a mode in the interior of the unit interval and whether it is symmetrical.
+\end_layout
+
+\begin_layout Standard
+The Beta can be used to describe not only the variety observed across people,
+ but it can also describe your subjective degree of belief (in a Bayesian
+ sense).
+ If you are not entirely sure that the probability is 0.22, but rather you
+ think that is the most likely value but that there is some chance that
+ the value is higher or lower, then maybe your personal beliefs can be described
+ as a Beta distribution.
+\end_layout
+
+\begin_layout Section
+Mathematical Definition
+\end_layout
+
+\begin_layout Standard
+The standard 
+\begin_inset Formula $Beta$
+\end_inset
+
+ distribution gives the probability density of a value 
+\begin_inset Formula $x$
+\end_inset
+
+ on the interval (0,1):
+\begin_inset Formula 
+\begin{equation}
+Beta(\alpha,\beta):\,\, prob(x|\alpha,\beta)=\frac{x^{\alpha-1}(1-x)^{\beta-1}}{B(\alpha,\beta)}\label{eq:BetaDensity}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $B$
+\end_inset
+
+ is the beta function
+\begin_inset Formula 
+\[
+B(\alpha,\beta)=\int_{0}^{1}t^{\alpha-1}(1-t)^{\beta-1}dt
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Don't let all of those betas confuse you.
+\end_layout
+
+\begin_layout Standard
+It is disappointingly confusing, but the word 
+\begin_inset Quotes eld
+\end_inset
+
+beta
+\begin_inset Quotes erd
+\end_inset
+
+ is used for 3 completely different meanings.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $Beta(\alpha,\beta)$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Beta
+\begin_inset Quotes erd
+\end_inset
+
+ is the name of the probability distribution
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $B(\alpha,\beta)$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Beta
+\begin_inset Quotes erd
+\end_inset
+
+ is the name of a function that appears in the denominator of the density
+ function
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\beta$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Beta
+\begin_inset Quotes erd
+\end_inset
+
+ is the name of the second parameter in the density function
+\end_layout
+
+\begin_layout Subsection
+About the Beta function 
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Beta function 
+\begin_inset Formula $B$
+\end_inset
+
+ in the denominator plays the role of a 
+\begin_inset Quotes eld
+\end_inset
+
+normalizing constant
+\begin_inset Quotes erd
+\end_inset
+
+ which assures that the total area under the density curve equals 1.
+\end_layout
+
+\begin_layout Standard
+The Beta function is equal to a ratio of Gamma functions:
+\begin_inset Formula 
+\[
+B(\alpha,\beta)=\frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha+\beta)}
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Keeping in mind that for integers, 
+\begin_inset Formula $\Gamma(k)=(k-1)!$
+\end_inset
+
+, one can do some checking and get an idea of what the shape might be.
+\end_layout
+
+\begin_layout Standard
+A 3 dimensional graph of the Beta function can be found in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:The-Beta-Function"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<graph1, fig=T,echo=F,include=F,height=9,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 30
+\end_layout
+
+\begin_layout Plain Layout
+
+alphaseq <- seq(0.2, 2 , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+betaseq <- seq(0.2, 2 , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+myProbX <- function(x1, x2){
+\end_layout
+
+\begin_layout Plain Layout
+
+beta(x1,x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mybeta<- outer(alphaseq,betaseq, FUN="myProbX")
+\end_layout
+
+\begin_layout Plain Layout
+
+persp(alphaseq,betaseq, mybeta, theta = 120, phi = 7, col = "pink", zlim=c(0,10)
+,zlab="Beta Function", xlab="alpha", ylab="beta",ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6.5in]{plots/t-graph1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Beta Function
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:The-Beta-Function"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Moments of the Beta
+\end_layout
+
+\begin_layout Standard
+The expected value of a variable that is Beta distributed is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E(x)=\mu=\frac{\alpha}{\alpha+\beta}\label{eq:BetaMean}
+\end{equation}
+
+\end_inset
+
+and the variance is
+\begin_inset Formula 
+\begin{equation}
+Variance(x)=\frac{\alpha\beta}{(\alpha+\beta)^{2}(\alpha+\beta+1)}\label{eq:BetaVariance}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+People who are familiar with the Generalized Linear Model will notice that
+\begin_inset Formula 
+\[
+V(\mu)=\frac{\beta}{(\alpha+\beta)(\alpha+\beta+1)}\cdot\mu
+\]
+
+\end_inset
+
+ is a variance function, 
+\begin_inset Formula $V(\mu)$
+\end_inset
+
+, which indicates the dependence of the observed variance on the mean.
+ For a fixed pair of parameters 
+\begin_inset Formula $(\alpha,\beta)$
+\end_inset
+
+, the variance is proportional to 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ A graph illustrating the Variance function is presented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:The-Variance-Function"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The third and fourth moments are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Skewness(x)=\frac{2(\beta-\alpha)\sqrt{1+\alpha+\beta}}{\sqrt{\alpha+\beta}(2+\alpha+\beta)}\label{eq:BetaSkewness}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Kurtosis(x)=\frac{6[\alpha^{3}+\alpha^{2}(1-2\beta)+\beta^{2}(1+\beta)-2\alpha\beta(2+\beta)]}{\alpha\beta(\alpha+\beta+2)(\alpha+\beta+3)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+<<graph2,fig=T,include=F,echo=F,height=9,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+N <- 30
+\end_layout
+
+\begin_layout Plain Layout
+
+alphaseq <- seq(0.2, 2 , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+betaseq <- seq(0.2, 2 , length.out=N)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+VarMu <- function(x1, x2){
+\end_layout
+
+\begin_layout Plain Layout
+
+ v <- x2/((x1+x2)*(x1+x2+1))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myvar <- outer(alphaseq,betaseq, FUN="VarMu")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mypersp <- persp(alphaseq,betaseq, myvar, theta = 125, phi = 7, col = "pink",
+ zlim=c(0,0.5),zlab="Multiplier", xlab="alpha", ylab="beta",ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+text(trans3d(1.2,0.1,0.4, mypersp), label=expression(Var(x) == mu %*% Multiplier
+ ))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6.5in]{plots/t-graph2.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Ratio of Variance to the Mean 
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:The-Variance-Function"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The Mode
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\alpha>1$
+\end_inset
+
+and 
+\begin_inset Formula $\beta>1$
+\end_inset
+
+, the peak of the density is in the interior of [0,1] and mode of the 
+\begin_inset Formula $Beta$
+\end_inset
+
+ distribution is 
+\begin_inset Formula 
+\begin{equation}
+mode=\gamma=\frac{\alpha-1}{\alpha+\beta-2}\label{eq:BetaMode}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ or 
+\begin_inset Formula $\beta<1$
+\end_inset
+
+, the mode may be at an edge.
+ 
+\end_layout
+
+\begin_layout Standard
+As we will illustrate below, if 
+\begin_inset Formula $\alpha=\beta=1$
+\end_inset
+
+, then the Beta is identical to a Uniform distribution.
+\end_layout
+
+\begin_layout Section
+Illustration
+\end_layout
+
+\begin_layout Standard
+One advantage of the Beta distribution is that it can take on many different
+ shapes.
+ If one believed that all scores were equally likely, then one could set
+ the parameters 
+\begin_inset Formula $\alpha=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta=1$
+\end_inset
+
+, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Fig:Uniform"
+
+\end_inset
+
+, this gives a 
+\begin_inset Quotes eld
+\end_inset
+
+flat
+\begin_inset Quotes erd
+\end_inset
+
+ probability density function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<graph3, include=F, fig=T,echo=F,results=hide>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- seq(0,1,length=21)
+\end_layout
+
+\begin_layout Plain Layout
+
+myvar <- dbeta (x,1,1)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot (x,myvar,main="",xlab="x",ylab="probability",ylim=c(0,1),type="l")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6in]{plots/t-graph3.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Beta(1,1) is the Uniform distribution
+\begin_inset CommandInset label
+LatexCommand label
+name "Fig:Uniform"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In models of elections, one may need a distribution of ideal points to resemble
+ a single-peaked distribution on the interval [0,1].
+ The Beta can be very useful in this kind of exercise.
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Some-Pleasant-Single-Peaked"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<graph4,echo=F,include=F,fig=T,height=10,width=6.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#PJ 2004-05-04
+\end_layout
+
+\begin_layout Plain Layout
+
+#For project with erik herron to demonstrate Beta parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+sampleSize <- 100
+\end_layout
+
+\begin_layout Plain Layout
+
+# Suppose you want to generate 10 distributions
+\end_layout
+
+\begin_layout Plain Layout
+
+# and display them in a single picture
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(5,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# x11(height=3.0,width=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist <-function(mode){
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  alphaMin <- 3
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  B <- (alphaMin-mode*(alphaMin-2)-1)/mode
+\end_layout
+
+\begin_layout Plain Layout
+
+  A <- (mode*alphaMin-2*mode+1)/(1-mode)
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (mode <= 0.5) {
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha1 <- alphaMin
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha2 <- B
+\end_layout
+
+\begin_layout Plain Layout
+
+    } else
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha2 <- alphaMin
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha1 <- A
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  z <- dbeta(seq(0,1,length=100),shape1=alpha1,shape2=alpha2)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  plot(1:100,z, type="l",ylim=c(0,2.5),main=paste("Beta(",round(alpha1,2),",",rou
+nd(alpha2,2),")"), xlab="x",ylab="probability density")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(3,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist(.3)
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist(.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist(.7)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6in]{plots/t-graph4.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Some Pleasant Single-Peaked Betas
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Some-Pleasant-Single-Peaked"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At one point, it fascinated me that the mode did not equal the mean and
+ that the variance ends up characterizing the 
+\begin_inset Quotes eld
+\end_inset
+
+slack
+\begin_inset Quotes erd
+\end_inset
+
+ between those two things.
+ Various densities in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:ModeMeanVariance"
+
+\end_inset
+
+ might be entertaining.
+ In these examples, the Beta parameters are chosen to keep the mode constant
+ at 0.3.
+ Note how the mean and variance change across the illustrations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Beta Distributions with Mode=0.3
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:ModeMeanVariance"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<graph5,fig=T,include=F,echo=F,height=10,width=7.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+#PJ 2004-05-04
+\end_layout
+
+\begin_layout Plain Layout
+
+#For project with erik herron do demonstrate Beta parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+sampleSize <- 500
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist <-function(alphaMin, mode) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  B <- (alphaMin-mode*(alphaMin-2)-1)/mode
+\end_layout
+
+\begin_layout Plain Layout
+
+  A <- (mode*alphaMin-2*mode+1)/(1-mode)
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (mode <= 0.5) {
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha1 <- alphaMin
+\end_layout
+
+\begin_layout Plain Layout
+
+      alpha2 <- B
+\end_layout
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\begin_layout Plain Layout
+
+   alpha2 <- alphaMin
+\end_layout
+
+\begin_layout Plain Layout
+
+   alpha1 <- A
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  mean1 <- (alpha1)/(alpha1+alpha2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  var1 <- (alpha1*alpha2)/(((alpha1+alpha2)^2)*(alpha1+alpha2+1));
+\end_layout
+
+\begin_layout Plain Layout
+
+  z <- dbeta(seq(0,1,length=100),shape1=alpha1,shape2=alpha2);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ plot(1:100,z, type="l",ylim=c(0,3.5),main=paste("Beta(",round(alpha1,2),",
+ ", round(alpha2,2),")"," mode=",mode," mean=",round(mean1,2),", var=",round(var
+1,3),sep=""), xlab="ideal point",ylab="density")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+makeDisp <- function(aseq, mode){
+\end_layout
+
+\begin_layout Plain Layout
+
+    par(mfrow=c(5,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (i in 1:length(aseq))
+\end_layout
+
+\begin_layout Plain Layout
+
+      createDist(aseq[i], mode)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+myseq <- seq(1.1, 7, length=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+makeDisp(myseq,.3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6in]{plots/t-graph5.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Perhaps, as they say, the versatility of the Beta is a strength, but there
+ is some reason to be cautious.
+ If the parameters wander into the (0,1) range, then some pretty surprising
+ shapes can appear.
+ Consider Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cap:Some-Unpleasant-Betas"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<graph6,fig=T,include=F,echo=F,height=10,width=7.5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+createDist2 <-function(alpha1,alpha2) {
+\end_layout
+
+\begin_layout Plain Layout
+
+   mean1 <- (alpha1)/(alpha1+alpha2)
+\end_layout
+
+\begin_layout Plain Layout
+
+   var1 <-(alpha1*alpha2)/(((alpha1+alpha2)^2)*(alpha1+alpha2+1));
+\end_layout
+
+\begin_layout Plain Layout
+
+   inx <- seq(0,1,length.out=100)
+\end_layout
+
+\begin_layout Plain Layout
+
+   z <- dbeta(inx,shape1=alpha1,shape2=alpha2);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   mytitle <- paste("Beta(",alpha1,",",alpha2," mean=",round(mean1,2),"
+ var=",round(var1,2),sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+   plot(inx,z,type="l",ylim=c(0,3.5),xlab="x",ylab="density",main=mytitle)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+makeDisp <- function() {
+\end_layout
+
+\begin_layout Plain Layout
+
+    myalpha<- c(0.2, 0.5, 0.75 , 1.1)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    par(mfcol=c(4,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (j in 1:4){
+\end_layout
+
+\begin_layout Plain Layout
+
+      createDist2(0.7,myalpha[j])
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    for (j in 1:4){
+\end_layout
+
+\begin_layout Plain Layout
+
+      createDist2(1.2,myalpha[j])
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+makeDisp()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=6in]{plots/t-graph6.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Some Unpleasant Betas
+\begin_inset CommandInset label
+LatexCommand label
+name "cap:Some-Unpleasant-Betas"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+About the connection between the mean, the mode, and the variance
+\end_layout
+
+\begin_layout Standard
+In the pictures displaying the Beta density, one's eye is drawn to the peak
+ of the frequency distribution, which is the mode.
+ We can set the Beta's parameters in order to generate a distribution with
+ a desired mode.
+ Let the mode be represented by 
+\begin_inset Formula $\gamma$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's a simple starting point: Suppose the mode is .50.
+ That is the same as the mean (its symmetric), and the mode formula (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BetaMode"
+
+\end_inset
+
+) implies:
+\begin_inset Formula 
+\begin{equation}
+.50=\frac{\alpha-1}{\alpha+\beta-2}
+\end{equation}
+
+\end_inset
+
+ and
+\begin_inset Formula 
+\[
+.50\alpha+.50\beta-1=\alpha-1
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+.5\alpha=.5\beta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha=\beta
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If one wants the mode to be in the middle, one can choose any value for
+ 
+\begin_inset Formula $\alpha,$
+\end_inset
+
+ as long as one chooses the same value for 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ (Whew! What a relief.
+ This exactly matched my intuition.) 
+\end_layout
+
+\begin_layout Standard
+If the mode is in the center, we know 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ are equal, but we don't know their values.
+ The selection, it turns out, depends on how much diversity there is.
+ If one wants a distribution to have points 
+\begin_inset Quotes eld
+\end_inset
+
+tightly bunched
+\begin_inset Quotes erd
+\end_inset
+
+ around the mode, then one should choose a large value for 
+\begin_inset Formula $\alpha,$
+\end_inset
+
+ say 10.0, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+variance\, of\, Beta(10,10)=0.01190
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In contrast, if 
+\begin_inset Formula $\alpha=1.5$
+\end_inset
+
+, the variance is much greater: 
+\begin_inset Formula 
+\begin{equation}
+variance\, of\, Beta(1.5,1.5)=0.0625
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Seen in this light, the parameter 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+homogeneity indicator.
+\begin_inset Quotes erd
+\end_inset
+
+ As 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ gets bigger, the distribution collapses around the mode.
+ 
+\end_layout
+
+\begin_layout Standard
+Although this particular calculation works only for a mode in the center,
+ it does outline the process that we can use to assign 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ for all other values of the mode.
+ 
+\end_layout
+
+\begin_layout Standard
+Suppose the mode is .4.
+ From equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BetaMode"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+.40=\frac{\alpha-1}{\alpha+\beta-2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+.40\alpha+.40\beta-0.8=\alpha-1
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+.4\beta=.6\alpha-0.2
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\beta=\frac{3}{2}\alpha-\frac{1}{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+.60\alpha=.2+.40\beta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha=\frac{1}{3}+\frac{2}{3}\beta
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+It is quite possible to calculate one parameter as a function of another,
+ after specifying the mode, even if the mode is off center.
+\end_layout
+
+\begin_layout Standard
+Generally speaking, for any value of the mode, 
+\begin_inset Formula $\gamma\in(0,1)$
+\end_inset
+
+ (keeping in mind the original stipulation that 
+\begin_inset Formula $\alpha,\beta>1$
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{equation}
+\gamma=\frac{\alpha-1}{\alpha+\beta-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\gamma\alpha+\gamma\beta-2\gamma=\alpha-1
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+(1-\gamma)\alpha=\gamma\beta-2\gamma+1
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\alpha=\frac{\gamma\beta-2\gamma+1}{(1-\gamma)}=\frac{\beta-2+\frac{1}{\gamma}}{(\frac{1}{\gamma}-1)}=\frac{\gamma}{1-\gamma}\beta-\frac{2\gamma-1}{1-\gamma}\label{eq:AlphaFnMode}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+So 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is a linear function of 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ (Note: 2013-10-25; reader notified me of typographical error in equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:AlphaFnMode"
+
+\end_inset
+
+.
+ Sorry!)
+\end_layout
+
+\begin_layout Standard
+And
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\gamma\beta=\alpha-1-\gamma\alpha+2\gamma
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\beta=\frac{\alpha-\gamma\alpha+2\gamma-1}{\gamma}=\frac{\alpha-\gamma(\alpha-2)-1}{\gamma}=\frac{(1-\gamma)}{\gamma}\alpha-\frac{1-2\gamma}{\gamma}\label{eq:BetaFnMode}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This indicates that if we begin with the mode, and then take as given either
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ or 
+\begin_inset Formula $\beta$
+\end_inset
+
+, we can calculate the missing parameter (
+\begin_inset Formula $\beta$
+\end_inset
+
+ or 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, as the case may be).
+ As a result, instead of thinking of the Beta's shape as determined by parameter
+s 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+, sometimes it is easier to think of it in terms of the mode (most likely
+ value) and the homogeneity.
+\end_layout
+
+\end_body
+\end_document

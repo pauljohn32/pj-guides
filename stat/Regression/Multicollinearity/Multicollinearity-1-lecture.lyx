@@ -1,0 +1,12194 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Multicollinearity in Regression 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2014
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Multicollinearity}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There's a small R program persp-multicollinearity-1.R.
+ It is available with this document and can be used to experiment with 3-D
+ illustrations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Definitions
+\end_layout
+
+\begin_layout BeginFrame
+What is Multi Collinearity?
+\end_layout
+
+\begin_layout Itemize
+Definition: Multicollineary exists if it is possible to calculate the value
+ of one IV using a linear formula that combines the other IV's.
+\end_layout
+
+\begin_layout Itemize
+Note.
+ It is not the same as 
+\begin_inset Quotes eld
+\end_inset
+
+bivariate correlation
+\begin_inset Quotes erd
+\end_inset
+
+ among x's.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The word has 
+\begin_inset Quotes eld
+\end_inset
+
+multi
+\begin_inset Quotes erd
+\end_inset
+
+ for a reason! It is not 
+\emph on
+bi-collinearity
+\emph default
+!
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Pearson correlation matrix not best way to check for multicollinearity.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Perfect Multicollinearity
+\end_layout
+
+\begin_layout Itemize
+Example: If a model has IV's 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $X2_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $X3_{i}$
+\end_inset
+
+, perfect MC would exist if one could find constants 
+\begin_inset Formula $k_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $k_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $k_{2}$
+\end_inset
+
+ such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X3_{i}=k_{0}+k_{1}X1_{i}+k_{2}X2_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If you put the same variable in a regression with two different names, what
+ do you get? The estimation process for the model should crash and complain
+ to you.
+ Perfect multicollinearity!
+\end_layout
+
+\begin_layout Itemize
+Silly mistakes: Put in 
+\begin_inset Quotes eld
+\end_inset
+
+gender
+\begin_inset Quotes erd
+\end_inset
+
+ (=Male Female) and 
+\begin_inset Quotes eld
+\end_inset
+
+sex
+\begin_inset Quotes erd
+\end_inset
+
+ (=Man Woman) and 
+\begin_inset Quotes eld
+\end_inset
+
+biologically capable of giving birth
+\begin_inset Quotes erd
+\end_inset
+
+ (=Yes No) in the same model.
+ 
+\end_layout
+
+\begin_layout Itemize
+Those variables cannot be differentiated from one another.
+\end_layout
+
+\begin_layout BeginFrame
+(ImPerfect?) Multicollinearity
+\end_layout
+
+\begin_layout Itemize
+If you put variables in a model that are similar, but not identical, then
+ you have multicollinearity.
+\end_layout
+
+\begin_layout Itemize
+It is not 
+\begin_inset Quotes eld
+\end_inset
+
+perfect
+\begin_inset Quotes erd
+\end_inset
+
+ (perfectly bad), but it is still (imperfectly) bad.
+\end_layout
+
+\begin_layout Itemize
+In a model with 10 IV, that means it is possible to predict (at least) one
+ IV from others with some weighted formula
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X10_{i}=k_{0}+k_{1}X1_{i}+k_{2}X2_{i}+k_{3}X3_{i}+\ldots+k_{9}X9_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $R_{x10.x1...x9}^{2}$
+\end_inset
+
+ is high, then 
+\begin_inset Formula $x10_{i}$
+\end_inset
+
+ has 
+\begin_inset Quotes eld
+\end_inset
+
+not much separate variation
+\begin_inset Quotes erd
+\end_inset
+
+, it cannot be distinguished from the others.
+ AND the others cannot be distinguished from it.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(23232)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mcGraph1 <- function (x1, x2, y, theta=0, phi=15){
+\end_layout
+
+\begin_layout Plain Layout
+
+  x1range <- magRange(x1, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  x2range <- magRange(x2, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  yrange <- magRange(y, 1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  zZero <- outer( plotSeq(x1range, l=5), plotSeq(x2range, l=5), function(
+ a,b) { a*b*0 + yrange[1] } )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  res <- persp(x=plotSeq(x1range, l=5), y= plotSeq(x2range, l=5), z=zZero,
+ zlim=yrange, lwd=1, xlab="x1",ylab="x2",zlab="y", theta=theta, phi=phi)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  yMinimum <- rep(yrange[1] , length(x1))
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints1 <- trans3d (x1, x2, yMinimum, pmat = res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  points( mypoints1, pch = 16, col= "blue")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mcGraph2 <- function(x1,x2,y, shrinky=1, theta=0, phi=15){
+\end_layout
+
+\begin_layout Plain Layout
+
+  x1range <- magRange(x1, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  x2range <- magRange(x2, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  yrange <- magRange(y, 1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+##
+\end_layout
+
+\begin_layout Plain Layout
+
+  zZero <- outer( plotSeq(x1range, l = 5), plotSeq(x2range, l = 5), function(
+ a,b) { a*b*0 + yrange[1] } )
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  res <- persp(x = plotSeq(x1range, l = 5), y = plotSeq(x2range, l = 5),
+ z = zZero, zlim = yrange, lwd = 1, xlab = "x1", ylab = "x2", zlab = "y",
+ theta = theta, phi=phi)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints1 <- trans3d ( x1, x2 ,yrange[1], pmat = res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  newy <- shrinky * (y - yrange[1]) + yrange[1]
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints2 <- trans3d ( x1 , x2 , newy , pmat = res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  points( mypoints2, pch = 1, col= "blue")
+\end_layout
+
+\begin_layout Plain Layout
+
+  points( mypoints1, pch = 16, col=gray(0.8))
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints2s <- trans3d ( x1, x2, (0.8)*newy, pmat =res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  arrows ( mypoints1$x , mypoints1$y , mypoints2s$x , mypoints2s$y , col="red"
+ , lty = 2, lwd=0.3, length=0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mcGraph3 <- function(x1, x2, y, theta = 0, phi = 15){
+\end_layout
+
+\begin_layout Plain Layout
+
+  x1range <- magRange(x1, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  x2range <- magRange(x2, 1.25)
+\end_layout
+
+\begin_layout Plain Layout
+
+  yrange <- magRange(y, 1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  zZero <- outer( plotSeq(x1range, l = 5), plotSeq(x2range, l = 5), function(
+ a, b) { a*b*0 + yrange[1] } )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  res <- persp(x = plotSeq(x1range, l = 5), y = plotSeq(x2range, l = 5),
+ z = zZero, zlim = yrange, lwd = 1, xlab = "x1", ylab = "x2", zlab = "y",
+ theta = theta, phi = phi)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints1 <- trans3d( x1, x2, yrange[1], pmat = res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints2 <- trans3d( x1, x2, y, pmat = res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  points( mypoints2, pch = 1, col = "blue")
+\end_layout
+
+\begin_layout Plain Layout
+
+  points( mypoints1, pch = 16, col = gray(0.8))
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  m1 <- lm( y ~ x1 + x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  # summary (m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  x1seq <- plotSeq (x1range, length = 20)
+\end_layout
+
+\begin_layout Plain Layout
+
+  x2seq <- plotSeq (x2range , length = 20)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  zplane <- outer ( x1seq, x2seq, function(a, b) { predict(m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+    newdata = data.frame( x1 = a, x2 = b ))} )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  for( i in 1:length(x1seq) ){
+\end_layout
+
+\begin_layout Plain Layout
+
+    lines(trans3d(x1seq[i], x2seq, zplane[i,], pmat = res), lwd = 0.3)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+  for( j in 1:length(x2seq) ){
+\end_layout
+
+\begin_layout Plain Layout
+
+    lines(trans3d(x1seq, x2seq[j], zplane[,j], pmat = res), lwd = 0.3)
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints4 <- trans3d (x1 , x2 , fitted(m1) , pmat =res )
+\end_layout
+
+\begin_layout Plain Layout
+
+##  points(mypoints4)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+	newy <- ifelse(fitted(m1) < y, fitted(m1)+ 0.8*(y-fitted(m1)),
+\end_layout
+
+\begin_layout Plain Layout
+
+	fitted(m1) + 0.8 * (y-fitted(m1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+  mypoints2s <- trans3d ( x1, x2, newy, pmat =res )
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+  arrows ( mypoints4$x , mypoints4$y , mypoints2s$x , mypoints2s$y , col
+ = "red" , lty = 4, lwd = 0.3, length = 0.05)
+\end_layout
+
+\begin_layout Plain Layout
+
+  m1
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+genCorrelatedData <- function(N = 100, means = c(50,50), sds = c(10,10),
+ rho = 0.0, stde = 1){ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  require(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+  corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  sigma <- diag(sds) %*% corr.mat %*% diag(sds)
+\end_layout
+
+\begin_layout Plain Layout
+
+  x.mat <-  mvrnorm(n = N, mu = means, Sigma = sigma)
+\end_layout
+
+\begin_layout Plain Layout
+
+  y = 0 + 0.2* x.mat[,1] + 0.2 * x.mat[,2] + stde*rnorm (N, m = 0, s = 1)
+\end_layout
+
+\begin_layout Plain Layout
+
+  dat <- data.frame(x.mat, y)
+\end_layout
+
+\begin_layout Plain Layout
+
+  names(dat) <- c("x1", "x2", "y")
+\end_layout
+
+\begin_layout Plain Layout
+
+  dat
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Illustration in 3 Dimensions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc1-1, include=F, fig=T, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Create data with x1 and x2 correlated at 0.10
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- genCorrelatedData(rho=0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- mcGraph1(dat$x1, dat$x2, dat$y, theta=-30, phi=8)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+No values drawn yet for dependent variable
+\end_layout
+
+\begin_layout Itemize
+Please notice dispersion in the x1-x2 plane
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc1-1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-1, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.0, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-2, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.05, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-2.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-3, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.1, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-3.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-4, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.2, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-4.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-5, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.3, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-5.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-6, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.4, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-6.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-7, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.5, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-7.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-8, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.6, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-8.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-9, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.7, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-9.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-10, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.80, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-10.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-11, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 0.90, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-11.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Watch Data Cloud Develop}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Itemize
+The true relationship is
+\begin_inset Formula 
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-13, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-13.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Spin the Cloud (Just Showing Off)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-20, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 20)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-20.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Spin the Cloud (Just Showing Off)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-21, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 40)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-21.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Spin the Cloud (Just Showing Off)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-22, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 60)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-22.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Spin the Cloud (Just Showing Off)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-23, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 80)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-23.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Spin the Cloud (Just Showing Off)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-24, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, shrinky = 1.0, theta = 100)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-24.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+3cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-50, fig=T, echo=F, include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-2-50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-50.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+3cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-51, fig=T, echo=F, include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=0)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-2-50}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-51.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+3cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-2-52, fig=T, echo=F, include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=-10)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1, tight=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-2-52}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-2-52.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Severe Collinearity: r(x1,x2)=0.9}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+3cm
+\end_layout
+
+\end_deeper
+\begin_layout ColumnsTopAligned
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc3-1, include=F, fig=T, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Create data with x1 and x2 correlated at 0.10
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- mcGraph1(dat2$x1, dat2$x2, dat2$y, theta=20, phi=8)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Nearly linear dispersion in the x1-x2 plane
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc3-1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Cloud Is More like Data Tube}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-3-2, fig=T, echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph2(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-3-2.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Cloud Is More like Data Tube}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+4cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-3-3, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-3-3}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+plane does not sit as 
+\begin_inset Quotes eld
+\end_inset
+
+comfortably
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+greater standard errors
+\end_layout
+
+\begin_layout Column
+8cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-3-3.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Effects of MC:
+\end_layout
+
+\begin_layout BeginFrame
+Symptom #1: Weak Hypothesis Tests.
+\end_layout
+
+\begin_layout Itemize
+MC inflates the variance 
+\begin_inset Formula $Var(\hat{b}_{1})$
+\end_inset
+
+ and the estimated variance, 
+\begin_inset Formula $\widehat{Var(\hat{\beta}_{1})}$
+\end_inset
+
+, and its square root, the 
+\begin_inset Formula $std.err.(\hat{\beta}_{1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $H_{0}:b=0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+MC makes t-statistics smaller, since 
+\begin_inset Formula $t=\frac{\widehat{b}}{std.err(\widehat{b})}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Find a book that gives the formula for the 
+\begin_inset Formula $s.e.(\hat{\beta})$
+\end_inset
+
+ for a model with a few independent variables.
+ It should be easy to see that as the variables become more similar, then
+ the 
+\begin_inset Formula $s.e(\hat{\beta})$
+\end_inset
+
+ gets bigger.
+\end_layout
+
+\begin_layout BeginFrame
+Warning Sign: Mismatch of F and t tests
+\end_layout
+
+\begin_layout Itemize
+Standard output: 
+\begin_inset Quotes eld
+\end_inset
+
+no significant(ly different from zero) t statistics
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But the F statisticis is significant, or there is a really big 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+You Did Not Do Something Wrong!
+\end_layout
+
+\begin_layout Itemize
+Suppose Nature used this formula:
+\begin_inset Formula 
+\begin{equation}
+y_{i}=1.1+4.4\, x1_{i}+2.1\, x2_{i}+e_{i},\,\, e_{i}\sim N(0,\sigma_{e}^{2})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You estimate the correct formula, with the right variables:
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If it 
+\begin_inset Quotes eld
+\end_inset
+
+just so happens
+\begin_inset Quotes erd
+\end_inset
+
+ that high levels of 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ are observed in the same cases in which we also observe 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+, then we have trouble estimating 
+\begin_inset Formula $\beta_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+other things equal
+\begin_inset Quotes erd
+\end_inset
+
+ theory cannot be explored with this data.
+ 
+\end_layout
+
+\begin_layout Itemize
+Do they love you because you are beautiful? Or because you are clever? Or
+ modest? Or because you are a good listener?
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Multicollinearity Causes High Variance in Slope Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Here's my demonstration plan.
+\end_layout
+
+\begin_layout Itemize
+First, I'll draw data from not-correlated independent variables
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+fit regressions (remember the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ slopes are 0.2
+\end_layout
+
+\begin_layout Itemize
+draw the 3d regression planes
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+I'll do that, say, 20 times.
+ In class, I might run the script that does this 500 times so we can 
+\begin_inset Quotes eld
+\end_inset
+
+really see
+\begin_inset Quotes erd
+\end_inset
+
+ it.
+ But that would make this PDF too large.
+\end_layout
+
+\begin_layout Itemize
+After that, I will repeat the process, but with data that is multi-correlated.
+ If the demonstration works properly, the reader should see that the fitted
+ models are more stable when there is no collinearity than when there is
+ collinearity.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-1, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-1}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 1
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-2, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-2}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 2
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-2.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-3, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-3}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 3
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-3.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-4, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-4}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 4
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-4.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-5, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 5
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-5.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-6, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 6
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-6.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-7, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-7}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 7
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-7.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-8, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-8}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 8
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-8.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-9, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-9}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 9
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-9.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-10, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 10
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-10.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-11, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 11
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-11.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-12, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-12}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 12
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-12.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-13, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-13}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 13
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-13.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-14, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-14}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 14
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-14.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-15, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-15}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 15
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-15.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-16, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-16}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 16
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-16.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-17, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-17}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 17
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-17.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-18, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-18}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 18
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-18.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-19, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-19}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 19
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-19.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression with Uncorrelated Predictors}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-4-20, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.0, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-4-20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 20
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-4-20.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Change Gears Now!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You should see that the planes are more-or-less 
+\begin_inset Quotes eld
+\end_inset
+
+the same
+\begin_inset Quotes erd
+\end_inset
+
+, the sampling process is not causing wild fluctuations.
+\end_layout
+
+\begin_layout Itemize
+Those had no correlation between 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Now, repeat with high correlation between those variables.
+ The plane will wobble a lot more.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-1, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-1}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 1
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-1.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-2, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-2}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 2
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-2.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-3, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-3}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 3
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-3.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-4, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-4}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 4
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-4.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-5, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 5
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-5.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-6, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 6
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-6.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-7, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-7}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 7
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-7.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-8, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-8}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 8
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-8.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-9, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-9}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 9
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-9.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-10, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-10}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 10
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-10.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-11, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-11}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 11
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-11.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-12, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-12}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 12
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-12.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-13, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-13}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 13
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-13.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-14, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-14}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 14
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-14.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-15, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-15}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 15
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-15.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-16, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-16}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 16
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-16.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-17, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-17}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 17
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-17.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-18, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-18}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 18
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-18.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-19, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-19}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 19
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-19.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{High Collinearity Causes Unstable Estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+2cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mc-5-20, fig=T, echo=F, include=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod, tight=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+small
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mc-5-20}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{x1,x2}=0.9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Sample 20
+\end_layout
+
+\begin_layout Column
+10cm
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-mc-5-20.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Symptom 2: 
+\begin_inset Quotes eld
+\end_inset
+
+Bouncing B's
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+If there is NO COLLINEARITY, estimates of slopes do not change when variables
+ are put in and removed from the model.
+\end_layout
+
+\begin_layout Itemize
+If there IS COLLINEARITY, the estimate of each 
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ depends on all of the data for all of the variables.
+ 
+\end_layout
+
+\begin_layout Itemize
+Slope estimates 
+\begin_inset Quotes eld
+\end_inset
+
+jump around
+\begin_inset Quotes erd
+\end_inset
+
+ when variables are inserted and removed from the model.
+\end_layout
+
+\begin_layout BeginFrame
+Omitted Variable Bias
+\end_layout
+
+\begin_layout Itemize
+If the Right fitted model is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+But you fit
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then the estimate of 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+is 
+\begin_inset Quotes eld
+\end_inset
+
+biased
+\begin_inset Quotes erd
+\end_inset
+
+ because 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+gets credit
+\begin_inset Quotes erd
+\end_inset
+
+ for the effect of 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout BeginFrame
+Formula to Demonstrate Effect of Collinearity with 2 IVs
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+The simple one-input regression
+\begin_inset Formula 
+\begin{equation}
+y_{i}=c_{0}+c_{1}x1_{i}+u_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The two-input regression
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\beta_{0}+\beta_{1}x1_{i}+\beta_{2}x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The auxiliary regression 
+\begin_inset Formula 
+\begin{equation}
+x2_{i}=d_{0}+d_{1}x1_{i}+v_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+The following summarizes the effect of excluding 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\hat{c}_{1}=\hat{\beta}_{1}+\hat{\beta}_{2}\cdot\hat{d}_{1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If you leave out 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+, the estimate 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+biased
+\begin_inset Quotes erd
+\end_inset
+
+ estimate of the slope 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Equivalently, Here's how the 
+\begin_inset Formula $\hat{\beta}_{1}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+jumps
+\begin_inset Quotes erd
+\end_inset
+
+ when 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+ is added to the model 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\beta}_{1}=\hat{c}_{1}-\hat{\beta}_{2}\cdot\hat{d}_{1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Suppressor Variables
+\end_layout
+
+\begin_layout Itemize
+In practice, it usually seems that, leaving a variable out makes the 
+\begin_inset Formula $b$
+\end_inset
+
+'s (and 
+\begin_inset Formula $t$
+\end_inset
+
+'s) of the included variables 
+\begin_inset Quotes eld
+\end_inset
+
+bigger
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Not logically necessary, however.
+ A 
+\begin_inset Quotes eld
+\end_inset
+
+Suppressor
+\begin_inset Quotes erd
+\end_inset
+
+ variable is one that makes 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ from another variable become greater when the suppressor is included in
+ the model.
+ (Leaving out the other 
+\begin_inset Quotes eld
+\end_inset
+
+suppresses
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Itemize
+Including a variable may make the estimated coefficients bigger for both
+ variables.
+\end_layout
+
+\begin_layout BeginFrame
+Example: Heaven and Hell
+\end_layout
+
+\begin_layout Itemize
+in rockchalk, dataset religion crime is described
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+The data national-level summary indicators of public opinion about the existence
+ of heaven and hell as well as the national rate of violent crime.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Special thanks to the anonymous data donor
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Crime is not a function of the belief in Heaven}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell10, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+data(religioncrime)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod1 <- lm(crime ~ heaven, data=religioncrime)	
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-hell10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{See?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell15, include=F, echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(crime ~ heaven, data=religioncrime)	
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-hell15}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Crime is not a function of the belief in Hell}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell20, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod2 <- lm(crime ~ hell, data=religioncrime)	
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-hell20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{See?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell25, include=F, echo=F, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(crime ~ hell, data=religioncrime)	
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(mod2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-hell25}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{But Heaven and Hell Both Affect Crime}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell30, include=F, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mod3 <- lm(crime ~ heaven + hell, data=religioncrime)	
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(mod3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-hell30.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Visualize that ...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell50, fig=T, include=F, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+with(religioncrime,      rockchalk::mcGraph1(heaven, hell, crime)      )	
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-hell50.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Visualize that ...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell60, fig=T, include=F, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+with(religioncrime,      
+\end_layout
+
+\begin_layout Plain Layout
+
+rockchalk::mcGraph2(heaven, hell, crime) )
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-hell60.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Visualize that ...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell70, fig=T, include=F, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+  mod1 <- with(religioncrime,      rockchalk::mcGraph3(heaven, hell, crime))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=10cm]{plots/t-hell70.pdf}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Diagnosis: How to Detect MC
+\end_layout
+
+\begin_layout BeginFrame
+The Bivariate Correlation Matrix
+\end_layout
+
+\begin_layout Itemize
+A simple, but not completely informative approach
+\end_layout
+
+\begin_layout Itemize
+cor(x) shows pearson correlations
+\end_layout
+
+\begin_layout Itemize
+does not demonstrate the 
+\bar under
+multi in multi-collinearity
+\end_layout
+
+\begin_layout BeginFrame
+Putting the 
+\begin_inset Quotes eld
+\end_inset
+
+Multi
+\begin_inset Quotes erd
+\end_inset
+
+ in Multicollinearity 
+\end_layout
+
+\begin_layout Itemize
+Regress Each Predictor on all of the others (creates 
+\begin_inset Formula $k$
+\end_inset
+
+ fitted models)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Auxiliary\, Regression\, j:\,\,\widehat{xj_{i}}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\ldots exclude\, j'th\ldots+xk_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Cohen's notation for the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ from that fit is 
+\begin_inset Formula $R_{xj.x2,x3,\ldots,(j),\ldots,k}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I write 
+\begin_inset Formula $R_{j}^{2}$
+\end_inset
+
+: 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ from the 
+\begin_inset Formula $j'th$
+\end_inset
+
+ auxiliary regression
+\end_layout
+
+\begin_layout Itemize
+Intuition: 
+\begin_inset Formula $1-R_{j}^{2}$
+\end_inset
+
+ indicates magnitude of 
+\begin_inset Formula $xj$
+\end_inset
+
+'s separate effect.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+if 
+\begin_inset Formula $1-R_{j}^{2}$
+\end_inset
+
+ is almost 0, it means the other variables can predict 
+\begin_inset Formula $xj$
+\end_inset
+
+ almost perfectly
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Tolerance
+\begin_inset Quotes erd
+\end_inset
+
+ is a name for 
+\begin_inset Formula $1-R_{j}^{2}$
+\end_inset
+
+ (according to Cohen, et al).
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Variance Inflation Factor 
+\end_layout
+
+\begin_layout Itemize
+Weird but true.
+ The true variance of 
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ can be re-organized thusly:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta}_{j})=\frac{\sigma_{e}^{2}}{(1-R_{j}^{2})\sum(xj_{i}-\overline{xj})^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{j}^{2}$
+\end_inset
+
+ is R-square from regressing 
+\begin_inset Formula $xj$
+\end_inset
+
+ on all other predictors in auxiliary regression.
+\end_layout
+
+\begin_layout Itemize
+Note denominator: Product of
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+tolerance, 
+\begin_inset Formula $(1-R_{j}^{2})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+the sum of squares for the 
+\begin_inset Formula $j'th$
+\end_inset
+
+ variable 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Test question: If your 
+\begin_inset Formula $\widehat{Var(\hat{\beta}_{j})}$
+\end_inset
+
+ is huge, what changes would you like to make in your data so as to make
+ it smaller?
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Variance inflation factor (page 2)
+\end_layout
+
+\begin_layout Itemize
+Re-write the variance formula like so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var(\hat{\beta}_{j})=\frac{\sigma_{e}^{2}}{(1-R_{j}^{2})\sum(xj_{i}-\overline{xj})^{2}}=\frac{1}{(1-R_{j}^{2})}\times\frac{\sigma_{e}^{2}}{\sum(xj_{i}-\overline{xj})^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+See why the first term is called a 
+\begin_inset Quotes eld
+\end_inset
+
+variance inflation factor
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+VIF_{j}=\frac{1}{1-R_{j}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{mcDiagnose in rockchalk package: Hell!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<hell100, include=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mcDiagnose(mod3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-hell100}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Section Summary
+\end_layout
+
+\begin_layout BeginFrame
+Big Take-Away Points (So Far)
+\end_layout
+
+\begin_layout Standard
+Fit your model with all of the variables your theory leads you to include
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+'s are still unbiased.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $std.err.(\hat{\beta}$
+\end_inset
+
+) is small, and t's are 
+\begin_inset Quotes eld
+\end_inset
+
+good
+\begin_inset Quotes erd
+\end_inset
+
+, don't worry about it.
+\end_layout
+
+\begin_layout Itemize
+MC between two variables (or within a block of variables) need not affect
+ estimates of other coefficients.
+\end_layout
+
+\begin_layout Section
+Solutions
+\end_layout
+
+\begin_layout BeginFrame
+I: Do nothing: 
+\end_layout
+
+\begin_layout Itemize
+acknowledge problem
+\end_layout
+
+\begin_layout Itemize
+Can do F test for groups of variables
+\end_layout
+
+\begin_layout BeginFrame
+II: Get More Diverse Data!
+\end_layout
+
+\begin_layout Itemize
+Gather more data, so the X's are not so intercorrelated.
+ 
+\end_layout
+
+\begin_layout Itemize
+This is the best and only truly meaningful solution.
+\end_layout
+
+\begin_layout Itemize
+In research planning, be conscious of MC dangers
+\end_layout
+
+\begin_layout BeginFrame
+III: Combine Variables Into An Index 
+\end_layout
+
+\begin_layout Itemize
+Begin with a set of variables that are almost the same, and then they combine
+ them by adding them or calculating an average.
+\end_layout
+
+\begin_layout Itemize
+Best when variables are 
+\begin_inset Quotes eld
+\end_inset
+
+conceptually related
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Better still if they are thought of as multiple measures of the same thing.
+\end_layout
+
+\begin_layout Itemize
+Poor person's 
+\begin_inset Quotes eld
+\end_inset
+
+structural equation model
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+More Sophisticated way to Create an Index: Principal Components
+\end_layout
+
+\begin_layout Itemize
+Definition: principal component is an 
+\begin_inset Quotes eld
+\end_inset
+
+underlying variable
+\begin_inset Quotes erd
+\end_inset
+
+ (unmeasured variable) that is related to the observed 
+\begin_inset Formula $X1$
+\end_inset
+
+, 
+\begin_inset Formula $X2,$
+\end_inset
+
+
+\begin_inset Formula $X3$
+\end_inset
+
+, 
+\begin_inset Formula $X4$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+PCs can be 
+\begin_inset Quotes eld
+\end_inset
+
+extracted
+\begin_inset Quotes erd
+\end_inset
+
+ from the data and used as predictors.
+ 2 PCs might effectively summarize 4 X's.
+\end_layout
+
+\begin_layout Itemize
+Some authors very enthusiastic about it, some find components difficult
+ to understand.
+\end_layout
+
+\begin_layout BeginFrame
+PC's Require Matrix Notation
+\end_layout
+
+\begin_layout Itemize
+Center variables so they are in 
+\begin_inset Quotes eld
+\end_inset
+
+deviations form
+\begin_inset Quotes erd
+\end_inset
+
+(So 
+\begin_inset Formula $X1_{i}=x1_{i}-\bar{x}$
+\end_inset
+
+, if 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ was the 
+\begin_inset Quotes eld
+\end_inset
+
+original
+\begin_inset Quotes erd
+\end_inset
+
+ data.) 
+\end_layout
+
+\begin_layout Itemize
+Let's reproduce 4 
+\begin_inset Formula $X$
+\end_inset
+
+'s with 2 PCs, called 
+\begin_inset Formula $Z1$
+\end_inset
+
+and 
+\begin_inset Formula $Z2$
+\end_inset
+
+.
+ The theory is that:
+\begin_inset Formula 
+\[
+\left[\begin{array}{cccc}
+X1 & X2 & X3 & X4\end{array}\right]=\begin{array}{cc}
+\left[\begin{array}{cc}
+Z1 & Z2\end{array}\right] & A\end{array}+\left[\begin{array}{cccc}
+u1 & u2 & u3 & u4\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $u1,$
+\end_inset
+
+
+\begin_inset Formula $u2,$
+\end_inset
+
+
+\begin_inset Formula $u3,u4$
+\end_inset
+
+ are columns of random errors, 
+\begin_inset Formula $E[u_{j}]=0$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $a$
+\end_inset
+
+ is a matrix of weights (actually, 
+\begin_inset Quotes eld
+\end_inset
+
+eigenvalues
+\begin_inset Quotes erd
+\end_inset
+
+ of X).
+ 
+\begin_inset Formula 
+\begin{equation}
+A=\left[\begin{array}{cccc}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Two PCs might effectively 
+\begin_inset Quotes eld
+\end_inset
+
+reproduce
+\begin_inset Quotes erd
+\end_inset
+
+ the 
+\begin_inset Formula $X$
+\end_inset
+
+'s like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X1_{i}=a_{11\,}Z1_{i}+a_{21}\, Z2_{i}+u1_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X2_{i}=a_{12\,}Z1_{i}+a_{22}\, Z2_{i}+u2_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X3_{i}=a_{13\,}Z1_{i}+a_{23}\, Z2_{i}+u3{}_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $X4{}_{i}=a_{14\,}Z1_{i}+a_{24}\, Z2_{i}+u1_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Substantive Interpretation of PCs
+\end_layout
+
+\begin_layout Itemize
+Suppose the 
+\begin_inset Quotes eld
+\end_inset
+
+city
+\begin_inset Quotes erd
+\end_inset
+
+ level IVs are like this:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $X1$
+\end_inset
+
+ number of children in public school
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X2$
+\end_inset
+
+ number of teachers in public schools
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X3$
+\end_inset
+
+ number of employees in city government
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X4$
+\end_inset
+
+ number of desks owned by city
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The first 2 go together, the last 2 go together
+\end_layout
+
+\begin_layout BeginFrame
+How Would that Look In PC Output?
+\end_layout
+
+\begin_layout Itemize
+Search for pattern in matrix of a's.
+\begin_inset Formula 
+\[
+\left[\begin{array}{cccc}
+X1 & X2 & X3 & X4\end{array}\right]=\begin{array}{cc}
+\left[\begin{array}{cc}
+Z1 & Z2\end{array}\right] & \left[\begin{array}{cccc}
+.5 & .5 & 0.0 & 0.0\\
+0.0 & 0.0 & .5 & .5
+\end{array}\right]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This example makes it very clear.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+PC 
+\begin_inset Formula $Z1$
+\end_inset
+
+ is driving the predictions for 
+\begin_inset Formula $X1$
+\end_inset
+
+ and 
+\begin_inset Formula $X2$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+PC 
+\begin_inset Formula $Z2$
+\end_inset
+
+ is driving 
+\begin_inset Formula $X3$
+\end_inset
+
+ and 
+\begin_inset Formula $X4$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+PCA: Math Facts
+\end_layout
+
+\begin_layout Enumerate
+By design, the columns 
+\begin_inset Formula $Z1$
+\end_inset
+
+ and 
+\begin_inset Formula $Z2$
+\end_inset
+
+ give the 
+\begin_inset Quotes eld
+\end_inset
+
+best possible
+\begin_inset Quotes erd
+\end_inset
+
+ linear prediction of the values of the X's.
+\end_layout
+
+\begin_layout Enumerate
+Can add more PCs if desired.
+\end_layout
+
+\begin_layout Enumerate
+The PCs 
+\begin_inset Formula $Z1$
+\end_inset
+
+and 
+\begin_inset Formula $Z2$
+\end_inset
+
+ are uncorrelated w/each other (orthogonal).
+ So if we remove the 
+\begin_inset Formula $X's$
+\end_inset
+
+ from the regression model, and we use the 
+\begin_inset Formula $Z's$
+\end_inset
+
+ instead, then our 
+\begin_inset Quotes eld
+\end_inset
+
+inputs
+\begin_inset Quotes erd
+\end_inset
+
+ are not intercorrelated any more.
+\end_layout
+
+\begin_layout BeginFrame
+Greene Does Not Endorse PC
+\end_layout
+
+\begin_layout Standard
+The leading econometrics text, William Greene, 
+\emph on
+Econometric Analysis
+\emph default
+, 5th ed (p.
+ 58)
+\end_layout
+
+\begin_layout Quote
+The problem here is that if the original model in the form 
+\begin_inset Formula $y=X\beta+\epsilon$
+\end_inset
+
+ were correct, then it is unclear what one is estimating when one regresses
+ 
+\begin_inset Formula $y$
+\end_inset
+
+ on some set of linear combinations of the columns of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Algebraically, it is simple; at least for the principal components case,
+ in which we regress 
+\begin_inset Formula $y$
+\end_inset
+
+ on 
+\begin_inset Formula $Z=XC_{L}$
+\end_inset
+
+to obtain 
+\begin_inset Formula $d$
+\end_inset
+
+, it follows that 
+\begin_inset Formula $E(d)=\delta=C_{L}C'_{L}\beta$
+\end_inset
+
+.
+ In an economic context, if 
+\begin_inset Formula $\beta$
+\end_inset
+
+ has an interpretation, then it is unlikely that 
+\begin_inset Formula $\delta$
+\end_inset
+
+ will.
+ (How do we interpret the price elasticity plus minus twice the income elasticit
+y?) 
+\end_layout
+
+\begin_layout BeginFrame
+Cohen, et al., also Reluctant
+\end_layout
+
+\begin_layout Standard
+A leading text, Cohen, et al, Applied Multiple Regression/Correlation Analysis
+ for the Behavioral Sciences, 3rd ed (p.
+ 429)
+\end_layout
+
+\begin_layout Quote
+Unfortunately, however, these 
+\begin_inset Formula $\tilde{\beta_{i}}$
+\end_inset
+
+ are only rarely interpretable.
+ The component scores are linear combinations of the original IVs and will
+ not typically have a clear meaning....
+ On the positive side, dropping components that account for small proportions
+ of variance eliminates major sources of multicollinearity.
+ The result is that the back transformed regression coefficients, 
+\begin_inset Formula $\beta_{i},$
+\end_inset
+
+for the original IVs will be biased, but will be more robust to small changes
+ in the data set than are the original OLS estimates.
+\end_layout
+
+\begin_layout BeginFrame
+IV: Ridge Regression 
+\end_layout
+
+\begin_layout Itemize
+Adding information adds efficiency.
+\end_layout
+
+\begin_layout Itemize
+See Practical Regression and Anova using R by Julian Faraway (in R contributed
+ documentation on 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.r-project.org
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Instead of using the OLS estimator
+\begin_inset Formula 
+\[
+\hat{\beta}^{OLS}=(X'X)^{-1}X'y\,\,\,\,\, Var(\hat{\beta}^{OLS})=\sigma_{e}^{2}(X'X)^{-1}
+\]
+
+\end_inset
+
+Insert a scalar value, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, known as the 
+\begin_inset Quotes eld
+\end_inset
+
+ridge constant,
+\begin_inset Quotes erd
+\end_inset
+
+ to create an adjusted estimator:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\beta}^{ridge}=(X'X+\lambda I)^{-1}X'y\,\,\,\,\, Var(\hat{\beta}^{ridge})=\sigma_{e}^{2}(X'X+\lambda I)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Ameliorates multicollinearity.
+ If a small value of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is used, then, of course, the estimates are not far from the 
+\begin_inset Formula $\hat{\beta}^{ols}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+This estimator is known to be biased, but it is also known to havelower
+ variance than the OLS estimator.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Evaluating Biased Estimators
+\end_layout
+
+\begin_layout Itemize
+Suppose we want the smallest squared-error
+\begin_inset Formula 
+\[
+E[(\hat{\beta}-b)^{2}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Assert: That is 
+\begin_inset Formula 
+\[
+E[(\hat{\beta}-b)^{2}]=(E[\hat{\beta}-b])^{2}+E[(\hat{\beta}-E(\hat{\beta}))^{2}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is
+\begin_inset Formula 
+\[
+E[(\hat{\beta}-b)^{2}]=bias\, of\, estimator^{2}+variance\, of\, estimator
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Appendices
+\end_layout
+
+\begin_layout Subsection
+The Matrix Math of Multicollinearity
+\end_layout
+
+\begin_layout BeginFrame
+OLS Estimators
+\end_layout
+
+\begin_layout Itemize
+The OLS estimator is
+\begin_inset Formula 
+\[
+\hat{\beta}=(X'X)^{-1}X'Y\,\,\,\,\,\,\,\,\,\,\,\,\,\widehat{V(\hat{\beta})}=\widehat{\sigma_{e}^{2}}*(X'X)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $\widehat{\sigma_{e}^{2}}$
+\end_inset
+
+ estimated variance of the error term, also known as the MeanSquareError.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The slope and variance estimates require us to calculate:
+\begin_inset Formula 
+\[
+(X'X)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Perfect multicollinearity: 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ cannot be calculated-- 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ cannot be 
+\begin_inset Quotes eld
+\end_inset
+
+inverted.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+In practice, multicollinearity is not severe enough to prevent calculations.
+ But it does make the estimated variances larger.
+\end_layout
+
+\begin_layout BeginFrame
+Here is an analogy with ordinary numbers.
+ 
+\end_layout
+
+\begin_layout Itemize
+Take 
+\begin_inset Formula $X=0$
+\end_inset
+
+.
+ Then the inverse, 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+is undefined.
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ cannot be inverted.
+\end_layout
+
+\begin_layout Itemize
+Suppose instead 
+\begin_inset Formula $X=0.0000000001$
+\end_inset
+
+.
+ Now the inverse of 
+\begin_inset Formula $X$
+\end_inset
+
+ does exist, but it is some HUGE number, 
+\begin_inset Formula $X^{-1}=\frac{1}{0.0000000001}=10^{9}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Inverse of a Matrix
+\end_layout
+
+\begin_layout Itemize
+Recall that 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ is a matrix defined in the following way:
+\begin_inset Formula 
+\[
+(X'X)*(X'X)^{-1}=I=\begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+0 & 0 & ... & 0 & 0 & 0\\
+0 & 0 & ... & ... & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 1
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If X is an nxp matrix, then X' is pxn, and so the product (X'X) is pxp.
+ (X'X) is square.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ cannot be inverted, it means that there are 2 or more redundant rows in
+ 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+.
+ Some computer programs will give the error 
+\begin_inset Quotes eld
+\end_inset
+
+the model is not full rank.
+\begin_inset Quotes erd
+\end_inset
+
+ If 
+\begin_inset Quotes eld
+\end_inset
+
+rank
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ is smaller than p, then it means there are redundant rows.
+ 
+\end_layout
+
+\begin_layout Itemize
+Usually, in practice, the cross product matrix 
+\begin_inset Formula $(X'X)$
+\end_inset
+
+ can still be inverted, however, the values in 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ are HUGE.
+ 
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Subsection
+What is 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ Like?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Envision $(X'X)$ and $(X'X)^{-1}$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I kept wondering what the matrix 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ would look like, so here's an example.
+ 
+\end_layout
+
+\begin_layout Itemize
+Suppose
+\begin_inset Formula 
+\[
+X=\left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & X1_{3} & X2_{3}\\
+1 & X1_{4} & X2_{4}\\
+\dots & \dots & \dots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The first column is the 
+\begin_inset Quotes eld
+\end_inset
+
+y intercept
+\begin_inset Quotes erd
+\end_inset
+
+ and there are 2 variables.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X'X$
+\end_inset
+
+.
+ The product of X transpose and X
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+X'X=\left[\begin{array}{cccccc}
+1 & 1 & 1 & 1 & \vdots & 1\\
+X1_{1} & X1_{2} & X1_{3} & X1_{4} & \vdots & X1_{N}\\
+X2_{1} & X2_{2} & X2_{3} & X2_{4} &  & X2_{N}
+\end{array}\right]\left[\begin{array}{ccc}
+1 & X1_{1} & X2_{1}\\
+1 & X1_{2} & X2_{2}\\
+1 & X1_{3} & X2_{3}\\
+1 & X1_{4} & X2_{4}\\
+\dots & \dots & \dots\\
+1 & X1_{N} & X2_{N}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X'X=\left[\begin{array}{ccc}
+N & \sum X1_{i} & \sum X2_{i}\\
+\sum X1_{i} & \sum X1_{i}^{2} & \sum X1_{i}\cdot X2_{i}\\
+\sum X2_{i} & \sum X1_{i}\cdot X2_{i} & \sum X2_{i}^{2}
+\end{array}\right]\label{eq:XprimeX}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We want to know 
+\begin_inset Formula $(X'X)^{-1}$
+\end_inset
+
+ in order to calculate 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ and 
+\begin_inset Formula $Var(\hat{\beta})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+From matrix algebra: the inverse of a matrix can be written as the product
+ of the determinant, 
+\begin_inset Formula $det(X'X)$
+\end_inset
+
+, and a matrix called the adjoint 
+\begin_inset Formula $adj(X'X)$
+\end_inset
+
+.
+ (Consult any linear algebra textbook, such as Howard Anton, 
+\shape italic
+Elementary Linear Algebra, 3ed
+\shape default
+, New York, John Wiley, 1980, p.
+ 80).
+ The formula is:
+\begin_inset Formula 
+\[
+(X'X)^{-1}=\frac{1}{det(X'X)}adj(X'X)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The determinant of the 3x3 matrix (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:XprimeX"
+
+\end_inset
+
+) is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum X2_{i}^{2}\right)+2\left(\sum X1_{i}\right)\cdot\left(\sum X2_{i}\right)\cdot\left(\sum X1_{i}\cdot X2_{i}\right)\\
+det(X'X) & = & -\left(\sum X2_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot X2_{i}\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X2_{i}^{2}\right)
+\end{array}\label{eq:detX'X}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If that determinant is equal to 
+\begin_inset Formula $0$
+\end_inset
+
+, then the inverse is not defined.
+ 
+\end_layout
+
+\begin_layout Itemize
+If you mistakenly put in two identical columns, so 
+\begin_inset Formula $X1_{i}=X2_{i}$
+\end_inset
+
+, the determinant is 0.
+ Replace 
+\begin_inset Formula $X2_{i}$
+\end_inset
+
+ by 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum X1_{i}^{2}\right)\\
+ &  & +2\left(\sum X1_{i}\right)\cdot\left(\sum X1\right)\cdot\left(\sum X1_{i}\cdot X1_{i}\right)\\
+det(X'X) & = & -\left(\sum X1_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot X1_{i}\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X1_{i}^{2}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)^{2}+2\left(\sum X1_{i}\right)^{2}\cdot\left(\sum X1_{i}^{2}\right)\\
+ & = & -N\cdot\left(\sum X1_{i}^{2}\right)^{2}-2\left(\sum X1_{i}\right)^{2}\left(\sum X1_{i}^{2}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The terms with plus signs are exactly counterbalanced by negative signs,
+ and so 
+\begin_inset Formula $det(X'X)=0$
+\end_inset
+
+ if two redundant variables are included.
+ When there are 2 redundant columns, there can be no linear regression analysis.
+\end_layout
+
+\begin_layout Standard
+What if 2 columns are not exactly the same, but instead just 
+\begin_inset Quotes eld
+\end_inset
+
+similar
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+correlated
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\[
+X2_{i}=X1_{i}+\gamma_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+ &  & N\left(\sum X1_{i}^{2}\right)\cdot\left(\sum(X1_{i}+\gamma_{i})^{2}\right)\\
+ &  & +2\left(\sum X1_{i}\right)\cdot\left(\sum(X1_{i}+\gamma_{i})\right)\cdot\left(\sum X1_{i}\cdot(X1_{i}+\gamma_{i})\right)\\
+det(X'X) & = & -\left(\sum(X1_{i}+\gamma_{i})\right)^{2}\left(\sum X1_{i}^{2}\right)-N\cdot\left(\sum X1_{i}\cdot(X1_{i}+\gamma_{i})\right)^{2}\\
+ &  & -\left(\sum X1_{i}\right)^{2}\cdot\left(\sum(X1_{i}+\gamma_{i})^{2}\right)
+\end{array}\label{eq:detX'X2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The intuition: if 
+\begin_inset Formula $\gamma_{i}=0$
+\end_inset
+
+, 
+\begin_inset Formula $det(X'X)=0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\gamma_{i}$
+\end_inset
+
+ is small--
+\begin_inset Formula $X2_{i}$
+\end_inset
+
+ is redundant with 
+\begin_inset Formula $X1_{i}$
+\end_inset
+
+-- then this determinant will be small.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "Multicollinearity-1-lecture-problems.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
