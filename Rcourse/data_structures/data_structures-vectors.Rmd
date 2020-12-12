@@ -1,0 +1,749 @@
+---
+title: "Vectors in R"
+subtitle: "All the News thats Fit to Print"
+author:
+ - name: Paul Johnson
+   affiliation: CRMDA
+   email: pauljohn@ku.edu
+advertise: >
+   Please  visit 
+   [http://pj.freefaculty.org/guides](http://pj.freefaculty.org/guides) 
+keywords: R,vectors
+abstract: >
+   Vectors are a vital data storage tool in R. They can be created, 
+   extracted, and re-organized in a number of ways.
+fontsize: 12pt
+checked_by: "Paul Johnson"
+Note to Authors: please_dont_change_the_next lines!
+date: "`r format(Sys.time(), '%B %d %Y')`"
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+    css: "`r system.file('theme/kutils.css', package = 'crmda')`"
+    template: "`r system.file('theme/guide-boilerplate.html', package = 'crmda')`"
+logoleft: "`r system.file('theme/jayhawk.png', package = 'crmda')`"
+logoright: "`r system.file('theme/CRMDAlogo-vert.png', package = 'crmda')`"
+---
+
+
+
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("figures-", "template")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 70)
+```
+
+
+# Vector variables in R
+
+#### The "atomic" variable modes are {.bs-callout .bs-callout-red}
+
+1) integer
+2) double (floating point numeric)
+3) character
+4) logical (TRUE or FALSE represent 1 and 0) AKA Boolean
+
+#### We'll not discuss
+
+5) complex
+6) raw
+
+
+#### Not all variables are vectors {.bs-callout .bs-callout-green}
+
+**Atomic**: a single "column" of information
+
+**Factors**: are not vectors in R, they are more complicated
+  variables. For same reason, ordered factors are not vectors.
+
+I guessed that Date objects are vectors, but not according to the help
+page `?vector`
+
+#### These are "multi-variable" structures {.bs-callout .bs-callout-green}
+
+8) matrix
+9) list
+10) data.frame
+
+A matrix is still "atomic" because we can conceptualize it as a vector
+that is broken into columns.  Not true of lists or data frames.
+
+# c and explicit typing
+
+
+#### Easy to create vectors{.bs-callout .bs-callout-blue}
+
+Authors often introduce vectors by the c() function. Here's a vector, for
+example
+
+```{r}
+x <- c(13, 2, 33, 4, 35)
+```
+
+x is a column vector, mathematically speaking, even though it prints
+out horizontally to "save space".
+
+```{r}
+x
+```
+
+#### R has no true "scalar" valeus.  Even if you declare a single element
+
+```{r}
+y <- 5
+is.vector(y)
+```
+
+It is not necessary to type y[1] to obtain the value, however. But is
+allowed:
+
+```{r}
+identical(y[1], y)
+```
+
+
+#### Access elements {.bs-callout .bs-callout-orange}
+
+##### By integer subscripts in brackets.
+
+Retrieve elements one a time.
+
+```{r}
+x[1]
+x[5]
+```
+Use an index vector
+
+```{r}
+x[c(3, 4, 5)]
+```
+
+Can separate calculation of the index (make 2 steps)
+
+```{r}
+indx <- c(2, 4)
+x[indx]
+```
+
+
+##### Omit by negative subscripts
+```{r}
+x[-4]
+x[c(-3,-4)]
+```
+
+##### A TRUE-FALSE Vector can be an index.
+
+Pull out items 1 and 4 by setting them as true
+
+```{r}
+indx <- c(TRUE, FALSE, FALSE, TRUE, FALSE)
+x[indx]
+```
+
+##### More examples: Using logical comparisons to select (filter) values.
+
+I'll use those "TRUE" values to filter the values from
+x which are greater than 0
+
+```{r}
+xgt0 <- x > 0
+x2 <- x[xgt0]
+x2
+```
+
+Often, we'd do that selection in one step, but you don't understand
+what's happening unless you do the 2 separate steps (good both for
+novices and bug-checkers).
+
+```{r}
+x2 <- x[x>0]
+x2
+```
+
+Could use `which()` to achieve same
+```{r}
+xwh <- which(x > 0)
+x[xwh]
+                                        #or
+x[which(x > 0)]
+```
+
+## `c()` is a friend and an enemy. {.tabset .tabset-fade}
+
+### Convenient 
+
+Reasons why necomers like c()
+
+   1) convenient
+   2) hyper-flexible: can throw together anything
+   3) often does what we want
+   4) can create named vector easily
+
+#### Convenient{.bs-callout .bs-callout-green}
+`c()` is brief, easy to remember
+
+`c()` might stand for "combine", "collect", "concatenate"
+
+Often works as expected, saves work that might be boring/repetitive.
+
+When I said `c()` is flexible, I had in mind that
+
+a) it asks for additional memory and combines vectors
+gracefully).
+
+```{r}
+x1 <- c(33, 22)
+x2 <- c(55.1, 55, 58, 11, 12)
+x3 <- c(x1, x2)
+x3
+```
+
+#### Behind the scenes, here's what has to happen to create x3.{.bs-callout .bs-callout-orange}
+
+   1) The number of elements in x1 and x2 must be counted
+   2) Memory must be requested for a vector equal to the requirement.
+   3) The individual elements must be copied into the newly allocated values.
+
+b)  `c()` is very helpful because it can,
+literally, combine completely different kinds of things and
+give a sensible result.  (That's *pleasant* and *dangerous*)
+
+### Named vector
+```{r}
+z <- c("beta0" = 0.1, "beta1" = 1.1, "beta2" = 0.04)
+```
+
+Note the quotations are not necessary on the names, I am just
+accustomed to typing them. Previous is equivalent to running
+one command to create the vector and then using the assignment version
+of `names(z2)` to attach the names.
+
+```{r}
+z2 <- c(0.1, 1.1, 0.04)
+names(z2) <- c("beta0", "beta1", "beta2")
+z2
+```
+
+In real life, I'd avoid so much typing by pasting the names together
+with a statement like
+
+```{r}
+z2 <- c(0.1, 1.1, 0.04)
+names(z2) <- paste0("beta", 0:2)
+z2
+```
+
+Named vectors cause some calculations to go slower in R, we would not
+make a huge structure with named elements. However, for small-medium
+vectors, named vectors are often very convenient. Naming the elements
+reduces the danger of accessing the wrong value by a numeric index. We
+also benefit by keeping a cleaner workspace. We avoid creating
+separate values for $\beta_0$, $\beta_1$ and so forth, we just
+retrieve them by name if we need them:
+
+```{r}
+z["beta0"]
+```
+
+If the names get in your way, use the `unname` function
+
+```{r}
+unname(z)
+```
+
+The `c()` function also has a superpower feature, the recursive
+argument.  If recursive is true, then c() will dig through lists (not
+discussed here) and pull out their individual elements.
+
+### What's bad about `c()`?
+
+#### c() "guesses" at the type of data we want to store.{.bs-callout .bs-callout-red}
+
+There's a difference between an integer and a floating point number,
+right?  The difference is much bigger in computer math than in
+pencil and paper math.
+
+Why the difference?  Computers use 0's and 1's to record numbers.  The
+integer $1$ is $63$ $0$'s followed by a $1$. The integer $3$ is $62$
+$0$'s followed by $11$. Integers are exact!
+
+Floating point numbers are approximations built on, say, 64 bit
+values.  A number which appears as 3 on the screen might in fact
+be 2.999999999234 because of *rounding error*.
+
+
+1) Integer comparisons are OK, can use "==" and "!=" for equal and
+not equal.
+
+```{r}
+x <- c(5L, 10L, 15L, 20L, 25L, 30L)
+y <- seq(5L, 30L, 5L)
+x == y
+```
+
+The "L" means "long integer". In R, all integers are "long" (64 bits).
+
+The `identical()` function can be used to compare entire vectors.
+
+```{r}
+identical(x, y)
+```
+
+### Fixes
+
+#### Other ways to let R know you want an integer vector{.bs-callout .bs-callout-blue}
+
+a) declare x as an integer before assigning values.
+
+```{r}
+x <- integer(5)
+## same as
+## x <- vector(mode = "integer", length = 5)
+```
+
+Then we have a somewhat stupid chore of putting values into x
+
+```{r}
+x[1] <- 13L
+x[2] <- 2L
+x[3] <- 33L
+x[4] <- 4L
+x[5] <- 35L
+```
+
+```{r}
+is.integer(x)
+```
+
+That is tedious.
+
+Are the "L"'s needed? Apparently yes. Observe:
+
+```{r}
+x <- integer(5)
+x[1] <- 13
+x[2] <- 2
+x[3] <- 33
+x[4] <- 4
+x[5] <- 35
+is.integer(x)
+```
+
+b) In the usual situation, people might use "*coercion*" after
+creating x.
+
+```{r}
+x <- c(13, 2, 33, 4, 35)
+x <- as.integer(x)
+```
+
+In this case, the *coercion* appears to be harmless.
+
+Sometimes, the coercion is not so harmless. In effect, it "rounds down".
+
+```{r}
+x <- c(13, 2, 33, 4, 35.0001)
+x <- as.integer(x)
+x
+```
+
+R has functions `floor()` and `round()` if you really do
+intend that to happen.
+
+The computer treats math with integers in a different way than with
+floating point values. If values truly are integers, OK! If one
+is a float, watch out!
+
+2) Floating point number problems
+
+We can't feel too terrifically confident that a number which appears
+as 1.0 (a floating point) is equal to 1L (an integer).
+
+This example seems not too worrisome
+
+```{r}
+x <- 5
+y <- c(4L, 5L, 6L)
+x == y
+```
+
+```{r}
+z <- c(4, 5, 6)
+y == z
+```
+
+I don't know why z is seen as equal to y, it seems to me it is not,
+as we deduce from
+
+```{r}
+identical(y, z)
+```
+
+But look at this horrifying example from the help page
+`?all.equal`
+
+```{r}
+x <- pi*(1/4 + 1:10)
+xtan <- tan(x)
+## Looks like integers
+xtan
+is.integer(xtan)
+xtan == 1L
+```
+
+As a result, we conclude **comparisons between floating point numbers are
+strongly discouraged**. R's `all.equal()` and `zapsmall()` functions are intended
+to help with comparison of floating point values.
+
+```{r}
+zapsmall(xtan) == 1L
+```
+
+### Danger!
+
+####Accidental data corruption{.bs-callout .bs-callout-blue}
+
+If we use it unthinkingly, c() will destroy data (or, well, alter it unexpectedly).
+
+Suppose we have some values and there is a missing score, which we
+accidentally represent as "NA".
+
+```{r}
+x3 <- c(1, 2, 3, "NA", 5)
+```
+
+What is x now?
+
+```{r}
+is.integer(x3)
+is.double(x3)
+is.character(x3)
+x3
+```
+
+What did I mean to do? Use the R symbol NA, without quotes, to
+indicate that the fourth score was missing.
+
+```{r}
+x4 <- c(1, 2, 3, NA, 5)
+is.character(x4)
+x4
+is.na(x4)
+```
+
+The return value from ```is.na()``` is an example of a logical vector,
+the values are either TRUE or FALSE.  Those are symbolic equivalents
+of 0 and 1. See?
+
+```{r}
+x4missing <- is.na(x4)
+x4missing == 1
+```
+
+# Vectorized calculations in R
+
+#### "Vectorized" means fewer for loops {.bs-callout .bs-callout-green}
+Many (not all) functions in R are vectorized. It is not necessary to
+apply a function individually to the elements (say, in a "for
+loop"). Instead, we handle a whole vector in one step.
+
+```{r}
+x1 <- 1:10
+3 * x1
+log(x1)
+sqrt(x1)
+exp(x1)
+```
+
+Similarly, addition, subtraction, and multiplication are vectorized
+
+```{r}
+x2 <- 55:64
+x1 + x2
+x2 - x1
+0.1 * x2 - x1
+```
+
+The symbol "*" indicates 'term wise' multiplication. It is not an
+"inner product" or "dot product" as in linear algebra.
+
+#### Many R funtions produce vectors {.bs-callout .bs-callout-green}
+
+1) Random number generators
+
+```{r}
+set.seed(234234)
+x <- rnorm(10)
+head(x)
+is.vector(x)
+is.double(x)
+```
+Head is shortcut for `x[1:6]`, see `?head`
+
+2) Sequence `seq()`
+
+3) Replicate `rep()`
+
+4) Logical comparisons create logical vectors.
+
+```{r}
+xgt0 <- x > 0
+head(xgt0)
+is.logical(xgt0)
+```
+
+
+
+# cbind and rbind
+
+The `cbind` and `rbind` functions are the vector-wise
+equivalents of `c()`.  These are both 1) handy and 2) dangerous.
+
+### cbind: combine columns side by side
+
+A vector is, by definition, a column structure. Lets make 2 columns
+and bind them together.
+
+```{r}
+x1 <- 1:5
+x2 <- seq(100, 180, by = 20)
+X <- cbind(x1, x2)
+X
+```
+
+The object `X` is a matrix, which we will discuss in a separate
+set of notes.
+
+```{r}
+class(X)
+```
+
+We don't want go get bogged-down now here about what a matrix is, or what a
+"class" is in R, or how a matrix is different from a vector. We will
+get bogged-down in that later.
+
+## cbind: what's dangerous about that?
+
+1) The unintended "demotion" or "promotion" of variable types occurs,
+as in `c()`. All of the columns may be altered by a single
+character in one of them.
+
+```{r}
+x1 <- c(1, 2, 3, "NA", 5)
+x2 <- seq(100, 180, by = 20)
+X <- cbind(x1, x2)
+X
+mode(X)
+```
+
+2) "Recycling" will re-use values in a sometimes unexpected way:
+
+
+```{r}
+x1 <- c(1, 2, NA)
+x2 <- seq(100, 180, by = 20)
+X <- cbind(x1, x2)
+X
+```
+
+We do see the warning there, but this is very dangerous behavior. It
+is an example of why it is not recommended to turn off warnings (or
+develop the habit of ignoring them).
+
+## rbind: not entirely expected result
+
+`rbind` stands for "row" bind.
+
+When I first applied `rbind` to two (column) vectors,
+
+```{r}
+x <- c(1, 2, 3)
+y <- c(4, 5, 6)
+```
+
+I expected the result would be a column `(1, 2, 3, 4, 5, 6)`. I
+was (mistakenly) expecting that, since both x and y are (column)
+vectors, R would treat them that way.
+
+However, the behavior of rbind is different, entirely!
+
+```{r}
+rbind(x, y)
+```
+
+That's was a surprise to me.  What happened?  When we gave the two
+vectors to `rbind()`, R was thinking to itself "Ah, they must want
+me to treat those two vectors as rows!".
+
+And why would R have a right to think so?  If I want to "stack
+together" two column vectors, I ought to use the `c()` function.
+That's what `c()` is actually intended for, after all!
+
+```{r}
+c(x, y)
+```
+The other lesson in this is that although vectors in R are generally
+thought of as column vectors, *you can't take that to the
+bank*. Simply put, always do your best to double-check calculations to
+make sure you are getting what you expect.
+
+# Afterthought 1: Transpose
+
+Vectors are columns. In R, they are a separate type of storage.
+Remember they are columns.
+
+**Question** What is the transpose of a column? 
+
+**Answer** A row.
+
+But in R there is no such thing as a "row vector".  So what do we
+receive if we use the "transpose" operator on a column vector?
+
+```{r}
+x <- c(10, 11, 12, 13, 14, 15, 16)
+x
+xt <- t(x)
+xt
+class(xt)
+```
+In R, the only way to represent a "row" is to talk about a matrix with
+just one row.  That's an important technical difference because R has
+vectors as columns, but, as we shall see, it also has matrices with
+only one column in them, but those one column matrices are not
+equivalent to an R vector in many ways.
+
+
+
+# Afterthought II: Super confusing problem of storage mode versus R class
+
+The actual storage work is handled in C, where the term "type" is used
+for variables.  The types are "int" (integer), "long" (integer that
+can hold more values), "float" (floating point real number), "double"
+(a double-precision floating point number), and so forth. In the R
+documentation, these are referred to as "types" (or the very closely
+related "storage modes").
+
+The reason for inserting this section is the ambiguity between
+the terms "numeric" and "double" (or double width floating point
+value) in various contexts. 
+
+## Class
+
+Many R users will never concern themselves with type or storage mode,
+but they will be interested in the "**class**" of an R object. The
+idea of object "class" frames almost all of the R user's day-to-day
+interaction with R.
+
+R marks each object with an attribute called "class" and that
+attribute is used by the R runtime system to make good guesses about
+what users need when they make requests. The term "class" embraces a
+much wider type of data structures than the "integer" "double",
+"character" storage mode family.  These classes are the structures
+that have made S and R famous, including factors, Dates, lists, data
+frames, and matrices. These things, of course, have to exist in memory
+with a certain structure, but since there are no built-in C
+equivalents of lists or dates, there is no danger of confusion.
+
+## Where Class and Storage terminology do not differ (integer, logical, character)
+
+
+There is no confusion about the meaning of storage mode or class in
+the cases of "character" and "logical" variables. The R classes
+"character" and "logical" are exactly what you expect.  They are
+vectors for which the storage mode is "character" or
+"logical". There's no trouble.
+
+Consider a logical vector.  I believe the output from
+coercion into other types is mostly understandable.
+
+```{r}
+x <- c(TRUE, FALSE, FALSE, TRUE)
+is.logical(x)
+as.character(x)
+as.integer(x)
+```
+
+## Numeric: Where Class and Storage terminology differ
+
+See the "Note on names" in the help page "?numeric". The confusion is
+that the name "numeric" sometimes means "floating point double
+precision numbers" while sometimes it includes both integers and
+floating-point numbers. The treatment is different in the older family
+of S3 functions.  In S4 family, numeric means double-precision
+floating point values.
+
+We will demonstrate the difference by starting with that logical vector.
+
+```{r}
+x <- c(TRUE, FALSE, FALSE, TRUE)
+z <- as.numeric(x)
+z
+is.integer(z)
+is.double(z)
+```
+
+The 0's and 1's in z represent floating point values, not integer 0L
+and 1L. The `as.numeric` function always generates a floating point
+value, even though we might wish we could have integer 0L and 1L. 
+
+Now lets try the same exercise from another direction.  The ambiguity
+of "numeric" will reveal itself.
+
+```{r}
+x <- c(TRUE, FALSE, FALSE, TRUE)
+z <- as.integer(x)
+z
+is.numeric(z)
+is.double(z)
+```
+
+The difference between "is.numeric" and "as.numeric" flows from the
+fact that as.numeric always creates floating point numbers, while
+"is.numeric" returns TRUE if the storage mode of the vector is integer
+or floating point. Those are all "numbers", especially when we need
+to differentiate them from character or logical variables.
+
+
+
+# Function Collection
+
+1) `c` General purpose concatenator often used to allocate vectors
+
+2) `vector()`: allocates space for a vector of given type. Same as
+functions `double()`, `integer()``, and so forth.
+
+3) `is.___` functions are for checking a thing's
+
+4) `as.___` family is for coercing a variable of one type into another
+class. `as.integer()`, `as.double()`,
+`as.logical()`. A general purpose "as()" function can be used
+instead, with arguments.
+
+5) 1:10 is shorthand for seq(1L, 10L, 1L)
+
+```{r}
+x1 <- 1:10
+is.integer(x1)
+x2 <- seq(1L, 10L, 1L)
+identical(x1, x2)
+```
+
+
+# Session Info
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+
+
+

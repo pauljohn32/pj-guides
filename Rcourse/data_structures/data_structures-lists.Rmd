@@ -1,0 +1,481 @@
+---
+title: "R variable types: lists!"
+author:
+ - name: Paul Johnson
+   affiliation: CRMDA
+   email: pauljohn@ku.edu
+advertise: >
+   Please  visit 
+   [http://pj.freefaculty.org/guides](http://pj.freefaculty.org/guides) 
+keywords: R,vectors
+abstract: >
+   A list is an information container. It can hold, literally, any
+   kind of R object.  With freedom, you also have responsibility.
+fontsize: 12pt
+checked_by: "Paul Johnson"
+Note to Authors: please_dont_change_the_next lines!
+date: "`r format(Sys.time(), '%B %d %Y')`"
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+    css: "`r system.file('theme/kutils.css', package = 'crmda')`"
+    template: "`r system.file('theme/guide-boilerplate.html', package = 'crmda')`"
+logoleft: "`r system.file('theme/jayhawk.png', package = 'crmda')`"
+logoright: "`r system.file('theme/CRMDAlogo-vert.png', package = 'crmda')`"
+---
+
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 70)
+```
+
+# List introduction
+
+**List** is a diverse collection of R objects. Any R object can
+be inserted in a list.
+
+A list is highly flexible. In versatility, a list is the complete
+opposite of an R vector or a matrix.
+
+Recall a vector or matrix must be
+made up of homogeneous elements. If we add an element in a vector (or
+matrix), it can happen that the entire vector (or matrix) changes as a
+result. (Recall inserting a character into a numeric vector?)
+
+Below several methods of inserting elements in lists and extracting
+them will be discussed.
+
+# Named and Unnamed lists
+
+First, we create a small example list for inspection. This is a named
+list because I insert a name with each element.
+
+```{r}
+mylist <- list("x" = c(1, 2, 3), "y" = matrix(rnorm(16), 4), "z" = "Paul")
+names(mylist)
+length(mylist)
+```
+
+This is an unnamed list:
+
+```{r}
+nonamelist <- list(c(1, 2, 3),  matrix(rnorm(16), 4), "Paul")
+length(nonamelist)
+nonamelist
+```
+
+You agree it has no names, right?
+```{r}
+names(nonamelist)
+```
+
+The elements of a named list can be accessed either by their
+name or their index number, while an unnamed list allows access
+only by the index number.
+
+One will find comments here and there in the literature to suggest that
+lists will be processed more quickly in R if they do not have named elements.
+
+If you want to remove the names from an object, there are two ways.
+
+```{r}
+unname(mylist)
+```
+
+or, equivalently,
+
+```{r}
+names(mylist) <- NULL
+mylist
+```
+
+But the gosh darned names are needed for the rest of the
+presentation, so
+
+```{r}
+names(mylist) <- c("x", "y", "z")
+```
+
+
+# List element access: [[ or [ ?
+
+#### The single [ {.bs-callout .bs-callout-blue}
+
+A single-bracket is used to extract subsets from the list, and
+*keep the result as a new list*.
+
+```{r}
+mylist2 <- mylist[c(1,3)]
+mylist2
+class(mylist2)
+length(mylist2)
+```
+
+#### The double [[ {.bs-callout .bs-callout-orange}
+
+The double-bracket [[ is used to copy an object from the list
+and the result is not a list anymore, it is the object's type.
+
+I'll access that element by name first:
+```{r}
+mymat1 <- mylist[["y"]]
+mymat1
+class(mymat1)
+```
+
+Then I access that by list position with an integer index:
+
+```{r}
+mymat2 <- mylist[[2]]
+mymat2
+class(mymat2)
+identical(mymat1, mymat2)
+```
+
+
+# Ways to allocate list storage
+
+There are two ways to do this. The first is the common, easy way.
+The second is the faster, more structured way.
+
+
+#### 1 The Easy way {.bs-callout .bs-callout-gray}
+1. Initiate an empty list that will grow as items are added to it.
+
+```{r}
+mylist1 <- list()
+```
+
+#### 2 The More Disciplined & Better Way {.bs-callout .bs-callout-orange}
+2. Initialize a list of a given size (for example, 6).
+
+```{r}
+mylist2 <- vector(mode = "list", length = 6)
+```
+
+## What's the difference? Speed, possibly
+
+The major difference between the two types arises when we want to put
+the lists to use. In the case of `mylist1`, we are allowed to add
+items one by one, either by name or position in the list:
+
+```{r}
+x1 <- c(1, 2, 3)
+x2 <- matrix(rnorm(9), ncol = 3)
+mylist1[[1]] <- x1
+mylist1[["x1"]] <- x1
+mylist1[[3]] <- x1
+```
+
+Note that, as far as "mylist1" is concerned, the first item is [[1]],
+the second item can be found either as [[2]] or [["x1"]], and the
+third item is [[3]]:
+
+```{r}
+mylist1
+mylist1[["x1"]]
+mylist1[[2]]
+```
+
+The list only had 3 elements, but if we insert a 6th element, then
+R creates NULL elements 4 through 5:
+
+```{r}
+mylist1[[6]] <- x2
+mylist1
+```
+Rememember that the absence of an element in a list is referred to
+by the symbol NULL, not NA (as for vectors and matrices).
+
+We find the difference in mylist2 is that we are not allowed to insert
+named elements into the middle of the list in the same way. Observe
+that because the list was allocated with elements 1 through 6 as NULL,
+then inserting a named thing "x1" adds a 7th element in the list:
+
+```{r}
+mylist2[[1]] <- x1
+mylist2[["x1"]] <- x1
+mylist2[[3]] <- x1
+mylist2
+```
+
+If we want to insert the matrix in the 6th element we can, of course:
+
+```{r}
+mylist2[[6]] <- x2
+mylist2
+```
+
+If we decide we want the elements to be named, we can do so with the
+names function:
+
+```{r}
+# only insert names for 6th and 7th items:
+names(mylist2)[6:7] <- c("x1", "x2")
+mylist2
+names(mylist2)
+```
+
+Conclusion: If you are going to generate a lot of objects for a
+list, it is best to allocate the whole list first and fill in the
+elements with `[[index_number]] <- ...`.
+
+If you want a more flexible list, in which you can insert things with
+names as you go, it is necessary to initiate the list with
+`list()` but insertion of items is slower.
+
+## Is that really faster?  Maybe!
+
+
+Allocation of memory is slow, so one argument in favor of the second
+strategy is that we allocate storage in one step. This is more
+efficient.
+
+I wondered if it really is more efficient.  The *right thing* would
+be to formalize this as a microbenchmark experiment, but the
+system.time function gives a quick snapshot:
+
+```{r}
+alist <- list()
+system.time(
+for(i in 1:10000){
+    alist[[i]] <- matrix(rnorm(9), ncol = 3)
+})
+
+alist2 <- vector("list", 10000)
+system.time(
+for(i in 1:10000){
+    alist2[[i]] <- matrix(rnorm(9), ncol = 3)
+})
+```
+
+
+# Brief Simulation Example
+
+There is a middle ground with the second style. We can create a list
+with 10 elements and then name them. If we do that, then we can insert
+things by name. Example, create a list with 10 named things for 10 models:
+
+```{r}
+mylist3 <- vector(mode = "list", length = 10)
+names(mylist3) <- paste0("mod", 1:10)
+mylist3
+```
+
+Now lets run a data-generator 10 times and fill those in:
+
+```{r}
+set.seed(234234)
+mdg <- function(N = 100, beta = c(0.1, 0.3, 0.1), stde = 7)
+{
+    e <- rnorm(N, m = 0, sd = stde)
+    ## oops, don't know parm for predictors
+    x1 <- rnorm(N, m = 40, sd = 10)
+    x2 <- rnorm(N, m = 20, sd = 40)
+    y <- beta[1] + beta[2] * x1 + beta[3] * x2 + e
+    invisible(data.frame(x1, x2, y))
+}
+
+for (i in 1:10){
+    adf <- mdg()
+    amodel <- lm(y ~ x1 + x2, data = adf)
+    mylist3[[paste0("mod", i)]] <- summary(amodel)
+}
+```
+
+It is pretty easy to verify that each element in this list is
+a summary object from the fitted regression.
+
+```{r}
+mylist3[[7]]
+class(mylist3[[7]])
+```
+
+
+#  lapply: Iterate on lists
+
+## 1. Basic lapply with one-argument function {.bs-callout .bs-callout-orange}
+A function, such as "class" or "print", can be applied to each
+element in the list in this way.
+
+```{r}
+lapply(mylist3, class)
+```
+
+For practical purposes, that is the same as "looping" over the
+elements like this:
+
+```{r}
+for(i in seq_along(mylist3)){
+    print(class(mylist3[[i]]))
+}
+```
+
+(The "print()" is needed because, without it, the for loop does
+not display the output from commands).
+
+#### Watch out about using for loops. {.bs-callout .bs-callout-orange}
+
+There is *social stigma*! If you go to StackExchange or the "r-help"
+list with example code that uses a for loop, you will often be shouted
+at because for loops are slow in R.
+
+While this is a slight exaggeration, there are cases where
+clever use of the ```lapply()``` iteration structure is
+faster. Generally, the reason is that R can look at the request and
+plan ahead for its calculations, while the for loop hides the long-run
+details from R.  Chores like memory allocation cannot be managed so
+efficiently.  Another fact is that "[" and "[[" are decidely slow
+operators. We are forcing R to talk back and forth from the R runtime,
+which is written in C, and the user workspace, which is slowed down
+by the fact that it interactive.
+
+## 2. Additional arguments can be named 
+
+```{r}
+lapply(mylist3, print, digits = 10)
+```
+
+The first argument to print MUST BE the element pulled from mylist3,
+while arguments passed to print are named after.
+
+The digits argument is COMMON across the calls to print. It is not
+"vectorized".  
+
+
+## 3. List is a return list
+
+One reason we use lapply is not simply to print things, but
+to create a new list that has the result of calculations, with
+each list element treated one-by-one.
+
+```{r}
+coeflist <- lapply(mylist3, coef)
+coeflist[1:3]
+```
+
+## 4. Example using "inline" (anonymous) function.
+
+Somebody said they only want to keep the P values.
+
+```{r}
+pvallist <- lapply(mylist3, function(x){
+    mycoefs <- coef(x)
+    pvals <- mycoefs[ , "Pr(>|t|)"]
+    pvals
+})
+pvallist
+```
+
+## 5. ```sapply``` and ```vapply```
+
+Return from list is always a list. Sometimes it can be
+
+   * a list in which each item is a vector with just one element.  We'd
+like to just have a vector.
+   * a list of vectors,  we might
+like to have the vector stacked as columns or rows in a matrix. 
+ 
+Many authors suggest the use of R's "sapply" for that:
+
+```{r}
+sapply(mylist3, function(x){
+    mycoefs <- coef(x)
+    pvals <- mycoefs[ , "Pr(>|t|)"]
+    pvals
+    })
+```
+
+**IMPORTANT** Note the return is a 3 x 10 matrix, one column
+for each element. Did you expect that? I expected the transpose.
+
+
+Although `sapply()` is widely used, Hadley Wickam
+suggests instead we focus on learning to use ```vapply()``` in *Advanced R*:
+
+```{r}
+vapply(mylist3, function(x){
+    mycoefs <- coef(x)
+    pvals <- mycoefs[ , "Pr(>|t|)"]
+    pvals
+    }, FUN.VALUE = numeric(3))
+```
+
+Note the difference is the argument FUN.VALUE, where we specify the
+structure of an individual returned element.
+
+`vapply()` is preferred because it is less likely to give us a
+result we don't expect. We told it we think each iteration should
+return a numeric vector with 3 elements, so R knew what to watch
+for. If the return did not match that criterion, we would have
+received an error.
+
+Admittedly, the documentation for vapply is poor and I would never
+have understood the point of this function without reading *Advanced
+R*.
+
+## 5. vapply Example: Lets Get the R-squares!
+
+```{r}
+rsq <- vapply(mylist3, function(x){
+    x$r.square
+}, FUN.VALUE = numeric(1))
+rsq
+```
+
+```{r fig=TRUE}
+hist(rsq, main = "R Square is the only thing I care about",
+     xlab = expression(R^2), prob = TRUE)
+```
+
+
+# List miscellaneous
+
+#### The unlist() function {.bs-callout .bs-callout-orange}
+
+If a list is a collection of vectors, unlist will take them apart:
+
+```{r}
+alist <- list(1:4, 32:44, rnorm(10))
+avec <- unlist(alist)
+avec
+class(avec)
+```
+
+```{r}
+alist <- list(1:4, 32:44, c("Paul", "Joe"))
+avec <- unlist(alist)
+avec
+class(avec)
+```
+
+Sometimes unlisting is more aggressive than we expect. Run
+```unlist(mylist3)``` and you'll see what 10 regressions look
+like when all of their numbers are flattened into a single
+vector.
+
+2. Delete a list element
+
+To remove an element from a list, it must be assigned the NULL value:
+
+```{r}
+nonamelist[[3]] <- NULL
+nonamelist
+```
+
+# Session Info
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+

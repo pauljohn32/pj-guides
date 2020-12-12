@@ -1,0 +1,365 @@
+---
+title: "R variable types: data.frames!"
+author:
+ - name: Paul Johnson
+   affiliation: CRMDA
+   email: pauljohn@ku.edu
+advertise: >
+   Please  visit 
+   [http://pj.freefaculty.org/guides](http://pj.freefaculty.org/guides) 
+keywords: R,vectors
+abstract: >
+   A data frame is a list, but with one special difference.  The
+   elements in a data.frame must all have the same number of items. 
+   Think of it as a rectangle, use "View" to see it.
+fontsize: 12pt
+checked_by: "Paul Johnson"
+Note to Authors: please_dont_change_the_next lines!
+date: "`r format(Sys.time(), '%B %d %Y')`"
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+    css: "`r system.file('theme/kutils.css', package = 'crmda')`"
+    template: "`r system.file('theme/guide-boilerplate.html', package = 'crmda')`"
+logoleft: "`r system.file('theme/jayhawk.png', package = 'crmda')`"
+logoright: "`r system.file('theme/CRMDAlogo-vert.png', package = 'crmda')`"
+---
+---
+title: "R variable types: data.frame"
+author:
+ - name: Paul E. Johnson
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: pauljohn@ku.edu
+ - name: "Tags: guides, R, data"
+ - name: "Please visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides) for the
+ latest and greatest versions of this guide, and many others" 
+abstract: 
+   All about data.frames in R!
+checked_by: "Brent Kaplan"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:
+    highlight: haddock
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("figures-", "template")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 70)
+```
+
+# data.frame Introduction
+
+#### List {.bs-callout .bs-callout-orange}
+**List** is a diverse collection of R objects. Any R object can
+be inserted in a list.
+#### Data Frame {.bs-callout .bs-callout-red}
+An R **data.frame** is an R list, but with one restriction: The number of rows in each element in the list must be identical.
+
+A "spread sheet" is the usual way to think of a data.frame. Each
+column is a variable and each row is a survey respondent or
+participant in a study.
+
+## A data frame is a collection of variables.
+
+Lets make some variables of different types:
+
+```{r}
+N <- 100
+x1 <- rnorm(N, m = 0, sd = 10)
+x2 <- rpois(N, lambda = 7)
+x3 <- sample(letters[1:26], N, replace = TRUE)
+x4 <- gl(5, N/5, labels = c("low", "luke", "med", "warm", "hot"))
+class(x1)
+class(x2)
+class(x3)
+class(x4)
+```
+The ```data.frame()``` function will staple those together as
+columns:
+
+```{r}
+dat <- data.frame(x1, x2, x3, x4, stringsAsFactors = FALSE)
+```
+
+## See what's in that data frame
+
+#### 1. head {.bs-callout .bs-callout-green}
+
+```{r}
+head(dat)
+```
+
+#### 2. str {.bs-callout .bs-callout-red}
+
+```{r}
+str(dat)
+```
+
+#### 3. Matrix row/Column syntax {.bs-callout .bs-callout-blue}
+
+Inspect some rows by syntax ```dat[ index, ]```, similar to matrices
+
+```{r}
+dat[c(1, 10:14, 99), ]
+```
+
+#### 4. Use View in the GUI {.bs-callout .bs-callout-blue}
+
+Use `View`
+
+```
+View(dat)
+```
+
+opens up a table view
+
+### 5. Extract Columns {.bs-callout .bs-callout-gray}
+
+Extract a column in either of 3.5 ways!
+
+    a. Take the 3rd column by integer index
+
+```{r}
+dat[ , 3]
+```
+
+    b. Take the 3rd column by its name
+
+```{r}
+dat[ , "x3"]
+```
+
+    c. Take the 3rd column by the $ "accessor" shortcut.
+
+```{r}
+dat$x3
+```
+
+    d. Because a data.frame is, technically, also an R list, it is
+    allowed to access columns in the way that list elements are
+    accessed. 
+	
+	Observe:
+
+```{r}
+x3.1 <- dat["x3"]
+class(x3.1)
+```
+Note that x3.1 is still a data.frame object, which has this
+weird-looking implication.
+
+```{r}
+x3.1$x3
+```
+
+We probably did not want a data frame with just x3, so the
+double bracket comes in handy
+
+```{r}
+x3.2 <- dat[["x3"]]
+class(x3.2)
+is.factor(x3.2)
+```
+
+## summary or summarize
+
+```{r}
+summary(dat)
+```
+
+I think output from rockchalk summarise is better
+
+```{r}
+library(rockchalk)
+summarize(dat)
+```
+
+
+
+
+# Rename data frame columns
+
+#### 1 dimnames {.bs-callout .bs-callout-gray}
+1. Use the `dimnames` function to rename both rows and columns in one command.
+This is identical to the way it is done in an R matrix:
+
+```{r}
+dimnames(dat) <- list(paste0("r", 1:100), paste0('a', 1:4))
+head(dat)
+```
+
+#### 2 colnames, rownames {.bs-callout .bs-callout-orange}
+2. The functions ```colnames()``` and ```rownames()``` can be used to
+   retrieve names or set them, depending on whether they are followed
+   by ```<-```.
+
+```{r}
+colnames(dat)
+colnames(dat) <- c("x1", "x2", "x3", "x4")
+head(dat)
+```
+
+#### 3 names {.bs-callout .bs-callout-blue}
+3. Because a data.frame is also an R list, with the special quality
+that its elements have the same number of rows, it is also allowed to
+change column numbers with the ```names()``` function.
+
+
+# Re-calculate new variables
+
+```
+dat$x2log <- log(dat$x2)
+```
+
+
+
+
+# Interesting problem I ran into recently.
+
+I usually think of a data.frame as a set of columns.
+I think most people do. However, that's just wrong.
+A data.frame object can have elements that are matrices
+or other data.frames.
+
+This often happens by accident. I do a calculation
+where I add a column to a data frame.
+
+
+
+```{r}
+N <- 100
+x1 <- rnorm(N, m = 0, sd = 10)
+x2 <- rpois(N, lambda = 7)
+dat2 <- data.frame(x1, x2)
+```
+
+Here's a fitted regression:
+
+```{r}
+m1 <- lm(x1 ~ x2, data = dat2)
+```
+
+Often, we might take predicted values or residuals, say
+
+```{r}
+dat2$pred <- predict(m1)
+```
+That's OK, as you can see we have a new column on the right side of
+the data frame:
+
+```{r}
+head(dat2)
+```
+
+However, a bad accident can happen if the return from predict
+happens to be a matrix. Consider this:
+
+```{r}
+dat2$otherpred <- predict(m1, interval = "confidence")
+```
+
+The thing, "otherpred" is a matrix with 3 columns. However,
+R let me insert it onto the data frame as if it were a column.
+Now, accessing those elements will be SUPER-confusing.
+
+```{r}
+head(dat2)
+```
+
+```{r}
+summary(dat2)
+```
+
+You'll get errors trying to access the otherpred "column" if you
+try dat2$otherpred.
+
+In case you do want to add a multi-column thing to a data
+frame, the right way to do it will either involve the
+R function ```cbind()``` or ```merge()```.
+
+```{r}
+otherpred <- predict(m1, interval = "confidence")
+dat3 <- cbind(dat2, otherpred)
+head(dat3)
+```
+
+```{r}
+dat4 <- merge(dat2, otherpred, by = "row.names")
+head(dat4)
+```
+
+I prefer using merge because, in the olden days, it dealt with
+missing values in a more graceful way.  Today, I don't think
+it matters much. Unless I do the merge incorrectly.
+
+
+I thought it would be easy to show those are identical,
+but I'm having some trouble. I think my merge is wrong.
+
+Get rid of that first column in dat4
+```{r}
+dat4[ , "Row.names"] <- NULL
+all.equal(dat3, dat4)
+```
+
+```{r}
+sum(dat3$fit - otherpred[ , "fit"])
+sum(dat3$lwr -  otherpred[ , "lwr"])
+```
+
+```{r}
+sum(abs(dat4$fit - otherpred[ , "fit"]))
+sum(abs(dat4$lwr -otherpred[ , "lwr"]))
+```
+
+```{r plot=TRUE}
+plot(dat4$fit, otherpred[ , "fit"])
+```
+
+Humphf!
+
+
+```{r}
+dat4 <- merge(dat2, otherpred, by = "row.names")
+head(dat4)
+```
+
+Now I see what's wrong. Once again, I was bone-crushed
+by the merge function's decision to shuffle my rows.
+
+```{r}
+dat4 <- dat4[order(as.numeric(dat4[ , "Row.names"])), ]
+```
+
+
+```{r plot=TRUE}
+plot(dat4$fit, otherpred[ , "fit"])
+```
+
+Or, more simply
+
+```{r}
+dat4 <- merge(dat2, otherpred, by = "row.names", sort = FALSE)
+```
+
+```{r plot=TRUE}
+plot(dat4$fit, otherpred[ , "fit"])
+```
+
+
+
+# Session Info
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+
