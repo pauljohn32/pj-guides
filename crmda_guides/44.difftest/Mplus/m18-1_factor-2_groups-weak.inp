@@ -1,0 +1,149 @@
+TITLE:
+Model 18 - One Factor Two Group Weak Model;
+
+DATA: FILE IS "../workingdata/data.dat";
+
+VARIABLE:
+NAMES ARE
+    stuID schoolID gender age grade
+
+    body1 body2 body3 body4 body5
+
+    phys1 phys2 phys3 phys4
+    phys5 phys6 phys7 phys8
+    
+    depress1 depress2 depress3 
+    depress4 depress5 depress6
+    
+    gotBu1 gotBu2 gotBu3 gotBu4
+    gotBu5 gotBu6 gotBu7 gotBu8
+    gotBu9
+    
+    buOth1 buOth2 buOth3 buOth4
+    buOth5 buOth6 buOth7 buOth8
+    buOth9
+    
+    alcohol1 alcohol2 alcohol3
+    alcohol4 alcohol5;
+
+USEVAR ARE
+grade
+depress1 depress2 depress3 depress4 depress5 depress6;
+GROUPING is grade (6 = 1 7 = 2);
+
+CATEGORICAL ARE
+depress1 depress2 depress3 depress4 depress5 depress6;
+
+MISSING ARE ALL (-9999);
+
+ANALYSIS:
+ESTIMATOR = WLSMV;
+PARAMETERIZATION = THETA;
+DIFFTEST = m17-1_factor-2_groups-config.dif;
+
+Model:
+depress BY depress1@1
+           depress2(f21)
+           depress3(f31)
+           depress4(f41)
+           depress5(f51)
+           depress6(f61);
+           [depress1$1](t11); 
+           [depress1$2](t12);
+           [depress1$3];
+           [depress1$4];
+           
+           [depress2$1](t21); 
+           [depress2$2];
+           [depress2$3];
+           [depress2$4];
+            
+           [depress3$1](t31); 
+           [depress3$2];
+           [depress3$3];
+           [depress3$4];
+
+           [depress4$1](t41); 
+           [depress4$2];
+           [depress4$3];
+           [depress4$4];
+
+           [depress5$1](t51); 
+           [depress5$2];
+           [depress5$3];
+           [depress5$4];
+
+           [depress6$1](t61); 
+           [depress6$2];
+           [depress6$3];
+           [depress6$4];
+
+depress*;
+[depress@0];
+
+depress1@1;
+depress2@1;
+depress3@1;
+depress4@1;
+depress5@1;
+depress6@1;
+
+Model 1:
+depress BY depress1@1
+           depress2(f21)
+           depress3(f31)
+           depress4(f41)
+           depress5(f51)
+           depress6(f61);
+
+           [depress1$1](t11); 
+           [depress1$2](t12);
+           [depress1$3];
+           [depress1$4];
+           
+           [depress2$1](t21); 
+           [depress2$2];
+           [depress2$3];
+           [depress2$4];
+            
+           [depress3$1](t31); 
+           [depress3$2];
+           [depress3$3];
+           [depress3$4];
+
+           [depress4$1](t41); 
+           [depress4$2];
+           [depress4$3];
+           [depress4$4];
+
+           [depress5$1](t51); 
+           [depress5$2];
+           [depress5$3];
+           [depress5$4];
+
+           [depress6$1](t61); 
+           [depress6$2];
+           [depress6$3];
+           [depress6$4];
+
+depress*;
+[depress*];
+
+depress1*;
+depress2*;
+depress3*;
+depress4*;
+depress5*;
+depress6*;
+
+OUTPUT:
+TECH1;
+TECH2;
+TECH3;
+TECH4;
+TECH5;
+TECH6;
+
+STDYX;
+SAVEDATA:
+DIFFTEST = m18-1_factor-2_groups-weak.dif;

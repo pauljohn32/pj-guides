@@ -1,0 +1,84 @@
+TITLE: Model 13 - Structural, Two IVs Predict One DV, IVs Correlation
+and Two Regressive Paths Equate;
+
+DATA: FILE IS "../workingdata/data.dat";
+
+VARIABLE:
+NAMES ARE
+    stuID schoolID gender age grade
+
+    body1 body2 body3 body4 body5
+
+    phys1 phys2 phys3 phys4
+    phys5 phys6 phys7 phys8
+    
+    depress1 depress2 depress3 
+    depress4 depress5 depress6
+    
+    gotBu1 gotBu2 gotBu3 gotBu4
+    gotBu5 gotBu6 gotBu7 gotBu8
+    gotBu9
+    
+    buOth1 buOth2 buOth3 buOth4
+    buOth5 buOth6 buOth7 buOth8
+    buOth9
+    
+    alcohol1 alcohol2 alcohol3
+    alcohol4 alcohol5;
+
+USEVAR ARE
+    depress1 depress2 depress3
+    depress4 depress5 depress6
+
+    gotBu1 gotBu2 gotBu3 gotBu4
+    gotBu5 gotBu6 gotBu7 gotBu8
+    gotBu9
+
+    alcohol1 alcohol2 alcohol3
+    alcohol4 alcohol5;
+
+CATEGORICAL ARE
+    depress1 depress2 depress3
+    depress4 depress5 depress6
+
+    gotBu1 gotBu2 gotBu3 gotBu4
+    gotBu5 gotBu6 gotBu7 gotBu8
+    gotBu9
+
+    alcohol1 alcohol2 alcohol3
+    alcohol4 alcohol5;
+   
+MISSING ARE ALL (-9999);
+
+ANALYSIS:
+    ESTIMATOR = WLSMV;
+    DIFFTEST = m11-structural.dif;
+
+Model:
+    depress BY depress1* depress2 depress3
+               depress4  depress5 depress6;
+    depress@1.0;
+
+    alcohol BY alcohol1* alcohol2 alcohol3
+               alcohol4  alcohol5;
+    alcohol@1.0;
+
+    gotBu BY gotBu1* gotBu2 gotBu3 gotBu4
+             gotBu5  gotBu6 gotBu7 gotBu8
+             gotBu9;
+    gotBu@1.0;
+
+    alcohol ON depress(a); 
+    alcohol ON gotBu(a);
+    depress WITH gotBu(a);
+
+OUTPUT:
+    TECH1;
+    TECH2;
+    TECH3;
+    TECH4;
+    TECH5;
+    TECH6;
+
+SAVEDATA:
+DIFFTEST = m13-structural.dif;

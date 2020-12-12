@@ -1,0 +1,675 @@
+---
+title: "Replicating the Mplus DIFFTEST Procedure"
+subtitle: "An R Function to Reproduce Nested Model Comparisons"
+author:
+- name: Ben A. Kite
+  affiliation: CRMDA, University of Kansas
+  email: bakite@ku.edu
+- name: Paul E. Johnson
+  affiliation: CRMDA, University of Kansas
+  email: pauljohn@ku.edu
+- name: Chong Xing
+  affiliation: CRMDA, University of Kansas
+  email: cxing@ku.edu
+advertise: >
+   **CRMDA Guide #44**. Please  visit 
+   [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides) for updates.
+keywords: > 
+    Structural Equation Modeling (SEM), Chi-Square Difference test,
+    Categorical Data. Weighted Least Squares (WLSMV), Mplus DIFFTEST
+abstract: >
+    In the Mplus statistical software suite
+    ([Muthén & Muthén, 1998-2017](https://www.statmodel.com/download/usersguide/MplusUserGuideVer_8.pdf)), 
+    the $T_3$ method
+    ([Asparouhov & Muthén, 2010](https://www.statmodel.com/download/WLSMV_new_chi21.pdf)) 
+    is used to conduct nested model comparisons ("difftest") with data that is not
+    normally distributed. The Mplus $T_3$ method is widely used for comparison
+    of models fitted with Likert-type ordinal variables, and yet it 
+    is not widely understood. This technical report describes the
+    anatomy of the Mplus $T_3$ DIFFTEST procedure. 
+    We offer an R (http://r-project.org) function
+    `crmda_difftest` which will import Mplus output files and reconstitute
+    matrices needed to calculate $T_3$. We provide an exhaustive 
+    collection of Mplus examples, along with their output, to demonstrate
+    the fact that the $T_3$ estimates from Mplus are reproduced exactly.
+
+checked_by: "Paul Johnson"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+    number_sections: true
+    css: theme/kutils.css
+    template: theme/guide-boilerplate.html
+logoleft: theme/jayhawk.png
+logoright: theme/CRMDAlogo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```	
+
+```{r themecopy, include = FALSE}
+library(kutils)
+library(crmda)
+## If theme directory does not have required images or TeX files
+## we need to retrieve them and put them in "theme" directory. 
+logos <- c(logoleft = "jayhawk.png", 
+           logoright = "CRMDAlogo-vert.png")
+files <- c("kutils.css", 
+           "guide-boilerplate.html")
+getFiles(logos, pkg = "crmda")
+getFiles(files, pkg = "crmda")
+```
+
+```{r, echo=T, include=FALSE}
+pdf.options(onefile=FALSE, family="Times", paper="special", height=4,
+            width=6, pointsize=10)
+
+## Reading in `crmda_difftest` and table making function
+source("difftest_functions.R")
+library(xtable)
+library(MplusAutomation)
+```
+
+# Motivation
+
+The Mplus[`DIFFTEST`](http://www.statmodel.com/download/usersguide/Chapter13.pdf)
+is a popular procedure (a chi-square difference based test) for
+comparing nested structural equation models. It is available for
+models estimated by the "MLMV", "WLSMV", and "ULSMV" procedures in
+Mplus. A model including a larger number of parameters is estimated,
+and then a second model is estimated with some parameters that are
+restricted (for example, to be equal to each other, or equal to
+0). Then the two models are compared using a statistic, referred to as
+$T_3$, that is supposed to be distributed as a $\chi^2$ random
+variable. When the test comparing models indicates that a difference
+is not statistically significant, or the equal-fit hypothesis is not
+rejected, researchers generally prefer the simpler model, the one which
+estimates fewer parameters.
+
+In Mplus, each input file can be used to estimate only one model. To
+communicate the results of estimation from the first to the second
+model, the Mplus
+[`SAVEDATA`](http://www.statmodel.com/download/usersguide/Chapter18.pdf)
+command creates a text file that is a single column of numbers that must be
+sorted into various vectors and matrices. This file, commonly referred
+to as a `DIFFTEST` file, is a snapshot summary of the internal state
+of the model. This file is then put to use by a `DIFFTEST` statement
+in the input file for the second model.
+
+There are two elements in the process that seem to be rather like a
+"black box". First, the format of the `DIFFTEST` file itself is not
+formally documented. It is simply a column of numbers. It is not
+apparent to the user how these values can be used to reconstruct the
+matrices needed to calculate the difference of models test. Second,
+the details required to calculate $T_3$ are elusive. There are a number
+of elements in the calculation, especially for multi-group models,
+that are not publicly documented.
+
+As we illustrate in this report, it is possible to unbox both of these
+elements. We parse the `DIFFTEST` files from two models and from them it
+is possible to recalculate the value of $T_3$ reported by Mplus. To
+the best of our knowledge, our R function, dubbed the
+`crmda_difftest`, provides values of the $T_3$ statistic that matches
+the Mplus `DIFFTEST` results perfectly (Mplus reports values to the
+third decimal place).
+
+The following sections first describe the two-step procedure in Mplus
+for conducting $T_3$ `DIFFTEST`. Second, calculation steps in
+`crmda_difftest` for reproducing $T_3$ statistics are outlined - from
+importing a `DIFFTEST` file, to separating the values into a collection
+of matrices, and to using these matrices for $T_3$ calculation. The last
+section reports a comprehensive series of models which demonstrate that the
+`crmda_difftest` procedures reproduce/match the values reported by Mplus.
+
+Applications of `crmda_difftest` to 36 model specifications are
+included to demonstrate the exact match with
+Mplus results. These examples employ data from the Human Behavior in
+School-Aged Children (HBSC) project
+([Iannotti, 2005-2006](https://www.icpsr.umich.edu/icpsrweb/ICPSR/studies/28241?q=HBSC)).
+The Mplus input (`inp`), output (`out`), and difftest (`dif`) files
+for all 36 models are included in
+[the folder with this report](http://crmda.dept.ku.edu/guides/44.difftest).
+The user should find a number of files.
+
+1. `44.difftest.Rmd`. The R markdown file with which the HTML is
+    prepared.
+2. `difftest_functions.R`. Includes the main function `crmda_difftest` and
+    several auxiliary functions.
+3. A plethora of Mplus input files named `m*.inp`, along with their
+   associated output and snapshot `DIFFTEST` files.
+
+
+# The $T_3$ Method
+
+The $T_3$ (second order) chi-square difference correction has been
+implemented in Mplus since Version 6
+([Asparouhov & Muthén, 2010](https://www.statmodel.com/download/WLSMV_new_chi21.pdf)). It was proposed as a replacement of the procedure suggested
+by Satorra ([1999](https://econ-papers.upf.edu/papers/395.pdf),
+[2000](https://link.springer.com/chapter/10.1007/978-1-4615-4603-0_17)),
+which we refer to as $T_2$
+([Asparouhov & Muthén, 2006](https://www.statmodel.com/download/webnotes/webnote10.pdf)).
+One criticism of $T_2$ is that the degrees of freedom for the test is
+a floating point number (which is typically rounded to the nearest
+integer).  The $T_2$ method is still available in Mplus when
+`Satterthwaite = ON` is specified under the `ANALYSIS` command in Mplus
+model syntax. Instead of involving a $df$ approximation, the degrees
+of freedom for a $T_3$ statistic is an integer, the difference in the
+number of parameters in two models.
+
+The calculation of the $T_3$ statistic is somewhat complicated. One
+must first calculate a summary of the difference between the two models.
+The difference between models can be referred to as $T.chisq$.
+This value is not in fact distributed as a $\chi^2$ statistic,
+an issue which has been widely discussed in the structural equation
+modeling (SEM) literature.
+
+To remedy that fact, Asparouhov and Muthén
+([2010](https://www.statmodel.com/download/WLSMV_new_chi21.pdf))
+propose a linear transformation of $T.chisq$. To perform the
+transformation, a 'scale factor', referred to as $a$, and a 'shift
+parameter', $b$, are needed. The $T_3$ statistic/transformation is computed with
+the following equation:
+
+\[
+T_3 = T.chisq \times a + b. \tag{1}
+\]
+
+Asparouhov and Muthén suggest that this shifting and scaling procedure
+produces a test statistic that is more desirable than the previously
+proposed methods (e.g., $T_2$), given the statistical property of
+$T_3$ is more similar to a $\chi^2$ statistic than the other
+methods. The importance of this claim is that researchers who rely on
+other methods may mistakenly detect differences between models.
+
+## The two step estimation procedure
+
+When estimating structural equation models in Mplus, the estimators
+known as "MLMV", "WLSMV", and "ULSMV" include a feature to create a
+model summary snapshot file (the so-called DIFFTEST file). The syntax
+of the
+[SAVEDATA](http://www.statmodel.com/download/usersguide/Chapter18.pdf)
+command is:
+
+```
+SAVEDATA:
+    DIFFTEST = m0.dif;
+```
+
+This saves a model snapshot that we have chosen to name `m0.dif` (for
+clarity).  A second model is then estimated, and the input file (say,
+`m1.inp`) includes an `ANALYSIS` stanza that requests a comparison
+against `m0.dif` by a
+[`DIFFTEST`](http://www.statmodel.com/download/usersguide/Chapter13.pdf)
+statement:
+
+```
+ANALYSIS:
+    ESTIMATOR = WLSMV;
+    DIFFTEST = m0.dif
+```
+
+In this nested model comparison, following Asparouhov and Muthén (
+[2006](https://www.statmodel.com/download/webnotes/webnote10.pdf))
+terminology, the first model is called the parent (or the $H_1$) model.
+The `dif` file for that model (`m0.dif`) is necessary to calculate
+the `DIFFTEST` which compares the parent against the second, nested
+model ($H_0$). In order to calculate the $T_3$ estimate with R, we
+need to save the `dif` snapshot files for both $H_1$ and $H_0$ models.
+
+# Calculating $T_3$
+
+## Step 1 - Extracting model information from an Mplus `DIFFTEST` File
+
+An Mplus `DIFFTEST` file contains a single column vector. It combines,
+without punctuation or labels, the values of 4 scalars, $T$, $g$, $s$
+and $p$, along with consecutive sets of values that must be separated
+and rearranged into 3 matrices, $\mathbf{\Delta}_i$, $\mathbf{P}_i$,
+and $\mathbf{V}_i$.
+
+1) $T$ is the minimized value of the fit function; this matches the
+   value reported for the last iteration in the
+   [TECH5](http://www.statmodel.com/download/usersguide/Chapter18.pdf) output.
+
+2) The number of groups ($g$).
+
+3) The number of sample statistics ($s$).
+
+4) The number of model parameters ($p$).
+
+5) $\mathbf{\Delta}_i$, an $s \cdot g \times p$ matrix to be
+reconstructed from the next $s \cdot g \cdot p$ elements in the `dif`
+file (there is one stanza for each group to be constructed).
+
+6) $\mathbf{P}_i$, a symmetric $p \times p$ matrix, reconstructed from
+the next $p(p + 1)/2$ elements in the `dif` file.
+
+7) $\mathbf{V}_i$, a symmetric $p \times p$ matrix, reconstructed from
+the final $p(p + 1)/2$ elements in the `dif` file.
+
+Because the `DIFFTEST` file provides the one long column of numbers,
+some trial and error was necessary to separate the values and place
+them into $\mathbf{\Delta}_i$, $\mathbf{P}_i$ and $\mathbf{V}_i$. The
+individual values are placed into the matrices row wise. The matrix
+$\mathbf{\Delta}_i$ has separate stanzas for each of $g$
+groups. Because $\mathbf{P}$ and $\mathbf{V}$ are symmetric matrices,
+the `dif` file provides only $p(p+1)/2$ distinct values for each
+one. The matrix is reconstructed by filling in a lower triangle
+row-wise (e.g., insert $\mathbf{P}[1,1]$, then $\mathbf{P}[2,1]$,
+$\mathbf{P}[2,2]$, $\mathbf{P}[3,1]$ and so forth). The fact that
+these are symmetric is relied upon to complete their reconstruction.
+
+## Step 2 - Calculating $T.chisq$
+
+*T.chisq* is computed by first taking the difference between the $T$
+values (the minimized fit function),
+
+\[	   
+T_\Delta = T_{nested} - T_{parent}, \tag{2}
+\]
+
+and then rescaling $T_\Delta$ by multiplying $N*2$, where *N* is the
+total sample size:
+
+\[
+T.chisq = T_\Delta*N*2. \tag{3}
+\]
+
+The value of $T.chisq$ cannot be reconstructed from the output of the
+two fitted models.  In particular, *T.chisq* is not based on the model
+$\chi^2$ values that are reported in Mplus output. When a model is
+estimated with "WLSMV", the chi-square value reported is a mean and
+variance adjusted version of $T$. In the $T_3$ test, *T.chisq*
+incorporates unscaled values of $T_{nested}$ and $T_{parent}$.
+
+## Step 3 - Calculating the $\mathbf{H}$ Matrix
+
+The calculation of $T_3$ will require the construction of several
+separate matrices that will be used to derive the scaling and shifting
+parameters. Here we are concerned with $\mathbf{H}$.
+This matrix is mentioned in
+Asparouhov and Muthén ([2006](https://www.statmodel.com/download/webnotes/webnote10.pdf)),
+where the details of its calculation are left as an exercise for the
+reader.
+
+For that reason, we do not know how this is calculated in Mplus, but
+the following will prove to be correct:
+
+\[
+H = (\Delta'_1\Delta_1)^{-1}\Delta_1'\Delta_0. \tag{4}
+\]
+
+This method is suggested by Yves Rosseel in the source code of the R
+package `lavaan` ([Rosseel, 2017](http://lavaan.ugent.be/)).  Note
+that to obtain the two matrices, $\mathbf{\Delta}_0$ and
+$\mathbf{\Delta}_1$, it is necessary parse both of the model `dif`
+files.
+
+## Step 4 - Calculating The $\mathbf{M}$ Matrix
+
+$\mathbf{M}$ is an ingredient in the equations for the scaling factor
+and shift parameter.
+
+As shown by
+Asparouhov and Muthen ([2006](https://www.statmodel.com/download/webnotes/webnote10.pdf)),
+$\mathbf{M}$ can be calculated as:
+
+\[
+M = (P_1 - P_1(H(H'P_1H)^{-1}H'P_1)V_1 \tag{5}
+\]
+
+using the matrices constructed previously.
+
+## Step 5 - Calculating the Scaling Factor and the Shift Parameter
+
+The scaling factor $a$ is computed with the following formula:
+
+\[
+a = \sqrt{\frac{D}{Tr(M*M)}}. \tag{6}
+\]
+
+Here $D$ is the degrees of freedom, calculated as the difference
+between the numbers of parameters estimated in the two
+models. 
+
+The shift parameter $b$ is computed as
+
+\[
+b = D - \sqrt{\frac{D*Tr(M)^2}{Tr(M*M)}}. \tag{7}
+\]
+
+In these formulas, $Tr$ is the trace operator, the
+sum of the elements along the main diagonal. 
+
+## Step 6 - Compute the Scaled $T_3$ Statistic
+
+Once $a$ and $b$ have been computed, they are used in Equation 1 along
+with $T.chisq$ to compute the $T_3$ chi-square difference
+statistic. Asparouhov and Muthén
+([2010](https://www.statmodel.com/download/WLSMV_new_chi21.pdf)) suggest
+that the $T_3$ statistic follows a chi-square distribution with $D$
+degrees of freedom.
+
+## Using the `crmda_difftest` Function
+
+The `crmda_difftest` function takes the file names of the Mplus output
+files for two nested models as input. For example:
+
+```{r, eval = FALSE}
+crmda_difftest("parent.out", "nested.out")
+```
+	
+We use functions provided by the MplusAutomation package 
+([Hallquist and Wiley, 2017](https://CRAN.R-project.org/package=MplusAutomation))
+for R to parse the Mplus output files.
+
+The function detects the location of the companion `dif` files,
+`parent.dif` and `nested.dif`. In our examples, these are available in
+the same folder as the output files. The `dif` files are parsed by an
+auxiliary function named `diffReader`. If there are multiple groups,
+the user must also specify the total sample size as a third argument
+to `crmda_difftest`. The function returns the $T_3$ value calculated
+by the aforementioned formulas, along with the estimate of $T_3$
+retrieved from the Mplus output file.
+
+# Matching Mplus `DIFFTEST` Calculations
+
+The `crmda_difftest` function imports the `dif` files and reproduces
+estimates of the $\chi^2$ test that match the $T_3$ estimates reported
+in Mplus
+([Asparouhov and Muthén, 2010](https://www.statmodel.com/download/WLSMV_new_chi21.pdf)).
+This section shows the results obtained from the `crmda_difftest`
+function match the values reported by the Mplus DIFFTEST procedure on
+a variety of models.
+
+## The demonstration data
+
+A subset of the HBSC data
+([Health Behavior in School-Aged Children; Iannotti, 2005-2006](http://www.uib.no/en/hbscdata/94259/data-documentation-20052006))
+was used to obtain the demonstration results. The HBSC data contains
+responses from students in grades 6, 7, 8, 9, and 10. The subset data
+being used here contains responses to ordinal measures (five-point
+Likert-type) on self-reported depression level, physical well-being,
+bullying experiences (got bullied by others and bullied others), and
+alcohol use. A total of 25 nested model comparison scenarios were
+devised. The Mplus estimator "WLSMV" was used for all of the model
+estimations.
+
+## Example models
+
+The following models were fitted to the HBSC data.
+
+```{r modeltable, include = FALSE, echo = FALSE, cache = TRUE}
+mplusdir <- "Mplus"
+outs <- list.files(mplusdir, pattern = "\\.out$", full.names = TRUE)
+models <- lapply(outs, function(x) readModels(x)$summaries)
+sums <- lapply(models, function(x) gsub(";", "", x[c("Title")]))
+sums2 <- lapply(sums, function(x) t(cbind(unlist(strsplit(x, " - ")))))
+titles <- do.call("rbind", sums2)
+titles <- cbind(titles, basename(outs))
+colnames(titles) <- c("Model Number", "Model Description", "Output File")
+modelTable <- print(xtable(titles), type = "html",
+                    include.rownames = FALSE, file = "tmpout/modeltable.html")
+```
+
+```{r printmods, results = "asis", echo = FALSE, dependson='modeltable'}
+cat(modelTable)
+```
+
+## Nested model comparisons
+
+In the following table, we summarize the $T_3$ values calculated with
+`crmda_difftest`, based on the `dif` files from Mplus, and compare
+against the values of the $T_3$ estimates reported in the Mplus output
+files. These results show that across a variety of model comparison
+scenarios the `crmda_difftest` function reproduces the test statistic
+provided by Mplus exactly to three decimal places.
+
+```{r, include = FALSE}
+## Creating a Data Frame Containing References for Mplus Out Files
+
+## Labels for 25 Nested Model Comparisons
+mplusOutRef <- data.frame("comparison" = c("Model.00vs01",
+                                           "Model.02vs03",
+                                           "Model.04vs05",
+                                           "Model.06vs07",
+                                           "Model.06vs08",
+                                           "Model.09vs10",
+                                           "Model.09vs11",
+                                           "Model.10vs12",
+                                           "Model.11vs13",
+                                           "Model.14vs15",
+                                           "Model.17vs18",
+                                           "Model.18vs19",
+                                           "Model.19vs20",
+                                           "Model.21vs22",
+                                           "Model.22vs23",
+                                           "Model.23vs24",
+                                           "Model.25vs26",
+                                           "Model.26vs27",
+                                           "Model.27vs28",
+                                           "Model.29vs30",
+                                           "Model.30vs31",
+                                           "Model.31vs32",
+                                           "Model.33vs34",
+                                           "Model.34vs35",
+                                           "Model.35vs36"), stringsAsFactors = FALSE)
+
+## Labels for the Parent Models' Mplus Output Files
+mplusOutRef[ , "parent"] <- c("m00-2_indicators.out",
+                              "m02-3_indicators.out",
+                              "m04-5_6_indicators.out",
+                              "m06-3_factors.out",
+                              "m06-3_factors.out",
+                              "m09-structural.out",
+                              "m09-structural.out",
+                              "m10-structural.out",
+                              "m11-structural.out",
+                              "m14-indirect.out",
+                              "m17-1_factor-2_groups-config.out",
+                              "m18-1_factor-2_groups-weak.out",
+                              "m19-1_factor-2_groups-strong.out",
+                              "m21-1_factor-3_groups-config.out",
+                              "m22-1_factor-3_groups-weak.out",
+                              "m23-1_factor-3_groups-strong.out",
+                              "m25-1_factor-4_groups-config.out",
+                              "m26-1_factor-4_groups-weak.out",
+                              "m27-1_factor-4_groups-strong.out",
+                              "m29-1_factor-5_groups-config.out",
+                              "m30-1_factor-5_groups-weak.out",
+                              "m31-1_factor-5_groups-strong.out",
+                              "m33-5_factors-5_groups-config.out",
+                              "m34-5_factors-5_groups-weak.out",
+                              "m35-5_factors-5_groups-strong.out")
+
+## Model Specifications for the Parent Models
+mplusOutRef[ , "parentSpec"] <- c("2 Factors_2 Indicators_Factor Correlation Free",
+                                  "2 Factors_3 Indicators_Factor Correlation Free",
+                                  "2 Factors_5/6 Indicators_Factor Correlation Free",
+                                  "3 Factors_5/6/9 Indicators_Factor Correlations Free",
+                                  "3 Factors_5/6/9 Indicators_Factor Correlations Free",
+                                  "3 Factors_2 IVs 1 DV_IVs Correlation Free_Regressive Paths Free",
+                                  "3 Factors_2 IVs 1 DV_IVs Correlation Free_Regressive Paths Free",
+                                  "3 Factors_2 IVs 1 DV_IVs Correlation Fixed 0_Regressive Paths Free",
+                                  "3 Factors_2 IVs 1 DV_IVs Correlation Fixed 0_Regressive Paths Equated",
+                                  "3 Factors_1 IV 1 DV 1 ME_Regressive Paths Free",
+                                  "1 Factor_2 Groups_config",
+                                  "1 Factor_2 Groups_weak",
+                                  "1 Factor_2 Groups_strong",
+                                  "1 Factor_3 Groups_config",
+                                  "1 Factor_3 Groups_weak",
+                                  "1 Factor_3 Groups_strong",
+                                  "1 Factor_4 Groups_config",
+                                  "1 Factor_4 Groups_weak",
+                                  "1 Factor_4 Groups_strong",
+                                  "1 Factor-5 Groups_config",
+                                  "1 Factor-5 Groups_weak",
+                                  "1 Factor-5 Groups_strong",
+                                  "5 Factors-5 Groups_config",
+                                  "5 Factors-5 Groups_weak",
+                                  "5 Factors-5 Groups_strong")
+
+## Labels for the Child Models' Mplus Output Files
+mplusOutRef[ , "child"] <- c("m01-2_indicators.out",
+                             "m03-3_indicators.out",
+                             "m05-5_6_indicators.out",
+                             "m07-3_factors.out",
+                             "m08-3_factors.out",
+                             "m10-structural.out",
+                             "m11-structural.out",
+                             "m12-structural.out",
+                             "m13-structural.out",
+                             "m15-indirect.out",
+                             "m18-1_factor-2_groups-weak.out",
+                             "m19-1_factor-2_groups-strong.out",
+                             "m20-1_factor-2_groups-strict.out",
+                             "m22-1_factor-3_groups-weak.out",
+                             "m23-1_factor-3_groups-strong.out",
+                             "m24-1_factor-3_groups-strict.out",
+                             "m26-1_factor-4_groups-weak.out",
+                             "m27-1_factor-4_groups-strong.out",
+                             "m28-1_factor-4_groups-strict.out",
+                             "m30-1_factor-5_groups-weak.out",
+                             "m31-1_factor-5_groups-strong.out",
+                             "m32-1_factor-5_groups-strict.out",
+                             "m34-5_factors-5_groups-weak.out",
+                             "m35-5_factors-5_groups-strong.out",
+                             "m36-5_factors-5_groups-strict.out")
+
+## Model Specifications for the Child Models
+mplusOutRef[ , "ChildSpec"] <- c("2 Factors_2 Indicators_Factor Correlation Fixed 0",
+                                 "2 Factors_3 Indicators_Factor Correlation Fixed 0",
+                                 "2 Factors_5/6 Indicators_Factor Correlation Fixed 0",
+                                 "3 Factors_5/6/9 Indicators_ 1 Factor Correlation Fixed 0",
+                                 "3 Factors_5/6/9 Indicators_2 Factor Correlations Equated",
+                                 "3 Factors_2 IVs 1 DV_IVs Correlation Fixed 0_Regressive Paths Free",
+                                 "3 Factors_2 IVs 1 DV_IVs Correlation Free_Regressive Paths Equated",
+                                 "3 Factors_2 IVs 1 DV_IVs Correlation Fixed 0_Regressive Paths Equated",
+                                 "3 Factors_2 IVs 1 DV_IVs Correlation and _Regressive Paths Equated",
+                                 "3 Factors_1 IV 1 DV 1 ME_Direct Path Fixed Zero",
+                                 "1 Factor_2 Groups_weak",
+                                 "1 Factor_2 Groups_strong",
+                                 "1 Factor_2 Groups_strict",
+                                 "1 Factor_3 Groups_weak",
+                                 "1 Factor_3 Groups_strong",
+                                 "1 Factor_3 Groups_strict",
+                                 "1 Factor_4 Groups_weak",
+                                 "1 Factor_4 Groups_strong",
+                                 "1 Factor_4 Groups_strict",
+                                 "1 Factor-5 Groups_weak",
+                                 "1 Factor-5 Groups_strong",
+                                 "1 Factor-5 Groups_strict",
+                                 "5 Factors-5 Groups_weak",
+                                 "5 Factors-5 Groups_strong",
+                                 "5 Factors-5 Groups_strict")
+
+## Number of Groups for each Nested Model Comparison
+mplusOutRef[ , "groupSize"] <- c(1, 1, 1, 1, 1,
+                                 1, 1, 1, 1, 1,
+                                 2, 2, 2, 3, 3,
+                                 3, 4, 4, 4, 5,
+                                 5, 5, 5, 5, 5)
+
+## Total Sample Size for each Nested Model Comparison
+## Has to Be Supplied to crmda_difftest When the Number of Groups Greater than 1
+mplusOutRef[ , "totalSampleSize"] <- c(9135, 9136, 9137, 9139, 9139,
+                                       9139, 9139, 9139, 9139, 9139,
+                                       4221, 4221, 4221, 6019, 6019,
+                                       6019, 7485, 7485, 7485, 9087,
+                                       9087, 9087, 9151, 9151, 9151)
+
+## Inspecting the Mplus Out Reference
+mplusOutRef
+str(mplusOutRef)
+
+res <- vector("list", length = 25)
+
+for (i in seq_along(rownames(mplusOutRef))) {
+    x <- mplusOutRef[i, ]
+    if(x["groupSize"] != 1) {
+        res[[i]] <- crmda_difftest(file.path(mplusdir, x["parent"]),
+                                   file.path(mplusdir, x["child"]),
+                                   samplesize = x["totalSampleSize"])    
+    } else {
+        res[[i]] <- crmda_difftest(file.path(mplusdir, x["parent"]),
+                                   file.path(mplusdir, x["child"]))
+    }
+    res[[i]][["comparison"]] <- mplusOutRef$comparison[[i]]}
+
+names(res) <- mplusOutRef$comparison
+
+```
+
+```{r comparisons, results = "asis", echo = FALSE, include = FALSE, cache=TRUE, eval = TRUE}
+ 
+tests <- lapply(res, function(x){
+    c(x[["comparison"]],
+      unlist(x[["R computations"]]),
+      x[["Mplus computations"]][[1]])
+    })
+
+tests <- do.call("rbind", tests)
+tests <- as.data.frame(tests, stringsAsFactors = FALSE)
+
+colnames(tests) <- c("Comparison", "crmda_difftest_T3", "df", "p", "Mplus_DIFFTEST_T3")
+tests <- tests[ , c("Comparison", "crmda_difftest_T3", "Mplus_DIFFTEST_T3", "df", "p")]
+rownames(tests) <- NULL
+tests <- data.frame(tests, stringsAsFactors = FALSE)
+
+tests[ , "Comparison"] <- gsub("\\.", " ", tests[,"Comparison"])
+tests[ , "Comparison"] <- gsub("vs", " vs. ", tests[,"Comparison"])
+
+tests[ , "p"] <- as.numeric(tests[,"p"])
+tests[ , "p"] <- sprintf("%.3f", tests[,"p"])
+
+tests[ , "crmda_difftest_T3"] <-
+    sprintf("%.3f", as.numeric(tests[ , "crmda_difftest_T3"]))
+
+tests[ , "df"] <- sprintf("%.3f", as.numeric(tests[ , "df"]))
+
+comparisonTable <- print(xtable(tests), type = "html", include.rownames = FALSE,
+                         file = "tmpout/comparisonTable.html")
+```
+
+```{r printcomp, results = "asis", echo = FALSE, eval=TRUE, dependson='comparisons'}
+cat(comparisonTable)
+```
+
+# Summary
+
+We have outlined the procedures necessary to import and parse the
+Mplus `DIFFTEST` files and to calculate a difference of fit test known
+as $T_3$.  While some elements in the calculations are based on our
+best guess about calculations in Mplus, we believe that the
+combination of elements is correct. The difference in our estimates
+and the values reported by Mplus is smaller than $10^{-4}$.
+
+The larger project from which this report is drawn will compare the
+hypothesis tests based on $T_2$, $T_3$, and others. With the
+completion of this phase, we are one step closer to the final
+goal. The next phase in this project is to create R functions that
+provide replacements for $\mathbf{\Delta}_i$, $\mathbf{P}_i$,
+$\mathbf{V}_i$.
+
+## R Session Info
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+```{r warnings, echo = FALSE}
+if(!is.null(warnings())){
+    print("Warnings:")
+    warnings()
+}
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)

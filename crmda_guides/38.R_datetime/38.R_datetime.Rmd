@@ -1,0 +1,497 @@
+---
+title: "Date and Time Information in R"
+subtitle: "Interacting with Excel Documents"
+author:
+ - name: Paul Johnson
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: quant@ku.edu
+ - name: "Tags: guides, R, datetime"
+ - name: "Please visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides) for the
+ latest and greatest versions of this guide, and many others" 
+abstract: 
+    Most users think of dates as character strings, for example
+ "Feb. 20, 1999". R is happy enough to treat them as character stings,
+ but we might want more powerful calculations. If we want, for
+ example, the difference--in minutes, hours, and seconds--between two
+ time points, we can get it if we let R know that's what we want. A
+ column of character string information can be converted into various
+ kinds of date and time variables, which allow subtraction, addition,
+ and so forth.  This note explores some examples in conjunction with
+ data stored in an MS Excel file, which is also available in this directory.
+checked_by: "Brent Kaplan"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  html_document:
+    highlight: haddock
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("figures-", "template")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 70)
+```
+
+## Introduction
+R includes functions that can convert information about dates and times
+into useful variables, so we can find, for example, the number of hours 
+that elapsed between the time of my admission into prison and my eventual 
+release.  It is possible to add dates together, or subtract them, and the 
+calculation is meaningful (that is, consistent with the calendar). 
+
+As I understand it, the R programmers have done all the work of taking 
+the leap year into account, so we could ask for the number of days between 
+the inauguration of Richard Nixon and Barack Obama and get a correct answer. 
+
+There are different mechanisms in place for management of time information. 
+The major difference between these approaches is that we might have 
+dates by themselves, or we might also have times (hour, minutes, seconds) 
+with the dates.  A date with time involves a much more elaborate 
+data structure, of course, but with a much richer end result. 
+We could, for example, calculate the number of minutes that passed 
+between the glorious Denver Bronco victory in Superbowl 33 
+and the glorious Denver Bronco victory in Superbowl 50. 
+
+I've been aware of the possibilities for a long time, 
+but was not interested in dates and times.  I suppose becoming old makes
+one more aware of that.  I was never required to calculate the difference in days
+or minutes between two events. That changed when we had a lot of 
+date-time data about the activities of elderly people who were 
+wearing accelerometer devices.  And then we had data about times of 
+admission into foster care and release from it for children in one state.
+
+## Working Example Excel File
+
+I was prompted to prepare this note because a student at the summeR 
+statistical institute asked for help with an Excel file. 
+I made a tiny imitation for the example.
+
+The example file is named date-20160524.xlsx. 
+Hopefully, a copy of that is available in the same folder as 
+this file, but if that fails, there is a copy at 
+
+http://pj.freefaculty.org/scraps/date-20160524.xlsx
+
+That's saved from a spread sheet program.  Over the years, we have
+had more-or-less success in importing these directly into R. Sometimes less.
+Lately, we have had good luck with the ```openxlsx``` package for R, which
+was created by Alexander Walker.  For us, that package appears
+to be something of a breakthrough: a truly open source, free-to-use and
+redistribute routine for opening and saving XLSX files. 
+Without installing new software (such as Perl) or relying 
+on a commercial product, we can import the most XLSX files
+that people email to us.  
+The package is on the CRAN server, here's the BibTeX for the 
+citation, just for fun.
+
+@Manual{,  
+    title = {openxlsx: Read, Write and Edit XLSX Files},  
+    author = {Alexander Walker},  
+    year = {2015},  
+    note = {R package version 3.0.0},  
+    url = {https://CRAN.R-project.org/package=openxlsx},  
+}
+
+
+
+# Dates and Times
+
+If data is only dates, but not times are associated, then an R 
+"Date" object is called for. This is the simplest type of data and it is the
+safest to use.  (Date information does not depend on the time zone. That's why
+it is closer to 'worry free'.)
+
+## Concentrate on the Date problem first.
+
+R's ```Sys.Date``` function will return today's date, so we have something to work with
+
+```{r}
+z <- Sys.Date()
+z
+```
+
+The thing ```z``` prints as a formatted structure because the object has a class attribute,
+which causes the print function to render it in that way. It is of class "Date", as we see here
+
+```{r}
+class(z)
+```
+
+What will the date be 6 days from now?
+
+```{r}
+z + 6
+```
+
+What will date be 112 days from now?
+
+```{r}
+z + 112
+```
+
+Create a new variable holding the date 200 days in the future
+```{r}
+z2 <- z + 200
+```
+
+The difference between z2 and z should be 200 days. Lets cross our 
+fingers and check.
+
+```{r}
+z2 - z
+```
+
+If the data includes only dates, no times, then
+it is not actually meaningful to look for difference in minutes.
+But you can if you want:
+
+```{r}
+difftime(z2, z, units = "mins")
+
+difftime(z2, z, units = "secs")
+```
+
+See ```?difftime```
+
+# About importing Date objects from Excel.
+
+I made a test example Excel sheet that has a couple
+of date columns, and then one string column that
+looks like a date, then 2 that have the Excel time in them.  
+ 
+The openxlsx import can try to convert dates
+for us, and I have that first as example here, but
+I did not truly understand what was going on until
+I ran the second example, where I did not let openxlsx
+convert date/time columns automatically.
+
+As you test this, remember to run ```str()``` frequently to
+see what the data has.
+
+Now, a word about data input in Excel.  The terminology is not
+exactly the same as within R.  When setting Format Cell in Excel, I
+notice that there is one option for "date" and one for "time".
+Appears to me the time format is just for for hours:min:sec and Excel has
+date formats that might be only days (04/01/2016) but can also do dates 
+with times added in (04/01/2016 2:00 PM) or (04/01/2016 14:00).
+As a result, I'm not entirely sure what will happen when that's imported
+into R.  I show a few variations below to give the idea of the differences.
+
+After testing, I believe that if the read.xlsx import process 
+only spots date columns and it is not, at the moment, able to
+differentiate date columns from date-with-time columns coming
+from Excel. Perhaps I'm not declaring them properly in Excel.
+
+However, if Excel has some non-empty times associated with the cells,
+in R we could use a more-complicated-than-Date storage class.  
+The two options are R classes named POSIXct and POSIXlt. These both
+store time in seconds and both can be used to calculate time between two 
+events.  The only difference between them is the internal storage format 
+and that POSIXct is not human-readable because of how it is stored (seconds), 
+while a POSIXlt object has the same instant in time saved with a
+more common looking combination of year, month, day, etc. 
+If we have POSIXct data, we can extract
+the same year, month, day information, so there is no real practical difference. 
+The only challenge we face is storage and conversion between the two,
+and an incredibly difficult proof-reading challenge of checking if our
+calculations are correct.  If a column is saved with the wrong 
+time zone, and then we subtract from a column that has the right time
+zone, well, the answer will be wrong. 
+
+Here's some R help output on those two types of storage.
+
+```{r}
+## POSIXct: seconds since 1970 (UTC time zone) as number.
+## POSIXlt: a named list of vectors,
+## 'sec"
+## 'min"
+## 'hour'
+## "mday"  (day of the month 1-31)
+## 'year'
+## 'wday" 0-6, day sunday - sat
+## 'yday' day of the year
+## 'isdst' daylight time saving flag
+## 
+## ‘"POSIXct"’ is more convenient for including in data frames, and
+##     ‘"POSIXlt"’ is closer to human-readable forms.
+```
+
+If we get wrestle the data correctly into a POSIXct column, we are safer
+because it uses the universal time code (UTC) and we don't have to worry
+about subtracting 3PM Central Time from 8PM Pacific Time. This
+clarity should lead us to wish we had POSIXct storage. We'll never
+get the difference in minutes or seconds wrong.  On the
+other hand, after we do calculations in UTC, we need to convert to some
+local time zone in order to understand what we have. 
+
+
+One final detail. In the Excel sheet, it is not truly necessary to use
+a specialized time format.  Many Excel users will simply use a text column.
+A date might saved as a character string, using
+some understandable format like "2016-05-22" or "05/22/2016". 
+There is a way to convert that to
+an R Date object.  We will explore "strptime" below.
+
+### First, inspect the XLSX file in Excel. 
+
+See what you have! open "date-20160524.xlsx". There are columns named x1 x2 x3 x4 and x5.
+Right click on the cells to see what the formats are.  
+The only simple one is x3, pure and simple text. x1 and 2 are date objects, but I chose
+not to ask Excel for times as well.  On the other hand, x4 and x5 columns have both date and
+time information stored in them.
+
+I'm guessing that columns 1 and 2 will be imported as R Date class objects, while
+4 and 5 will either lose the time element (my fear!) or they will become POSIX 
+date-time variables.
+
+
+### Open the XLSX file with read.xlsx
+
+To load an XLSX file, first we use the library function to attach the openxlsx package.
+
+```{r}
+library(openxlsx)
+```
+
+The function ```read.xlsx``` does the work. Note, the ```detectDates` 
+argument is set as TRUE, meaning we are hoping that read.xlsx will
+notice which columns are marked as date information in Excel and it will do the right thing.
+
+```{r}
+dat1 <- read.xlsx("date-20160524.xlsx", detectDates = TRUE)
+```
+
+It looks about right for columns 1 through 3.
+```{r}
+dat1
+str(dat1)
+summary(dat1)
+```
+The Excel sheet has columns 1 and 2 saved as date information. 
+We asked ```read.xlsx``` to notice date variables and 
+try to convert them into R dates automatically. 
+
+I'm a little disappointed that columns x4 and x5 don't have time elements.
+
+### Subtract dates
+Lets see the benefit by calculating the difference in days between x1 and x2.
+We can treat the date columns as if they were numeric columns by subtracting them.
+
+```{r}
+dat1$x1 - dat1$x2
+```
+
+The ```difftime``` function can be used to give us the same result in different units:
+
+```{r}
+difftime(dat1$x1, dat1$x2, units = "mins")
+
+difftime(dat1$x1, dat1$x2, units = "days")
+
+difftime(dat1$x1, dat1$x2, units = "hours")
+```
+In the last example, you see where R has "overloaded" the minus sign, so that when we 
+write ```dat1$x1 - dat1$x2```, the R runtime system notices that x1 is a 
+date variable and it sends the work of calculating that difference 
+to the ```datetime``` function. My tendency would be to just use the 
+```datetime``` function when I need the difference in dates, but the
+minus sign seems to be a crowd pleaser.
+
+The R runtime system tries to conceal some details.  In case of curiosity, I suggest the user compare the output of 
+
+```{r}
+print(dat1$x1)
+```
+
+which is a beautified date representation of the information, 
+with the internal value of that variable, which is not human readable: 
+
+```{r}
+print(unclass(dat1$x1))
+```
+
+At several points, I have been fooled by R's print function because it shows
+what it thinks I want, rather than all of the information. 
+The way to make it show everything is to apply 
+unclass to the object first, before printing. 
+After unclass is applied, the print function shows
+everything.
+
+### Convert text information into year, month, date format.
+
+Note x3 is just a text variable. The function ```strptime``` is used to convert the 
+text string into a structure of type POSIXlt. That's not just a Date variable, it is
+a much more elaborate time storage type.
+
+```{r}
+dat1$x3.2 <- strptime(dat1$x3, format = "%Y/%m/%d")
+```
+
+Because the time information is missing when we import the data, the variable x3.2 
+appears to have no time components.   Neither the print nor the str functions reveal
+the inner structure to us, when the inner variables (such as time) have no information.
+
+```{r}
+dat1$x3.2
+str(dat1$x3.2)
+```
+
+But those additional elements are there if we remove the class designator, which 
+lays bare the internal storage:
+
+```{r}
+unclass(dat1$x3.2)
+```
+
+Since that column does not make use of the time information, we can convert it to a Date variable.
+The function ```as.Date``` coerces the POSIXlt ```dat1$x3.2``` into a date object. 
+Note because there were no minutes or hours, we don't lose anything here.
+
+```{r}
+justWondered <- as.Date(dat1$x3.2)
+unclass(justWondered)
+```
+
+The variable x3.2 is a more powerful structure because it includes time as possible information within its structure.  That is POSIXlt format, which appears to us as a Date object with enrichment that allows it to store hours:minutes:seconds as well. 
+
+To see the difference between a Date variable, such as ```x1```, try to ask the Date
+variable what hour value it has.  
+
+```
+dat1$x1$hour
+```
+
+When I do that, I see
+```
+Error in dat1$x1$hour : $ operator is invalid for atomic vectors. 
+```
+
+That happens because ```x1``` has no hour
+information.
+
+On the other hand, x3.2 has more flavor. Because it is POSIXlt,
+it has "hour" "min" "sec" and so forth. Unfortunately in this
+example, they are all 0 because the input time was only dates,
+
+```{r}
+dat1$x3.2$hour
+dat1$x3.2$min
+```
+
+## Import the Excel file again, but don't detectDates
+
+Lets make sure we understand what's going on by
+turning off the automatic date converter. Set detectDates as FALSE.
+
+```{r}
+dat2 <- read.xlsx("date-20160524.xlsx", detectDates = FALSE)
+dat2
+```
+
+Somehow, I was not expecting that. Those are the integers that Excel 
+uses internally to remember dates.  On screen, inside the spread 
+sheet program, they look like dates. But down under, they are not.
+
+The columns that were dates in Excel are now just numbers.
+
+```{r}
+str(dat2)
+summary(dat2)
+```
+
+We can recover the dates like this:
+
+```{r}
+dat2$x1time <- convertToDate(dat2$x1)
+dat2$x2time <- convertToDate(dat2$x2)
+```
+
+That looks like a victory, we can subtract dates, just as we did before
+
+```{r}
+dat2$x1time - dat2$x2time
+```
+
+I suppose we better ask R what it has
+
+```{r}
+str(dat2)
+```
+
+Now lets see what happens with the last two columns. There are 2 functions
+```convertToDate``` and ```convertToDateTime```. We need to test both.
+
+```{r}
+dat2$x4date <- convertToDate(dat2$x4)
+dat2$x4datetime <- convertToDateTime(dat2$x4)
+
+dat2$x5date <- convertToDate(dat2$x5)
+dat2$x5datetime <- convertToDateTime(dat2$x5)
+```
+
+Ask R what it has
+
+```{r}
+str(dat2)
+```
+
+The variable x5datetime2 can be converted into a POSIXlt object where we dictate
+the format as it will appear to us on the screen (see the format argument):
+
+```{r}
+dat2$x5datetime2 <- strptime(dat2$x5datetime, format = "%Y-%m-%d %H:%M:%OS")
+dat2$x5datetime2$hour
+dat2$x5datetime2$min
+dat2$x5datetime2$sec
+
+str(dat2)
+```
+
+A column with the time storage format POSIXlt can be subtracted from a column with storage type POSIXct. I hope.
+Lets subtract some times, see what happens
+```{r}
+dat2$x5datetime2 - dat2$x4datetime
+
+difftime(dat2$x5datetime2, dat2$x4datetime, "seconds")
+```
+
+So far, this appears simple to me, but there is a very stern warning in the end of the help page for POSIXlt:
+
+     Great care is needed when comparing objects of class ‘"POSIXlt"’.
+     Not only are components and attributes optional; several
+     components may have values meaning ‘not yet determined’ and the
+     same time represented in different time zones will look quite
+     different.
+     
+I suppose I would not bet my fortune on differences in date-time objects without double-checking some 
+calculations.  We have seen problems when the time zone in a computer is set incorrectly, and 
+so date-time objects created there cause weird differences when used on another comuter.  One of the 
+assistants in our lab declared in 2015 that we would always use Pacific Standard Time, which sounded
+great. Except for the fact we are in Kansas.
+
+I hope this cleared up some mysteries and did not create (m)any new ones.
+
+If you are not confused enough, consider more reading
+
+```{r}
+## ?DateAndTimeClasses
+## ?POSIXlt
+## ?Date
+## ?Ops.Date
+## ?strptime
+```
+
+There are nice test examples in ```strptime```
+
+
+
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+

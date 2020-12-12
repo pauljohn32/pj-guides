@@ -1,0 +1,5404 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass extarticle
+\begin_preamble
+% Following comment is required. Do not delete it.
+%\usepackage{Sweave}
+
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{siunitx}
+
+\input{theme/guidePreambleHeader.tex}
+\input{theme/preambleFooter.tex}
+\input{theme/guidePreambleSweavel.tex}
+\end_preamble
+\use_default_options false
+\begin_modules
+logicalmkup
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize letterpaper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidesetup{%
+\end_layout
+
+\begin_layout Plain Layout
+
+  author={
+\end_layout
+
+\begin_layout Plain Layout
+
+    lastname=Johnson, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    firstname=Paul~E., 
+\end_layout
+
+\begin_layout Plain Layout
+
+    affiliation=CRMDA,
+\end_layout
+
+\begin_layout Plain Layout
+
+    email=pauljohn@ku.edu},
+\end_layout
+
+\begin_layout Plain Layout
+
+  url={crmda.ku.edu/guides},
+\end_layout
+
+\begin_layout Plain Layout
+
+  keywords={Regression, Poisson, Count model},
+\end_layout
+
+\begin_layout Plain Layout
+
+  title={Using Count Models to Estimate Rates},
+\end_layout
+
+\begin_layout Plain Layout
+
+  subtitle={Brief Note with Examples},
+\end_layout
+
+\begin_layout Plain Layout
+
+  leftlogo={theme/logoleft.pdf},
+\end_layout
+
+\begin_layout Plain Layout
+
+  rightlogo={theme/logo-vert.pdf},
+\end_layout
+
+\begin_layout Plain Layout
+
+  number=45,
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidehdr
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% tmpout directory must exist first
+\end_layout
+
+\begin_layout Plain Layout
+
+<<tmpout, echo=FALSE, include=FALSE, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if(!dir.exists("tmpout")) dir.create("tmpout", showWarnings=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=tmpout/t, split=TRUE, ae=FALSE, height=4, width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=FALSE, include=FALSE, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+opts.orig <- options()
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=FALSE,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<texcopy, include=FALSE, echo=FALSE, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(stationery)
+\end_layout
+
+\begin_layout Plain Layout
+
+## If theme directory does not have required images or TeX files
+\end_layout
+
+\begin_layout Plain Layout
+
+## we need to retrieve them and put them in "theme" directory.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+logos <- c(logoleft = "logoleft.pdf", 
+\end_layout
+
+\begin_layout Plain Layout
+
+           logoright = "logo-vert.pdf",
+\end_layout
+
+\begin_layout Plain Layout
+
+           address = "addressFooter.tex")
+\end_layout
+
+\begin_layout Plain Layout
+
+getFiles(logos, pkg = "crmda")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%The listings class used here allows within-document style
+\end_layout
+
+\begin_layout Plain Layout
+
+%changes.
+ R input boxes are governed by 
+\end_layout
+
+\begin_layout Plain Layout
+
+% "Rsize", "Rbackground" and "Rcolor", while R output boxes depend on
+\end_layout
+
+\begin_layout Plain Layout
+
+% "Routsize", "Routbackground", and "Routcolor".
+ Colors
+\end_layout
+
+\begin_layout Plain Layout
+
+% can be specified in many ways, as shown here
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rsize{
+\backslash
+huge
+\backslash
+ttfamily}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routsize{
+\backslash
+huge}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routbackground{
+\backslash
+color[gray]{0.40}}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color[gray]{0.60}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routcolor{
+\backslash
+color[rgb]{0.9, 0.1, 0.1}]}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rcommentcolor{
+\backslash
+color{green}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+\noindent
+This demonstrates how to use count regression (Poisson or Negative Binomial),
+ to estimate rates of events.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+We conducted an analysis of injury rates among fireworks industry workers
+ for one project, using R 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "RCore"
+literal "false"
+
+\end_inset
+
+.
+ A SAS enthusiast wondered if we could match some estimates from SAS.
+ We will demonstrate how this can be done.
+ We have fully worked 2 example projects in both SAS and R to demonstrate
+ the equivalence of the results obtained with the two software packages.
+ 
+\end_layout
+
+\begin_layout Standard
+We found the most serious impediment was the terminology of models for rates
+ of events.
+ The transition from estimating counts to estimating rates is simple, but
+ worth reviewing methodically.
+ Once we establish the terminology for this process, we will discuss the
+ worked examples.
+\end_layout
+
+\begin_layout Standard
+The results obtained with SAS and R are shown to be equivalent.
+ A full understanding of the findings can only be had by running the code
+ that we supply along with this report.
+ Many details are omitted from this summary.
+\end_layout
+
+\begin_layout Section
+Estimating Rates with Regression Models for Counts
+\end_layout
+
+\begin_layout Standard
+A Poisson regression is usually thought of as a model for counts, such as
+ the number of on-the-job accidents resulting in personal injury.
+ However, because the number of hours worked varies from month to month,
+ we expect the accident count fluctuates as well.
+ It is not enough to model the count, we need to estimate the injury rate
+ per hour worked.
+ 
+\end_layout
+
+\begin_layout Standard
+The count regression can be rephrased as a way of estimating rates.
+\end_layout
+
+\begin_layout Section*
+Math review
+\end_layout
+
+\begin_layout Standard
+Remember the laws of logarithms and exponentials.
+ Some of the most important facts are
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $e^{x}\cdot e^{y}=e^{x+y}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $e^{log(x)}=x$
+\end_inset
+
+ and, equivalently, 
+\begin_inset Formula $log(e^{x})=x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $log(x/y)=log(x)-log(y)$
+\end_inset
+
+ and 
+\begin_inset Formula $log(x\cdot y)=log(x)+log(y)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $log(1)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this notation, 
+\begin_inset Formula $log$
+\end_inset
+
+ is the natural logarithm, a log with the base 
+\begin_inset Formula $e$
+\end_inset
+
+.
+ This is often referred to as 
+\begin_inset Formula $ln$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Model for counts
+\end_layout
+
+\begin_layout Standard
+In the usual Poisson model, the number of events, 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+, is represented as a draw from a Poisson distribution in which the parameter
+ is 
+\begin_inset Formula $\lambda_{i}=\mathrm{exp}(X_{i}\beta)$
+\end_inset
+
+.
+ That one parameter is, it turned out, equal to both the variance and the
+ expected value of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ The expected value is
+\begin_inset Formula 
+\begin{equation}
+E[y_{i}|X_{i}]=\lambda_{i}=e^{X_{i}\beta}=\mathrm{exp}(X_{i}\beta)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this notation, 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ is a row vector, the 
+\begin_inset Formula $i$
+\end_inset
+
+'th row out of a larger predictor matrix 
+\begin_inset Formula $X$
+\end_inset
+
+ which has 
+\begin_inset Formula $N$
+\end_inset
+
+ rows (one for each case) and 
+\begin_inset Formula $p$
+\end_inset
+
+ columns.
+ There is almost always a column of 
+\begin_inset Formula $1$
+\end_inset
+
+'s in the first column of 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ to represent the intercept.
+ 
+\begin_inset Formula 
+\[
+X_{i}\beta=\left[\begin{array}{cccc}
+1 & x1_{i} & \ldots & xp_{i}\end{array}\right]\left[\begin{array}{c}
+\beta_{0}\\
+\beta_{1}\\
+\vdots\\
+\beta_{p}
+\end{array}\right]
+\]
+
+\end_inset
+
+The vector of slope coefficients, 
+\begin_inset Formula $\beta$
+\end_inset
+
+, has as many elements as there are items in 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The exponential transformation is used because, no matter what the input
+ 
+\begin_inset Formula $X_{i}\beta$
+\end_inset
+
+ might be, the transformed output will be positive.
+ This is theoretically required in a model of counts.
+ The estimate of the expected value must positive.
+\end_layout
+
+\begin_layout Standard
+This is a generalized linear model with a 
+\begin_inset Quotes eld
+\end_inset
+
+log link
+\begin_inset Quotes erd
+\end_inset
+
+ (log both sides):
+\begin_inset Formula 
+\begin{equation}
+\mathrm{log}(E[y_{i}|X_{i}])=X_{i}\beta\label{eq:loglink}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For any given set of predictors, we can calculate the predicted value of
+ the mean of 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+.
+ The notation becomes cumbersome if we write 
+\begin_inset Formula $\widehat{E[y_{i}]}$
+\end_inset
+
+, so it is usual to let 
+\begin_inset Formula $\mu_{i}=E[y_{i}|X_{i}]$
+\end_inset
+
+.
+ Then the predicted value, or the estimate of the mean, can be referred
+ to as 
+\begin_inset Formula 
+\begin{equation}
+\hat{\mu_{i}}=exp(X_{i}\hat{\beta})
+\end{equation}
+
+\end_inset
+
+The Poisson distribution has the property that its only parameter, which
+ in this case would be 
+\begin_inset Formula $\lambda_{i}=exp(X_{i}\hat{\beta})$
+\end_inset
+
+, is also equal to its expected value and its variance.
+ It is fairly common to begin count models with the assumption that 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ is drawn from a Poisson distribution.
+ If it appears there is overdispersion, then we might change the assumed
+ distribution to Negative Binomial.
+ In either case, the 
+\begin_inset Quotes eld
+\end_inset
+
+count to rate
+\begin_inset Quotes erd
+\end_inset
+
+ transformation described next will work well.
+\end_layout
+
+\begin_layout Subsection*
+A Rate Model 
+\end_layout
+
+\begin_layout Standard
+The model described so far predicts the mean number of events.
+ The apparatus for the count model can be used to estimate the rate of occurrenc
+e for events.
+ We need to justify the following method of estimating rates, where the
+ observed count is 
+\begin_inset Formula $y_{i}$
+\end_inset
+
+ and an 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+exposure
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+ variable, 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+, represents the time during which counts are collected for each case 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ The unit of observation for the exposure variable is usually 
+\emph on
+time
+\emph default
+ or similar
+\emph on
+.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Proposition
+\series default
+: we can estimate the rate, rather than the count, if we transform the linear
+ predictor by inserting the log of the exposure:
+\begin_inset Formula 
+\begin{equation}
+\lambda_{i}=e^{X_{i}\beta+log(n_{i})}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The additional quantity, 
+\begin_inset Formula $log(n_{i})$
+\end_inset
+
+, that is known as an 
+\series bold
+offset
+\series default
+.
+ There is no coefficient or weight for the offset term in the predictor,
+ it simply is assumed to enter the model with the value 
+\begin_inset Formula $log(n_{i})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+On the face of it, it appears there is no sense in this, so I make a special
+ effort to justify it.
+ There are two ways to describe the adaptation of the Poisson model to estimate
+ rates.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Derivation 1: Hypothesize a rate model
+\end_layout
+
+\begin_layout Standard
+This is offered in Atkinson, et al (
+\begin_inset CommandInset citation
+LatexCommand citeyear
+key "Atkinson2008"
+literal "true"
+
+\end_inset
+
+, p.
+ 10) as a mathematical 
+\begin_inset Quotes eld
+\end_inset
+
+sleight of hand.
+\begin_inset Quotes erd
+\end_inset
+
+ Suppose
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $n_{i}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+exposure
+\begin_inset Quotes erd
+\end_inset
+
+ variable.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+ is the 
+\series bold
+\emph on
+rate of events
+\series default
+\emph default
+ per unit of observation, 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+.
+
+\emph on
+ 
+\end_layout
+
+\begin_layout Standard
+Then a model for the expected event count for case 
+\begin_inset Formula $i$
+\end_inset
+
+ would be the rate 
+\emph on
+times
+\emph default
+ the exposure, or
+\begin_inset Formula 
+\begin{equation}
+E[y_{i}]=\tau_{i}n_{i}.\label{eq:rate}
+\end{equation}
+
+\end_inset
+
+Now suppose the rate is driven by the linear predictor we were using for
+ the raw count model, with an exponential transformation, 
+\begin_inset Formula $\tau_{i}=e^{X_{i}\beta}$
+\end_inset
+
+.
+ The expect count is
+\begin_inset Formula 
+\begin{equation}
+E[y_{i}]=e^{X_{i}\beta}n_{i}.\label{eq:expcount}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The laws of logs are then employed: 
+\begin_inset Formula 
+\begin{equation}
+E[y_{i}]=e^{X_{i}\beta}e^{log(n_{i})}=e^{X_{i}\beta+log(n_{i})}.\label{eq:res1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(This is allowed because 
+\begin_inset Formula $n_{i}=e^{log(n_{i})}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Subsection*
+Derivation 2: The left hand side is count over exposure
+\end_layout
+
+\begin_layout Standard
+Assert that the outcome being modeled is 
+\begin_inset Formula $y_{i}/n_{i}$
+\end_inset
+
+, the ratio of the count to the exposure.
+ Surely, that ratio is a rate! The GLM looks like the original count model,
+ except for the fact that 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+ is in the denominator of the left hand side.
+ 
+\begin_inset Formula 
+\begin{align}
+E[y_{i}/n_{i}] & =e^{X_{i}\beta}.\label{eq:pois}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Because the expected value is a linear operator (for any 
+\begin_inset Formula $\kappa$
+\end_inset
+
+, 
+\begin_inset Formula $E[\kappa y_{i}]=\kappa E[y_{i}])$
+\end_inset
+
+, we can rewrite the left hand side (using 
+\begin_inset Formula $1/n_{i}$
+\end_inset
+
+ in the role of 
+\begin_inset Formula $\kappa$
+\end_inset
+
+): 
+\begin_inset Formula 
+\[
+\frac{1}{n_{i}}E[y_{i}]=e^{X_{i}\beta}.
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+From this point, the derivation can take either of two turns.
+ In one approach, multiply both sides by 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E[y]=e^{X_{i}\beta}n_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have arrived at (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expcount"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) again and the previous derivation applies.
+\end_layout
+
+\begin_layout Standard
+Another derivation starts with (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:pois"
+
+\end_inset
+
+) and logs both sides:
+\begin_inset Formula 
+\begin{align*}
+log(E[y_{i}]/n_{i}) & =X_{i}\beta\,\mathrm{\,\,(law\,of\,logarithms)}\\
+log(E[y_{i}])-log(n_{i}) & =X_{i}\beta\,\mathrm{\,\,(law\,of\,logarithms)}\\
+log(E[y_{i}]) & =X_{i}\beta+log(n_{i})\\
+E[y_{i}] & =exp(X_{i}\beta+log(n_{i}))
+\end{align*}
+
+\end_inset
+
+Recall that is the same as the 
+\begin_inset Quotes eld
+\end_inset
+
+log link
+\begin_inset Quotes erd
+\end_inset
+
+ formulation of the Poisson model (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:loglink"
+
+\end_inset
+
+), except that there is a new offeset predictor added, 
+\begin_inset Formula $log(n_{i})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Confidence intervals for estimated rates
+\end_layout
+
+\begin_layout Standard
+The calculation of confidence intervals for predicted values from generalized
+ linear models is an area of open research and controversy.
+ There have been at least 30 methods proposed, many using exotic mathematics.
+ In most of the practical research applications, a simple 
+\begin_inset Quotes eld
+\end_inset
+
+seat of the pants
+\begin_inset Quotes erd
+\end_inset
+
+ Wald approximation is taken.
+ For each case, a standard error is calculated, and then the confidence
+ interval is derived by a simple thing like
+\begin_inset Formula 
+\[
+exp(X_{i}\hat{\beta}+log(n_{i})\pm1.96\cdot std.err.)
+\]
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 1.96 is a familiar number for regression analysts, roughly indicting
+ the width of 95% of cases that would arise in repeated sampling, and 
+\begin_inset Formula $std.err.$
+\end_inset
+
+ is the value variously described in software as the standard error of the
+ fitted value (se.fit in R).
+ This method is not perfect because it ignores our uncertainty about 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+, but it is usually considered good enough.
+ This is the method I use in the rockchalk package for R and it is the method
+ that SAS adopts in all of their derivations.
+\end_layout
+
+\begin_layout Subsection*
+Injury rates for different values of exposure
+\end_layout
+
+\begin_layout Standard
+The motivating example for this project was a study of injuries among employees
+ in the fireworks industry.
+ We have data for hours worked, by month, for 2016 and 2017.
+ For each month, there is a tabulation of the number of on-the-job accidents.
+ The number of accidents will be the count variable in which we are interested,
+ and the exposure will be the number of hours worked.
+\end_layout
+
+\begin_layout Standard
+If we wanted to estimate the rate of events for exposure equal to 1, this
+ problem would be easy.
+ However, the current US policy is to estimate the rate per 200,000 hours
+ of worker exposure.
+ The SAS software did not make this easy.
+\end_layout
+
+\begin_layout Standard
+The observed number of injuries per hours worked would be 
+\begin_inset Formula 
+\[
+\frac{y_{i}}{n_{i}}=\frac{injuries_{i}}{\#\,of\,hours_{i}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The estimated expected number of injuries, which we are treating as a predicted
+ value, given some predictors and an exposure 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+, would be 
+\begin_inset Formula 
+\begin{equation}
+\widehat{E[y_{i}|X_{i}]}=exp(X_{i}\hat{\beta})+log(n_{i})\label{eq:poispred}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want a rate for a given number of hours worked.
+ This is the point at which the examples we found were difficult to understand
+ because the available software treats this in different ways.
+ 
+\end_layout
+
+\begin_layout Standard
+First, suppose we want to estimate the accident rate for 
+\begin_inset Formula $n_{i}=1$
+\end_inset
+
+ unit of exposure.
+ Because 
+\begin_inset Formula $log(1)=0$
+\end_inset
+
+, then inserting estimates 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ into the predictive formula for 
+\begin_inset Formula $n_{i}=1$
+\end_inset
+
+ we find the rate for case 
+\begin_inset Formula $i$
+\end_inset
+
+ with exposure 1:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\widehat{rate\,per\,1\,unit\,exposure}_{i}=exp(X_{i}\hat{\beta})+log(1)=exp(X_{i}\hat{\beta})\label{eq:poispred2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because 
+\begin_inset Formula $log(1)=0$
+\end_inset
+
+, e
+\emph on
+stimating the rate per 1 unit of exposure is the same as estimating the
+ predicted value from the rate regression after removing the offset entirely
+\emph default
+.
+ The estimate of 
+\begin_inset Formula $exp(X_{i}\hat{\beta})$
+\end_inset
+
+ is the number of injuries expected for just one hour of labor.
+ 
+\end_layout
+
+\begin_layout Standard
+In our analysis of injuries, however, we are not asked for 
+\begin_inset Quotes eld
+\end_inset
+
+injuries per 1 hour
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Instead, we are asked for a value consistent with previous governmentally
+ supervised studies.
+ The OSHA rate standard uses 200,000 hours worked as the baseline value
+ and the desired estimate is the number of injuries per 200,000 hours worked.
+ As a result, to calculate the injury rate per 200,000 hours worked, we
+ use the same formula, but insert the offset 
+\begin_inset Formula $log(200,000)$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+\widehat{rate_{OSHA}}=\widehat{rate\,per\,200000\,unit\,exposure}=exp(X_{i}\hat{\beta})+log(200,000)\label{eq:poispred3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Case studies
+\end_layout
+
+\begin_layout Standard
+Here we have worked example case studies.
+\end_layout
+
+\begin_layout Subsubsection*
+Insurance Rate Regressions
+\end_layout
+
+\begin_layout Standard
+There is an example of a Poisson-based estimate of a rate model in the 
+\emph on
+SAS Usage Note 24188
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\emph on
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://support.sas.com/kb/24188.html
+\end_layout
+
+\end_inset
+
+.
+
+\emph default
+ Accessed 2018-01-23.
+ We have a copy of that report saved in a PDF in case it becomes unavailable
+ in the future.
+\end_layout
+
+\end_inset
+
+.
+
+\emph default
+ The model predicts insurance claims rates for cars as a function of their
+ size (
+\begin_inset Quotes eld
+\end_inset
+
+small
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+medium
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+large
+\begin_inset Quotes erd
+\end_inset
+
+) and the age of the car's owner, which is very coarsely grouped (
+\begin_inset Quotes eld
+\end_inset
+
+1
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+2
+\begin_inset Quotes erd
+\end_inset
+
+).
+ We are predicting 
+\emph on
+claims per policyholder category
+\emph default
+ (not claims per year).
+\end_layout
+
+\begin_layout Standard
+One interesting thing worth noting is that the data is imported in aggregated
+ form, as summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Insurance-claim-data"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Since the raw input data includes only 6 lines, it seems like a hollow
+ exercise to create a variable summary table, but I did so to find out what
+ would happen (see Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Descriptive-statistics-(insuranc"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+In our SAS folder for this project, we replicate the SAS calculations described
+ on the SAS website (
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SAS-help_note24188.sas
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and the accompanying *.lst and *.log files).
+ 
+\end_layout
+
+\begin_layout Standard
+In the R folder, see 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SAS-help_note24188.R
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The Stata version is 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SAS-help_note24188.do
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In the SAS webpage, the theoretical model is represented as 
+\begin_inset Formula 
+\[
+log(\mu/n)=\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{3}CAR_{small}+\beta_{4}AGE_{1}+\beta_{5}AGE_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The subscripts refer to the dummy variables representing various car sizes
+ and ages.
+ The notation seem poor because the estimates for 
+\begin_inset Formula $CAR_{small}$
+\end_inset
+
+ and 
+\begin_inset Formula $AGE_{1}$
+\end_inset
+
+ cannot be obtained separately because the model is overidentified.
+ It should have been written:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+log(\mu/n)=\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{5}AGE_{2}\label{eq:SAS}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If I were writing this from scratch, I would have written
+\begin_inset Formula 
+\[
+log(\mu_{i}/n_{i})=\beta_{0}+\beta_{1}car.large_{i}+\beta_{2}car.medium_{i}+\beta_{5}age.old_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In any case, beginning with the SAS formula in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:SAS"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), we use the rate model derivation 2 above:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+log(\mu)-log(n) & =\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{5}AGE_{2}\\
+ & =\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{5}AGE_{2}+log(n)
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mu & =exp(\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{5}AGE_{2}+log(n))\\
+ & =n\times exp(\beta_{0}+\beta_{1}CAR_{large}+\beta_{2}CAR_{medium}+\beta_{5}AGE_{2})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the observed value of claims is assumed to be Poisson
+\begin_inset Formula 
+\[
+claims\sim Poisson(\mu).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas10, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+wdir <- "workingdata"
+\end_layout
+
+\begin_layout Plain Layout
+
+fn <- "insure.csv"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+insure <- read.csv(file.path(wdir, fn), stringsAsFactors = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+insure$car <- factor(insure$car, levels = c("small", "medium", "large"))
+\end_layout
+
+\begin_layout Plain Layout
+
+insure$agen <- insure$age
+\end_layout
+
+\begin_layout Plain Layout
+
+insure$age <- factor(insure$age)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(insure) <- gsub("^ln$", "nlog", colnames(insure))
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(insure) <- gsub("^c$", "claims", colnames(insure))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Insurance claim data
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Insurance-claim-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(insure), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In R code for the model, the offset can be estimated either with a predictor
+ that is logged in the data set or with math in the formula itself.
+ Here we take the latter approach.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas100.0, echo=T, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ins2 <- glm(claims ~ offset(log(n)) + car + age, family = "poisson", data
+ = insure)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The summary table is presented in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Insurance-claims-offset"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Insurance-claims-offset"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, my eye was drawn to the fact that the sample size, N, is reported as 6
+ and the deviance is 2.81.
+ One might say 
+\begin_inset Quotes eld
+\end_inset
+
+aha, deviance is hugely bigger than degrees of freedom,
+\begin_inset Quotes erd
+\end_inset
+
+ but that would be a mistake.
+ The degrees of freedom value against which 2.81 must be compared is 
+\begin_inset Formula $N-4=2$
+\end_inset
+
+ because 4 parameters are estimated in the model.
+ Hence residual deviance of 2.81 on 2 degrees of freedom is not too bad.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas100, results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(ins2)
+\end_layout
+
+\begin_layout Plain Layout
+
+vl <- c(
+\begin_inset Quotes eld
+\end_inset
+
+carmedium
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Car: medium
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+carlarge
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Car: large
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+age2
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Age: senior
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Descriptive statistics (insurance claims)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Descriptive-statistics-(insuranc"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas150,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(descriptiveTable(ins2, varLabels = vl)), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Insurance claims offset model (Poisson)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Insurance-claims-offset"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas200,echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(
+\begin_inset Quotes eld
+\end_inset
+
+Poisson with offset
+\begin_inset Quotes erd
+\end_inset
+
+=ins2),
+\end_layout
+
+\begin_layout Plain Layout
+
+       runFuns = c("AIC" = "Akaike IC"), 
+\end_layout
+
+\begin_layout Plain Layout
+
+       varLabels = vl, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter estimates seem to indicate that as the insured car becomes
+ larger, the predicted number of insurance claims should go down, while
+ if the owner is older, the number of claims should go up.
+ Rather than inspecting the parameter estimates, I will inspect the predicted
+ values.
+ Using the predictOMatic function, I specify the values of the predictors
+ for which I want predictions in the predVals argument.
+ The setting 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+show observed categories
+\begin_inset Quotes erd
+\end_inset
+
+ and the number of cars for which we want a prediction is 1.
+ Hence, we are estimating the rate per car.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<sas300>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ins2.pom <- predictOMatic(ins2, predVals = list("car" = "table", "age" =
+ "table","n" = 1), interval = "confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Predicted rates from the insurance model (Poisson)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(ins2.pom), floating=FALSE, include.rownames=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+In R, it is easier to obtain predicted values of the rate than it is in
+ SAS.
+ The SAS code (as illustrated in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SAS-help_note24188.sas
+\end_layout
+
+\end_inset
+
+) obscures the details to an extent, but the key insight is this: the rates
+ being estimated are desired for 
+\begin_inset Formula $n_{i}=1$
+\end_inset
+
+, meaning the exposure's offset term needs to be set at 
+\begin_inset Formula $log(1)=0$
+\end_inset
+
+ in calculating the predicted rates.
+ Because of the way SAS code calculates predicted values, then, it is necessary
+ to do some after-the-fact adjustments that remove the effect caused by
+ offset(nlog).
+ 
+\end_layout
+
+\begin_layout Standard
+In the SAS Usage Note 24188, there are 3 SAS procedures shown for calculating
+ confidence intervals on estimates.
+ The one I replicate in my examples is SAS method 2.
+ The first method described in the SAS note is not possible for us because
+ our version of SAS is different (the SAS plm feature is unavailable).
+ 
+\end_layout
+
+\begin_layout Subsection*
+Soccer goals
+\end_layout
+
+\begin_layout Standard
+The R package GWRM includes a data set about goals scored in the European
+ soccer league.
+ (While I don't watch soccer, I am a fan of count data that obviously calls
+ for a correction in the form of a logged offset.)
+\end_layout
+
+\begin_layout Standard
+The usual assumption in count data sets is that the counts observed for
+ the various cases are based on the same amount of exposure.
+ The goals data set does not match that explanation because it includes
+ some players who play just a few matches while some play in many.
+ Predicting the number of goals scored without taking into account the number
+ of games played seems silly.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals10.
+ results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fn <- 
+\begin_inset Quotes eld
+\end_inset
+
+goals.rds
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+wdir <- 
+\begin_inset Quotes eld
+\end_inset
+
+workingdata
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+goals <- readRDS(file.path(wdir, fn))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:The-goals-data"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we illustrate the first 15 rows of the original data.
+ This data is irregular in a couple of ways.
+ First, there are many players who participate but never score.
+ Second, there are some high scorers who, of course, must necessarily play
+ in a large number of games.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Goals-and-matches"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The descriptive statistics are summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Goals-data:-descriptive"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+The goals data set
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:The-goals-data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(goals[1:15, ]), floating = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=T, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(jitter(goals) ~ jitter(played), goals, xlab = 
+\begin_inset Quotes eld
+\end_inset
+
+matches played (jittered)
+\begin_inset Quotes erd
+\end_inset
+
+, ylab = 
+\begin_inset Quotes eld
+\end_inset
+
+goals scored (jittered)
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Goals and matches
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Goals-and-matches"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We might not have considered the importance of the number of matches if
+ we proceeded in haste with a count regression analysis of the number of
+ goals.
+ The Poisson-based generalized linear model's only predictor is the player's
+ position, which has three categories.
+\end_layout
+
+\begin_layout Standard
+In R, the generalized linear model can be estimated as follows.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals100, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- glm(goals ~ position, data = goals, family = poisson)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The estimated model is summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Poisson-regression-estimates"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The parameters are understandable (front line players score more goals
+ than midfielders, etc.) and statistically significant.
+ One might take that as a sign of encouragement, but there is a sign of
+ trouble.
+ The deviance, which should be nearly the same as the number of cases, is
+ about 4 times larger.
+ A high amount of deviance is often taken to mean that there is overdispersion,
+ which, in this case, is caused by the fact we did not take into account
+ the number of matches in which the players participated.
+ Simply put, within a position, we have grouped together players who participate
+d in 5 games with others who participated in 30 and the number of goals
+ they score is much more variable than the Poisson model predicts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Poisson regression estimates
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Poisson-regression-estimates"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(
+\begin_inset Quotes eld
+\end_inset
+
+Poisson Regression (without offset)
+\begin_inset Quotes erd
+\end_inset
+
+ = m1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Goals data: descriptive stats
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Goals-data:-descriptive"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+desctab <- descriptiveTable(m1, stats = c(
+\begin_inset Quotes eld
+\end_inset
+
+min
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+max
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+mean
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+sd
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+skewness
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+kurtosis
+\begin_inset Quotes erd
+\end_inset
+
+))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(desctab), floating = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Poisson mismatch between observed and predicted counts
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Poisson-mismatch-between"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals150, results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(COUNT)
+\end_layout
+
+\begin_layout Plain Layout
+
+newnames <- c(propObsv = 
+\begin_inset Quotes eld
+\end_inset
+
+Observed
+\begin_inset Quotes erd
+\end_inset
+
+, propPred = 
+\begin_inset Quotes eld
+\end_inset
+
+Predicted
+\begin_inset Quotes erd
+\end_inset
+
+, Diff= 
+\begin_inset Quotes eld
+\end_inset
+
+Difference
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+poipred <- poi.obs.pred(10, m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(kutils)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(poipred) <- mgsub(names(newnames), newnames, colnames(poipred))
+\end_layout
+
+\begin_layout Plain Layout
+
+poipred
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(poipred), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The deviance of the Poisson model appears quite high.
+ As shown in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Poisson-mismatch-between"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, the number of observed 0's is quite high compared to the number predicted,
+ while the predictions are on the high side for counts from 1 through 7.
+\end_layout
+
+\begin_layout Standard
+We can work through the usual tests for overdispersion.
+ First, the Pearson residuals are used to conduct a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals200>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1.p.resids <- residuals(m1, type="pearson") 
+\end_layout
+
+\begin_layout Plain Layout
+
+test.stat <- sum(m1.p.resids^2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+test.stat 
+\end_layout
+
+\begin_layout Plain Layout
+
+pchisq(test.stat, m1$df.residual, lower.tail=FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The AER package includes a dispersion test that supports the conclusion
+ that the Poisson model is not well suited to the data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals250>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(AER)
+\end_layout
+
+\begin_layout Plain Layout
+
+dispersiontest(m1, trafo=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have been meaning to emphasize for students is that there are two kinds
+ of predicted values that are obtained from generalized linear models.
+ The first type, which is the default of R's predict function, is a prediction
+ on the link scale.
+ In the Poisson case, this is a prediction of 
+\begin_inset Formula $\eta_{i}=X_{i}\beta,$
+\end_inset
+
+ which we might refer to either as 
+\begin_inset Formula $\hat{\eta}_{i}$
+\end_inset
+
+ or 
+\begin_inset Formula $X_{i}\hat{\beta}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The rockchalk package's function predictOMatic provides fitted values on
+ the response scale.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals290>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predictOMatic(m1, predVals = list(position = 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+), interval = 
+\begin_inset Quotes eld
+\end_inset
+
+confidence
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The predictOMatic function currently cannot display the link scale (that
+ will be corrected).
+ As a result, we will compare the link and response values in the old-fashioned
+ way with the following code (and raw R output): 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals300>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nd <- newdata(m1, predVals = list(position = 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+))
+\end_layout
+
+\begin_layout Plain Layout
+
+predict(m1, newdata = nd, type = "link", interval = 
+\begin_inset Quotes eld
+\end_inset
+
+confidence
+\begin_inset Quotes erd
+\end_inset
+
+, se.fit = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As we see, the fitted values on the link scale may be positive or negative.
+ The fitted values on the response scale are the transformed by the inverse
+ link function, 
+\begin_inset Formula $exp(fit)$
+\end_inset
+
+, as we see here:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+predict(m1, newdata = nd, type = "response", interval = 
+\begin_inset Quotes eld
+\end_inset
+
+confidence
+\begin_inset Quotes erd
+\end_inset
+
+, se.fit = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Rate Models
+\end_layout
+
+\begin_layout Standard
+To correct the obvious problem that the model should take into account the
+ number of games played for each player, the offset predictor is inserted
+ in the Poisson GLM.
+ The estimates are summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Poisson-offset"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The parameter estimates for the positions are very similar, which is something
+ of a surprise.
+ The inclusion of the offset reduces the residual model deviance very substantia
+lly (although it is still not as good as it will be).
+ In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Poisson-offset-mismatch"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we have the comparison of the predicted and observed outcomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ ## Offset model for rate of goals per game
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- glm(goals ~ position + offset(log(played)),           
+\end_layout
+
+\begin_layout Plain Layout
+
+        data = goals, family = poisson) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Poisson regression estimates
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Poisson-offset"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(
+\begin_inset Quotes eld
+\end_inset
+
+Without offset)
+\begin_inset Quotes erd
+\end_inset
+
+ = m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+       
+\begin_inset Quotes eld
+\end_inset
+
+With offset
+\begin_inset Quotes erd
+\end_inset
+
+ = m3), centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Poisson offset model observed and predicted counts
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Poisson-offset-mismatch"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals500, results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newnames <- c(propObsv = 
+\begin_inset Quotes eld
+\end_inset
+
+Observed
+\begin_inset Quotes erd
+\end_inset
+
+, propPred = 
+\begin_inset Quotes eld
+\end_inset
+
+Predicted
+\begin_inset Quotes erd
+\end_inset
+
+, Diff= 
+\begin_inset Quotes eld
+\end_inset
+
+Difference
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+poipred <- poi.obs.pred(20, m3)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(poipred) <- mgsub(names(newnames), newnames, colnames(poipred))
+\end_layout
+
+\begin_layout Plain Layout
+
+poipred
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(poipred), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Even though the AER package's dispersion test does not reject the null hypothesi
+s that there is no overdispersion, I'm still distrustful of this model.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dispersiontest(m3, trafo=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If I thought the problem was primarily in the excess of 0's in the outcome,
+ I might pursue a zero-inflated model.
+ However, I'd rather try a negative binomial model (as we will see, the
+ results are good).
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Negative binomial models
+\end_layout
+
+\begin_layout Standard
+The dispersion test for the Poisson model with offset indicates that there
+ is no substantial overdispersion.
+ However, the inspection of Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Poisson-offset-mismatch"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ makes me wonder if we ought to take one more step to adjust the model.
+ 
+\end_layout
+
+\begin_layout Standard
+We fit a negative binomial model, with and without the offset.
+ The models are estimated with the following R code
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(MASS)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- glm.nb(goals ~ position, data = goals)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- glm.nb(goals ~ position + offset(log(played)), data = goals) 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The two models are summarized side-by-side in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:NB-2tables"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Negative Binomial estimates of soccer goals
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:NB-2tables"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(
+\begin_inset Quotes eld
+\end_inset
+
+Without Offset
+\begin_inset Quotes erd
+\end_inset
+
+ = m2, 
+\begin_inset Quotes eld
+\end_inset
+
+With Offset
+\begin_inset Quotes erd
+\end_inset
+
+ = m4), request = c(
+\begin_inset Quotes eld
+\end_inset
+
+theta
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+theta
+\begin_inset Quotes erd
+\end_inset
+
+), runFuns =c(
+\begin_inset Quotes eld
+\end_inset
+
+deviance
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Deviance
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+AIC
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+AIC
+\begin_inset Quotes erd
+\end_inset
+
+), centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Even if we don't include the offset, the dispersion diagnostics for the
+ negative binomial model are quite favorable:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.p.resids <- residuals(m2, type="pearson")
+\end_layout
+
+\begin_layout Plain Layout
+
+test.stat <- sum(m2.p.resids^2)
+\end_layout
+
+\begin_layout Plain Layout
+
+test.stat
+\end_layout
+
+\begin_layout Plain Layout
+
+pchisq(test.stat, m1$df.residual, lower.tail=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The predicted and observed outcomes from the Negative Binomial without and
+ with the offset are displayed in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Goals:nbpredictions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Goals: Negative Binomial predictions
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Goals:nbpredictions"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+a) Without offset
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals1100, results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+newnames <- c(propObsv = 
+\begin_inset Quotes eld
+\end_inset
+
+Observed
+\begin_inset Quotes erd
+\end_inset
+
+, propPred = 
+\begin_inset Quotes eld
+\end_inset
+
+Predicted
+\begin_inset Quotes erd
+\end_inset
+
+, Diff= 
+\begin_inset Quotes eld
+\end_inset
+
+Difference
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+nbpred1 <- nb2.obs.pred(15, m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(nbpred1) <- mgsub(names(newnames), newnames, colnames(nbpred1))
+\end_layout
+
+\begin_layout Plain Layout
+
+nbpred1
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(nbpred1), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+b) With offset
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<goals1200, results=hide, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nbpred2 <- nb2.obs.pred(15, m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+colnames(nbpred2) <- mgsub(names(newnames), newnames, colnames(nbpred2))
+\end_layout
+
+\begin_layout Plain Layout
+
+nbpred2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(nbpred2), floating=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To my eye, the predictions of the model without the offset are closer to
+ the marginal totals of the data in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Goals:nbpredictions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ I was inclined to say 
+\begin_inset Quotes eld
+\end_inset
+
+ah, the model without the offsets is just as good.
+\begin_inset Quotes erd
+\end_inset
+
+ But that conclusion would be an error.
+ Consider the fact that the deviance values reported for the models are
+ quite different.
+ The conclusions of a 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test comparing the two models, whether using base R's 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+anova()
+\end_layout
+
+\end_inset
+
+ function or the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+lrtest()
+\end_layout
+
+\end_inset
+
+ function in the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+lmtest
+\end_layout
+
+\end_inset
+
+ package, indicate that the second model is better.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options.orig <- options()
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=80)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+anova(m2, m4, test = 
+\begin_inset Quotes eld
+\end_inset
+
+Chisq
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(lmtest)
+\end_layout
+
+\begin_layout Plain Layout
+
+lrtest(m2, m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=F,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(options.orig)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The output from the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+anova
+\end_layout
+
+\end_inset
+
+ function draws our attention to the difference in the estimated value of
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+ in the two negative binomial models.
+ When the offset is included, 
+\begin_inset Formula $\theta$
+\end_inset
+
+ rises from 0.612 to 1.78.
+ Recall that as 
+\begin_inset Formula $\theta$
+\end_inset
+
+ becomes larger, the random noise contributed by the log-gamma random error
+ becomes smaller.
+ The 
+\begin_inset Formula $\theta$
+\end_inset
+
+ parameter reported here is transformed in Stata output and referred to
+ as 
+\begin_inset Formula $\alpha=1/\theta$
+\end_inset
+
+.
+ The variance of the negative binomial process is
+\begin_inset Formula 
+\[
+\mu_{i}+\frac{1}{\theta}\mu_{i}^{2}=\mu_{i}+\alpha\mu_{i}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As 
+\begin_inset Formula $\theta\rightarrow\infty$
+\end_inset
+
+, this model's uncertainty shrinks to the Poisson model.
+ Simply put, the amount of unaccounted for uncertainty is meaningfully reduced
+ by including the offset for the number of games played.
+ 
+\end_layout
+
+\begin_layout Standard
+When all is said and done, then, what impact does a player's position have
+ on the number of goals scored.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+predictOMatic
+\end_layout
+
+\end_inset
+
+ output from this command
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4a.pom <-predictOMatic(m4, predVals=list(played=1, position = "table"),
+ interval = 
+\begin_inset Quotes eld
+\end_inset
+
+confidence
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is summarized in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:m4-predomatic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Predicted goal scoring rate per game (Negative Binomial Model with offset)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:m4-predomatic"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+print(xtable(m4a.pom), floating = FALSE, include.rownames=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Fireworks Industry Injury Analysis
+\end_layout
+
+\begin_layout Standard
+This is the project for which we started to explore Poisson rate models
+ more closely.
+ The objective is to estimate the rate of worker accidental injuries per
+ 200,000 hours worked in a segment of the the fireworks manufacturing and
+ sales industries.
+ 
+\end_layout
+
+\begin_layout Standard
+The data is available in a 
+\begin_inset Quotes eld
+\end_inset
+
+long
+\begin_inset Quotes erd
+\end_inset
+
+ format file, 
+\begin_inset Quotes eld
+\end_inset
+
+fireworks-1617.csv
+\begin_inset Quotes erd
+\end_inset
+
+ summarized in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{monthly}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<import10,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+wdir <- "workingdata"
+\end_layout
+
+\begin_layout Plain Layout
+
+fire <- read.csv(file.path(wdir, "fireworks-1617.csv"), header=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+fire$yearf <- as.factor(fire$year)
+\end_layout
+
+\begin_layout Plain Layout
+
+fire$junjul <- factor(ifelse(!fire$month %in% c("June", "Jul"), "other",
+ "June.or.July"),                       levels = c("other", "June.or.July"))
+\end_layout
+
+\begin_layout Plain Layout
+
+fire$hourslog <- log(fire$hours)
+\end_layout
+
+\begin_layout Plain Layout
+
+rockchalk::summarize(fire)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xtab10,echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+keepers <- c("year", "month", "hours", "accidents")
+\end_layout
+
+\begin_layout Plain Layout
+
+fire.xt <- xtable(fire[ , keepers], caption = "Monthly Injury Data", label
+ = "monthly")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(fire.xt, caption.placement="top")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the R folder included with this report, there is a file 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+fireworks-1.R
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ that was used to make our original calculations for this project.
+ The same code has been incorporated into this document to assure reproducabilit
+y.
+ For comparison, we also offer 
+\begin_inset Quotes eld
+\end_inset
+
+f
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ireworks-1.sas
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, a SAS code file, as well as output file, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+fireworks-1.lst
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The SAS and R files generate identical results.
+\end_layout
+
+\begin_layout Standard
+The important difference between the insurance rate model and firework employee
+ injury model is that we want the rate for 200,000 hours of labor, so the
+ offset in the predictive model needs to be adjusted correctly.
+ The predicted values must be drawn with the offset value of log(200000).
+ In the SAS code, this amounts to a somewhat ungainly process in which one
+ calculates the combined predictive sum 
+\begin_inset Formula $X_{i}\beta+log(n_{i})$
+\end_inset
+
+ from which the offset must replaced with 
+\begin_inset Formula $log(200,000)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Poisson model without offset:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m0 <-   glm(accidents ~ 1 + yearf + junjul, data = fire, family = "poisson")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m0)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Poisson model with offset, no other predictors:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- glm(accidents ~ offset(hourslog) + 1, data = fire, family = "poisson")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next, I report the predicted values of the rate of accidents per 200,000
+ hours worked.
+ The client for whom we did the original analysis wanted three confidence
+ intervals for the estimated injury rates
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nd <- data.frame(hourslog = log(200000))
+\end_layout
+
+\begin_layout Plain Layout
+
+## This is number of accidents predicted per 200000 hours
+\end_layout
+
+\begin_layout Plain Layout
+
+## pooling both years of data:
+\end_layout
+
+\begin_layout Plain Layout
+
+m1.p95 <- predictOMatic(m1, predVals = nd,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.95)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1.p90 <- predictOMatic(m1, predVals = nd,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.90)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1.p80 <- predictOMatic(m1, predVals = nd,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.80)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1cis <- merge(m1.p95, m1.p90, by = c("hourslog", "fit"), suffix = c("95",
+ "90"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m1cis <- merge(m1cis, m1.p80, by = c("hourslog", "fit"), suffix = c("", "80"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1cis
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Poisson with offset, including the year as a predictor
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- glm(accidents ~ offset(hourslog) + 1 + yearf, fire, family = "poisson")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The predicted values of the number of accidents per 200,000 hours worked
+ are summarized in the same manner.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=FALSE,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nd <- data.frame(hourslog = log(200000), yearf = c("2016", "2017"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.p <- predict(m2, newdata = nd, se.fit = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+predVals2 <- list(hourslog = log(200000), yearf= c("2016", "2017")) 
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.p95 <- predictOMatic(m2, predVals = predVals2,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.95)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.p90 <- predictOMatic(m2, predVals = predVals2, 
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.90)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.p80 <- predictOMatic(m2, predVals = predVals2,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.80)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2cis <- merge(m2.p95, m2.p90, by = c("yearf", "hourslog", "fit"), suffix
+ = c("95", "90"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m2cis <- merge(m2cis, m2.p80, by = c("yearf", "hourslog", "fit"), suffix
+ = c("", "80"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m2cis$hourslog <- NULL
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2cis
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The final model includes a dummy variable to find out if the injury rate
+ is higher in June and July.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- glm(accidents ~ offset(hourslog) + 1 + yearf + junjul,
+\end_layout
+
+\begin_layout Plain Layout
+
+          dat = fire, family = "poisson")
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=FALSE,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nd <- data.frame(hourslog = log(200000), yearf = c("2016", "2017"),
+\end_layout
+
+\begin_layout Plain Layout
+
+                 junjul = factor(c("no", "jj"), levels = c("other", "June.or.July"
+)))
+\end_layout
+
+\begin_layout Plain Layout
+
+m3.p <- predict(m3, newdata = nd, se.fit = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+predVals3 <- list(hourslog = log(200000),
+\end_layout
+
+\begin_layout Plain Layout
+
+                 yearf= c("2016", "2017"),
+\end_layout
+
+\begin_layout Plain Layout
+
+                 junjul = c("other", "June.or.July"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m3.p95 <- predictOMatic(m3, predVals = predVals3,
+\end_layout
+
+\begin_layout Plain Layout
+
+              interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+              level = 0.95)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3.p90 <- predictOMatic(m3, predVals = predVals3,
+\end_layout
+
+\begin_layout Plain Layout
+
+                         interval = "confidence",
+\end_layout
+
+\begin_layout Plain Layout
+
+                         level = 0.90)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3.p80 <- predictOMatic(m3, predVals = predVals3,
+\end_layout
+
+\begin_layout Plain Layout
+
+                         interval = "confidence",  level = 0.80)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3cis <- merge(m3.p95, m3.p90, by = c("yearf", "hourslog", "fit"), suffix
+ = c("95", "90"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m3cis <- merge(m3cis, m3.p80, by = c("yearf", "hourslog", "fit"), suffix
+ = c("", "80"))
+\end_layout
+
+\begin_layout Plain Layout
+
+m3cis
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m3cis
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The residual deviance of m3 is slightly higher than the degrees of freedom.
+ This variable may be "overdispersed", it has higher variance than the Poisson
+ distribution might lead us to expect.
+ However, the dispsersion test in the AER package does not seem to indicate
+ there is much trouble.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(AER) 
+\end_layout
+
+\begin_layout Plain Layout
+
+dispersiontest(m3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Interesting Quirk in Aggregation
+\end_layout
+
+\begin_layout Standard
+While working on this project, we noticed that we get the same hospital
+ injury rate for 2016 whether we use 1) the annual aggregated data (2 rows,
+ one for 2016 and one for 2017) or 2) the monthly data as described above.
+ In retrospect, this might seem obvious to some, but it seemed interesting
+ and worth writing down for future reference.
+ We will also see that the estimated injury rate per 200,000 worked, and
+ the confidence intervals, are equivalent as well.
+ 
+\end_layout
+
+\begin_layout Standard
+We will simply demonstrate by comparing the monthly and annual data estimates.
+ Suppose first we use the monthly injury rate data as shown in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{monthly}
+\end_layout
+
+\end_inset
+
+.
+ The R code with which we fit the rate model uses the year as the only predictor
+, since we are interested in estimating the annual rate of injury.
+ This assumes–implicitly–that the rate of injury is the same across all
+ months of 2016.
+ Recognizing that the monthly-data model assumes that the true rate is fixed
+ for the whole year, of course, is a powerful hint for the eventual equivalence
+ of the monthly and annual data estimates.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<agg10,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fireagg <- aggregate(fire[ , c("accidents", "hours")] , list(year = fire$year),
+ sum, na.rm=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+fireagg$hourslog <- log(fireagg$hours)
+\end_layout
+
+\begin_layout Plain Layout
+
+fireagg$yearf <- factor(fireagg$year)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<xtab20,echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+keepers <- c("year", "hours", "accidents")
+\end_layout
+
+\begin_layout Plain Layout
+
+fire.xtagg <- xtable(fireagg[ , keepers], caption = "Annual fire Data", label
+ = "annual")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(fire.xtagg, caption.placement="top")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Poisson regression is calculated with the monthly information is with
+ an offset term, the 
+\begin_inset Formula $log(hours)$
+\end_inset
+
+, which is represented in R as 
+\begin_inset Quotes eld
+\end_inset
+
+offset(hourslog)
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<m2montly, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.monthly <- glm(accidents ~ offset(hourslog) + 1 + yearf, fire, family
+ = "poisson") 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2.monthly)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the estimated fire rate with 95% confidence intervals is obtained as
+ follows.
+ The column labeled 
+\begin_inset Quotes eld
+\end_inset
+
+fit
+\begin_inset Quotes erd
+\end_inset
+
+ is the estimated rate an the columns lwr and upr are the lower and upper
+ confidence intervals:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(m2.monthly.p95 <- rockchalk::predictOMatic(m2.monthly, predVals=list(hourslog=log(
+200000), yearf=c("2016", "2017")), interval="confidence", level=0.95))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now suppose the data are aggregated at the annual level.
+ The input information used in the estimation is just 2 lines, as shown
+ in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{annual}
+\end_layout
+
+\end_inset
+
+.
+ One might have the intuition that we are 
+\begin_inset Quotes eld
+\end_inset
+
+throwing away degrees of freedom
+\begin_inset Quotes erd
+\end_inset
+
+ by using the annual data, but that argument overlooks the fact that the
+ number of hours worked during the year is the sum of hours worked in the
+ various months.
+ In what follows, the R code refers to this annual data as 
+\begin_inset Quotes eld
+\end_inset
+
+fireagg
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The Poisson generalized linear model is estimated with an offset equal to
+ the the actual number of hours worked in each year:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m2.annual <- glm(accidents ~ offset(hourslog) + 1 + yearf, fireagg, family
+ = "poisson") 
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m2.annual)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We note that the estimated rates for the two years are identical to the
+ values obtained with the monthly information:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+rockchalk::predictOMatic(m2.annual, predVals=list(hourslog=log(200000), 
+                                            yearf= c("2016", "2017")), interval
+ = "confidence", level = 0.95)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The coefficients of the fitted models are shown side-by-side in Table 3.
+ Note that the coefficients and standard errors are identical.
+ There is a superficial difference in the number of cases, since the monthly
+ estimates are compiled with more 
+\begin_inset Quotes eld
+\end_inset
+
+rows
+\begin_inset Quotes erd
+\end_inset
+
+ of information and the annual estimates are based on two 
+\begin_inset Quotes eld
+\end_inset
+
+rows
+\begin_inset Quotes erd
+\end_inset
+
+.
+ But the information involved–the number of accidents and the number of
+ hours worked–are equivalent in the two methods.
+ The model 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ statistics are identical.
+\end_layout
+
+\begin_layout Standard
+In the SAS code files for these example projects, we find the same equivalence
+ of estimates based on the monthly and annual data.
+\end_layout
+
+\begin_layout Standard
+
+\lang american
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg10, echo=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list("Annual" = m2.annual, "Monthly" = m2.monthly), float=TRUE, title
+ = "Comparing Annual and Monthly Fits")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "theme/R,theme/mlm"
+options "bibtotoc,apalike2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Replication Information
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Session-Info"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please leave this next code chunk if you are producing a guide document.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<session, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sessionInfo()
+\end_layout
+
+\begin_layout Plain Layout
+
+if(!is.null(warnings())){
+\end_layout
+
+\begin_layout Plain Layout
+
+    print("Warnings:")
+\end_layout
+
+\begin_layout Plain Layout
+
+    warnings()}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<opts20, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Don't delete this.
+ It puts the interactive session options
+\end_layout
+
+\begin_layout Plain Layout
+
+## back the way they were.
+ If this is compiled within a session
+\end_layout
+
+\begin_layout Plain Layout
+
+## it is vital to do this.
+\end_layout
+
+\begin_layout Plain Layout
+
+options(opts.orig)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

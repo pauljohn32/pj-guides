@@ -1,0 +1,320 @@
+%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english,noae]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{url}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{beamerarticle,pgf}
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+\AtBeginDocument{
+	\let\origtableofcontents=\tableofcontents
+	\def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+	\def\gobbletableofcontents#1{\origtableofcontents}
+}
+\usepackage[natbibapa]{apacite}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\providecommand*{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+
+\mode<article>{
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+}
+
+\usepackage{array}
+\usepackage{xparse}
+\usepackage{babel}
+\usepackage{datetime}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{url}
+
+\definecolor{darkblue}{HTML}{1e2277}
+\definecolor{kublue81186}{RGB}{0,81,186}
+\newdateformat{monddyyyy}{\shortmonthname[\THEMONTH].~\THEDAY,~\THEYEAR}
+
+
+%% BEGIN custom header
+\ExplSyntaxOn
+\NewDocumentCommand \guidesetup { m }
+ {
+  \keys_set:nn { guide } { #1 }
+ }
+
+\int_new:N \g_guide_authors_int
+\prop_new:N \g_guide_authors_prop
+\tl_new:N \l__guide_authors_tl
+
+\keys_define:nn { guide }
+ {
+  author .code:n =
+   {
+    \int_gincr:N \g_guide_authors_int
+    \keys_set:nn { guide / author } { #1 }
+   },
+  author/firstname .code:n = { \guide_add_author:nn { firstname } { #1 } },
+  author/lastname .code:n = { \guide_add_author:nn { lastname } { #1 } },
+  author/affiliation .code:n = { \guide_add_author:nn { affiliation } { #1 } },
+  author/email .code:n = { \guide_add_author:nn { email } { #1 } },
+  leftlogo .tl_set:N = \l_guide_leftlogo_tl,
+  rightlogo .tl_set:N = \l_guide_rightlogo_tl,
+  number .tl_set:N = \l_guide_number_tl,
+  title .tl_set:N = \l_guide_title_tl,
+  subtitle .tl_set:N = \l_guide_subtitle_tl,
+  keywords .tl_set:N = \l_guide_keywords_tl,
+  url .tl_set:N = \l_guide_url_tl,
+  title .initial:n = {TITLE~NEEDED},
+}
+\NewDocumentCommand \guidehdr { +O{} }
+ {
+  \group_begin:
+  \keys_set:nn { guide } { #1 }
+  \guide_hdr:
+  \group_end:
+ }
+\cs_new_protected:Nn \guide_hdr:
+ {
+   \centering
+   \noindent\fcolorbox{kublue81186}{white}{
+  \begin{tabular}
+   {
+    @{}c
+    >{\centering}m{ \dim_eval:n { \textwidth - 2.5in - 6\tabcolsep - 2\arrayrulewidth } }
+    c@{}
+   }
+   &&\tabularnewline[-\dim_eval:n { -\normalbaselineskip + 3ex }]
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=.75in]{\l_guide_leftlogo_tl}
+  \end{tabular}
+  &
+  \centering
+    {\textsc{\large{}\l_guide_title_tl}}
+    \tl_if_empty:NF \l_guide_subtitle_tl
+    {
+      {\\\textsc{\large{}\l_guide_subtitle_tl}}
+    }
+  \\
+  \textcolor{kublue81186}{\rule[0.5ex]{1\linewidth}{0.7pt}}\\
+  \guide_print_authors:
+  &
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=1.25in]{\l_guide_rightlogo_tl}
+  \end{tabular}
+  \tabularnewline
+  \tl_if_empty:NTF \l_guide_number_tl
+   { \leavevmode\vphantom{G}}
+   {\small\bfseries { Guide~No: ~ \tl_use:N \l_guide_number_tl }} & 
+   \tl_if_empty:NF \l_guide_keywords_tl
+   {\centering
+    \textbf{Keywords}: ~ \l_guide_keywords_tl}
+   & 
+   \small\bfseries\monddyyyy\today \tabularnewline
+   \tl_if_empty:NF \l_guide_url_tl
+   {
+   \multicolumn{3}{c}{
+    See ~ \url{\l_guide_url_tl} ~ for ~ updates.}
+     }
+  \tabularnewline
+  \end{tabular}
+  }
+}
+
+\cs_new_protected:Nn \guide_add_author:nn
+ {
+  \prop_gput:Nxn \g_guide_authors_prop
+   { #1 \int_to_arabic:n { \g_guide_authors_int } }
+   { #2 }
+ }
+\cs_generate_variant:Nn \prop_gput:Nnn { Nx }
+\cs_new_protected:Nn \guide_print_authors:
+ {
+  \tl_clear:N \l__guide_authors_tl
+  \int_step_inline:nnnn { 1 } { 1 } { \g_guide_authors_int }
+   {
+    \tl_put_right:Nn \l__guide_authors_tl
+     {
+      \textbf
+       {
+        \prop_item:Nn \g_guide_authors_prop { firstname ##1 }~
+        \prop_item:Nn \g_guide_authors_prop { lastname ##1 },~
+       }
+       \prop_item:Nn \g_guide_authors_prop { affiliation##1 },~
+       \href{mailto:\prop_item:Nn \g_guide_authors_prop { email##1 } }
+       {\url{\prop_item:Nn \g_guide_authors_prop { email##1 }}}
+       \\
+     }
+   }
+   \tl_use:N \l__guide_authors_tl
+ }
+\ExplSyntaxOff
+%%END This ends the custom header
+
+
+
+
+
+%% $ nullify Emacs underscores
+%% BEGIN: Footer
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\ExplSyntaxOn
+\NewDocumentCommand \footersetup { +m }
+{
+\keys_set:nn { footer } { #1 }
+}
+\keys_define:nn { footer }
+{	
+    leftside .code:n = {
+\keys_set:nn { footer / leftside } { #1 }
+},
+rightside .code:n = {
+\keys_set:nn { footer / rightside } { #1 }
+},
+    leftside / lone .tl_set:N = \l_footer_leftside_lone_tl,
+    leftside / ltwo .tl_set:N = \l_footer_leftside_ltwo_tl,
+    leftside / lthree .tl_set:N = \l_footer_leftside_lthree_tl,
+    rightside / rone .tl_set:N = \l_footer_rightside_rone_tl,
+    rightside / rtwo .tl_set:N = \l_footer_rightside_rtwo_tl,
+    rightside / rthree .tl_set:N = \l_footer_rightside_rthree_tl,
+    leftside .initial:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .initial:n = {rone = ~, rtwo = ~,  rthree = ~},
+    leftside .default:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .default:n = {rone = ~, rtwo = ~,  rthree = ~},
+}
+\NewDocumentCommand \guideftr { +o }
+{
+  \IfValueT { #1 } 
+  {
+    \keys_set:nn { footer } { #1 }
+  }
+  \guide_ftr:
+}
+\cs_new_protected:Nn \guide_ftr:
+{
+  % Now fancy header/footer settings
+  \lhead{}%
+  \chead{}%
+  \rhead{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \lfoot{}%
+  \cfoot{{Page} ~ \thepage {} ~ { of } ~ {} \pageref{LastPage}}%
+  \rfoot{}%
+
+  \fancypagestyle{firststyle}%
+  {%
+    \lhead{}%
+    \chead{}%
+    \rhead{}%
+    \lfoot{}%
+    \cfoot{}%
+    \rfoot{}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyfoot[L]{\l_footer_leftside_lone_tl {} \\%
+      \l_footer_leftside_ltwo_tl {} \\%
+      \l_footer_leftside_lthree_tl {}}%
+    \fancyfoot[R]{\l_footer_rightside_rone_tl {} \\%
+      \l_footer_rightside_rtwo_tl {} \\%
+      \l_footer_rightside_rthree_tl {}}%
+      \renewcommand{\footrulewidth}{.2pt}%
+  }%
+  \thispagestyle{firststyle}
+}
+\ExplSyntaxOff
+%% End of fancy footer setup
+
+%% Specify fully the left and right sides of footer, 3 lines
+%% If blanks are needed, must insert value " ~ "
+%% If comma needed inside value, wrap in {}.
+
+\urlstyle{tt}
+\usepackage{menukeys}
+
+\hypersetup{
+ unicode=true,pdfusetitle,bookmarks=true,
+ bookmarksnumbered=false, bookmarksopen=false,
+ breaklinks=true, pdfborder={0 0 0},
+ pdfborderstyle={}, backref=false,
+ colorlinks=true, linkcolor=darkblue,
+ urlcolor=darkblue, citecolor=darkblue}
+
+\makeatother
+
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listing}
+
+\begin{document}
+\noindent \mode<article>{
+\footersetup{
+  leftside={
+    lone={CRMDA, 1425 Jayhawk BLVD, Lawrence KS 66045} 
+    },
+  rightside={
+    rone=Web: \url{https://crmda.ku.edu} (785)863-3353
+    }
+}
+\guideftr
+}
+\mode<article>{
+\thispagestyle{firststyle}
+}
+
+\noindent %% Fill in values of the arguments here, 
+%% If blanks are needed, must insert value " ~ "
+%% If comma needed inside value, wrap in {}.
+%% Delete secondauthor and thirdauthor if not needed
+\guidesetup{%
+  author={
+    lastname=Xing, 
+    firstname=Chong, 
+    affiliation=CRMDA,
+    email=cxing@ku.edu},
+  author={
+    lastname=Johnson, 
+    firstname=Paul, 
+    affiliation=CRMDA, 
+    email=pauljohn@ku.edu}, 
+  url={https://crmda.ku.edu/guides},
+  keywords={Macintosh maintenance, R},
+  title={R Mac Setup},
+  leftlogo={theme/logoleft.pdf},
+  rightlogo={theme/logo-vert.pdf},
+  number=47,
+}
+\guidehdr
+\begin{abstract}
+This is an ``article'' formatted version of the slides, which are
+available in the same folder as this article as ``\href{https://crmda.dept.ku.edu/guides/47.mac_R_setup/47.mac_R_setup-slides.pdf}{47.mac\_R\_setup-slides.pdf}''.
+The content is exactly the same. The only difference is that the result
+is reformatted and, possibly, more convenient for inspection by users. 
+\end{abstract}
+\input{47.mac_R_setup-slides.tex}
+\end{document}

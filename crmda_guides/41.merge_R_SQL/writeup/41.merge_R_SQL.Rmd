@@ -1,0 +1,994 @@
+---
+title: "CRMDA GUIDE 41 <br> R Merge & SQL-based Alternatives"
+author:
+- name: Zack Roman
+  affiliation: CRMDA
+  email: zroman@ku.edu
+- name: Ben Kite
+  affiliation: CRMDA, H&R Block 
+  email: bakite@ku.edu
+- name: Chong Xing
+  affiliation: CRMDA
+  email: cxing@ku.edu
+- name: Paul Johnson
+  affiliation: Director, CRMDA
+  email: crmda@ku.edu
+advertise: >
+   **For CRMDA Guide documents and updates**, <br> please visit
+   [http://crmda.ku.edu/guides-index](http://crmda.ku.edu/guides-index)
+keywords: >
+   Data Frames, Merging, SQL, Left/Right Join
+abstract: >
+   It is common for researchers or data analysts to desire information present in multiple data sets.
+   This guide provides an overview of data merging procedures in R. It
+   highlights the uses of three methods for combining data sets: the
+   `merge()` function in base R, the `join()` function in `plyr`
+   package, and the merging commands in `data.table` package. Further,
+   it highlights some common problems associated with each method
+   and demonstrates how to avoid them. Examples of data merges in
+   the widely popular structured query language (SQL) framework, and
+   the associated terminology, are provided first and then the equivalent
+   R syntax is presented.
+checked_by: "Paul Johnson"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    highlight: haddock
+    number_sections: true
+    css: theme/kutils.css
+    template: theme/guide-boilerplate.html
+bibliography: merge.bib
+logoleft: theme/jayhawk.png
+logoright: theme/CRMDAlogo-vert.png
+---
+
+
+
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+```{r themecopy, include=FALSE}
+library(kutils)
+library(crmda)
+## If theme directory does not have required images or TeX files
+## we need to retrieve them and put them in "theme" directory. 
+logos <- c(logoleft = "jayhawk.png", 
+           logoright = "CRMDAlogo-vert.png")
+files <- c("kutils.css", 
+           "guide-boilerplate.html")
+getFiles(logos, pkg = "crmda")
+getFiles(files, pkg = "crmda")
+```
+
+```{r, echo=T, include=FALSE}
+pdf.options(onefile=FALSE, family="Times", paper="special", height=4,
+            width=6, pointsize=10)
+```
+
+# Terminology
+
+The term *merge* means to combine two data sets by aligning
+information about individual rows based on values in common
+variables. For example, in a study of police brutality, Sharp and
+Johnson had public opinion about the attitudes toward police in 33
+American cities (@sharp_accounting_2009). The researchers also had a
+separate data set about police administration in those cities. It was
+necessary to merge the information about cities with the information
+about individuals to determine, for example, if cities with
+African-American police chiefs experienced an improvement in police
+evaluations among non-white residents of those cities.  This is a
+common requirement in "multilevel statistical analysis". Another
+common analysis scenario that may require combining two or more data
+sets is longitudinal research - same individuals have been surveyed at
+different time waves and the survey responses were stored separately
+by waves. Usually, there is a unique ID variable for each survey
+respondent in all the data sets and it can be used as the key variable
+to link information collected at different time waves about a same
+person.
+
+## What is SQL and Why Do We Care?
+
+Statistical programs like Stata, SAS, SPSS, and R developed their own
+terminology for matching and aligning different data sets. The methods
+of combining two data sets developed in small, isolated, language-specific
+bubbles which, in retrospect, ignored the rapidly developing general
+purpose database language known now as SQL.
+
+From the 1970s onward, the IBM corporation was developing its own
+general purpose language for data restructuring called SQL, Structured
+Query Language (see [Codd,
+1970](https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf)). SQL 
+has been widely used in database construction and is now considered to
+be a staple in the construction of data-backed Websites that absorb
+and redistribute information (e.g., see [Oracle's SQL implementation](https://docs.oracle.com/cd/B13789_01/server.101/b10759/intro.htm)).
+
+To the surprise of many database enthusiasts, R's base function
+`merge()` does not use SQL terminology. That surely creates
+frustration for them, since the terminology for aligning data sets
+must be completely re-learned. However, as mentioned (somewhat
+tersely) in the help page for R's `merge()`, it is possible to create
+a translation table between SQL terminology and the approach used in
+R.
+
+>
+In SQL database terminology, the default value of ‘all = FALSE’
+gives a _natural join_, a special case of an _inner join_.
+Specifying ‘all.x = TRUE’ gives a _left (outer) join_, ‘all.y =
+TRUE’ a _right (outer) join_, and both (‘all = TRUE’ a _(full)
+outer join_.  DBMSes do not match ‘NULL’ records, equivalent to
+‘incomparables = NA’ in R. ([R Core Team 2017](https://rweb.crmda.ku.edu/cran/)).
+
+We don't expect that paragraph is understandable to most readers of
+this guide. And *that is the problem we are trying to fix by preparing
+this document*.
+
+nocite: '@Rcore'
+
+The `merge()` function is in the base of R (R Core Team 2017), but there are also
+user-contributed packages for R that more explicitly use the
+terminology of SQL. The packages that we emphasize in this note are
+`plyr` and `data.table`.  We believe it is safe to say that,
+without a basic understanding of SQL terminology, users will have
+a very difficult time making use of those packages.
+
+
+```{r, include = FALSE}
+## Build Some Data
+authors <- data.frame(
+  surname = I(c("Tukey", "Venables", "Tierney", "Ripley", "McNeil")),
+  nationality = c("US", "Australia", "US", "UK", "Australia"),
+  deceased = c("yes", rep("no", 4)))
+
+## Build Another Data Set
+books <- data.frame(
+  name = I(c("Tukey", "Venables", "Tierney",
+             "Ripley", "Ripley", "McNeil", "R Core")),
+  title = c("Exploratory Data Analysis",
+            "Modern Applied Statistics",
+            "LISP-STAT",
+            "Spatial Statistics", "Stochastic Simulation",
+            "Interactive Data Analysis",
+            "An Introduction to R"),
+  other_author = c(NA, "Ripley", NA, NA, NA, NA,
+                   "Venables & Smith"))
+```
+
+## SQL Terminology {.bs-callout .bs-callout-green}
+
+`Join` means to combine two data sets. In SQL, the custom is to refer
+to the two data sets as "left" and "right". Think of the one on the
+left as the "target" and information from the "right" is extracted
+and paired together with the rows of the one on the left.
+
+A **key** is a variable that is used to align the separate information
+of the two data sets being combined. The key variable is a common
+variable between the 2 data frames being joined/merged, typically it
+is an "ID" variable or "Name".
+
+SQL Join notation has set a standard language for merging in the data
+science community. The following is a general outline of the SQL
+syntax. In this form, the first table is the "left" data frame, and
+the second is the "right" data frame. When joining/merging, the user can
+specify qualities of the merge that treat the right and left data
+frame differently. The proceeding examples highlight this.
+
+```{r, eval=FALSE}
+ SELECT "column_name(s)"
+ FROM "table1 "
+ JOIN "table2 "
+ ON "table1.key1=table2.key2;"
+```
+
+### Arguments
+
+1.) `SELECT` names the variables to be retained
+
+2.) ```table1``` is known as the **left** table, `table2` is the **right** table.
+
+3.) `JOIN` is a keyword that specifies the type of merge. The types
+that we discuss in this note are `INNER JOIN`, `OUTER JOIN` (AKA `FULL
+JOIN`) and `LEFT JOIN`.
+
+4.) `ON` specifies the **key** variables, the ones that are to be
+aligned. In this case, ```table1.key1=table2.key2;```
+means that in `table1`, there will be a variable "key1" and that is
+used to align the cases as specified in table2's variable "key2". They
+might be the name of a city or a person's identification number.
+
+ Note: The
+```.``` appended in SQL is equivalent to the ```$``` operator in R.
+
+# Merge in R 
+The `merge()` function in base R combines 2 data frames, which
+it refers to as `x` and `y`.  If we were using SQL terminology,
+we would say `x` is the `left` set and `y` is the `right` set.
+R uses the name `by` to refer to the key variables. 
+ 
+## Syntax of R merge() {.bs-callout .bs-callout-red}
+
+The `merge()` function receives the following arguments.
+
+* `merge(x, y, by, by.x, by.y, incomparables, sort, all.x, all.y)`
+
+### Arguments
+1. `x` would be called the `left` data set in SQL <br>
+
+2. `y` the `right` data set <br>
+
+3. `by, by.x, by.y` provide the key variables. Specify different key
+variables with `by.x` and `by.y`, or if the key variables have the
+same name, then simply `by` should be used. <br>
+
+4. `incomparables` specifies  which values of the key should never be
+matched.  It is a good habit to specify missing values and other
+values that should not be logically equated. Almost always, we need a
+laundry list to prevent accidental matches, such as `incomparables =
+c(NA, NULL, Inf)`.<br>
+
+5. `sort`: unless this is `FALSE`, R will re-order the rows of the
+result.  The sorting process sometimes seems surprising to users, who
+would rather have the rows remain in the ordering specified by the `x`
+data set.  We suggest most users should set `sort = FALSE`, and will
+illustrate the problem below.
+
+6. `all, all.x, all.y` arguments ask for either, all entries to
+appear in the output set, or all `X` or `Y` entries. By
+default, `all = FALSE` so only matching entries from both sides
+will appear in the output data set. If a variable has a missing entry
+it will be filled with NA's
+
+
+## Our first example data sets: {.bs-callout .bs-callout-blue}
+
+```{r}
+## Data set x
+authors
+## Data set y
+books
+```
+
+
+## Inner Join {.tabset .tabset-fade}
+
+In SQL terminology, an "inner join" is a merge that only keeps information
+about rows that are matched in the keys of both data sets.
+
+In R's `merge()` function, the parameters all, all.x, and all.y
+determine whether a merge will perform like an inner join, an outer
+join, or a left join. The `merge()` equivalent of an inner join is
+obtained if `all=FALSE`, which is the default in merge.  `all=FALSE`
+implies `all.x=FALSE` and `all.y=FALSE`.
+
+### <span style="color:red">R merge with all=FALSE</span>
+
+The following merge will produce a data set in which only cases will
+appear that have matches from both the x (authors) and y (books) data
+sets. Notice that the 'R core team' is excluded because it does not 
+appear in both data sets.  <br>
+
+Note: the x and y data set had different names for the key
+variable. When this occurs the output data set will have the x
+variable name.
+
+```{r}
+merg.df.1 <- merge(x = authors, y = books, by.x = "surname", by.y = "name",
+                   all = FALSE)
+merg.df.1
+```
+
+### <span style="color:green">SQL Inner Join</span>
+
+Note: A "table" in SQL is a "data frame" in R terminology.
+
+```{r, eval=FALSE}
+ SELECT authors.surname, authors.nationality, authors.deceased,
+        books.name, books.title, books.other_author
+ FROM authors
+ INNER JOIN books
+ ON authors.surname = books.name;
+```
+
+Note: Always end SQL statements with a semi-colon, `;`. 
+
+## Does it matter if the left and right data sets are swapped? {.tabset .tabset-fade}
+
+Answer: Not very much! Because an inner join only keeps the items that match exactly
+in each data set, it does not matter very much in R whether we
+think of one data set as `x` or `y`.
+
+This is another inner join, however the x and y variables are switched,
+the output data set is the same. The most important difference in the
+result is that the rows and columns come out in different
+orders.
+
+Note in the output that the R core team is not included because it did
+not appear in both data sets.
+
+```{r}
+merg.df.2 <- merge(x = books, y = authors, by.x = "name", by.y = "surname")
+merg.df.2
+```
+
+## Outer Join (Full Join) {.tabset .tabset-fade}
+
+An outer join keeps all of the records from either the data sets.
+Empty cells (missing values) are created for the unmatched cases.
+
+### <span style="color:red">merge: Outer join implies all = TRUE</span>
+
+The following code uses the `all` argument with the value `TRUE`. This
+instructs the merge to keep all of the rows, whether there are matches in
+the other data set.
+
+Note: If a value does not have an associated entry missing values will
+appear as "NA". This is exemplified by the R core team row which has
+"NA" for "nationality" and "deceased"
+
+```{r}
+merg.df.3 <- merge(x = authors, y = books, by.x = "surname", by.y = "name",
+                   all = TRUE)
+merg.df.3
+```
+
+### <span style="color:green"> Equivalent SQL code</span>
+
+```{r, eval=FALSE}
+ SELECT authors.surname, authors.nationality, authors.deceased,
+        books.name, books.title, books.other_author
+ FROM books
+ FULL JOIN authors
+ ON books.name = authors.surname ;
+```
+
+## Left Join {.tabset .tabset-fade}
+
+Left Join will include all entries in the left data set, which we are
+calling `x`.  Rows from `y` are selected only if the key value matches
+the key for the `x` data set. This drops unmatched entries from `y`,
+in other words.
+
+### <span style="color:red">merge: Left join implies all.x =
+    TRUE</span>
+
+The left join in R's `merge()` function is obtained by setting
+`all.x = TRUE` and `all.y = FALSE`.  Because `all.y = FALSE` is
+the default, it is not necessary to insert that in the function
+call, as we show here.
+
+The R core team is not included in the output data set because it is
+only found in the `y` (right) data set.
+
+```{r}
+merg.df.4 <- merge(x = authors, y = books, by.x = "surname", by.y = "name",
+            all.x = TRUE)
+merg.df.4
+```
+
+### <span style="color:green">Equivalent SQL code</span>
+
+```{r, eval=FALSE}
+ SELECT authors.surname, authors.nationality, authors.deceased,
+        books.name, books.title, books.other_author
+ FROM authors
+ LEFT JOIN books
+ ON authors.surname = books.name;
+```
+
+## Right Join {.tabset .tabset-fade}
+
+In SQL, the right merge is not usually discussed because one can
+simply swap the left and right sets to obtain an equivalent merge.
+However, in R is possible to explicitly conduct a right merge, one
+which keeps all of the rows from `y` and attaches them to the
+rows from `x` which match on the key variable.
+
+### <span style="color:red">merge: Right join implies all.y =
+    TRUE</span>
+
+
+To achieve a right join with `merge()`, we set `all.y = TRUE` and
+leave the default `all.x = FALSE` unchanged.
+
+```{r}
+merg.df.5 <- merge(x = authors, y = books, by.x = "surname", by.y = "name",
+                   all.y = TRUE)
+merg.df.5
+```
+
+### <span style="color:green">Equivalent SQL code</span>
+
+```{r, eval=FALSE}
+ SELECT authors.surname, authors.nationality, authors.deceased,
+        books.name, books.title, books.other_author
+ FROM authors
+ RIGHT JOIN books
+ ON authors.surname = books.name;
+```
+
+## Troubleshooting R's `merge()` function
+
+### Avoiding unintended matches of missing values in the key
+
+### Use the incomparables parameter in `merge()`{.bs-callout .bs-callout-red}
+
+We create two small example data frames with missing values on the key variables,
+which are named `k1` and `k2`.
+
+```{r, include=FALSE}
+x <- data.frame(k1 = c(NA, NA, 3, 4, 5, 6), k2 = c(1, NA, NA, 4, 5, 6), ID = 1:6)
+y <- data.frame(k1 = c(NA, 2, NA, 4, 5, 6), k2 = c(NA, NA, 3, 4, 5, 6), ID = 1:6)
+```
+
+```{r}
+x
+y
+```
+
+Notice that the merge treats the NAs in x as if they are matches for
+the NAs in y. Almost surely, this is an error for most real life
+data analysis projects.
+
+```{r}
+merg.df.6 <- merge(x = x, y = y, by = c("k1", "k2"))
+## Loose your job
+merg.df.6
+```
+
+To resolve this problem, the 'incomparables' argument should specify
+the values which are not intended for comparison.  For instance, we
+might simply insert NA as an incomparable value.
+
+```{r}
+merg.df.7 <- merge(x = x, y = y, by = c("k2"), incomparables = NA)
+```
+
+The result is considerably more satisfactory
+
+```{r}
+merg.df.7
+```
+
+In many projects, we would protect ourselves by including a laundry
+list of legal R values that should not be compared in the keys. We
+would almost certainly have `incomparables = c(NA, NaN, Inf, "\\s*")`
+to prevent matches for missing values, the "not a number" indicator,
+infinity, and blank spaces.
+
+
+## Prevent `merge()` from Sorting the Output {.bs-callout .bs-callout-red}
+
+The `merge()` function will, by default, sort the output data
+according to the values of the key variables.  Because R treats the
+keys as if they were factors, the sorting of the values may have
+unintended consequences of "shuffling" the rows. Many users would
+rather leave the rows of the left hand data set `x` as they were, and
+then when new rows are inserted to accomodate `y`, they should be
+placed at the end of the result.
+
+Here we have an example of how the default sorting approach creates a
+row-ordering that is, to say the least, unexpected.
+
+```{r, include = FALSE}
+n <- 30
+d <- data.frame(ID = 1:n, Company =
+       sample(c("Company_A", 	  "Company_B", "Company_C", "Company_D"),
+       						             size = n,replace = TRUE),
+	   profit = rnorm(n, 100, 15))
+
+d2 <- data.frame(ID = 1:n, Company = d$Company,
+       Region = sample(c("Midwest","Southeast","Deep_South","West_Coast","East_Coast"),
+           size = n, replace = TRUE),
+	   Cost = rnorm(n, 1000, 150))
+```
+
+Recall that R's `data.frame` function *by default* converts character variables
+into R factor variables.
+
+Notice the ordering of ID variable in the merged result. It counts up from
+$1, 10, 11, \ldots, 19, 2, 20, 21, \ldots$. Again, almost surely, this is
+unwanted.
+
+```{r}
+d_merged <- merge(x = d, y = d2, by = c("ID", "Company"),
+                  sort = TRUE, all.x = TRUE)
+d_merged
+```
+
+The solution for this is quite simple. Don't allow `merge()` to sort
+the rows of the merged set.
+
+```{r}
+d_merged <- merge(x = d, y = d2, by = c("ID", "Company"),
+                  sort = FALSE, all.x = TRUE)
+d_merged
+```
+
+Or, alternatively, more carefully police the values of the key so that
+when the values are sorted, they will be placed into a correct
+order. (There is a function in the `rockchalk` package named `padw0()`
+that would change the values of ID to $01, 02, \ldots, 30$ so that the
+factor variables would have the corrected sort.
+
+```{r}
+d$ID <- rockchalk::padW0(d$ID)
+d2$ID <- rockchalk::padW0(d$ID)
+
+d_merged_pad <- merge(x = d, y = d2, by = c("ID", "Company"),
+                      sort = TRUE, all.x = TRUE)
+d_merged_pad
+```
+
+## Merging Long Data with Wide Data
+
+This is sometimes referred to as an "m:1" merge. This kind of case
+arises when `x` is, for example, surveys for children, some of whom
+are from the same family, and `y` is data about the families
+themselves.  There are several observations for each unit in the left
+data set and these appear as "repeated" key values.  In the right data
+set we want to find one that can be associated with the "m" values of
+the key variable The information about the family from the `y` data
+set must be copied into each of the rows in `x` where the family
+appears.
+
+ For example:
+
+```{r, include=FALSE}
+n  <- 16
+ID <- c(rep(1, 4), rep(2, 4),rep(3, 4),rep(4, 4))
+d_long <- as.data.frame(ID)
+d_long["Region"]  <-
+    sample(c("Midwest", "Southeast", "Deep_South", "West_Coast", "East_Coast"),
+           size = n, replace = TRUE)
+ID <- seq(1,4)
+d_wide <- as.data.frame(ID)
+d_wide["Industry"] <- sample(c("Hot_Dogs", "Toilet_Paper", "Candy", "YoYo's"),
+                             size = 4)
+```
+
+```{r}
+d_long
+d_wide
+```
+
+The merge result accurately fills columns, putting together the
+repeated values of "Region" with identical matching values of "Industry".
+
+```{r}
+d_merged <- merge(d_long, d_wide, by.x = "ID", by.y = "ID", all.y = TRUE)
+d_merged
+```
+
+## `kutils` `mergeCheck()` Function {.bs-callout .bs-callout-red}
+
+Sometimes it is tedious to check data frames for illegal or unmatched
+key values. In the newest version of the `kutils` package for R
+(1.34), we have introduced a new function to provide quick diagnostics
+on the keys in a proposed merge. The diagnostic is called
+`mergeCheck()`.  Consider the following examples taken directly from
+the `mergeCheck()` help documentation (`example(mergeCheck)`):
+
+```{r, include=FALSE}
+library(kutils)
+df1 <- data.frame(id = 1:7, x = rnorm(7))
+df2 <- data.frame(id = c(2:6, 9:10), x = rnorm(7))
+```
+
+```{r}
+df1
+df2
+```
+Notice our two data frames have non matching key values.
+
+```{r}
+mergeCheck(x = df1, y = df2, by = "id")
+```
+
+`mergeCheck()` alerted us to the specific non matching ID numbers.
+Let's consider a case with duplicate key values:
+
+```{r, include=FALSE}
+df1 <- data.frame(id = c(1:3, NA, NaN, "", " "), x = rnorm(7))
+df2 <- data.frame(id = c(2:6, 5:6), x = rnorm(7))
+```
+
+```{r}
+df1
+df2
+```
+Notice the duplicate key values in a single dataframe.
+
+```{r}
+mergeCheck(x = df1, y = df2, by = "id")
+```
+
+`mergeCheck` alerts us to three potential problems here: A missing key
+value, duplicate key values, and unmatched cases.
+ 
+The most convenient element of `mergeCheck()` is that it maintains
+the same arguments as `merge()` once you pass the `mergeCheck()` test,
+you can simply erase the "Check" portion of the function and safely 
+perform the merge. Let's take a look at a succsesful merge check:
+ 
+```{r}
+df1 <- data.frame(id = c(1:10), x = rnorm(10))
+df2 <- data.frame(id = c(1:10), x = rnorm(10))
+
+mergeCheck(x = df1, y = df2, by = "id")
+```
+
+Notice `mergeCheck()` has nothing to point out as problematic. 
+
+It is important to note that in many situations `mergecheck()` may
+alert us to potential non-matching cases, but don't fear! If we are 
+conducting a left or right join, we should know well in advance one 
+of our data frames will contain many unmatched IDs. Similarly in an 
+inner join, it is expected we will encounter non-matching ID's. 
+We should be most concerned with missing key values, as well as 
+duplicate key values.
+  
+## `merge()` Summary
+
+1. INNER JOIN  is equivalent to basic `merge(all.x=FALSE, all.y =
+FALSE)`. Rows without matches are dropped from the resulting data set
+
+2. LEFT JOIN is equivalent to `merge()` with `all.x = T`. Rows in
+the Right (y) data table are dropped if not paired
+
+3. RIGHT JOIN is equivalent to `merge()` with `all.y = T`. Rows in 
+the left (x) data table are dropped if not paired
+
+4. Full JOIN is equivalent to `merge()` with `all = T`. All rows 
+are incorporated and empty cells are replaced with NULL (NA)
+
+# The `plyr` Package for R
+
+The `plyr` package (@plyr),
+offers a handful of data manipulation tools that are part of
+a sequence of offerings that is now known as the "tidyverse".
+
+The `join()` function in `plyr` handles left, right, and full merges
+with results similar to the R base `merge()`, but with some subtle
+conveniences.
+
+## Join function
+
+The `join` function in the `plyr` package provides a middle ground between `merge()` and
+SQL's joining by directly using SQL terminology with the `join()` 
+function.
+
+```{r,include =FALSE}
+library("plyr")
+```
+
+### Arguments {.bs-callout .bs-callout-red}
+
+join accepts the following arguments.
+
+* `join(x, y, by, type, match)`
+
+1. `x` x data set (left)
+
+2. `y` y data set (right)
+
+3. `by` key variable
+
+4. `type` type of join. Can be "left", "right", "inner", or "full".
+
+5. `match`: how should duplicate ids be matched? Either match just 
+the "first" matching row, or match "all" matching rows. Defaults to 
+"all" for compatibility with merge, but "first" is significantly faster.
+
+### Pros and Cons
+
+The `plyr` package's `join()` function has several attractive features
+
+1. It does not, by default, sort the rows.  This, by itself, avoids
+one of the chronic problems for novices who use `merge()`
+
+2. `join` uses SQL terminology, so its features are more immediately
+understandable to afficionados of SQL.
+
+3. `join` has seemingly-more sensible defaults for handling of keys.
+Importantly, two key values that are missing are never matched
+together in the joining process. In comparison, with `merge()`,
+users must be careful to specify the `incomparables` parameter.
+
+4. Cases have been found in which `join()` is faster than
+`merge()`.
+
+The cons of the `join` function are that some functionality of
+merge is omitted. Most importantly:
+
+1. The key variables must have exactly the same names in the two
+data sets. 
+
+
+## Left, Right, Full and Outer joins with `plyr::join()`
+
+Because `join()` requires us to have a key variable that has the same
+name in the two data sets, we need to do some data preparation before
+merging. Here, we choose to rename the variable `surname` as `name`.
+
+```{r}
+colnames(authors) <- gsub("surname", "name", colnames(authors))
+```
+
+After that, we can use the variable "name" as the key.
+
+### Left Join with `plyr::join` {.bs-callout .bs-callout-orange}
+
+```{r}
+join(x = books, y = authors, by = "name", type = "left")
+```
+
+### Right Join with `plyr::join` {.bs-callout .bs-callout-orange}
+
+```{r}
+join(x = books , y= authors , by="name",type = "right")
+```
+
+## Full Join with `plyr::join` {.bs-callout .bs-callout-orange}
+
+```{r}
+join(x = books , y = authors , by="name",type = "full")
+```
+
+## Inner Join with `plyr::join` {.bs-callout .bs-callout-orange}
+
+```{r, error = TRUE}
+join(x = books, y= authors, by="name",type = "inner")
+```
+
+## Creating a "long" data set {.bs-callout .bs-callout-orange}
+
+This demonstrates that the "m:1" merge works as well with `join()` as
+it does with `merge()`. 
+
+```{r}
+join(x = d_long , y = d_wide , by = "ID", type = "full")
+```
+
+```{r}
+merge(x = d_long, y = d_wide, by = "ID", all.x = TRUE, all.y = TRUE)
+```
+
+
+## No NA Matching Problems {.bs-callout .bs-callout-red}
+
+```{r}
+join(x = x , y = y , by = "ID", type = "inner")
+```
+
+```{r, include=FALSE}
+n <- 30
+ID <- seq(1, n)
+d <- as.data.frame(ID)
+d["Company"] <- sample(c("Company_A", "Company_B",
+                         "Company_C", "Company_D"),
+                       size = n, replace = TRUE)
+d["Profit"] <- rnorm(n, 100, 15)
+ID <- seq(1, n)
+d2 <- as.data.frame(ID)
+d2["Company"] <- d$Company
+d2["Region"]  <-
+    sample(c("Midwest", "Southeast", "Deep_South", "West_Coast",
+             "East_Coast"), size = n, replace = TRUE)
+d2["Cost"] <- rnorm(n, 1000, 150)
+```
+
+## No Sorting Problems {.bs-callout .bs-callout-red}
+
+It does not have sorting issues by default
+
+```{r}
+join(x = d, y = d2, by = "ID", type = "inner")
+```
+
+# The `data.table` Package for R
+
+The `data.table` package (@DowleSrinivasan) for R offers another
+method for merging data. The CRMDA has prepared a separate guide, with
+working examples, for `data.table` [Data Table Guide: Basic Usage and
+Advanced Topics](https://crmda.ku.edu/node/516).  The `data.table`
+package has been especially helpful in dealing with *very large* data
+structures, reducing runtime from hours to minutes in several cases.
+For that reason, we typically prefer to use the `data.table` package
+when working with large datasets (several million rows). The
+'data.table' package merges data frames (which are first converted to
+data tables) faster than the aforementioned methods. We suggest using
+this link to learn more about 'data.table':
+https://www.datacamp.com/courses/data-analysis-the-data-table-way.
+
+
+## Example Data {.bs-callout .bs-callout-blue}
+Here we replicate some of the previous examples with 'data.table' 
+to demonstrate its use.
+
+```{r, include=TRUE}
+library(data.table)
+```
+
+```{r, include=FALSE}
+authors <- data.frame(
+    surname = I(c("Tukey", "Venables", "Tierney", "Ripley", "McNeil")),
+    nationality = c("US", "Australia", "US", "UK", "Australia"),
+    deceased = c("yes", rep("no", 4)))
+
+books <- data.frame(
+    name = I(c("Tukey", "Venables", "Tierney",
+               "Ripley", "Ripley", "McNeil", "R Core")),
+    title = c("Exploratory Data Analysis",
+              "Modern Applied Statistics",
+              "LISP-STAT",
+              "Spatial Statistics", "Stochastic Simulation",
+              "Interactive Data Analysis",
+              "An Introduction to R"),
+    other_author = c(NA, "Ripley", NA, NA, NA, NA,
+                     "Venables & Smith"))
+```
+
+We can take the authors and books data frames from before and 
+convert them to data table objects. We must also set the keys 
+for these data tables.  The key(s) indicates which variables to 
+sort the data table by and what to use as a key when merging.
+
+```{r, include=TRUE}
+authors
+books
+authors <- as.data.table(authors)
+books <- as.data.table(books)
+setkey(authors, surname)
+setkey(books, name)
+```
+
+## Left, Inner, and Full Joins with `data.table`
+
+## Left Join {.bs-callout .bs-callout-blue}
+
+It appears backwards, but here is a left join of `books` (y) onto
+`authors` (`x`).
+
+```{r}
+books[authors]
+```
+
+## Right Join {.bs-callout .bs-callout-blue}
+
+We can reverse it for a right join.
+
+```{r}
+authors[books]
+```
+
+## Inner Join {.bs-callout .bs-callout-blue}
+
+And specifying 'nomatch = 0' indicates an inner join.
+
+```{r}
+authors[books, nomatch=0]
+```
+
+## What about keys with missing values? {.bs-callout .bs-callout-blue}
+
+Here we have two data frames with information about NFL 
+quarterbacks and how many Super Bowls and league MVP awards 
+they have won.
+
+```{r}
+x <- data.frame("Name" = c("Johnson", NA, "Brady", "Ryan", NA, "Goff"),
+                "Titles" = c(1, 0, 5, 0, 1, 0))
+				
+y <- data.frame("LastName" = c(NA, "Marino", "Brady", "Ryan", "Wilson",
+                               "Bryant", NA),
+                "MVPs" = c(0, NA, 3, 0, 0, 0, 0))
+x
+y
+```
+
+## NA Matching Problems {.bs-callout .bs-callout-blue}
+
+Unfortunately, matches occur on with missing key values.
+
+```{r, echo=TRUE}
+x <- as.data.table(x)
+y <- as.data.table(y)
+setkey(x, Name)
+setkey(y, LastName)
+
+## Left join
+y[x]
+
+## Right join
+x[y]
+
+## Inner join
+y[x, nomatch = 0]
+```
+
+Clearly, missing values in keys is going to be a problem. 
+Removing cases with missing prior to merging might be 
+the best option.
+
+## Multiple rows with same key value {.bs-callout .bs-callout-blue}
+
+The data.table package allows multiple key values to be specified.
+This can be useful when a single variable does not uniquely identify
+each row. In the data created here there are two cases with the last
+name "Manning."
+
+```{r}
+x <- data.frame("First" = c("Peyton", "Eli", "Tom", "Matt"),
+                "Last" = c("Manning", "Manning", "Brady", "Ryan"),
+                "Titles" = c(2, 2, 5, 0))
+
+y <- data.frame("FirstName" = c("Peyton", "Tom", "Matt", "Russell",
+                                "Dez", "Von"),
+                "LastName" = c("Manning", "Brady", "Ryan", "Wilson",
+                               "Bryant", "Miller"),
+                "MVPs" = c(3, 3, 1, 0, 0, 0))
+x
+y
+```
+
+If we were to merge the data tables using only the last name 
+variables as the key, the results would be strange.
+
+```{r, echo=TRUE}
+x <- data.table(x)
+y <- data.table(y)
+setkey(x, Last)
+setkey(y, LastName)
+
+## Left join
+y[x]
+
+## Right join
+x[y]
+
+## Inner join
+y[x, nomatch = 0]
+```
+
+Check to see if another variable can be used as a key!
+
+Are the values in 'x[ , Last]' unique?
+
+```{r, echo=TRUE}
+nrow(x) == length(unique(x[ , Last]))
+```
+
+How about 'x[ , Last, First]'?
+
+```{r}
+nrow(x) == nrow(unique(x[ , Last, First]))
+```
+
+These two variables uniquely identify each row!
+We can use both of them as keys.
+
+```{r}
+setkey(x, Last, First)
+setkey(y, LastName, FirstName)
+## Left join
+y[x]
+## Right join
+x[y]
+```
+
+## data.table Summary {.bs-callout .bs-callout-blue}
+
+The 'data.table' package provides the same output from 
+merging as the previously shown methods (with the exception 
+'data.table' producing 'data.table' objects, not 'data.frame'
+objects). The major benefit of using 'data.table' is the 
+increase in speed when working with large data frames.
+
+# References

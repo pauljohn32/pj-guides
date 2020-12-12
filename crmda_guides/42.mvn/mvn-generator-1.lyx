@@ -1,0 +1,9278 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass scrartcl
+\begin_preamble
+\usepackage{ifthen}
+
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+% \setlength{\belowcaptionskip}{\@tempdima}%
+}{%
+ \end@float
+}
+
+
+\usepackage{textcomp}
+\usepackage{listings}
+
+\usepackage{color}
+\usepackage{courier}
+
+\lstset{tabsize=2, breaklines=true,upquote=true,backgroundcolor=\color[gray]{.97}, basicstyle=\footnotesize\ttfamily}
+%%\lstset{tabsize=2, breaklines=true,upquote=true,backgroundcolor=\color[gray]{.97}}
+\end_preamble
+\use_default_options true
+\begin_modules
+logicalmkup
+enumitem
+theorems-std
+\end_modules
+\maintain_unincluded_children false
+\begin_local_layout
+Format 7
+InsetLayout CharStyle:Rinput
+LyxType               charstyle
+LabelString           Rinput
+LatexType             command
+LatexName             Rinput
+Font
+Family             Typewriter
+EndFont
+Preamble
+\newcommand*{\Rinput}[1]{{\ttfamily #1}}
+EndPreamble
+End
+InsetLayout CharStyle:Rfunction
+LyxType               charstyle
+LabelString           Rfunction
+LatexType             command
+LatexName             Rfunction
+Font
+Family             Typewriter
+EndFont
+Preamble
+\newcommand*{\Rfunction}[1]{{\ttfamily #1}}
+EndPreamble
+End
+InsetLayout CharStyle:Routput
+LyxType               charstyle
+LabelString           Routput
+LatexType             command
+LatexName             Routput
+Font
+Family             Typewriter
+EndFont
+Preamble
+\newcommand*{\Routput}[1]{{\ttfamily #1}}
+EndPreamble
+End
+\end_local_layout
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter courier
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command bibtex8
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize letterpaper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vb}[1]{\bm{\mathrm{#1}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Where do Multivariate Normal Samples Come from?
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson <pauljohn@ku.edu>
+\begin_inset Newline newline
+\end_inset
+
+Center for Research Methods and Data Analysis
+\begin_inset Newline newline
+\end_inset
+
+University of Kansas
+\begin_inset Newline newline
+\end_inset
+
+Lawrence, Kansas 66045
+\end_layout
+
+\begin_layout Date
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This note is about details of simulation of draws from a multivariate normal
+ distribution.
+ It reviews the mathematical formulation of the problem, some matrix terminology
+, and compares software implementations.
+ It explores a basic question that most social scientists never consider,
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Where do multivariate normal samples come from?
+\begin_inset Quotes erd
+\end_inset
+
+ The essay compares Stata 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Stata14Software"
+
+\end_inset
+
+ functions, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+, and the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ function in the MASS package (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "MASS"
+
+\end_inset
+
+) for R (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "R"
+
+\end_inset
+
+).
+ A number of matrix algebra details are written out in detail.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename images/CC_88x31.png
+	height 0.5cm
+
+\end_inset
+
+This work is licensed under a 
+\begin_inset CommandInset href
+LatexCommand href
+name "Creative Commons Attribution 4.0 International License"
+target "http://creativecommons.org/licenses/by/4.0/"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In an essay named, 
+\begin_inset Quotes eld
+\end_inset
+
+New Estimates for Propensity Score Analysis Monte Carlo Simulations
+\begin_inset Quotes erd
+\end_inset
+
+, we discuss a replication of Monte Carlo simulation estimates reported
+ in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "guo_propensity_2014"
+
+\end_inset
+
+.
+ Some differences between simulations prepared in R (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "R"
+
+\end_inset
+
+) and Stata 14 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Stata14Software"
+
+\end_inset
+
+, as reported by Guo and Fraser, are considered.
+ 
+\end_layout
+
+\begin_layout Standard
+This essay is a record of the technical side of the project.
+ In the process of discovering the source of the differences, a good deal
+ of effort was invested developing an understanding of the technical foundations
+ of the competing methods of creating simulated multivariate normal data.
+ Students in research methodology can benefit from an inspection of this
+ material in four ways.
+ First, an abstract algorithm for simulating draws from a multivariate normal
+ (
+\begin_inset Formula $MVN$
+\end_inset
+
+) distribution is laid out, step by step.
+ Second, competing methods of decomposing a matrix 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ and the associated cross product matrix 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+ are considered.
+ Third, coding differences between R and Stata implementations of the 
+\begin_inset Formula $MVN$
+\end_inset
+
+ are considered.
+ Finally, the different characteristics of 
+\begin_inset Quotes eld
+\end_inset
+
+empirically standardized
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $MVN$
+\end_inset
+
+ data are investigated.
+ The Stata documentation cautions readers against the usage of their function
+ called 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+.
+ We consider the implications of mistakenly using this function when one
+ ought to be using a function to draw 
+\begin_inset Formula $MVN$
+\end_inset
+
+ samples instead.
+ 
+\end_layout
+
+\begin_layout Standard
+The first sections offer a formal definition of the 
+\begin_inset Formula $MVN$
+\end_inset
+
+ distribution and its parameters along with some mathematical details.
+ A 5 step procedure for generating 
+\begin_inset Formula $MVN$
+\end_inset
+
+ samples is described.
+ The software implementations in Stata and R are compared.
+ The final section focuses on Stata's 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ function, which may have been used accidentally in simulations that should
+ instead have used drawnorm.
+ 
+\end_layout
+
+\begin_layout Standard
+This note presumes a basic training in statistics, random variables
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Distribution Overview: Probability by the Seat of the Pants
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/Distributions/DistributionOverview/Distribut
+ionReview.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, and elementary matrix algebra as it is used in regression analysis.
+ Most of the other details are given a basic description when they arise.
+\end_layout
+
+\begin_layout Section
+Normal and Multivariate Normal Distributions
+\end_layout
+
+\begin_layout Standard
+\noindent
+Basic surveys of the normal distribution, 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+, and the multivariate normal distribution, 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+, are available on my Website
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Normal Distribution
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/Distributions/DistributionWriteups/Normal/No
+rmal-01.pdf
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+The Multivariate Normal Distribution
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/guides/stat/Distributions/DistributionWriteups/NormalMul
+tivariate/NormalMultivariate.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The probability density function for the one variable model is written
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Univariate:}\,f(x)=\frac{1}{\sqrt{2\pi}\sigma}\,e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}}\,\mathrm{or\,}\,\frac{1}{(2\pi)^{1/2}\sigma}\,e^{-\frac{1}{2}\left(x-\mu\right)\sigma^{-1}\left(x-\mu\right)}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A draw from that probability process is referred to as 
+\begin_inset Formula $x\sim N(\mu,\sigma^{2})$
+\end_inset
+
+.
+ The parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ determines the center point of the distribution's values, while 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is the dispersion.
+ The density function has the property that the mostly likely outcome is
+ also the expected value, which happens to equal the parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ For that reason, the parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is sometimes simply referred to as the expected value, or the mean.
+ The dispersion parameter is often referred to as the variance.
+ I try to avoid the name 
+\begin_inset Quotes eld
+\end_inset
+
+population
+\begin_inset Quotes erd
+\end_inset
+
+ to refer to this process; that causes more confusion than clarity for readers.
+ Instead, refer to this a data generating process, and 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ are the 
+\begin_inset Quotes eld
+\end_inset
+
+true
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+parametric
+\begin_inset Quotes erd
+\end_inset
+
+ values.
+ Estimates from samples are distinguished with hats, 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\sigma}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We write 
+\begin_inset Formula $\vb x\sim MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+ to refer to a column vector that is drawn from the multivariate normal
+ distribution, 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+To save space on a written page, we often refer the transpose, 
+\begin_inset Formula $\vb x^{T}$
+\end_inset
+
+, which is a row vector, or, equivalently 
+\begin_inset Formula $\vb x=(x_{1},x_{2},\ldots x_{p})^{T}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\vb x=\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+\vdots\\
+x_{p}
+\end{array}\right]\sim MVN(\vb{\mu},\vb{\Sigma})=MVN\left(\left[\begin{array}{c}
+\mu_{1}\\
+\mu_{2}\\
+\vdots\\
+\mu_{p}
+\end{array}\right],\left[\begin{array}{cccc}
+\sigma_{1}^{2} & \sigma_{12} &  & \sigma_{1p}\\
+\sigma_{12} & \sigma_{2}^{2} &  & \sigma_{2p}\\
+ &  & \ddots\\
+\sigma_{1p} & \sigma_{2p} &  & \sigma_{p}^{2}
+\end{array}\right]\right).
+\end{equation}
+
+\end_inset
+
+ The probability density function (PDF) for the 
+\begin_inset Formula $MVN$
+\end_inset
+
+ is quite similar to the formula for the one dimensional model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(\vb x)=\frac{1}{(2\pi)^{p/2}|\vb{\Sigma}|^{1/2}}e^{\frac{-1}{2}(\vb x-\vb{\mu})^{T}\vb{\Sigma}^{-1}(\vb x-\vb{\mu})}.\label{eq:MVN}
+\end{equation}
+
+\end_inset
+
+The probability of a given outcome depends on the parameters, 
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\vb{\mu}=\left[\begin{array}{c}
+\mu_{1}\\
+\mu_{2}\\
+\vdots\\
+\mu_{p}
+\end{array}\right] & \vb{\Sigma}=\left[\begin{array}{cccc}
+\sigma_{1}^{2} & \sigma_{12} &  & \sigma_{1p}\\
+\sigma_{12} & \sigma_{2}^{2} &  & \sigma_{2p}\\
+ &  & \ddots\\
+\sigma_{1p} & \sigma_{2p} &  & \sigma_{p}^{2}
+\end{array}\right]\end{array}.\label{eq:musigma}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is also known in the literature as the 
+\begin_inset Quotes eld
+\end_inset
+
+variance-covariance matrix
+\begin_inset Quotes erd
+\end_inset
+
+ or the 
+\begin_inset Quotes eld
+\end_inset
+
+covariance matrix
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The similarity of 
+\begin_inset Formula $MVN$
+\end_inset
+
+ to the one-dimensional normal is more apparent if we write the one variable
+ model's density as
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+f(x)=\frac{1}{(2\pi)^{1/2}\sigma}\,e^{-\frac{1}{2}\left(x-\mu\right)\sigma^{-1}\left(x-\mu\right)}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+If 
+\begin_inset Formula $p=1$
+\end_inset
+
+, of course, the two density functions are the same (both one dimensional).
+ 
+\end_layout
+
+\begin_layout Section
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Understanding Sigma
+\end_layout
+
+\end_inset
+
+Understanding the Variance Matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Most students do not have trouble appreciating the fact that the vector
+ of means for the individual elements, 
+\begin_inset Formula $(\mu_{1},\ldots,\mu_{p})^{T}$
+\end_inset
+
+, provides the center points (modes, means) of the individual components
+ of the random draw.
+ They do, however, have difficulty understanding the variance matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+One source of difficulty is a notational incongruity.
+ In the literature, we refer to variance as 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ (sigma squared) and the standard deviation as 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ (sigma).
+ In contrast, in a multivariate normal model, we refer to the variance matrix
+ simply as 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ (bold-faced upper-case sigma), whereas it would seem more natural to refer
+ to it as 
+\begin_inset Formula $\vb{\Sigma}^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+A nice way to begin study the variance matrix is to set all of the non-diagonal
+ elements to zero (
+\begin_inset Formula $\sigma_{ij}=0$
+\end_inset
+
+),
+\begin_inset Formula 
+\begin{equation}
+\vb{\Sigma=}\left[\begin{array}{cccc}
+\sigma_{1}^{2} & 0 &  & 0\\
+0 & \sigma_{2}^{2} &  & 0\\
+ &  & \ddots\\
+0 & 0 &  & \sigma_{p}^{2}
+\end{array}\right]\label{eq:sigmauncorrelated}
+\end{equation}
+
+\end_inset
+
+As one can see in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:sigmauncorrelated"
+
+\end_inset
+
+), the elements on the main diagonal (
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+) are variance parameters.
+ Notice the incongrous notation: 
+\begin_inset Formula $Sigma$
+\end_inset
+
+ (on the left) is equal to a diagonal of 
+\begin_inset Formula $sigma$
+\end_inset
+
+s squared.
+ 
+\end_layout
+
+\begin_layout Standard
+A draw from 
+\begin_inset Formula $MVN$
+\end_inset
+
+ with that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ matrix would provide uncorrelated elements.
+ We can see that the square root of each element in the diagonal (
+\begin_inset Formula $\sqrt{\sigma_{i}^{2}}=\sigma_{i}$
+\end_inset
+
+) looks an awful lot like the standard deviation of an individual variable.
+ If we took draws from 
+\begin_inset Formula $MVN$
+\end_inset
+
+ with this variance, we would essentially have separate columns.
+ We could look at the 
+\begin_inset Formula $j$
+\end_inset
+
+'th element of 
+\begin_inset Formula $\vb x$
+\end_inset
+
+ in isolation and the value would be distributed with standard deviation
+ 
+\begin_inset Formula $\sigma_{j}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Lets collect the standard deviations in a vector 
+\begin_inset Formula $\vb{\sigma}=(\sigma_{1},\sigma_{2},\ldots,\sigma_{p})^{T}$
+\end_inset
+
+.
+ If we place the standard deviation values along the diagonal, as in the
+ following, we have a matrix that might be thought of as a square root of
+ 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+\vb{\Sigma}^{1/2}=\left[\begin{array}{cccc}
+\sigma_{1} & 0 &  & 0\\
+0 & \sigma_{2} &  & 0\\
+ &  & \ddots\\
+0 & 0 &  & \sigma_{p}
+\end{array}\right]=diag(\vb{\sigma})\label{eq:sigmaroot}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Note that it is a matrix square root, in the sense that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb{\Sigma}=\vb{\Sigma}^{1/2}\vb{\Sigma}^{1/2}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+This will turn out to be a key idea in the generation of multivariate normal
+ random.
+ We are able to state conditions under which a square root of the variance
+ 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ exists.
+ 
+\end_layout
+
+\begin_layout Subsection
+About the off-diagonal elements, 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Generally, the off-diagonal elements in 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ are not equal to 0.
+ Those off diagonal elements, 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+ in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:musigma"
+
+\end_inset
+
+), are commonly called covariance parameters.
+ A positive value of 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+ means that elements 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+go together
+\begin_inset Quotes erd
+\end_inset
+
+, in the sense that if 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is high, then 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ is also likely to be high.
+ A negative value means that when 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is high, then 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ is low.
+\end_layout
+
+\begin_layout Standard
+There are 
+\begin_inset Formula $p^{2}$
+\end_inset
+
+ elements in 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ (it is a 
+\begin_inset Formula $p\times p$
+\end_inset
+
+ matrix).
+ We are
+\emph on
+ not free to set all of them however we like
+\emph default
+.
+ There are logical and mathematical restrictions on the values that must
+ be respected.
+ Obviously, the main diagonal elements 
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+ must be positive (they are variances).
+ In addition, as we see in the next sections, 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is symmetric and positive definite.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Sigma is symmetric
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is symmetric.
+\end_layout
+
+\begin_layout Standard
+The values of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ above and below the main diagonal must be the same, 
+\begin_inset Formula $\sigma_{ij}=\sigma_{ji}$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $\vb{\Sigma}=\vb{\Sigma}^{T}$
+\end_inset
+
+.
+ As soon as we define variance, the proof that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is symmetric will fall out without any effort.
+ 
+\end_layout
+
+\begin_layout Standard
+To define variance, it is necessary to understand the concept of expected
+ value.
+ In a one variable probability model, the expected value is 
+\begin_inset Formula $E[x]=\mu$
+\end_inset
+
+ and the variance is defined as the expected value of the squared deviation
+ of observed scores around the expected value, 
+\begin_inset Formula $E[(x-E[x])^{2}]=E[(x-\mu)^{2}]=\sigma^{2}$
+\end_inset
+
+.
+ Expected value is a probability weighted sum of possible outcomes for a
+ variable.
+ In the normally distributed variables, 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is the average and 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ is the diversity of scores likely to be observed.
+\end_layout
+
+\begin_layout Standard
+The multivariate model uses vector multiplication to define variance.
+ Replace the one variable expression 
+\begin_inset Formula $(x-E[x])$
+\end_inset
+
+ with the multivariate 
+\begin_inset Formula $(\vb x-E[\vb x])$
+\end_inset
+
+.
+ I'll be explicit: 
+\end_layout
+
+\begin_layout Standard
+
+\size footnotesize
+\begin_inset Formula 
+\begin{eqnarray}
+\vb{\Sigma} & = & E[(\vb x-E[\vb x])((\vb x-E[\vb x])^{T}]\label{eq:ExpSigma}
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=E\left[\left[\begin{array}{c}
+x_{1}-E[x_{1}]\\
+x_{2}-E[x_{2}]\\
+\vdots\\
+x_{p}-E[x_{p}]
+\end{array}\right]\left[\begin{array}{cccc}
+x_{1}-E[x_{1}], & x_{2}-E[x_{2}], & \ldots, & x_{p}-E[x_{p}]\end{array}\right]\right]
+\]
+
+\end_inset
+
+
+\size scriptsize
+
+\begin_inset Formula 
+\[
+=E\left[\begin{array}{ccccc}
+(x_{1}-E[x_{1}])^{2} & (x_{1}-E[x_{1}])(x_{2}-E[x_{2}]) & (x_{1}-E[x_{1}])(x_{3}-E[x_{3}]) & \cdots & (x_{1}-E[x_{1}])(x_{p}-E[x_{p}])\\
+(x_{1}-E[x_{1}])(x_{2}-E[x_{2}) & (x_{2}-E[x_{2}])^{2} & (x_{2}-E[x_{2}])(x_{3}-E[x_{3}]) &  & \vdots\\
+(x_{1}-E[x_{1}])(x_{3}-E[x_{3}) & (x_{2}-E[x_{2}])(x_{3}-E[x_{3}]) & \ddots &  & \vdots\\
+\ddots &  &  & \ddots & \vdots\\
+(x_{1}-E[x_{1}])(x_{p}-E[x_{p}]) &  &  &  & (x_{p}-E[x_{p}])^{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The expected value of a matrix is the expected value of each individual
+ element.
+ Before writing that out, lets simplify by replacing 
+\begin_inset Formula $E[x_{i}]$
+\end_inset
+
+ with 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+
+\size footnotesize
+\begin_inset Formula 
+\begin{equation}
+=\left[\begin{array}{cccc}
+E[(x_{1}-\mu_{1})^{2}] & E[(x_{1}-\mu_{1})(x_{2}-\mu_{2})] &  & E[(x_{1}-\mu_{1})(x_{p}-\mu_{p})]\\
+E[(x_{1}-\mu_{1})(x_{2}-\mu_{2})] & E[(x_{2}-\mu_{2})^{2}]\\
+ &  & \ddots\\
+\\
+E[(x_{1}-\mu_{1})(x_{p}-\mu_{p})] &  &  & E[(x_{p}-\mu_{p})^{2}]
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the construction of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, it should be apparent that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is a symmetric matrix
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In elementary mathematics, we know that 
+\begin_inset Formula $a\cdot b=b\cdot a$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+: 
+\begin_inset Formula $E[(x_{i}-\mu_{i})(x_{j}-\mu_{j})]=E[(x_{j}-\mu_{j})(x_{i}-\mu_{i})]$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The impact of symmetry is that it reduces the number of 
+\begin_inset Quotes eld
+\end_inset
+
+unrestricted elements
+\begin_inset Quotes erd
+\end_inset
+
+ in 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ There are 
+\begin_inset Formula $(n-1)n/2$
+\end_inset
+
+ elements above the main diagonal.
+ Once they are specified, they must be mirrored below.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Sigma is positive definite
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite
+\end_layout
+
+\begin_layout Standard
+This section is about the restrictions that flow from the idea that the
+ last part of the exponent in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVN"
+
+\end_inset
+
+), 
+\begin_inset Formula 
+\begin{equation}
+(\vb x-\vb{\mu})^{T}\vb{\Sigma}^{-1}(\vb x-\vb{\mu}),\label{eq:MVNdistance}
+\end{equation}
+
+\end_inset
+
+must be positive.
+ We explore the idea that 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+, and hence 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, must be 
+\begin_inset Quotes eld
+\end_inset
+
+positive definite
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This discussion is a little bit esoteric, but this concept/terminology
+ pervades the literature on multivariate random numbers and there is simply
+ no way to avoid it.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's one intuition.
+ The distance between two points cannot be negative (Remember Pythagoras:
+ 
+\begin_inset Formula $a^{2}+b^{2}=c^{2}$
+\end_inset
+
+).
+ The difference 
+\begin_inset Formula $(\vb x-\vb{\mu})$
+\end_inset
+
+ is the distance between 
+\begin_inset Formula $\vb x$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+.
+ The squared distance from 
+\begin_inset Formula $\vb x$
+\end_inset
+
+ to 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{equation}
+(\vb x-\vb{\mu})^{T}(\vb x-\vb{\mu})=(x_{1}-\mu_{1})^{2}+(x_{2}-\mu_{2})^{2}+\cdots+(x_{p}-\mu_{p})^{2},
+\end{equation}
+
+\end_inset
+
+an application of the Pythagorean theorem.
+ Squared values are always positive.
+ As long as the two points are indeed at different positions, the distance
+ between them has to be greater than zero.
+ This is not something to be derived.
+ It is a property to be assumed: 
+\begin_inset Formula 
+\begin{equation}
+(\vb x-\vb{\mu})^{T}(\vb x-\vb{\mu})>0\,if\,\vb x\neq\vb{\mu}.\label{eq:distance_unweighted}
+\end{equation}
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNdistance"
+
+\end_inset
+
+) we have a weighted distance matrix, where the inverse of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ appears between 
+\begin_inset Formula $(\vb x-\vb{\mu})^{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $(\vb x-\vb{\mu})$
+\end_inset
+
+.
+ The weighted distance, well, has to be positive, unless the two points
+ we are comparing are at the exactly same position.
+ So we restate the 
+\begin_inset Quotes eld
+\end_inset
+
+distance must be positive
+\begin_inset Quotes erd
+\end_inset
+
+ idea: 
+\begin_inset Formula 
+\begin{equation}
+(\vb x-\vb{\mu})^{T}\vb{\Sigma}^{-1}(\vb x-\vb{\mu})>0.\label{eq:MVNdistance2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The expression in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNdistance2"
+
+\end_inset
+
+) has a formal name: 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+positive definite
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A matrix, such as 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+, is positive definite if, for any non-zero vector 
+\begin_inset Formula $\vb z$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+\vb z^{T}\vb{\Sigma}^{-1}\vb z>0.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+If the inequality allows 
+\begin_inset Quotes eld
+\end_inset
+
+equal to
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $\geq$
+\end_inset
+
+, then 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+ is said to be positive semi-definite.
+ This generally indicates that one column can be reproduced as a weighted
+ sum of the other columns; such a column adds no information.
+\end_layout
+
+\begin_layout Standard
+Admittedly, this seems esoteric because we are working hard to justify the
+ simple idea that 
+\begin_inset Quotes eld
+\end_inset
+
+something squared is a positive value
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Not only does it seem esoteric, it seems unhelpful.
+ We want information about restrictions on 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, but we are giving restrictions on 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+.
+ However, the effort is not wasted.
+ 
+\end_layout
+
+\begin_layout Standard
+Here is an important fact: if 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite, then 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+ is positive definite.
+ This is fairly easy to prove.
+ Suppose 
+\begin_inset Formula $\vb x\vb{\Sigma}\vb x>0$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is symmetric and invertible.
+ Let 
+\begin_inset Formula $\vb y=\vb{\Sigma}\vb x$
+\end_inset
+
+.
+ Note that 
+\begin_inset Formula $\vb y^{T}=\vb x^{T}\vb{\Sigma}^{T}$
+\end_inset
+
+.
+ Thus 
+\begin_inset Formula $\vb y^{T}\vb{\Sigma}^{-1}\vb y=\vb x^{T}\vb{\Sigma}^{T}\vb{\Sigma}^{-1}\vb{\Sigma}\vb x=\vb x^{T}\vb{\Sigma}\vb x$
+\end_inset
+
+.
+ The signs of the first and third elements must be the same, so if 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite, then so is 
+\begin_inset Formula $\vb{\Sigma}^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Checking if a Matrix is Positive Definite: Eigenvalues and Eigenvectors
+\end_layout
+
+\begin_layout Standard
+In many linear algebra books (for example, Golub and Van Loan, 
+\begin_inset CommandInset citation
+LatexCommand citeyear
+after "p. 141-2"
+key "golub_matrix_1996"
+
+\end_inset
+
+), there will be a list of equivalent properties that link positive definiteness
+ of a matrix to a number of other qualities.
+ These other qualities give us ideas about how to check whether a matrix
+ is positive definite, or how we might manufacture a positive definite matrix..
+ 
+\end_layout
+
+\begin_layout Theorem
+(Positive Definite Matrix Properties) The following are equivalent:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\vb x^{T}\vb{\Sigma}\vb x>0$
+\end_inset
+
+ for all 
+\begin_inset Formula $\vb x\neq0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+If a matrix 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ has full column rank (the 
+\begin_inset Formula $p$
+\end_inset
+
+ columns are linearly independent), then the product 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+ is a positive definite matrix.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The number of columns in 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ determines the size of 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ is 
+\begin_inset Formula $n\times p$
+\end_inset
+
+, then 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+ is square, 
+\begin_inset Formula $p\times p$
+\end_inset
+
+, and it is symmetric.
+ The number of rows in 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ is not relevant to the final size of 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+A positive definite matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ can be decomposed into a product of matrices.
+ The Cholesky root and the eigenvalue decompositions are explored below.
+\end_layout
+
+\begin_layout Enumerate
+The eigenvalues of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ are positive.
+\end_layout
+
+\begin_layout Enumerate
+The determinants of principal submatrices (square submatrices beginning
+ with row and column 1) are positive.
+\end_layout
+
+\begin_layout Standard
+In property 4, we note that when 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite, then the eigenvalues are all positive.
+ 
+\end_layout
+
+\begin_layout Standard
+Eigenvalues are discussed in depth in a first course on linear algebra.
+ This note cannot replace a thorough study of the material, but it might
+ help students remember what they learned, or motivate them to study some
+ more.
+ Here is a nutshell definition of eigenvalue.
+\end_layout
+
+\begin_layout Standard
+The eigenvalues (
+\begin_inset Formula $\lambda_{j}$
+\end_inset
+
+) and eigenvectors (
+\begin_inset Formula $\vb v_{j}$
+\end_inset
+
+) of a matrix are defined as the solutions of this equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\vb{\Sigma}\vb v_{j} & = & \lambda_{j}\vb v_{j}\label{eq:eigen_definition}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Heuristically, this says that the scaling effect that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ exerts on a vector 
+\begin_inset Formula $\vb v_{j}$
+\end_inset
+
+ can be summarized by a proportional rescaling 
+\begin_inset Formula $\lambda_{j}\vb v_{j}.$
+\end_inset
+
+ This is the sense in which the matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is characterized by 
+\begin_inset Formula $\lambda_{j}$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb v_{j}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Eigenvalues are calculated as follows.
+ Rearrange the definition as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\vb{\Sigma}\vb v_{j} & = & \lambda_{j}\vb v_{j}\nonumber \\
+\vb{\Sigma}\vb v_{j}-\lambda_{j}\vb v_{j} & = & 0\nonumber \\
+\vb{\Sigma}\vb v_{j}-\lambda_{j}\vb I\vb v_{j} & = & 0\nonumber \\
+(\vb{\Sigma}-\lambda_{j}\vb I) & \vb v_{j}= & 0\label{eq:eigen_solution}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want to ignore the trivial solution where 
+\begin_inset Formula $\vb v_{j}=0$
+\end_inset
+
+.
+ Thus, when 
+\begin_inset Formula $\vb v_{j}\neq0$
+\end_inset
+
+, it must be that 
+\begin_inset Formula $(\vb{\Sigma-\lambda_{j}I})=0$
+\end_inset
+
+.
+ There may be several solutions, the eigenvalues are always generally unique.
+ A theorem in linear algebra states that the eigenvalues can be found as
+ the solutions of the so-called characteristic equation, 
+\begin_inset Formula $det(\vb{\Sigma}-\lambda_{j}\vb I)=0$
+\end_inset
+
+, where 
+\begin_inset Formula $det$
+\end_inset
+
+ represents the determinant.
+ When 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is a well specified 
+\begin_inset Formula $p\times p$
+\end_inset
+
+ variance matrix, then there will be 
+\begin_inset Formula $p$
+\end_inset
+
+ separate solutions of the characteristic equation, and hence 
+\begin_inset Formula $p$
+\end_inset
+
+ eigenvalues.
+ After the eigenvalues are found, then the corresponding vectors are calculated.
+ 
+\end_layout
+
+\begin_layout Standard
+In most software packages, the eigenvalues are stored in order of descending
+ magnitude in 
+\begin_inset Formula $\vb{\lambda}^{T}=(\lambda_{1},\lambda_{2},\ldots,\lambda_{p})$
+\end_inset
+
+ and the eigenvectors are scaled so that 
+\begin_inset Formula $\vb v_{j}^{T}\vb v_{j}=1$
+\end_inset
+
+.
+ (The scaling is done by calculating 
+\begin_inset Formula $\vb v_{j}^{T}\vb v_{j}$
+\end_inset
+
+ for the un-scaled eigenvector and then replacing 
+\begin_inset Formula $\vb v_{j}$
+\end_inset
+
+ with 
+\begin_inset Formula $\frac{1}{\vb v_{j}^{T}\vb v_{j}}\vb v_{j}$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+We use the symbol 
+\begin_inset Formula $\vb V=[\vb v_{1},\vb v_{2},\ldots,\vb v_{p}]$
+\end_inset
+
+ to refer to a 
+\begin_inset Formula $p\times p$
+\end_inset
+
+ matrix with columns of the scaled eigenvectors.
+ The columns of 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ are all linearly independent from one another.
+ That is to say, not only are they scaled so that their lengths are 
+\begin_inset Formula $1$
+\end_inset
+
+, but also 
+\begin_inset Formula $\vb v_{j}^{T}\vb v_{k}=0$
+\end_inset
+
+ for all 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+.
+ Thus
+\begin_inset Formula 
+\begin{equation}
+\vb V^{T}\vb V=\vb I
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Rescaling Normal Random Variables
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Sigma is a Scaling Parameter
+\end_layout
+
+\end_inset
+
+One Dimension: 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ is a Scaling Parameter
+\end_layout
+
+\begin_layout Standard
+Until recent software enhancements, it was very common that statistical
+ packages (or spreadsheets) would offer to draw from a standard normal distribut
+ion 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+, but not from a normal with other values for the expected value and variance.
+ A draw from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+ can be re-scaled to match the desired probability model.
+ 
+\end_layout
+
+\begin_layout Standard
+If we have a draw 
+\begin_inset Formula $x$
+\end_inset
+
+ from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+ but we wish we had a draw from 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+, where 
+\begin_inset Formula $\sigma^{2}>0$
+\end_inset
+
+, we re-scale 
+\begin_inset Formula $x$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+y=\mu+\sigma\cdot x.\label{eq:yfromx}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Note that 
+\begin_inset Formula $x$
+\end_inset
+
+ is multiplied by the standard deviation, 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, not the variance, 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+.
+ The parameter 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ is a scaling factor, while the 
+\begin_inset Formula $\mu$
+\end_inset
+
+ plays the role of a location parameter.
+\end_layout
+
+\begin_layout Standard
+This pre-supposes that one has a high quality method to draw a simulated
+ 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+, of course, but that is fairly well worked out at this late date.
+\end_layout
+
+\begin_layout Standard
+There are two technical claims worth emphasizing.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Given a random variable 
+\begin_inset Formula $x$
+\end_inset
+
+ with 
+\begin_inset Formula $E[x]=0$
+\end_inset
+
+ and 
+\begin_inset Formula $Var[x]=1$
+\end_inset
+
+, a weighted sum 
+\begin_inset Formula $y=\mu+\sigma x$
+\end_inset
+
+ has 
+\begin_inset Formula $E[y]=\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $Var[y]=\sigma^{2}$
+\end_inset
+
+.
+ This claim is true for all random variables, whether 
+\begin_inset Formula $x$
+\end_inset
+
+ is normal or not.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $y$
+\end_inset
+
+ is normally distributed, 
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+.
+ The proof that this requires us to do some math (either a 
+\begin_inset Quotes eld
+\end_inset
+
+change of variables
+\begin_inset Quotes erd
+\end_inset
+
+ in the probability density function or a comparison of the moment generating
+ functions).
+\end_layout
+
+\begin_layout Subsection
+The Multivariate Version of Re-scaling
+\end_layout
+
+\begin_layout Standard
+The multivariate version of the rescaling exercise is as follows.
+ This follows the argument in Scheuer and Stoller (
+\begin_inset CommandInset citation
+LatexCommand citeyear
+after "p. 278"
+key "scheuer_generation_1962"
+
+\end_inset
+
+).
+ Suppose 
+\begin_inset Formula $\vb x$
+\end_inset
+
+ is a vector of 
+\begin_inset Formula $p$
+\end_inset
+
+ values drawn from an 
+\begin_inset Formula $MVN(0,\vb I)$
+\end_inset
+
+ process.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb x=\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+\vdots\\
+x_{p}
+\end{array}\right]\sim MVN\left(\left[\begin{array}{c}
+0\\
+0\\
+0\\
+\vdots\\
+0
+\end{array}\right],\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]\right)\label{eq:-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+This is no different from saying that each of the elements in 
+\begin_inset Formula $\vb x$
+\end_inset
+
+ is drawn independently, 
+\begin_inset Formula $x_{i}\sim N(0,1)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We want to apply a transformation so that the result is
+\begin_inset Formula 
+\begin{equation}
+\vb y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{p}
+\end{array}\right]\sim MVN(\vb{\mu},\vb{\Sigma})=MVN\left(\left[\begin{array}{c}
+\mu_{1}\\
+\mu_{2}\\
+\vdots\\
+\mu_{p}
+\end{array}\right],\left[\begin{array}{cccc}
+\sigma_{1}^{2} & \sigma_{12} &  & \sigma_{1p}\\
+\sigma_{12} & \sigma_{2}^{2} &  & \sigma_{2p}\\
+ &  & \ddots\\
+\sigma_{1p} & \sigma_{2p} &  & \sigma_{p}^{2}
+\end{array}\right]\right).\label{eq:-1-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The correct transformation looks quite a bit like (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:yfromx"
+
+\end_inset
+
+):
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+\vb y=\vb{\mu}+\vb S\vb x.\label{eq:MVNlinear}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{p}
+\end{array}\right]=\left[\begin{array}{c}
+\mu_{1}\\
+\mu_{2}\\
+\vdots\\
+\mu_{p}
+\end{array}\right]+\left[\begin{array}{cccc}
+s_{11} & s_{12} &  & s_{1p}\\
+s_{21} & s_{22} &  & s_{2p}\\
+ &  & \ddots\\
+s_{p1} & s_{p2} &  & s_{pp}
+\end{array}\right]\left[\begin{array}{c}
+\begin{array}{c}
+x_{1}\\
+x_{2}\\
+\vdots\\
+x_{p}
+\end{array}\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+where 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ is a square scaling matrix that plays the same role that 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ played in the one variable model.
+ 
+\end_layout
+
+\begin_layout Standard
+Clearly, the expected value of our candidate draw 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ is correct, 
+\begin_inset Formula 
+\begin{equation}
+E[\vb y]=E[\vb{\mu}+\vb S\vb x]=\vb{\mu}+\vb SE[\vb x]=\vb{\mu}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+And the variance matrix of 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ is 
+\begin_inset Formula 
+\begin{equation}
+Var[\vb y]=\vb SVar(x)\vb S^{T}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Because 
+\begin_inset Formula $Var(\vb x)=\vb I$
+\end_inset
+
+ and because 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+ is symmetric,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Var[\vb y]=\vb S\vb S^{T}=\vb S^{T}\vb S.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As long as the scaling matrix 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ is chosen 
+\emph on
+very carefully
+\emph default
+, so that 
+\begin_inset Formula $\vb S^{T}\vb S=\vb{\Sigma}$
+\end_inset
+
+, then a big part of the work is finished.
+ We have some encouragement in positive definite matrix property 2, which
+ indicates that 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+ is positive definite.
+ We just don't know yet if 
+\begin_inset Formula $\vb S^{T}\vb S$
+\end_inset
+
+ equals 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ That problem is discussed in the next section.
+\end_layout
+
+\begin_layout Standard
+The next step is to establish the fact that 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ is multivariate normally distributed, 
+\begin_inset Formula $\vb y\sim MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+.
+ According to 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "p. 1015"
+key "greene_econometric_2008"
+
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Any linear function of a vector of joint normally distributed variables
+ is also normally distributed...
+ Thus, 
+\begin_inset Formula 
+\begin{equation}
+If\,\vb x\sim N(\vb{\mu},\vb{\Sigma}),\,then\,\vb A\vb x+\vb b\sim N(\vb A\vb{\mu}+\vb b,\,\vb A\vb{\Sigma}\vb A^{T})".\label{eq:Greene}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+It is said that the normal distribution is 
+\emph on
+closed under addition
+\emph default
+: if we put in a draw from a multivariate normal, and re-scale by adding
+ or multiplying by real valued matrices, we get out a re-scaled, but still
+ multivariate normal, random variable.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "p. 565-6"
+key "devroye_non-uniform_1986"
+
+\end_inset
+
+ gives an argument for this based on the moment generating function.
+ He adds, 
+\begin_inset Quotes eld
+\end_inset
+
+Unfortunately, the only symmetric stable distribution with finite variance
+ is the normal distribution....
+ Thus, the property that the normal distribution is closed under the operation
+ 'linear combination' is what makes it so attractive to the user.
+ If the user specifies non-normal marginals, the covariance structure is
+ much more difficult to enforce
+\begin_inset Quotes erd
+\end_inset
+
+ (
+\begin_inset CommandInset citation
+LatexCommand citealt
+after "p. 565"
+key "devroye_non-uniform_1986"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Subsection
+Square Root of a Matrix
+\end_layout
+
+\begin_layout Standard
+The number 
+\begin_inset Formula $9$
+\end_inset
+
+ has two possible square roots, 
+\begin_inset Formula $3$
+\end_inset
+
+ and 
+\begin_inset Formula $-3$
+\end_inset
+
+.
+ The square root of a number is not unique.
+ In light of that, it should not come as a shock to learn that the square
+ root of a matrix is not unique.
+ It may come as a shock, however, to learn matrix square roots are grossly
+ different from one another and there are many square roots.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Method 1: Cholesky decomposition
+\end_layout
+
+\begin_layout Standard
+If all of the estimated eigenvalues are greater than zero, the Cholesky
+ decomposition of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ can be calculated.
+ The Cholesky algorithm finds a upper triangular matrix 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ with this interesting property:
+\begin_inset Formula 
+\begin{equation}
+\vb{\Sigma}=\vb{R^{T}\times R=}\left[\begin{array}{ccccc}
+r_{11} & 0 & 0 & 0 & 0\\
+r_{12} & r_{22} & 0 & 0 & 0\\
+r_{13} & r_{23} & r_{33} & 0 & 0\\
+ &  &  & \ddots & 0\\
+r_{1p} & r_{1p} & r_{3p} &  & r_{pp}
+\end{array}\right]\left[\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & \ldots & r_{1p}\\
+ & r_{22} & r_{23} &  & r_{2p}\\
+ &  & r_{33}\\
+ &  &  & \ddots\\
+ &  &  &  & r_{pp}
+\end{array}\right].\label{eq:Cholesky}
+\end{equation}
+
+\end_inset
+
+This is one way to get a 
+\begin_inset Quotes eld
+\end_inset
+
+matrix square root.
+\begin_inset Quotes erd
+\end_inset
+
+ The lower triangular part, 
+\begin_inset Formula $\vb R^{T}$
+\end_inset
+
+, can play the role of 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ in the rescaling equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNlinear"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+How do we know that 
+\begin_inset Formula $\vb R^{T}$
+\end_inset
+
+ can pass for 
+\begin_inset Formula $\vb S$
+\end_inset
+
+? The definition in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Cholesky"
+
+\end_inset
+
+) indicates that 
+\begin_inset Formula $\vb R^{T}\vb R$
+\end_inset
+
+ equals the variance matrix,
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Method 2: Eigen decomposition
+\end_layout
+
+\begin_layout Standard
+When 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive semi-definite (there is an eigenvalue equal to 0), the Cholesky
+ decomposition is not possible.
+ In that case, an eigen decomposition of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ can be used.
+ Recall the eigenvalue vector is 
+\begin_inset Formula $\vb{\lambda}^{T}=(\lambda_{1},\lambda_{2},\ldots,\lambda_{p})$
+\end_inset
+
+ and the scaled eigenvectors are the columns of 
+\begin_inset Formula $\vb V=[\vb v_{1},\vb v_{2},\ldots,\vb v_{p}]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We have not emphasized until now that the eigenvalue matrix 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ is an 
+\emph on
+orthonormal
+\emph default
+ matrix.
+ That means the vectors are orthogonal to one another, 
+\begin_inset Formula $\vb v_{i}^{T}\vb v_{j}=0$
+\end_inset
+
+ (that's the 
+\begin_inset Quotes eld
+\end_inset
+
+ortho
+\begin_inset Quotes erd
+\end_inset
+
+ part), and they are re-scaled so their norms are are unity: 
+\begin_inset Formula $\vb v_{j}^{T}\vb v_{j}=1$
+\end_inset
+
+ (that's the 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+ part).
+ Hence
+\end_layout
+
+\begin_layout Fact
+If 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ is an orthonormal matrix, then 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\vb V^{T}\vb V=\mbox{\vb I}$
+\end_inset
+
+, and
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\vb V^{-1}=\vb V^{T}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align block
+The eigenvalues and eigenvectors can be used to write out a decomposition
+ of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ (This is also referred to as the spectral decomposition of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+).
+ Begin with the definition in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:eigen_definition"
+
+\end_inset
+
+): 
+\begin_inset Formula 
+\begin{eqnarray}
+\vb{\Sigma}\vb V & = & \vb Vdiag(\vb{\lambda})\nonumber \\
+\vb{\Sigma}\vb V\vb V^{T} & = & \vb Vdiag(\vb{\lambda})\vb V^{T}\nonumber \\
+\vb{\Sigma} & = & \vb Vdiag(\vb{\lambda})\vb V^{T}.\label{eq:eigen_decomp}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The function 
+\begin_inset Formula $diag$
+\end_inset
+
+ places a vector's values along the diagonal: 
+\begin_inset Formula 
+\begin{equation}
+diag(\vb{\lambda})=\left[\begin{array}{cccc}
+\lambda_{1} & 0 & 0 & 0\\
+0 & \lambda_{2} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & \lambda_{p}
+\end{array}\right].\label{eq:-9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $\lambda_{j}\geq0$
+\end_inset
+
+, a real-valued square root of each eigenvalue exists, and we can write
+ this as a product using 
+\begin_inset Formula $diag(\vb{\lambda})^{1/2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+diag(\vb{\vb{\lambda}})=\left[\begin{array}{cccc}
+\sqrt{\lambda_{1}} & 0 & 0 & 0\\
+0 & \sqrt{\lambda_{2}} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & \sqrt{\lambda_{p}}
+\end{array}\right]\left[\begin{array}{cccc}
+\sqrt{\lambda_{1}} & 0 & 0 & 0\\
+0 & \sqrt{\lambda_{2}} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & \sqrt{\lambda_{p}}
+\end{array}\right]=diag(\vb{\lambda})^{1/2}diag(\vb{\lambda})^{1/2}\label{eq:-10}
+\end{equation}
+
+\end_inset
+
+This allows us to revise (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:eigen_decomp"
+
+\end_inset
+
+) into a format that helps us to see that we have square root of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray}
+\vb{\Sigma} & = & \vb Vdiag(\vb{\vb{\lambda}})^{1/2}\,\,\,diag(\vb{\vb{\lambda}})^{1/2}\vb V^{T}.\nonumber \\
+ &  & \vb Vdiag(\vb{\lambda})^{1/2}(\vb Vdiag(\vb{\lambda})^{1/2})^{T}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The scaling matrix will be 
+\begin_inset Formula 
+\begin{equation}
+\vb S=\vb Vdiag(\vb{\lambda})^{1/2}\label{eq:eigen-squareroot}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+because 
+\begin_inset Formula $\vb S\vb S^{T}=\vb S^{T}\vb S=\vb{\Sigma}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Is there any substantive interpretation for 
+\begin_inset Formula $\vb S?$
+\end_inset
+
+ It is clear that the square roots of the eigenvalues are being used to
+ re-scale the columns of the eigenvector matrix 
+\begin_inset Formula $\vb V$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb S=\left[\begin{array}{cccc}
+v_{11} & v_{12} &  & v_{1p}\\
+v_{21} & v_{22} &  & v_{2p}\\
+ &  & \ddots\\
+ &  &  & v_{pp}
+\end{array}\right]\left[\begin{array}{cccc}
+\sqrt{\lambda_{1}} & 0 & 0 & 0\\
+0 & \sqrt{\lambda_{2}} & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & \sqrt{\lambda_{p}}
+\end{array}\right]=\left[\begin{array}{cccc}
+\sqrt{\lambda_{1}}v_{11} & \sqrt{\lambda_{2}}v_{12} &  & \sqrt{\lambda_{p}}v_{1p}\\
+\sqrt{\lambda_{1}}v_{21} & \sqrt{\lambda_{2}}v_{22} &  & \sqrt{\lambda_{p}}v_{2p}\\
+ &  & \ddots\\
+ &  &  & \sqrt{\lambda_{p}}v_{pp}
+\end{array}\right]\label{eq:-14}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Decompositions
+\end_layout
+
+\end_inset
+
+Decompositions of 
+\begin_inset Formula $\vb X$
+\end_inset
+
+, rather than 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A different decomposition problem arises if the user has a 
+\begin_inset Quotes eld
+\end_inset
+
+raw data matrix
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\vb X$
+\end_inset
+
+.
+ The usual statistics textbook recommends formula involving a cross product
+ matrix 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+, such as the ordinary least squares (OLS) regression vector, 
+\begin_inset Formula $\vb{\hat{\beta}}=(\vb X^{T}\vb X)^{-1}\vb X^{T}\vb y$
+\end_inset
+
+.
+ Statistics students then travels into a field like numerical linear algebra,
+ where the first thing they learn is 
+\begin_inset Quotes eld
+\end_inset
+
+you were not taught proper formulas for digital calculation
+\begin_inset Quotes erd
+\end_inset
+
+ (see Woods, 2006, for example).
+ Following the advice in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "golub_matrix_1996"
+
+\end_inset
+
+, we avoid forming 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+ explicitly and do not try to 
+\begin_inset Quotes eld
+\end_inset
+
+solve
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+ by explicit matrix inversion.
+ No reasonable regression software tries to invert 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+ any more.
+\end_layout
+
+\begin_layout Standard
+There are much more accurate ways to calculate theoretically important quantitie
+s like the inverse of 
+\begin_inset Formula $(\vb X^{T}\vb X)^{-1}$
+\end_inset
+
+.
+ This is done with matrix factorization.
+ In R, for example, there are two functions for principal components analysis.
+ The function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+princomp
+\end_layout
+
+\end_inset
+
+ uses the older style of less stable linear algebra based on the eigen decomposi
+tion of the centered variance matrix while the newer 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+prcomp
+\end_layout
+
+\end_inset
+
+ is carried out after decomposing the data matrix.
+ The R help page for the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+prcomp
+\end_layout
+
+\end_inset
+
+ mentions this difference, somewhat obliquely, 
+\begin_inset Quotes eld
+\end_inset
+
+The calculation is done by a singular value decomposition of the (centered
+ and possibly scaled) data matrix, not by using ‘
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eigen
+\end_layout
+
+\end_inset
+
+’ on the covariance matrix.
+ This is generally the preferred method for numerical accuracy
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "R"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+There are several different ways that can decompose a data matrix.
+ The two most widely mentioned are the QR decomposition and the singular
+ value decomposition (SVD).
+ The QR and the SVD are different from the Cholesky and eigen decompositions
+ because the latter approaches require the input data must be a square matrix,
+ whereas QR and SVD can be applied to an 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Method 3.
+ QR decomposition
+\end_layout
+
+\begin_layout Standard
+The theoretical quantity 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+ can be calculated in a much more numerically accurate way as 
+\begin_inset Formula $(\vb R^{T}\vb R)$
+\end_inset
+
+, where 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ is an upper triangular matrix.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb R=\left[\begin{array}{cccc}
+r_{11} & r_{12} & \ldots & r_{1p}\\
+0 & r_{22} &  & r_{2p}\\
+0 & 0 & \ddots\\
+0 & 0 & 0 & r_{pp}
+\end{array}\right]\label{eq:QR_R}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ matrix is one result of the QR decomposition.
+ The fact that 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ is triangular leads to a number of simpler calculations.
+ In particular, if we do need to calculate 
+\begin_inset Formula $\vb R^{-1}$
+\end_inset
+
+, it is a comparatively fast, stable exercise.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+thin
+\begin_inset Quotes erd
+\end_inset
+
+ version of the 
+\begin_inset Formula $\vb Q\vb R$
+\end_inset
+
+ decomposition is
+\begin_inset Formula 
+\begin{equation}
+\vb X=\vb{QR}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The matrix 
+\begin_inset Formula $\vb Q$
+\end_inset
+
+ is 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ orthogonal columns
+\begin_inset Formula 
+\begin{equation}
+\vb Q=\left[\begin{array}{cc}
+Q & p\,columns\\
+ & orthogonal\\
+\\
+n\,rows\\
+\\
+\\
+\\
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+Orthogonality implies 
+\begin_inset Formula $\vb Q^{-1}\vb Q=\vb Q^{T}\vb Q=\vb I$
+\end_inset
+
+, and 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ is the upper triangular matrix in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:QR_R"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ produced by QR is, theoretically, equivalent to the Cholesky decomposition
+ of 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+, with the possible exception that the diagonal elements in some of the
+ rows in 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ from 
+\begin_inset Formula $\vb Q\vb R$
+\end_inset
+
+ are not positive and signs of those rows need to be reversed.
+ To avoid explicitly forming 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+, we replace 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ with 
+\begin_inset Formula $\vb Q\vb R$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{equation}
+\vb X^{T}\vb X=(\vb Q\vb R)^{T}\vb Q\vb R=\vb R^{T}\vb Q^{T}\vb Q\vb R=\vb R^{T}\vb R.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If a calculation calls for 
+\begin_inset Formula $(\vb X^{T}\vb X)^{-1}$
+\end_inset
+
+, then, we can replace that with 
+\begin_inset Formula $(\vb R^{T}\vb R)^{-1}$
+\end_inset
+
+.
+ However, we would not explicitly calculate 
+\begin_inset Formula $(\vb R^{T}\vb R)$
+\end_inset
+
+ and invert that product.
+ Instead, we note, theoretically
+\begin_inset Formula 
+\begin{equation}
+(\vb R^{T}\vb R)^{-1}=\vb R^{-1}\vb R^{-1^{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is necessary to calculate 
+\begin_inset Formula $\vb R^{-1}$
+\end_inset
+
+, but that is a simpler, more stable calculation because the lower left
+ side of 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ is full of 
+\begin_inset Formula $0$
+\end_inset
+
+'s.
+ The inverse of an upper triangular matrix will also be upper triangular,
+ so the benefits of this simplification continue.
+ 
+\end_layout
+
+\begin_layout Standard
+Currently, I believe that most software implementations of the Cholesky
+ root of 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+ will not form 
+\begin_inset Formula $(\vb X^{T}\vb X)$
+\end_inset
+
+ and then decompose it.
+ They will instead conduct the decomposition of 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ itself, and then return the triangular 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ as the solution.
+\end_layout
+
+\begin_layout Subsubsection*
+Method 4.
+ Singular Value Decomposition
+\end_layout
+
+\begin_layout Standard
+The QR decomposition is the predominant method of calculating regression
+ estimates because it is fast and very stable numerically.
+ An alternative decomposition, the singular value decomposition, is probably
+ even better in terms of numerical stability (avoiding roundoff error, etc),
+ but it is also more costly to compute.
+ There has been discussion from time-to-time suggesting that the SVN will
+ eventually become the predominant method, but, so far, it is not.
+ However, in a close case, where a matrix is perhaps nearly singular, it
+ may be that the SVD can calculate results that would be simply impossible
+ with the other approaches.
+ 
+\end_layout
+
+\begin_layout Standard
+The thin singular value decomposition (SVD) of 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ is a product of 3 matrices.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X=\vb U\vb D\vb V^{T}.\label{eq:SVD-1-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{ccccc}
+\vb U &  & p\,columns\\
+ &  & orthogonal\\
+n\,rows\\
+\\
+\\
+\\
+\\
+\end{array}\right]\left[\begin{array}{ccc}
+\delta_{1} & 0 & 0\\
+0 & \ddots & 0\\
+0 & 0 & \delta_{p}
+\end{array}\right]\left[\begin{array}{ccc}
+\vb V^{T} & p\,columns\\
+\\
+p\,rows
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The columns of 
+\begin_inset Formula $\vb U$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ are orthogonal.
+ That affords simplifications such as 
+\begin_inset Formula $\vb U^{T}\vb U=I$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb V^{T}=\vb V^{-1}$
+\end_inset
+
+ .
+ The matrix 
+\begin_inset Formula $\vb D$
+\end_inset
+
+ is a 
+\begin_inset Formula $p\times p$
+\end_inset
+
+ diagonal matrix of the so-called 
+\begin_inset Quotes eld
+\end_inset
+
+singular values
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Formula $\delta_{i}$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{equation}
+\vb D=diag(\delta_{1},\delta_{2},\ldots,\delta_{p})=\left[\begin{array}{cccc}
+\delta_{1} & 0 &  & 0\\
+0 & \delta_{2} &  & 0\\
+ &  & \ddots\\
+0 & 0 &  & \delta_{p}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+To see the simplifying benefit of the SVD, replace 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ with 
+\begin_inset Formula $\vb U\vb D\vb V^{T}.$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X^{T}\vb X=(\vb U\vb D\vb V^{T})^{T}\vb U\vb D\vb V^{T}=\vb V\vb D\vb U^{T}\vb U\vb D\vb V^{T}=(\vb D\vb V^{T})^{T}\vb D\vb V^{T}=(\vb V\vb D)(\vb V\vb D)^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The square root of 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+ is thus seen to be 
+\begin_inset Formula $\vb V\vb D$
+\end_inset
+
+(or
+\begin_inset Formula $(\vb D\vb V^{T})^{T}$
+\end_inset
+
+, depending on how you want to group things.
+ So the SVD based candidate for a square root of 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+\vb S=\vb{\vb V}diag(\vb{\delta})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The SVD approach is similar in personality to the eigenvalue decomposition
+ of 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+.
+ If numerical linear algebra were 
+\begin_inset Quotes eld
+\end_inset
+
+perfectly accurate
+\begin_inset Quotes erd
+\end_inset
+
+, then the eigen method in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:eigen-squareroot"
+
+\end_inset
+
+), 
+\begin_inset Formula $\vb Vdiag(\vb{\lambda})^{1/2}$
+\end_inset
+
+, would be identical to the SVD solution 
+\begin_inset Formula $\vb{\vb V}diag(\vb{\delta})$
+\end_inset
+
+.
+ Consequently, we see that, on a theoretical level, the singular values
+ are the squares of the eigen values.
+ 
+\end_layout
+
+\begin_layout Section
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Simulating draws
+\end_layout
+
+\end_inset
+
+Software Implementations that Draw from 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The multivariate normal generator distributed with R is 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ in the recommended package MASS (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "MASS"
+
+\end_inset
+
+).
+ The Stata function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ is part of the base package.
+ 
+\end_layout
+
+\begin_layout Standard
+The important parameters specified by the user are 1) the number of draws
+ required (
+\begin_inset Formula $n$
+\end_inset
+
+), 2) the population mean vector (
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+) that has 
+\begin_inset Formula $p$
+\end_inset
+
+ elements, 3) the variance matrix (
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+) which is 
+\begin_inset Formula $p\times p$
+\end_inset
+
+, and 4) a tolerance parameter (
+\begin_inset Formula $tol$
+\end_inset
+
+) which is used to decide if the variance matrix is positive definite.
+ The desired result is an 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix in which each row is a draw from 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+.
+ I concentrate on the case in which the user specifies a covariance matrix
+ (rather than a correlation matrix).
+\end_layout
+
+\begin_layout Standard
+The code for these functions is displayed in Appendices 1 and 2.
+ Although the coding language differs between Stata and R, a careful review
+ indicates that both of them are carrying out a 5 step algorithm.
+\end_layout
+
+\begin_layout Enumerate
+Calculate the eigen decomposition of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Check that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite by inspecting the eigenvalues.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+If an eigenvalue is intolerably negative, terminate with an error message.
+\end_layout
+
+\begin_layout Enumerate
+Tolerably negative eigenvalues are reset to 0.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Create a scaling matrix, 
+\begin_inset Formula $\vb S$
+\end_inset
+
+.
+ The two programs differ in this stage.
+ R uses the eigen decomposition while Stata uses Cholesky roots.
+\end_layout
+
+\begin_layout Enumerate
+Create a candidate 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix of random vectors by drawing from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Apply 
+\begin_inset Formula $\vb y=\vb{\mu}+\vb S\vb x$
+\end_inset
+
+ to rescale the candidate random draws.
+\end_layout
+
+\begin_layout Standard
+To help the reader line up the critical parts for comparison, I offer Table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Aligning-Code"
+
+\end_inset
+
+, which enumerates the algorithmic steps with line numbers in the code.
+\end_layout
+
+\begin_layout Standard
+For students who do not read much computer code, one detail is worth mentioning.
+ In computer calculations, one of the slowest phases is allocation of memory,
+ say for an 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix.
+ In numerical linear algebra, there is a tradition of writing new results
+ on top of old matrices that already exist in memory.
+ In R, for example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+X <- matrix(rnorm(p * n), n)
+\end_layout
+
+\begin_layout Plain Layout
+
+if(empirical) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- scale(X, TRUE, FALSE) # remove means
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- X %*% svd(X, nu = 0)$v # rotate to PCs
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- scale(X, FALSE, TRUE) # rescale PCs to unit variance
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+or in Stata,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+qui mat accum `T' = `varlist', noc dev
+\end_layout
+
+\begin_layout Plain Layout
+
+mat `T' = `T'/(`nobs'-1)
+\end_layout
+
+\begin_layout Plain Layout
+
+mat `T' = cholesky(syminv(`T'))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+In an analytical report, we would usually create new labels for the successive
+ matrices, allowing us to differentiate them in our discussion.
+ Efficient software coders don't allocate fresh memory unless they really
+ need to.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Aligning 
+\begin_inset Formula $MVN$
+\end_inset
+
+ Code
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Aligning-Code"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="13" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="left" valignment="top" width="1.5in">
+<column alignment="left" valignment="top" width="1cm">
+<column alignment="left" valignment="top" width="1.8in">
+<column alignment="left" valignment="top" width="1.2cm">
+<column alignment="left" valignment="top" width="1.8in">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Step
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mvrnorm (R)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+drawnorm (Stata)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+line
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+comments
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+line
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+comments
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.
+ Eigenvalues
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7-8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eigen
+\end_layout
+
+\end_inset
+
+ is in base R.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+79
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+_checkpd
+\end_layout
+
+\end_inset
+
+ writes eigenvector and eigenvalues in memory
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2a.
+ Check positive semi-definite
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\lambda_{j}$
+\end_inset
+
+ less than 
+\begin_inset Formula $-tol|\lambda_{1}|$
+\end_inset
+
+ causes termination.
+ 
+\begin_inset Formula $tol$
+\end_inset
+
+ defaults to 
+\begin_inset Formula $10^{-6}$
+\end_inset
+
+, while in Stata it defaults to 
+\begin_inset Formula $10^{-8}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+79
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+_checkpd
+\end_layout
+
+\end_inset
+
+ returns 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+r(npos)
+\end_layout
+
+\end_inset
+
+, an integer number representing the number of non-negative eigenvectors
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2b.
+ Reform eigenvalues
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+pmax(ev, 0)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+91
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+max(0, `D'[1,`i'])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3.
+ Create re-scaling matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Uses eigenvalue method.
+ The rescaling matrix 
+\begin_inset Formula $\vb V\,diag(\sqrt{\vb{\lambda}})$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+85-93
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+if 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+r(npos)=p
+\end_layout
+
+\end_inset
+
+, then use Cholesky root.
+ Otherwise, use 
+\begin_inset Formula $\vb V\sqrt{diag(\vb{\lambda})}$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.
+ Create 
+\begin_inset Formula $\vb X$
+\end_inset
+
+, 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix of candidates from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rnorm
+\end_layout
+
+\end_inset
+
+ uses a table-based CDF lookup procedure
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+121-27
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Stata updated the normal random generator.
+ Two versions are maintained.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5.
+ Re-scale the candidate data into desired 
+\begin_inset Formula $MVN$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Result must be transposed before return to user
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+129-36
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Stata score function is 
+\begin_inset Quotes eld
+\end_inset
+
+inner product
+\begin_inset Quotes erd
+\end_inset
+
+ of data row with weight matrix
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+142
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Standard deviation is vector of 
+\begin_inset Formula $1$
+\end_inset
+
+'s (having no effect when user supplies covar matrix).
+ M is the mean vector requested by user.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topspace="default" interlinespace="default">
+<cell multicolumn="1" alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Step for generating data with mean and variance exactly equal to 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4.5.
+ Rescale the candidate 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ so that the column means are 
+\begin_inset Formula $\vb 0$
+\end_inset
+
+ and variance matrix is 
+\begin_inset Formula $\vb I$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mean center the columns
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+144 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+corr2data.ado
+\end_layout
+
+\begin_layout Plain Layout
+Mean center the columns.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Use SVD (principal components) to create uncorrelated columns.
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+147-54
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Form (
+\begin_inset Formula $\frac{1}{(n-1)}\vb X^{T}\vb X$
+\end_inset
+
+), invert and take Cholesky root.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Check positive definiteness
+\end_layout
+
+\end_inset
+
+Checking 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ for positive definiteness: Eigenvalues
+\end_layout
+
+\begin_layout Standard
+The user supplies a variance matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, but software cannot trust the user to supply a coherent matrix.
+ Obviously, it would not make sense to ask for simulations from a silly
+ matrices like
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cc}
+0 & -1\\
+2 & 0
+\end{array}\right]\,or\,\left[\begin{array}{cccc}
+1 & .3 & 4 & 3\\
+.4 & 1 & 3 & 4\\
+2 & 5 & 1 & 3\\
+5 & 4 & 2 & 1
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+but users sometimes ask silly questions.
+\end_layout
+
+\begin_layout Standard
+All 
+\begin_inset Formula $MVN$
+\end_inset
+
+ programs should fail if the elements on the main diagonal, the variances,
+ are not positive, and also if the other terms are mathematically incoherent
+ (it should be symmetric and positive definite).
+ 
+\end_layout
+
+\begin_layout Standard
+The programs 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ check for trouble by evaluating the eigennvalues of the user-specified
+ matrix 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ The key idea here is that 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ must be either positive definite (
+\begin_inset Formula $\lambda_{j}>0$
+\end_inset
+
+) or positive semi-definite (
+\begin_inset Formula $\geq\lambda_{j})$
+\end_inset
+
+.
+ The difference between 
+\begin_inset Quotes eld
+\end_inset
+
+all positive eigenvalues
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+some positive eigenvalues and some equal to 0
+\begin_inset Quotes erd
+\end_inset
+
+ is the difference between saying 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite and 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive semi-definite.
+ If 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ has a column with no unique information (say, it is full of 0's or is a
+ copy of another column), then we will find that there are several positive
+ eigenvalues, but one or more might be exactly equal to 0.
+ As we will explain below, this exercise only truly makes sense if 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+is positive definite, but we can avoid outright failure if it is merely
+ positive semi-definite.
+\end_layout
+
+\begin_layout Standard
+It may happen that the 
+\begin_inset Quotes eld
+\end_inset
+
+correct
+\begin_inset Quotes erd
+\end_inset
+
+ (pencil-and-paper) eigenvalue is zero or a small positive number but rounding
+ error in a digital computer leads to a negative value.
+ In both 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+, an allowance is made for that kind of numeric wobble.
+ The positive definiteness test is failed only if there is an eigenvalue
+ that is negative and outside a tolerance region, as specified by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\lambda_{j}<-tol\,|\lambda_{1}|.\label{eq:posdef-mass}
+\end{equation}
+
+\end_inset
+
+In 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+, the default value of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+tol
+\end_layout
+
+\end_inset
+
+ is 
+\begin_inset Formula $10^{-6}$
+\end_inset
+
+ , while in Stata it is 
+\begin_inset Formula $10^{-8}$
+\end_inset
+
+.
+ The key idea here is that the true value of the smaller eigenvalues might
+ actually be positive, but the digital calculations have returned values
+ just slightly below 0.
+ If an eigenvalue is far enough from 
+\begin_inset Formula $0$
+\end_inset
+
+ to convince us that it truly is negative, then we conclude the user's matrix
+ is not a valid, positive semi-definite matrix.
+ The programs will stop and return an error message to the user.
+\end_layout
+
+\begin_layout Subsection
+Reforming the eigenvalues (and positive semi-definiteness).
+\end_layout
+
+\begin_layout Standard
+Suppose none of the eigenvalues are negative enough to fail the test, but
+ some are negative.
+ None of the procedures we have for creating scaling matrices will work
+ properly.
+ We reform the negative eigenvalues by changing them to 0: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\lambda_{j}=max(0,\lambda_{j}).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The Scaling Matrix: Eigenvalue-based weights? Or the Cholesky-based weights?
+\end_layout
+
+\begin_layout Standard
+The major difference between 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ is in the selection of the MVN scaling matrix.
+ In equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNlinear"
+
+\end_inset
+
+), we require a matrix 
+\begin_inset Formula $\vb S$
+\end_inset
+
+ that can serve as a square root of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In Stata, the procedure is conditional.
+ If 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite, then a Cholesky decomposition is used.
+ If 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is not positive definite, the alternative approach using the eigen decompositio
+n is used.
+ 
+\end_layout
+
+\begin_layout Standard
+In 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+, the eigen decomposition is used, whether 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive definite or semi-definite.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+On the Wikipedia page for this topic discusses both, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://en.wikipedia.org/wiki/Multivariate_normal_distribution
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ The eigen decomposition was used to check whether the eigenvalues are intolerab
+ly negative.
+ It is put to use to calculate the scaling matrix.
+\end_layout
+
+\begin_layout Standard
+The procedure in Stata wastes a bit of computation.
+ The eigenvalue decomposition was calculated by the check for positive definiten
+ess.
+ The decision to create a Cholesky decomposition when 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is full rank wastes some time.
+ If one is running a simulation with hundreds of thousands of samples, this
+ would have a noticeable effect.
+ 
+\end_layout
+
+\begin_layout Standard
+When there are some 
+\begin_inset Formula $0$
+\end_inset
+
+'s in the reformed eigenvalue vector, 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive semi-definite.
+ Both Stata and R use the eigen decomposition.
+ Basically, this means that the user-specified 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ includes some redundant columns.
+ 
+\end_layout
+
+\begin_layout Standard
+It deserves mention that the eigen decomposition is not really a solution
+ for the inadequacies of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, but rather it is a way to ignore them.
+ The program will run without generating an error.
+ But one should not assume this is a good outcome.
+ In fact, the simulated 
+\begin_inset Formula $MVN$
+\end_inset
+
+ draws are don't really fill up the full 
+\begin_inset Formula $p$
+\end_inset
+
+ dimensional space.
+ 
+\end_layout
+
+\begin_layout Standard
+It is easier to illustrate than explain.
+ Suppose, the user input is 
+\begin_inset Formula 
+\begin{equation}
+\vb{\mu}=\left[\begin{array}{c}
+2\\
+3\\
+4\\
+5\\
+6
+\end{array}\right]\,and\,\,\vb{\Sigma}=\left[\begin{array}{ccccc}
+11 & 0 & 0 & 0 & 0\\
+0 & 13 & 0 & 0 & 0\\
+0 & 0 & 22 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is positive semi-definite.
+ The reformed eigenvalue vector is 
+\begin_inset Formula $(\lambda_{1}=22,\lambda_{2}=13,\lambda_{3}=11,0,0)$
+\end_inset
+
+.
+ The MVN generator will, basically, ignore the two columns of 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+ The generator will return the mean in positions 4 and 5 of all simulated
+ vectors.
+ The first four draws (the rows in this output) from 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rmvnorm
+\end_layout
+
+\end_inset
+
+ are 
+\begin_inset Foot
+status collapsed
+
+\begin_layout LyX-Code
+library(MASS)
+\end_layout
+
+\begin_layout LyX-Code
+set.seed(12345)
+\end_layout
+
+\begin_layout LyX-Code
+Sigma <- matrix(c(11, rep(0, 5), 13, rep(0, 5), 22, rep(0, 12)), ncol =
+ 5)
+\end_layout
+
+\begin_layout LyX-Code
+mu <- c(2, 3, 4, 5, 6)
+\end_layout
+
+\begin_layout LyX-Code
+mvrnorm(4, mu, Sigma)
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{rrrrrr}
+\end_layout
+
+\begin_layout Plain Layout
+
+& 1 & 2 & 3 & 4 & 5 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+1 & 4.03 & -2.76 & 7.66 & 5.00 & 6.00 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+2 & 1.46 & 9.51 & 10.83 & 5.00 & 6.00 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+3 & 4.69 & 1.26 & 0.98 & 5.00 & 6.00 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+4 & 9.29 & 5.24 & -3.28 & 5.00 & 6.00
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+There's no variance in the columns for which the eigenvalue is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ Hence, the ability to 
+\begin_inset Quotes eld
+\end_inset
+
+work around
+\begin_inset Quotes erd
+\end_inset
+
+ a positive semi-definite matrix is not a get out of jail free card.
+ The simulation procedure here will not crash, but it not return useful
+ output for the 4th and 5th elements of the simulated data rows.
+ The simulation effectively generates an 
+\begin_inset Formula $MVN$
+\end_inset
+
+ draw with 
+\begin_inset Formula $3=5-2$
+\end_inset
+
+ dimensions.
+ The ability to tolerate positive semi-definite variance matrices is not
+ hugely beneficial, except in avoiding crashes.
+ Users are well advised to revise their variance matrices by eliminating
+ linearly dependent columns.
+\end_layout
+
+\begin_layout Subsection
+Rescaling
+\end_layout
+
+\begin_layout Standard
+To re-scale a single vector 
+\begin_inset Formula $\vb x$
+\end_inset
+
+, we draw 
+\begin_inset Formula $p$
+\end_inset
+
+ values from 
+\begin_inset Formula $MVN(\vb 0,\vb I)$
+\end_inset
+
+ and place them into 
+\begin_inset Formula $\vb x=(x_{1},\ldots,x_{p})^{T}$
+\end_inset
+
+.
+ We manufacture 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ with equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNlinear"
+
+\end_inset
+
+), which is reprinted (again) for reference.
+\begin_inset Formula 
+\[
+\vb y=\vb{\mu}+\vb S\vb x.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is a little wrinkle coming our way.
+ The re-scaling equation handles column vectors, but the input data will
+ be row vectors.
+ In both 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+, the input matrix 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix, where the candidates to be rescaled are rows.
+ The programs fill up an 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix candidate matrix,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb X=\left[\begin{array}{cccc}
+x_{11} & x_{12} &  & x_{1p}\\
+x_{21} & x_{22}\\
+ &  & \vdots\\
+x_{n1} &  &  & x_{np}
+\end{array}\right].\label{eq:X-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+with draws from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+ and a row can be thought of as a draw from 
+\begin_inset Formula $MVN(\vb 0,\vb I)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The calculation strategy in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ is to transpose 
+\begin_inset Formula $\vb X$
+\end_inset
+
+.
+ The candidate vectors, which are rows in 
+\begin_inset Formula $\vb X$
+\end_inset
+
+, become columns of 
+\begin_inset Formula $\vb X^{T}$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb Y^{T}=\vb{\mu}\vb 1_{n}^{T}+\vb S\vb X^{T}.\label{eq:YTrans}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\[
+\vb Y^{T}=\left[\begin{array}{cccc}
+y_{11} & y_{21} &  & y_{n1}\\
+y_{12} & y_{22}\\
+\\
+y_{1p} &  &  & y_{np}
+\end{array}\right]=\left[\begin{array}{cccc}
+\mu_{1} & \mu_{1} &  & \mu_{1}\\
+\mu_{2} & \mu_{2} & (n & \mu_{2}\\
+\mu_{3} & \mu_{3} & cols) & \mu_{3}\\
+\vdots & \vdots &  & \vdots\\
+\mu_{p} & \mu_{p} &  & \mu_{p}
+\end{array}\right]+\left[\begin{array}{c}
+Scaling\\
+matrix\\
+(p\times p)
+\end{array}\right]\,\left[\begin{array}{cccc}
+x_{11} & x_{21} &  & x_{n1}\\
+x_{12} & x_{22}\\
+\\
+x_{1p} &  &  & x_{np}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+As one can see, the matrix algebra requires us to have 
+\begin_inset Formula $n$
+\end_inset
+
+ copies of 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ side-by-side.
+ (
+\begin_inset Formula $\vb 1_{n}^{T}$
+\end_inset
+
+ is a row vector with 
+\begin_inset Formula $n$
+\end_inset
+
+ elements, all of which are equal to 
+\begin_inset Formula $1$
+\end_inset
+
+).
+ A side effect of this approach is that the result is also a transposed
+ matrix, 
+\begin_inset Formula $\vb Y^{T}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The Stata code works row by row, performing a series of inner-product calculatio
+ns.
+ To describe that, a mathematically equivalent representation would be
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb Y=\vb 1_{n}\vb{\mu}^{T}+\vb X\,\vb S^{T}.\label{eq:YnotTransposed}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+One can think of the rescaling calculation as (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:YTrans"
+
+\end_inset
+
+) or (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:YnotTransposed"
+
+\end_inset
+
+).
+ I understood the method in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:YTrans"
+
+\end_inset
+
+) more readily, but (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:YnotTransposed"
+
+\end_inset
+
+) is perhaps more intuitive.
+\end_layout
+
+\begin_layout Subsection
+The $100,000 Question
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:EigenVSCholesky"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+How can the two completely different scaling matrices lead to equally good
+ 
+\begin_inset Formula $MVN$
+\end_inset
+
+ draws?
+\end_layout
+
+\begin_layout Standard
+It is not intuitively reasonable to suppose that the the two versions, 
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\left[\begin{array}{cccc}
+r_{11} & 0 & 0 & 0\\
+r_{12} & r_{22} & 0 & 0\\
+ &  & \ddots & 0\\
+r_{1p} & r_{1p} &  & r_{pp}
+\end{array}\right]\,,\mathrm{and}\, & \left[\begin{array}{cccc}
+\sqrt{\lambda_{1}}v_{11} & \sqrt{\lambda_{2}}v_{12} &  & \sqrt{\lambda_{p}}v_{1p}\\
+\sqrt{\lambda_{1}}v_{21} & \sqrt{\lambda_{2}}v_{22} &  & \sqrt{\lambda_{p}}v_{2p}\\
+ &  & \ddots\\
+\sqrt{\lambda_{1}}v_{p1} & \sqrt{\lambda_{2}}v_{p2} &  & \sqrt{\lambda_{p}}v_{pp}
+\end{array}\right]\end{array},\label{eq:Scandidates}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+are equally good candidates to serve as 
+\begin_inset Formula $\vb S$
+\end_inset
+
+.
+ The one on the left is half filled with 
+\begin_inset Formula $0$
+\end_inset
+
+'s.
+ It is apparent that we will get different simulated draws from these two
+ matrices.
+\end_layout
+
+\begin_layout Standard
+My intuition resists the idea that these two scaling matrices are equally
+ valid.
+ I have come to accept the fact that they are adequate for two reasons.
+ First, it is apparent that 
+\begin_inset Formula $\vb S^{T}\vb S=\vb S\vb S^{T}=\vb{\Sigma}$
+\end_inset
+
+, using either matrix in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Scandidates"
+
+\end_inset
+
+) as 
+\begin_inset Formula $\vb S$
+\end_inset
+
+.
+ They are both square roots of the same 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+, meaning the data re-scaled with them is drawn from 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Second, I became aware of this fact that, generally speaking, matrix square
+ roots are not unique.
+\end_layout
+
+\begin_layout Proposition
+Given a symmetric 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ for which a square root 
+\begin_inset Formula $S$
+\end_inset
+
+ exists (
+\begin_inset Formula $\vb S^{T}\vb S=\vb{\Sigma}$
+\end_inset
+
+), and given 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ is orthonormal, then 
+\begin_inset Formula $\vb V\vb S$
+\end_inset
+
+ is also a square root.
+ 
+\end_layout
+
+\begin_layout Standard
+Proof.
+ Recall 
+\begin_inset Formula $\vb V\vb V^{T}=\vb I$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+(\vb V\vb S)^{T}(\vb V\vb S) & = & \vb S^{T}\vb V^{T}\vb V\vb S=\vb S^{T}\vb S.
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are various suggestions about other ways to find a square-root decompositi
+on that is most numerically stable, or fast to compute, or unique within
+ some restricted class of matrices.
+ For example, it can be shown that, if we insist the main diagonal of the
+ Cholesky triangle is positive, then there is a unique triangular 
+\begin_inset Formula $\vb R$
+\end_inset
+
+ satisfying 
+\begin_inset Formula $\vb R^{T}\vb R$
+\end_inset
+
+ if 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ is symmetric.
+ Golub and Van Loan (
+\begin_inset CommandInset citation
+LatexCommand citeyear
+key "golub_matrix_1996"
+
+\end_inset
+
+, p.
+ 149) show (by a singular value decomposition of the Cholesky triangle)
+ that there is a unique square root if we insist the square root matrix
+ itself is symmetric and positive semi-definite.
+ Unfortunately, the two 
+\begin_inset Quotes eld
+\end_inset
+
+unique
+\begin_inset Quotes erd
+\end_inset
+
+ square roots are not equal to each other.
+\end_layout
+
+\begin_layout Standard
+Some authors are drawn to the Cholesky decomposition, when it exists, because
+ we can, at least, get a basic understanding of what's going on.
+ Write out the scaling equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:YTrans"
+
+\end_inset
+
+) for a 4 dimensional problem (keep this simple by letting 
+\begin_inset Formula $\vb{\mu}=0$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+y_{3}\\
+y_{4}
+\end{array}\right] & = & \left[\begin{array}{cccc}
+r_{11} & 0 & 0 & 0\\
+r_{12} & r_{22} & 0 & 0\\
+r_{13} & r_{23} & r_{33} & 0\\
+r_{14} & r_{24} & r_{34} & r_{44}
+\end{array}\right]\left[\begin{array}{c}
+x_{1}\\
+x_{2}\\
+x_{3}\\
+x_{4}
+\end{array}\right]\\
+ & = & \left[\begin{array}{llll}
+r_{11}x_{1}\\
+r_{12}x_{1}+r_{22}x_{2}\\
+r_{13}x_{1}+r_{23}x_{2}+r_{33}x_{3}\\
+r_{14}x_{1}+r_{24}x_{2}+r_{34}x_{3}+r_{44}x_{4}
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first term 
+\begin_inset Formula $y_{1}=r_{11}x_{1}$
+\end_inset
+
+ is easy to understand.
+ The candidate 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ has been weighted by 
+\begin_inset Formula $r_{11}$
+\end_inset
+
+, which is a standard deviation.
+ That row is precisely analogous to equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:yfromx"
+
+\end_inset
+
+).
+ The following rows are less easy to grasp, however.
+\end_layout
+
+\begin_layout Subsection
+There's More: Its reversible.
+ 
+\end_layout
+
+\begin_layout Standard
+If we are given a draw from a correlated 
+\begin_inset Formula $MVN$
+\end_inset
+
+, it is possible to 
+\begin_inset Quotes eld
+\end_inset
+
+de-correlate
+\begin_inset Quotes erd
+\end_inset
+
+ the columns.
+ This is sometimes referred to as 
+\begin_inset Quotes eld
+\end_inset
+
+whitening
+\begin_inset Quotes erd
+\end_inset
+
+, as in converting columns to 
+\begin_inset Quotes eld
+\end_inset
+
+white noise.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that the focal calculation is (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVNlinear"
+
+\end_inset
+
+), 
+\begin_inset Formula $\vb y=\vb{\mu}+\vb S\vb x.$
+\end_inset
+
+ In equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Greene"
+
+\end_inset
+
+), we have the tool understand the transform of a draw like 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ into some other distribution.
+ This works whether we want the transformation to go back to 
+\begin_inset Formula $MVN(0,I)$
+\end_inset
+
+ or something else.
+ If 
+\begin_inset Formula $\vb y\sim MVN(\vb{\mu},\mbox{\vb{\Sigma}})$
+\end_inset
+
+, a new variable 
+\begin_inset Formula $\vb z=\vb b+\mbox{\vb A}\vb y$
+\end_inset
+
+ is distributed as 
+\begin_inset Formula $N(\vb A\vb{\mu}+\vb b,\,\vb A\vb{\Sigma}\vb A^{T})$
+\end_inset
+
+.
+ So 
+\begin_inset Formula $\vb y$
+\end_inset
+
+ can be converted to 
+\begin_inset Formula $\vb z\sim MVN(\vb{0,}\mbox{\vb I)}$
+\end_inset
+
+ by setting 
+\begin_inset Formula $\vb A=\vb S^{-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb b=-\vb{\mu}\vb S^{-1}$
+\end_inset
+
+.
+ It is especially easy to see that if we write
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\vb z & = & \vb b+\mbox{\vb A}\vb y=\vb b+\mbox{\vb A (}\vb{\mu}+\vb S\vb x)\\
+ & = & \vb b+\mbox{\vb A}\vb{\mu}+\vb A\vb S\vb x
+\end{eqnarray}
+
+\end_inset
+
+In order to end up with 
+\begin_inset Formula $\vb z\sim MVN(\vb{0,}\mbox{\vb I)}$
+\end_inset
+
+, it is necessary that 
+\begin_inset Formula $\vb A\vb S=\vb I$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb b+\mbox{\vb A}\vb{\mu}=\vb 0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Forcing the Average and Covariance to equal parameters
+\end_layout
+
+\end_inset
+
+Forcing the Sample Average to Have Observed Statistics 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Both 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\vb{\Sigma}$
+\end_inset
+
+ are characteristics of a data generator (a.k.a 
+\begin_inset Quotes eld
+\end_inset
+
+population parameters
+\begin_inset Quotes erd
+\end_inset
+
+).
+ We often want to compare the sample estimates, which I'll refer to as 
+\begin_inset Formula $\hat{\vb{\mu}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\vb{\Sigma}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The summary statistics from a sample are not equal to the parameters of
+ the data generator.
+ There is variation among samples.
+ Newcomers often expect that the mean of a sample drawn from 
+\begin_inset Formula $N(10,20)$
+\end_inset
+
+ will be exactly 10.
+ It takes a little time for them to become reconciled to the reality of
+ this.
+\end_layout
+
+\begin_layout Standard
+It never occurred to me that anybody might like to manipulate a data generator
+ so that the observed mean would exactly equal 
+\begin_inset Formula $\vb{\mu}$
+\end_inset
+
+ (or that they would want 
+\begin_inset Formula $\hat{\vb{\Sigma}}=\vb{\Sigma}$
+\end_inset
+
+).
+ It never occurred to me until I heard about the Stata function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+.
+ It does exactly that.
+ 
+\end_layout
+
+\begin_layout Standard
+The Stata simulation code used by Guo and Fraser uses 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ to draw a sample that is supposedly multivariate normal.
+ They describe the variables thus: 
+\end_layout
+
+\begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
+where 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+, 
+\begin_inset Formula $Z$
+\end_inset
+
+, and 
+\begin_inset Formula $u$
+\end_inset
+
+ are random variables, normally distributed with a mean vector of (3 2 10
+ 5 0), a standard deviation vector (.5 .6 9.5 2 1) and the following symmetric
+ correlation matrix:
+\begin_inset Formula 
+\[
+r(x_{1},x_{2},x_{3},Z,u)=\left[\begin{array}{ccccc}
+1\\
+.2 & 1\\
+.3 & 0 & 1\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & .4 & 1
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Quote
+In addition, 
+\begin_inset Formula $v$
+\end_inset
+
+ is a random variable that is normally distributed with mean zero and variance
+ 1...
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citeyearpar
+after "p. 350"
+key "guo_propensity_2014"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+However, according to its documentation 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Stata14manual"
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ does not purport to generate a multivariate normally distributed sample:
+ 
+\end_layout
+
+\begin_layout Quote
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ ...
+ creates a new dataset with a specified covariance (correlation) structure....
+ The purpose of this is to allow you to perform analyses from summary statistics
+ (correlations/covariances and maybe the means) when these summary statistics
+ are all you know and summary statistics are sufficient to obtain results.
+  
+\end_layout
+
+\begin_layout Quote
+The data created by 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ are artificial; they are not the original data, and it (
+\emph on
+sic
+\emph default
+) is not a sample from an underlying population with the summary statistics
+ specified.
+ See 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ if you want to generate a random sample....
+ 
+\end_layout
+
+\begin_layout Quote
+The dataset 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ creates is suitable for one purpose only:  performing analyses when all
+ that is known are summary statistics and those summary statistics are sufficien
+t for the analysis at hand.
+\end_layout
+
+\begin_layout Standard
+After digesting this information, I realized that the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ function for R has an equivalent, setting the argument 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+empirical = TRUE
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+At the moment, I have two questions.
+\end_layout
+
+\begin_layout Enumerate
+How do they do that? For that part, I have a good answer.
+\end_layout
+
+\begin_layout Enumerate
+What do they get when they do that? This part has no good answer yet, but
+ there are interesting questions.
+ Is there any formal way to understand the distortion caused by usage of
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ when a draw from an 
+\begin_inset Formula $MVN$
+\end_inset
+
+ is needed instead? 
+\end_layout
+
+\begin_layout Subsection
+How Do They Do That?
+\end_layout
+
+\begin_layout Standard
+This is a 
+\begin_inset Quotes eld
+\end_inset
+
+data standardization
+\begin_inset Quotes erd
+\end_inset
+
+ chore.
+ It can be accomplished by inserting another step in the middle of the 5
+ step algorithm for 
+\begin_inset Formula $MVN$
+\end_inset
+
+ draws (see the last entry in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Aligning-Code"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Subsubsection
+The big picture: standardizing variables
+\end_layout
+
+\begin_layout Subsubsection*
+One standardized variable
+\end_layout
+
+\begin_layout Standard
+Standardizing data is familiar to most social scientists.
+ Consider 
+\begin_inset Formula $x$
+\end_inset
+
+, a column variable, with an estimated mean 
+\begin_inset Formula $\hat{\mu}=\frac{1}{n}\sum x_{i}$
+\end_inset
+
+ and standard deviation 
+\begin_inset Formula $\hat{\sigma}=\sqrt{\frac{1}{(n-1)}\sum(x_{i}-\hat{\mu})^{2}}$
+\end_inset
+
+.
+ The value we often refer to as a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized variable
+\begin_inset Quotes erd
+\end_inset
+
+ is calculated as
+\begin_inset Formula 
+\begin{equation}
+\hat{Z}_{i}=\frac{x_{i}-\hat{\mu}}{\hat{\sigma}}.\label{eq:standardize-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+That variable has a mean of 
+\begin_inset Formula $0$
+\end_inset
+
+ and standard deviation 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ This is true, no matter what data generator supplies 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, even if it is not normal.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{Z}$
+\end_inset
+
+ is an estimate of how 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is fluctuating above and below the center of the random process.
+ It is an estimate of variable that is centered and standardized on the
+ true population parameters, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Z_{i}=\frac{x_{i}-\mu}{\sigma}.\label{eq:Z-score}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+This variable 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ is normally distributed if 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is normal.
+ Note 
+\begin_inset Formula $Z_{i}=-\frac{\mu}{\sigma}+\frac{1}{\sigma}x_{i}$
+\end_inset
+
+, a linear translation of 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ By the same derivation as (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:yfromx"
+
+\end_inset
+
+), we are certain this is normal, 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The empirically standardized 
+\begin_inset Formula $\hat{Z}_{i}$
+\end_inset
+
+ does not have an expected value of 
+\begin_inset Formula $0$
+\end_inset
+
+, or parametric variance 
+\begin_inset Formula $1$
+\end_inset
+
+, but the vector 
+\begin_inset Formula $\vb{\hat{Z}}$
+\end_inset
+
+ has an observed mean exactly 
+\begin_inset Formula $0$
+\end_inset
+
+ and variance equal to 1.
+ Its not normal any more, but that doesn't stop us from rescaling it.
+ A research who needs to manufacture a new column with empirical mean 
+\begin_inset Formula $a$
+\end_inset
+
+ and standard deviation 
+\begin_inset Formula $b$
+\end_inset
+
+ can apply this rescaling equation: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+a+b\hat{Z}_{i}=a+b\left(\frac{x_{i}-\hat{\mu}}{\hat{\sigma}}\right).\label{eq:standardize-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I don't know what the name for that thing is.
+ 
+\end_layout
+
+\begin_layout Standard
+It is not 
+\begin_inset Formula $N(a,b^{2})$
+\end_inset
+
+.
+ But the empirical mean is 
+\begin_inset Formula $a$
+\end_inset
+
+ and the variance is 
+\begin_inset Formula $b^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Multivariate standardization: step 4.5
+\end_layout
+
+\begin_layout Standard
+By analogy to the procedure in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:standardize-2"
+
+\end_inset
+
+), a multivariate process is employed in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The candidate data matrix in which each row is 
+\begin_inset Formula $MVN(\vb 0,\vb I)$
+\end_inset
+
+, is transformed so that the observed mean of each column is 
+\begin_inset Formula $0$
+\end_inset
+
+ and the observed variance matrix is the identity matrix.
+ This is not the same as standardizing each column separately.
+ Not only must each column's empirical mean be 
+\begin_inset Formula $0$
+\end_inset
+
+ with standard deviation is 
+\begin_inset Formula $1$
+\end_inset
+
+, but also the observed correlation between any pair of columns must be
+ 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The mean-centered matrix, 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+, is made up of columns 
+\begin_inset Formula $\vb X[\,,j]-mean(\vb X[\,,j])$
+\end_inset
+
+.
+ After this, the empirical mean of each column in 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+ is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The unbiased empirical estimate of the variance matrix is 
+\begin_inset Formula 
+\begin{equation}
+Var(\vb X_{c})=\frac{1}{(n-1)}\vb X_{c}^{T}\vb X_{c}\label{eq:Variance}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+We need to find a de-correlating matrix 
+\begin_inset Formula $\vb A$
+\end_inset
+
+ with the property that
+\begin_inset Formula 
+\begin{equation}
+\vb X_{u}=\vb X_{c}\vb A\,\,such\,that\,Var(\vb X_{c}\vb A)=\vb I.\label{eq:Xc_A}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have competing ways to calculate 
+\begin_inset Formula $\vb A$
+\end_inset
+
+, one which is more immediately understandable, one of which is more numerically
+ accurate.
+ The more immediately understandable approach is the one implemented in
+ Stata's 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+.
+ Because 
+\begin_inset Formula $Var(\vb X_{c}\vb A)=\vb A^{T}Var(\vb X_{c})\vb A$
+\end_inset
+
+, we can write the requirement
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{eqnarray*}
+Var(\vb X_{c}\vb A)=\vb A^{T}Var(\vb X_{c})\vb A & = & \mbox{\vb I}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Then the inverse of both sides is 
+\begin_inset Formula 
+\begin{equation}
+\vb A^{-1}Var(\vb X_{c})^{-1}\vb A^{T^{-1}}=\vb I
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+and we find
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{equation}
+Var(\vb X_{c})^{-1}=\vb A\vb A^{T}.\label{eq:VarX_inverse_root}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Thus, the desired matrix 
+\begin_inset Formula $\vb A$
+\end_inset
+
+ is clearly a square root of 
+\begin_inset Formula $Var(\vb X_{c})^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+That approach has some bad numerical properties (high roundoff error).
+ The condition (index of numerical instability, see ) of 
+\begin_inset Formula $\vb X_{c}^{T}\vb X_{c}$
+\end_inset
+
+ is the square of the condition of 
+\begin_inset Formula $\vb X_{c}^{T}$
+\end_inset
+
+.
+ It is recommended instead employ a solution that does not require the explicit
+ formulation of 
+\begin_inset Formula $\vb X_{c}^{T}\vb X_{c}$
+\end_inset
+
+ or the calculation of its inverse.
+ Those concerns are clearly in the forefront of the approach in the R, where
+ the singular value decomposition is used.
+ 
+\end_layout
+
+\begin_layout Standard
+After step 4.5 is complete, the de-correlated matrix 
+\begin_inset Formula $X_{u}$
+\end_inset
+
+ has been created.
+ It replaces 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ in step 5.
+ Because 
+\begin_inset Formula $\vb X_{u}$
+\end_inset
+
+ has column means equal to 
+\begin_inset Formula $0$
+\end_inset
+
+ and empirical variance 
+\begin_inset Formula $\mbox{\vb I}$
+\end_inset
+
+, the result has summary statistics that exactly match the user request.
+\end_layout
+
+\begin_layout Subsubsection
+Implementation Details: mvrnorm with 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+empirical = TRUE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ function's argument 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+empirical
+\end_layout
+
+\end_inset
+
+ is documented as follows: 
+\begin_inset Quotes eld
+\end_inset
+
+mu and Sigma specify the empirical not population mean and covariance matrix.
+\begin_inset Quotes erd
+\end_inset
+
+ In the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ code (see Appendix 1), only 5 lines between steps 4 and 5 are altered (see
+ lines 11 through 15).
+ 
+\end_layout
+
+\begin_layout Enumerate-Resume
+Line 12.
+ Create a mean-centered matrix 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate-Resume
+Line 13.
+ Use a singular value decomposition (principal components analysis) generate
+ a new candidate matrix in which the empirically observed correlations among
+ the columns are 0.
+ New 
+\begin_inset Quotes eld
+\end_inset
+
+empirically de-correlated
+\begin_inset Quotes erd
+\end_inset
+
+ columns are produced using estimates of the eigenvalues of 
+\begin_inset Formula $\vb X_{c}^{T}\vb{X_{c}}$
+\end_inset
+
+ that are produced with principal component analysis.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X_{c}\vb V\label{eq:rmvnorm_PC}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The columns are referred to as principal component scores; they are orthogonal
+ columns, empirically uncorrelated (Pearson's r between columns is 
+\begin_inset Formula $0$
+\end_inset
+
+; it is easy to show that 
+\begin_inset Formula $Var(\vb X_{c}\vb V)=\vb I$
+\end_inset
+
+).
+ I suspect the reader will take my word for that, or else some background
+ reading on principal components might be in order.
+ 
+\end_layout
+
+\begin_layout Standard
+The principal component scores are organized so that column 1 has the greatest
+ variance and the last column has the smallest variance.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate-Resume
+Line 14.
+ Suppose the standard deviation estimates are 
+\begin_inset Formula $\hat{\vb{\sigma}}=(\hat{\sigma}_{1},\ldots,\hat{\sigma}_{p})^{T}$
+\end_inset
+
+.
+ Create 
+\begin_inset Formula $X_{u},$
+\end_inset
+
+ a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized
+\begin_inset Quotes erd
+\end_inset
+
+ set of columns of 
+\begin_inset Formula $\vb{X_{c}V}$
+\end_inset
+
+.
+ In effect, we divide each column of 
+\begin_inset Formula $\vb{X_{c}V}$
+\end_inset
+
+ by its observed standard deviation.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X_{u}=(\vb X_{c}\vb V)\left(\begin{array}{cccc}
+\frac{1}{\hat{\sigma}_{1}} & 0 & \ldots & 0\\
+0 & \frac{1}{\hat{\sigma}_{2}} &  & 0\\
+\vdots &  & \ddots\\
+0 & 0 &  & \frac{1}{\hat{\sigma}_{p}}
+\end{array}\right)=(\vb X_{c}\vb V)diag(\frac{1}{\hat{\vb{\sigma}}})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+It turns out that the variance of the columns of 
+\begin_inset Formula $X_{c}V$
+\end_inset
+
+ can be calculated from the singular values, which are also available from
+ the SVD.
+ The variance of the 
+\begin_inset Formula $j$
+\end_inset
+
+'th column of the scores in 
+\begin_inset Formula $\vb X_{c}\vb V$
+\end_inset
+
+ is 
+\begin_inset Formula $\delta^{2}/(n-1)$
+\end_inset
+
+, so the standard deviations are 
+\begin_inset Formula $\hat{\sigma}_{j}=\delta_{j}/\sqrt{n-1}$
+\end_inset
+
+.
+ Hence, 
+\begin_inset Formula 
+\begin{equation}
+diag(\frac{1}{\hat{\sigma}})=diag(\sqrt{n-1}/\vb{\delta})
+\end{equation}
+
+\end_inset
+
+Steps 2 and 3 can be carried out in one single step, combining the de-correlatin
+g and re-scaling effort.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X_{u}=\vb X_{c}\left(\vb V\,diag(\frac{\sqrt{n-1}}{\delta})\right)\label{eq:SVDsingle_step}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we write it in that way, we see that the de-correlating matrix 
+\begin_inset Formula $\vb A$
+\end_inset
+
+ in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Xc_A"
+
+\end_inset
+
+) is 
+\begin_inset Formula $\vb Vdiag(\sqrt{n-1}/\delta)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Because these changes purge the candidate matrix 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ of its randomized 
+\begin_inset Quotes eld
+\end_inset
+
+individuality
+\begin_inset Quotes erd
+\end_inset
+
+, step 5 in the algorithm will produce a data structure in which the observed
+ mean and variance matrix exactly match the user's request.
+\end_layout
+
+\begin_layout Subsubsection*
+SVD Implementation
+\end_layout
+
+\begin_layout Standard
+The authors of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ choose to use singular value decomposition (SVD) of 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+ because of its superior numerical stability.
+ Recall the SVD is a product of 3 matrices.
+ 
+\begin_inset Formula 
+\begin{equation}
+\vb X_{c}=\vb U\vb D\vb V^{T}.\label{eq:SVD-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $\vb U$
+\end_inset
+
+ is an orthogonal matrix that is 
+\begin_inset Formula $n\times p$
+\end_inset
+
+, 
+\begin_inset Formula $\vb V$
+\end_inset
+
+ is also orthogonal 
+\begin_inset Formula $p\times p$
+\end_inset
+
+, and 
+\begin_inset Formula $\vb D=diag(\vb{\delta})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+A de-correlating matrix consistent with (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Xc_A"
+
+\end_inset
+
+) is obtained by replacing 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+ in the variance formula with 
+\begin_inset Formula $\vb U\vb D\vb V^{T}$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{eqnarray}
+Var(\vb X_{c}) & = & \frac{1}{(n-1)}\vb X_{c}^{T}\vb X_{c}\nonumber \\
+ & = & (\frac{1}{\sqrt{n-1}}\vb D\vb V^{T})^{T}\left(\frac{1}{\sqrt{n-1}}\vb D\vb V^{T}\right).
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Because the inverse of a product is the product of the inverses, in reverse
+ order, 
+\begin_inset Formula 
+\begin{eqnarray}
+Var(\vb X_{c}){}^{-1} & = & (\vb V\sqrt{n-1}\vb{D^{-1}})(\vb V\sqrt{n-1}\vb{D^{-1}})^{T}\nonumber \\
+ & = & \vb Vdiag(\sqrt{n-1}/\vb{\delta})\,(\vb Vdiag(\sqrt{n-1}/\vb{\delta}))^{T}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The term 
+\begin_inset Formula $\vb Vdiag(\sqrt{n-1}/\vb{\delta})$
+\end_inset
+
+ can be a square root of 
+\begin_inset Formula $Var(\vb X_{c})^{-1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Implementation Details: Stata's corr2data
+\end_layout
+
+\begin_layout Standard
+The Stata 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ function is in a file named 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data.ado
+\end_layout
+
+\end_inset
+
+ that is presented in Appendix 3.
+ 
+\end_layout
+
+\begin_layout Standard
+Step 4.5 takes on a different appearance partly because this code is written
+ in Stata, but mostly because instead of using an SVD based square root
+ of the variance matrix, they use the Cholesky root of the inverse of the
+ variance matrix.
+\end_layout
+
+\begin_layout Enumerate-Resume
+Line 144.
+ The mean-centered candidate matrix, 
+\begin_inset Formula $\vb X_{c}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate-Resume
+Recall the inverse of the variance matrix approach in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VarX_inverse_root"
+
+\end_inset
+
+) The Stata code explicitly calculates 
+\begin_inset Formula $\vb X^{T}\vb X$
+\end_inset
+
+, inverts the variance matrix and extracts the square roots of the inverse
+ calculating 
+\begin_inset Formula $\vb A^{T}\vb A=Cholesky(Var(\vb X_{c})^{-1})$
+\end_inset
+
+.
+ That approach uses several of the calculations that are discouraged in
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "golub_matrix_1996"
+
+\end_inset
+
+.
+ Other strategies might be more accurate.
+\end_layout
+
+\begin_layout Enumerate-Resume
+The calculation that manufactures the de-correlated matrix 
+\begin_inset Formula $\vb X_{u}$
+\end_inset
+
+ is found to be:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vb X_{c}\vb A\label{eq:corr2data_XGT}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The end product is a matrix in which, except for roundoff error, the mean
+ of each column is 
+\begin_inset Formula $0$
+\end_inset
+
+ and the columns are uncorrelated and have variance equal to 
+\begin_inset Formula $1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+What do they get when they do that?
+\end_layout
+
+\begin_layout Standard
+I now appreciate the ambiguous commentary in the Stata documentation for
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+, it 
+\begin_inset Quotes eld
+\end_inset
+
+is not a sample from an underlying population with the summary statistics
+ specified.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ manufactured data set does not have rows drawn from 
+\begin_inset Formula $MVN(\vb{\mu},\vb{\Sigma})$
+\end_inset
+
+, but what does it have? Intuition suggests that this new data set is probably
+ pretty close to multivariate normal, perhaps it is a multivariate 
+\begin_inset Formula $t$
+\end_inset
+
+ distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+I do not (yet) know the distribution of these corr2data draws, but I see
+ reasons to expect this is more like a multivariate 
+\begin_inset Formula $t$
+\end_inset
+
+ than a normal distribution.
+ We can see that the rows of the corr2data draws are not independently and
+ identically distributed.
+ 
+\end_layout
+
+\begin_layout Standard
+Lets start by considering just one 
+\begin_inset Quotes eld
+\end_inset
+
+standardized variable
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Let the input values be 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+, let the empirically standardized scores be 
+\begin_inset Formula $\hat{Z}_{i}=\frac{1}{\hat{\sigma}}(x_{i}-\hat{\mu})$
+\end_inset
+
+.
+ The vector 
+\begin_inset Formula $\hat{\vb Z}=(\hat{Z}_{1},\hat{Z}_{2},\ldots,\hat{Z}_{n})^{T}$
+\end_inset
+
+ collects together 
+\begin_inset Formula $n$
+\end_inset
+
+ standardized values.
+ 
+\end_layout
+
+\begin_layout Standard
+In introductory statistics, they told us to act as if 
+\begin_inset Formula $\hat{Z}_{i}$
+\end_inset
+
+ is a sample drawn from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+.
+ That's obviously wrong.
+ The values 
+\begin_inset Formula $\hat{\vb Z}$
+\end_inset
+
+ are not statistically independent.
+ Each element 
+\begin_inset Formula $\hat{Z}_{i}$
+\end_inset
+
+ depends on fluctuations in any of the 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+'s because the estimated mean and standard deviation include all of those
+ scores.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+First, let 
+\begin_inset Formula $n=1$
+\end_inset
+
+, 
+\begin_inset Formula $x_{1}\sim N(0,1)$
+\end_inset
+
+.
+ Unfortunately, it appears that 
+\begin_inset Formula $\hat{Z}_{1}$
+\end_inset
+
+ is undefined because the sample standard deviation of one point is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+The smallest sample for which we can calculate 
+\begin_inset Formula $\hat{Z}$
+\end_inset
+
+ is thus 2.
+ Draw 
+\begin_inset Formula $(x_{1},x_{2})^{T}$
+\end_inset
+
+, each from 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+, and then calculate the standardized scores, 
+\begin_inset Formula $(\hat{Z}_{1},\hat{Z}_{2})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\hat{Z}_{1}=\frac{x_{1}-\hat{\mu}}{\hat{\sigma}}=\frac{x_{1}-\frac{1}{2}(\sum_{i=1}^{2}x_{i})}{\sqrt{\sum_{i=1}^{2}(x_{i}-\frac{1}{1}\sum_{i=1}^{2}x_{i}})^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Then draw one more observation.
+ Leave 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ the same, of course, so the only change is in 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+.
+ Given input 
+\begin_inset Formula $(x_{1},x_{2},x_{3})^{T}$
+\end_inset
+
+ the estimates 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\sigma}$
+\end_inset
+
+ will change, so the standardized scores for cases 1 and 2 will change,
+ even though 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ are not altered.
+ 
+\begin_inset Formula 
+\begin{equation}
+\hat{Z}_{1}=\frac{x_{1}-\hat{\mu}}{\hat{\sigma}}=\frac{x_{1}-\frac{1}{3}(\sum_{i=1}^{3}x_{i})}{\sqrt{\sum_{i=1}^{3}(x_{i}-\frac{1}{2}\sum_{i=1}^{3}x_{i}})^{2}}
+\end{equation}
+
+\end_inset
+
+Every element in the vector 
+\begin_inset Formula $\hat{\vb Z}=(\hat{Z}_{1},\hat{Z}_{2},\ldots,\hat{Z}_{n})^{T}$
+\end_inset
+
+ depends one each individual element in 
+\begin_inset Formula $(x_{1},x_{2},\ldots,x_{p})^{T}$
+\end_inset
+
+.
+ The values in 
+\begin_inset Formula $\hat{Z}_{i}$
+\end_inset
+
+ can't be viewed as a series of independent draws from a single probability
+ model.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+What's especially bad about that? Researchers are accustomed to performing
+ calculations with 
+\begin_inset Formula $\hat{Z}$
+\end_inset
+
+, such as the 
+\begin_inset Formula $t$
+\end_inset
+
+ test or the 
+\begin_inset Formula $F$
+\end_inset
+
+ test.
+ These tests are all based on the idea that the values being considered
+ are 
+\begin_inset Quotes eld
+\end_inset
+
+independently, identically distributed
+\begin_inset Quotes erd
+\end_inset
+
+ (iid) draws from a specified distribution.
+ Not only is it certain that the values 
+\begin_inset Formula $\hat{Z}_{i}$
+\end_inset
+
+ are not normal, but 
+\emph on
+they are also not independent
+\emph default
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What can we say for sure? 
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $n>1$
+\end_inset
+
+, the empirical average is 0 and the standard deviation is 1.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $E[\hat{Z}_{i}]=0$
+\end_inset
+
+ because 
+\begin_inset Formula $E[x_{i}]=\mu$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+From sample to sample, the mean 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ cannot change, it is fixed at 
+\begin_inset Formula $0$
+\end_inset
+
+, so its variance has to be 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ Hence, the standard error of the mean of 
+\begin_inset Formula $\hat{Z}$
+\end_inset
+
+ is 0.
+\end_layout
+
+\begin_layout Subsubsection*
+Is the Stata method in corr2data more 
+\begin_inset Quotes eld
+\end_inset
+
+wrong
+\begin_inset Quotes erd
+\end_inset
+
+ than the method used in R's mvrnorm?
+\end_layout
+
+\begin_layout Standard
+The answers are 
+\begin_inset Quotes eld
+\end_inset
+
+No
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Yes
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The answer is 
+\begin_inset Quotes eld
+\end_inset
+
+No
+\begin_inset Quotes erd
+\end_inset
+
+ in the sense that of these functions empirically standardizes the candidate
+ 
+\begin_inset Formula $\vb X$
+\end_inset
+
+ matrix and then rescale the result.
+ By showing that each one derives the matrix square root of the inverse
+ of a variance matrix, they more-or-less aiming at the same thing.
+ I've compared quite a few calculations using the two matrix methods and
+ the calculated values are the same up to the 8th decimal place.
+ 
+\end_layout
+
+\begin_layout Standard
+The answer is 
+\begin_inset Quotes eld
+\end_inset
+
+Yes
+\begin_inset Quotes erd
+\end_inset
+
+ because 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ handles the random number stream very badly.
+ Like R, Stata uses a system-wide pseudo random generator (PRNG) stream
+ that powers many different calculations.
+ If one runs 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drawnorm
+\end_layout
+
+\end_inset
+
+ several times, it generates different 
+\begin_inset Formula $MVN$
+\end_inset
+
+ draws each time because the position in the system-wide PRNG is advanced
+ each time.
+ In contrast, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ gives the exact same data set every time we call it, unless we explicitly
+ set the argument 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+seed()
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+corr2data
+\end_layout
+
+\end_inset
+
+ does not advance the system-wide PRNG and there is simply no way to feel
+ confident that one block of data returned after setting seed(234234) is
+ not correlated with a block returned from corr2data with seed(432432).
+ 
+\end_layout
+
+\begin_layout Standard
+Aside from the numerical precision, and the peculiarity of calling corr2data,
+ it is difficult to say that we have fully understood the properties of
+ corr2data.
+ We end up with the same frustrating 
+\begin_inset Quotes eld
+\end_inset
+
+too many square roots
+\begin_inset Quotes erd
+\end_inset
+
+ problem that frustrated the conclusion of the 
+\begin_inset Formula $MVN$
+\end_inset
+
+ generation discussion in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:EigenVSCholesky"
+
+\end_inset
+
+.
+ We have two seemingly different scaling matrices are equally good on theoretica
+l terms.
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+This discussion tries to combine lessons in matrix algebra with a detailed
+ comparison of software that generates multivariate normal samples.
+ I have learned a good deal about the details of creating simulated draws
+ and have been reminded of many details in linear algebra that I had forgotten,
+ or never knew.
+ 
+\end_layout
+
+\begin_layout Standard
+It has been shown that draws from a multivariate normal distribution can
+ be created in a 5 step algorithm.
+ This algorithm, which is similarly implemented in R and Stata, works in
+ an understandable way.
+ The algorithm inspects the user's request for internal coherence (the positive
+ definite variance matrix), creates a scaling matrix by extracting the square
+ root of the variance matrix, and then reshapes candidate draws that can
+ be pulled from a standard normal distribution 
+\begin_inset Formula $N(0,1)$
+\end_inset
+
+.
+ Since some software frameworks do not offer pre-packaged 
+\begin_inset Formula $MVN$
+\end_inset
+
+ data generators, an understanding of this procedure might be helpful to
+ some readers.
+ 
+\end_layout
+
+\begin_layout Section*
+Appendix 1.
+ mvrnorm
+\end_layout
+
+\begin_layout Standard
+In the MASS package (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "MASS"
+
+\end_inset
+
+) for R (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "R"
+
+\end_inset
+
+), one finds the file 
+\begin_inset Quotes eld
+\end_inset
+
+mvrnorm.R
+\begin_inset Quotes erd
+\end_inset
+
+, in which the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+mvrnorm
+\end_layout
+
+\end_inset
+
+ function is found.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "numbers=left,numberstyle={\tiny},basicstyle={\footnotesize},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mvrnorm <-
+\end_layout
+
+\begin_layout Plain Layout
+
+    function(n = 1, mu, Sigma, tol = 1e-6, empirical = FALSE, EISPACK =
+ FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    p <- length(mu)
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(!all(dim(Sigma) == c(p,p))) stop("incompatible arguments")
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (missing(EISPACK)) EISPACK <- getOption("mvnorm_use_EISPACK", FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+    eS <- eigen(Sigma, symmetric = TRUE, EISPACK = EISPACK)
+\end_layout
+
+\begin_layout Plain Layout
+
+    ev <- eS$values
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(!all(ev >= -tol*abs(ev[1L]))) stop("'Sigma' is not positive definite")
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- matrix(rnorm(p * n), n)
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(empirical) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        X <- scale(X, TRUE, FALSE) # remove means
+\end_layout
+
+\begin_layout Plain Layout
+
+        X <- X %*% svd(X, nu = 0)$v # rotate to PCs
+\end_layout
+
+\begin_layout Plain Layout
+
+        X <- scale(X, FALSE, TRUE) # rescale PCs to unit variance
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+    nm <- names(mu)
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(is.null(nm) && !is.null(dn <- dimnames(Sigma))) nm <- dn[[1L]]
+\end_layout
+
+\begin_layout Plain Layout
+
+    dimnames(X) <- list(nm, NULL)
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(n == 1) drop(X) else t(X)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Appendix 2.
+ drawnorm.ado
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "numbers=left,numberstyle={\tiny}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+*! version 7.3.0  03feb2015
+\end_layout
+
+\begin_layout Plain Layout
+
+program define drawnorm
+\end_layout
+
+\begin_layout Plain Layout
+
+	local xeqversion : di "version " string(_caller()) ":"
+\end_layout
+
+\begin_layout Plain Layout
+
+	version 8.2
+\end_layout
+
+\begin_layout Plain Layout
+
+	local version _caller()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	gettoken first 0: 0, parse(",")
+\end_layout
+
+\begin_layout Plain Layout
+
+	#del;
+\end_layout
+
+\begin_layout Plain Layout
+
+	syntax [,
+\end_layout
+
+\begin_layout Plain Layout
+
+		n(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		SEED(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		Double
+\end_layout
+
+\begin_layout Plain Layout
+
+		CORR(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		COV(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		CStorage(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		Means(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		SDs(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		CLEAR
+\end_layout
+
+\begin_layout Plain Layout
+
+		FORCEPSD
+\end_layout
+
+\begin_layout Plain Layout
+
+		TOL(passthru) // undocumented
+\end_layout
+
+\begin_layout Plain Layout
+
+	] ;
+\end_layout
+
+\begin_layout Plain Layout
+
+	#del cr
+\end_layout
+
+\begin_layout Plain Layout
+
+	quietly count
+\end_layout
+
+\begin_layout Plain Layout
+
+	local curn = r(N)
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `"`n'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		confirm integer n `n'
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' == `curn' {
+\end_layout
+
+\begin_layout Plain Layout
+
+			local n
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `"`n'"' == "" {	/* add newvarlist to existing dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = r(N)
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `nobs' <= 0 {
+\end_layout
+
+\begin_layout Plain Layout
+
+			error 2000
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if "`clear'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			drop _all
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui set obs `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+			local n `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {			/* generate new dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' <= 0 {
+\end_layout
+
+\begin_layout Plain Layout
+
+			error 2000
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui count
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' != r(N) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui des, short
+\end_layout
+
+\begin_layout Plain Layout
+
+			if r(changed) & ("`clear'" == "" ) {
+\end_layout
+
+\begin_layout Plain Layout
+
+				error 4
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			drop _all
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = `n'
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui set obs `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	local 0 "`first'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	syntax newvarlist
+\end_layout
+
+\begin_layout Plain Layout
+
+	local k : word count `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`seed'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		`xeqversion' set seed `seed'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	tempname C D L M P S
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`cov'" != "" | "`corr'" != "" { 
+\end_layout
+
+\begin_layout Plain Layout
+
+		if "`cov'" != "" & "`corr'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			dis as err "cov() and corr() " ///
+\end_layout
+
+\begin_layout Plain Layout
+
+			    "may not be specified together"
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit 198
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `"`corr'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			_m2matrix `C' corr `k' "`corr'" "`cstorage'"
+\end_layout
+
+\begin_layout Plain Layout
+
+			local Cname `corr' 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else {
+\end_layout
+
+\begin_layout Plain Layout
+
+			_m2matrix `C' cov  `k' "`cov'"  "`cstorage'"		
+\end_layout
+
+\begin_layout Plain Layout
+
+			local Cname `cov' 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		_checkpd `C', matname(`Cname') check(psd) `forcepsd' `tol'  
+\end_layout
+
+\begin_layout Plain Layout
+
+		if r(npos)==`k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+			// C is positive definite; 
+\end_layout
+
+\begin_layout Plain Layout
+
+			// for backward compatibility: use Cholesky root 
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `P' = cholesky(`C')
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else {
+\end_layout
+
+\begin_layout Plain Layout
+
+			// in the singular case, we use eigen decomposition
+\end_layout
+
+\begin_layout Plain Layout
+
+			// already available from _checkpd
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `L' = r(L)
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `D' = r(Ev) 
+\end_layout
+
+\begin_layout Plain Layout
+
+			forvalues i = 1/`k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+				matrix `D'[1,`i'] = sqrt(max(0,`D'[1,`i']))
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `P' = `L'*diag(`D') 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `P' = I(`k')
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* M = means */
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`means'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		_m2matrix `M' means `k' "`means'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `M' = J(1,`k', 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* S = stds */
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `"`sds'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `"`cov'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			dis as err "cov() and sds() may not be specified together"
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit 198
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		_m2matrix `S' sds `k' "`sds'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `S' = J(1,`k',1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* generate new variables */
+\end_layout
+
+\begin_layout Plain Layout
+
+	tokenize `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	local newlist `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	foreach var of local newlist {
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `version' <= 10 {
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui gen `double' `var' = invnormal(uniform())
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else {
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui gen `double' `var' = rnormal()
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* transform to desired corr */
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat roweq `P' = " "
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat coleq `P' = " "	/* remove possible equation names from P */
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat rownames `P' = `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat colnames `P' = `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		tempname new`i' row
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat `row' = `P'[`i', 1...]
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat score `new`i'' = `row'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* transform to desired means and std */
+\end_layout
+
+\begin_layout Plain Layout
+
+	tokenize `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui replace ``i'' = `new`i'' * `S'[1,`i'] + `M'[1,`i']
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`n'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = string(`nobs',"%12.0fc")
+\end_layout
+
+\begin_layout Plain Layout
+
+		dis as txt "(obs `nobs')"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Appendix 3.
+ corr2data.ado
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "numbers=left,numberstyle={\tiny}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+*! version 7.3.0  03feb2015
+\end_layout
+
+\begin_layout Plain Layout
+
+program corr2data
+\end_layout
+
+\begin_layout Plain Layout
+
+	version 8.2
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	query sortseed
+\end_layout
+
+\begin_layout Plain Layout
+
+	local sortseed = r(sortseed)
+\end_layout
+
+\begin_layout Plain Layout
+
+	local currseed = c(seed)
+\end_layout
+
+\begin_layout Plain Layout
+
+	capture noisily  Make `0'
+\end_layout
+
+\begin_layout Plain Layout
+
+	set seed `currseed'
+\end_layout
+
+\begin_layout Plain Layout
+
+	set sortseed `sortseed'
+\end_layout
+
+\begin_layout Plain Layout
+
+	if _rc {
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit _rc
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+program Make
+\end_layout
+
+\begin_layout Plain Layout
+
+	gettoken first 0: 0, parse(",")
+\end_layout
+
+\begin_layout Plain Layout
+
+	#del ;
+\end_layout
+
+\begin_layout Plain Layout
+
+	syntax [,
+\end_layout
+
+\begin_layout Plain Layout
+
+		n(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		CORR(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		COV(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		CStorage(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		Means(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		SDs(string)
+\end_layout
+
+\begin_layout Plain Layout
+
+		SEED(int 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		Double
+\end_layout
+
+\begin_layout Plain Layout
+
+		CLEAR
+\end_layout
+
+\begin_layout Plain Layout
+
+		FORCEPSD
+\end_layout
+
+\begin_layout Plain Layout
+
+		TOL(passthru) // undocumented
+\end_layout
+
+\begin_layout Plain Layout
+
+	] ;
+\end_layout
+
+\begin_layout Plain Layout
+
+	#del cr
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `"`n'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		confirm integer n `n'
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' == _N {
+\end_layout
+
+\begin_layout Plain Layout
+
+			local n
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`n'" == "" {	/* add newvarlist to existing dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = _N
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `nobs' <= 0 {
+\end_layout
+
+\begin_layout Plain Layout
+
+			error 2000
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if "`clear'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			drop _all
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui set obs `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+			local n `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {			/* generate new dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' <= 0 {
+\end_layout
+
+\begin_layout Plain Layout
+
+			error 2000
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui count
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `n' != r(N) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			qui des, short
+\end_layout
+
+\begin_layout Plain Layout
+
+			if r(changed) & ("`clear'" == "" ) {
+\end_layout
+
+\begin_layout Plain Layout
+
+				error 4
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			drop _all
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = `n'
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui set obs `nobs'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	local 0 "`first'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	syntax newvarlist
+\end_layout
+
+\begin_layout Plain Layout
+
+	local k : word count `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `nobs' <= `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		dis as err "number of observations should exceed number of variables"
+\end_layout
+
+\begin_layout Plain Layout
+
+		exit 2001
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	tempname C D L M P S T
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`cov'" != "" | "`corr'" != "" { 
+\end_layout
+
+\begin_layout Plain Layout
+
+		if "`cov'" != "" & "`corr'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			dis as err "cov() and corr() " ///
+\end_layout
+
+\begin_layout Plain Layout
+
+			    "may not be specified together"
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit 198
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `"`corr'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			_m2matrix `C' corr `k' "`corr'" "`cstorage'"
+\end_layout
+
+\begin_layout Plain Layout
+
+			local Cname `corr' 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else {
+\end_layout
+
+\begin_layout Plain Layout
+
+			_m2matrix `C' cov  `k' "`cov'"  "`cstorage'"		
+\end_layout
+
+\begin_layout Plain Layout
+
+			local Cname `cov' 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		tempname Cmatrix
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `Cmatrix' = `C'
+\end_layout
+
+\begin_layout Plain Layout
+
+		local rows = rowsof(`"`Cmatrix'"')
+\end_layout
+
+\begin_layout Plain Layout
+
+		local cols = colsof(`"`Cmatrix'"')
+\end_layout
+
+\begin_layout Plain Layout
+
+		if `rows' != `cols' | `rows' != `k' | `cols' != `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+			di as err "{p}" ///
+\end_layout
+
+\begin_layout Plain Layout
+
+			"matrix is not conformable with the number of " ///
+\end_layout
+
+\begin_layout Plain Layout
+
+			"variables requested:  rows and columns must " ///
+\end_layout
+
+\begin_layout Plain Layout
+
+			"equal the number of specified variables{p_end}"
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit 503
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		_checkpd `C', matname(`Cname') check(psd) `forcepsd' `tol' 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		if r(npos)==`k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+			// C is positive definite; 
+\end_layout
+
+\begin_layout Plain Layout
+
+			// for backward compatibility: use Cholesky root 
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `P' = cholesky(`C')
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		else {
+\end_layout
+
+\begin_layout Plain Layout
+
+			// in the singular case, we use eigen decomposition
+\end_layout
+
+\begin_layout Plain Layout
+
+			// already available from _checkpd
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `L' = r(L)
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `D' = r(Ev) 
+\end_layout
+
+\begin_layout Plain Layout
+
+			forvalues i = 1/`k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+				matrix `D'[1,`i'] = sqrt(max(0,`D'[1,`i']))
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			matrix `P' = `L'*diag(`D') 
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `P' = I(`k')
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* M = means */
+\end_layout
+
+\begin_layout Plain Layout
+
+	if `"`means'"' != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		_m2matrix `M' means `k' "`means'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `M' = J(1,`k', 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* S = stds */
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`sds'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		if "`cov'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+			dis as err "cov() and sds() may not be specified together"
+\end_layout
+
+\begin_layout Plain Layout
+
+			exit 198
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		_m2matrix `S' sds `k' "`sds'"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	else {
+\end_layout
+
+\begin_layout Plain Layout
+
+		matrix `S' = J(1,`k',1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* generate new variables */
+\end_layout
+
+\begin_layout Plain Layout
+
+	set seed0 `seed'
+\end_layout
+
+\begin_layout Plain Layout
+
+	foreach var of local varlist {
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui gen `double' `var' = invnorm(uniform0())
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui sum `var'
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui replace `var' = `var' - r(mean)
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* reform them to be zero corr */
+\end_layout
+
+\begin_layout Plain Layout
+
+	qui mat accum `T' = `varlist', noc dev
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat `T' = `T'/(`nobs'-1)
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat `T' = cholesky(syminv(`T'))
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		tempname new`i' row
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat `row' = (`T'[1..., `i'])'
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat score `new`i'' = `row'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	tokenize `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui replace ``i'' = `new`i''
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* transform to desired corr */
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat roweq `P' = " "
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat coleq `P' = " "	/* remove possible equation names from P */
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat rownames `P' = `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	mat colnames `P' = `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		tempname new`i' row
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat `row' = `P'[`i', 1...]
+\end_layout
+
+\begin_layout Plain Layout
+
+		mat score `new`i'' = `row'
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* transform to desired means and std */
+\end_layout
+
+\begin_layout Plain Layout
+
+	tokenize `varlist'
+\end_layout
+
+\begin_layout Plain Layout
+
+	forvalues i = 1 / `k' {
+\end_layout
+
+\begin_layout Plain Layout
+
+		qui replace ``i'' = `new`i'' * `S'[1,`i'] + `M'[1,`i']
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if "`n'" != "" {
+\end_layout
+
+\begin_layout Plain Layout
+
+		local nobs = string(`nobs',"%12.0fc")
+\end_layout
+
+\begin_layout Plain Layout
+
+		dis as txt  "(obs `nobs')"
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "cm"
+options "apalike2"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

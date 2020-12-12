@@ -1,0 +1,116 @@
+
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## Paul Johnson
+> ## 20180124
+> 
+> ## For Mindy Flanagan
+> 
+> ## SAS code is matched up with R. We can match the rate and CI
+> ## values reported by SAS for the 6 subgroups formed by
+> ## setting car and age at their "mix and match" combinations.
+> 
+> insure <- read.csv("insure.csv")
+> insure$car <- factor(insure$car, levels = c("small", "medium", "large"))
+> insure$agen <- insure$age
+> insure$age <- factor(insure$age)
+> 
+> m1 <- glm(c ~ offset(ln) + car + age, family = "poisson", data = insure)
+> summary(m1)
+
+Call:
+glm(formula = c ~ offset(ln) + car + age, family = "poisson", 
+    data = insure)
+
+Deviance Residuals: 
+       1         2         3         4         5         6  
+ 1.00847  -0.93383  -0.21139  -0.60484   0.71931   0.06088  
+
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  -2.6367     0.1318 -20.005  < 2e-16 ***
+carmedium    -0.6928     0.1282  -5.402 6.60e-08 ***
+carlarge     -1.7643     0.2724  -6.478 9.32e-11 ***
+age2          1.3199     0.1359   9.713  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 175.1536  on 5  degrees of freedom
+Residual deviance:   2.8207  on 2  degrees of freedom
+AIC: 40.928
+
+Number of Fisher Scoring iterations: 4
+
+> 
+> ## First, SAS claims the estimate rate for claims AGE=1 is 0.03156. This
+> ## was the most difficult to reproduce, there is no canned routine to do it.
+> ## There's no canned way to do this because
+> ## nobody would ever want to, but SAS did, so we can:
+> ## But this gets the "right number" for the estimate, matches column 9 of
+> ## Table 1 (top of page 2 when I print this out)
+> library(rockchalk)
+> m1.nd <- newdata(m1, list(age = c("1", "2"),
++                           car = c("small", "medium", "large"),
++                           ln = 0))
+> m1.lp <- predict(m1, newdata = m1.nd, type = "link",
++                  interval="confidence", se.fit = TRUE)
+> m1.nd <- data.frame(m1.nd, m1.lp)
+> aggregate(m1.nd$fit, list(age = m1.nd$age), function(fit){exp(mean(fit))})
+  age          x
+1   1 0.03156487
+2   2 0.11815268
+> ##  age          x
+> ##1   1 0.03156487
+> ##2   2 0.11815268
+> ##
+> ## SAS does not report how they calculated the CI on those values
+> ## I don't want to guess.
+> 
+> 
+> ## The rest is easier. Get predicted values for all combinations of
+> ## age and car.
+> 
+> predictOMatic(m1, predVals = list("car" = "table", "age" = "table", "ln" = 0),
++               interval = "confidence")
+rockchalk:::predCI: model's predict method does not return an interval.
+ We will improvize with a Wald type approximation to the confidence interval 
+  ln    car age        fit        lwr        upr
+1  0  small   1 0.07159780 0.05529808 0.09270205
+2  0 medium   1 0.03581213 0.02796003 0.04586937
+3  0  large   1 0.01226541 0.00699169 0.02151703
+4  0  small   2 0.26800274 0.22453970 0.31987872
+5  0 medium   2 0.13405089 0.10823732 0.16602074
+6  0  large   2 0.04591153 0.02766553 0.07619114
+> 
+> ## Output matches exactly the SAS table immediately below the
+> ## usage of proc plm
+> ##   ln    car age        fit        lwr        upr
+> ## 1  0  small   1 0.07159780 0.05529808 0.09270205
+> ## 2  0 medium   1 0.03581213 0.02796003 0.04586937
+> ## 3  0  large   1 0.01226541 0.00699169 0.02151703
+> ## 4  0  small   2 0.26800274 0.22453970 0.31987872
+> ## 5  0 medium   2 0.13405089 0.10823732 0.16602074
+> ## 6  0  large   2 0.04591153 0.02766553 0.07619114
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  1.355   0.073   1.437 
