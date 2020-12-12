@@ -1,0 +1,1541 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: data1.Rnw
+%   Author: Paul Johnson
+%   Assistant:
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Revision History --
+%  2011-02-08, 2012-05-05, 2013-05-05
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+
+
+%=============================================================================
+%
+
+
+
+\title[Data I] % (short title, use only with long paper titles)
+{Data Input and Recoding I}
+
+\subtitle{Tabular Data Formats}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{data}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=160, prompt="  ", continue="  ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+@
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{
+
+    \frametitle{Outline}
+
+    \tableofcontents[currentsection,currentsubsection]
+
+  }
+
+}
+
+
+\section{Introduction}
+
+
+% __________________________________________
+\begin{frame}
+  \frametitle{The Usual: Use One Rectangular Data Set}
+  \begin{itemize}
+  \item Following the introduction of SPSS in 1968, social scientists
+    became accustomed to the idea of using a ``rectangular data set.''
+
+\begin{equation}
+\begin{array}{ccccc}
+Var1 & Var2 & Var3 & Var4 & Var5\\
+1 & 5 & 6 & 4 & 31\\
+2 & 2 & 3 & 5 & 29\\
+3 & 4 & 5 & 5 & 53\\
+4 & 2 & 2 & 3 & 22\end{array}\end{equation}
+
+   \item The first column was usually a ``respondent identifier''
+  \end{itemize}
+\end{frame}
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Variable name; Value Label}
+  \begin{description}
+  \item[Value] The values of the variables were usually kept in a numeric format.
+  \item[Value Label] A mapping from numerical values to substantive labels
+
+  \item[Codebook] A listing of values and labels, e.g.
+
+\begin{tabular}{|c|r|}
+\hline
+\multicolumn{2}{|c|}{Var2}\tabularnewline
+\hline
+\hline
+Value & Label\tabularnewline
+\hline
+1 & Never\tabularnewline
+\hline
+2 & Sometimes\tabularnewline
+\hline
+3 & Often\tabularnewline
+\hline
+4 & Always\tabularnewline
+\hline
+8 & Don't Know\tabularnewline
+\hline
+9 & Other Missing\tabularnewline
+\hline
+\end{tabular}
+
+  \end{description}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{R Terminology}
+  \begin{itemize}
+  \item data frame
+    \begin{itemize}
+      \item combine equal-sized columns side-by-side
+      \item columns can be different data types
+      \item inside R guts, a data frame is really just an R list,
+        with the ``equal length columns'' requirement
+    \end{itemize}
+  \item variable: a column of information
+    \begin{itemize}
+    \item numeric (floating point)
+    \item integer
+    \item factor (a categorical indicator)
+    \item ordered factor (a factor that some procedures treat differently)
+    \item character
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Accessing columns V1 V2 V3 in ``dat''}
+  \begin{itemize}
+    \item First, be polite. Ask the data frame what its column names are!
+<<eval = F, include = T>>=
+  colnames(dat)
+@
+
+Suppose the names are V1, V2, V3, V4.
+    \item After that, there are many ways to access a column
+    \begin{itemize}
+       \item Use the Dollar Sign:  \texttt{dat\$V1}
+       \item Use R list notation \texttt{dat[["V1"]]}
+       \item Ask for column number, as if a matrix \texttt{dat[, 1]}
+       \item Ask for columns by name \texttt{dat[, c("V1","V2")]}
+     \end{itemize}
+    \item These access methods are all equivalent, but some are easier
+      to ``fit'' into your program than others.
+    \item Retrieving one column creates an R vector, not an $N \times
+      1$ data frame. Make a mental bookmark for the ``drop gotcha''
+      problem, I should have a blog post about it. (But can explain it
+     to you if you need).
+  \end{itemize}
+\end{frame}
+
+
+% ===========================================================
+
+\section{Text Files}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The CSV and other text formats}
+   \begin{itemize}
+     \item Suppose the variables are in a file that looks like this:
+
+\begin{Schunk}
+\begin{Soutput}
+id, age, momage, dadage, iq
+1, 14, 33, 36, 117
+2, 17, 40, 44, 111
+\end{Soutput}
+\end{Schunk}
+     \item Row 1 is a ``header'' line
+     \item The separator is the symbol ``,''
+     \item This is a ``free field'' format, only the separator and the
+       values matter. Column positioning is ignored.
+
+     \item We seldom encounter fixed field formats today, but they can
+       be managed.
+   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Little warning about text storage format}
+  \begin{itemize}
+  \item We used to (some still do) call this ASCII data (American Standard
+    Code for Information Interchange)
+  \item In 1990s, encoding formats proliferated, and today it is very
+    unlikely that you actually have ASCII text in a text file.
+  \item ASCII won't recognize slanted quotation marks or many other
+    symbols that are comon today.
+  \item ``unicode'' is an
+    internationalized character encoding format that is attempting to
+    displace the many formats that have been used.
+  \item We \emph{hope} these character formats ``just work'' when you
+    use R, but if they don't, we have ways to convert text storage
+    formats. Web search: ``locale'', ``iconv''.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Reading raw text files into R}
+  \begin{itemize}
+  \item \texttt{read.table()} is the workhorse. I use this instead of
+    type-specific read functions like read.csv.
+<<eval=F, include=T>>=
+   dat <- read.table(file = "whatever.txt", header = TRUE, sep = ",")
+@
+  \item Key options
+    \begin{itemize}
+    \item file=''whatever.txt''
+    \item header=TRUE: specifies first row is variable names. If no
+      header line exists, specify FALSE
+    \item sep= the separator character
+      \begin{itemize}
+      \item space is default, omit sep option
+      \item ``\textbackslash t'' tab
+      \item ``,'' comma
+      \item ``|'' ``bar''
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%___________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example}
+  \begin{itemize}
+    \item In my current working directory, I have a subfolder called
+      ``examples''. Look for a file called ``practiceData.txt''.
+
+<<dat10, echo=T>>=
+  dat <- read.table("examples/practiceData.txt", header = TRUE)
+@
+
+\item Review the first few lines
+<<dat15>>=
+head(dat)
+@
+  \end{itemize}
+\end{frame}
+% ___________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Look that over}
+
+  \begin{itemize}
+  \item > \texttt{dat} \# same as \texttt{print(dat)}
+  \item > \texttt{str(dat)} \# gives item-by-item information
+
+<<dat20,echo=T>>=
+str(dat)
+@
+  \item Confirm presence of column names
+
+<<dat25, echo=T>>=
+colnames(dat)
+@
+
+\end{itemize}
+\end{frame}
+
+%___________________________________________
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{More Snooping on ``dat'' object}
+
+  \begin{itemize}
+  \item R has a method summary.data.frame, which is called here:
+
+<<dat30, echo=T>>=
+   summary(dat)
+@
+
+  \item rockchalk package has function \texttt{summarize()} that has some conveniences.
+\def\Sweavesize{\scriptsize}
+<<dat35>>=
+rockchalk::summarize(dat)
+@
+
+\item Many other functions can be run ``on'' the data frame to
+  find out more about it.
+
+\begin{itemize}
+  \item Ask for ``dimensions'': rows and columns
+<<dat40>>=
+dim(dat)
+@
+
+  \item Check for presence of row names
+<<dat45>>=
+rownames(dat)
+@
+
+ \item \texttt{names()} will reveal names even for a non-rectangular
+   collection of stuff (an R list, for example) .
+<<>>=
+names(dat)
+@
+
+  \item Review any attributes of the data frame object. Again,
+    ``names'' attribute is the thing we get by explicitly asking for
+    colnames (admittedly confusing).
+
+<<dat50,echo=T>>=
+attributes(dat)
+@
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Exercise: Test your skills on trouble files}
+  \begin{itemize}
+    \item trouble-1.txt and trouble-2.txt are in examples folder.
+    \item
+<<exercise01, eval = F>>=
+dat <- read.table("examples/trouble-1.txt")
+@
+    \item Different thing wrong with this
+<<exercise02, eval = F>>=
+dat <- read.table("examples/trouble-2.txt")
+@
+
+    \item Note: You will need to open these files in a ``flat text''
+       editor to see what's in them--don't use MSWord or Excel. Do use
+       any programming file editor, such as Emacs, Notepad++, RStudio
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbtim]
+  \frametitle{Exercise: Test your skills on trouble-1.txt and trouble-2.txt}
+
+  \begin{itemize}
+  \item There are GUI Spread-Sheetish thing
+
+  \item   Look, don't touch
+<<dat51a, eval=F>>=
+View(dat)
+@
+  \item Dangerous: allows you to damage data!
+<<dat51b, eval=F>>=
+fix(dat)
+@
+
+
+\end{itemize}
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{There's even a plot method for data frames}
+
+<<dat60, echo=T,fig=T>>=
+plot(dat)
+@
+
+\end{frame}
+
+
+
+%____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Want to save that data frame as text?}
+  \begin{itemize}
+    \item Creates a text file ``newPractice.txt'' in the current working directory.
+<<dat70, echo=T, eval=F>>=
+write.table(dat, file = "newPractice.txt", row.names = FALSE, sep = "|")
+@
+  \item This creates the file in the subdirectory ``examples''
+<<dat75, echo=T, eval=F>>=
+write.table(dat, file = "examples/newPractice.txt", row.names = FALSE, sep = "|")
+@
+  \item \texttt{row.names = FALSE} is important. Otherwise, R this
+    DOES NOT create a rectangular data structure (try it and see).
+
+  \item Sometimes its helpful to specify an unusual separator, but
+    don't forget to use same separator when re-opening the table
+
+  \item Note that factor lables are written out as character strings
+<<dat80, eval=F, include=T>>=
+dat <- read.table("examples/newPractice.txt", sep = "|", header = TRUE)
+@
+  \end{itemize}
+\end{frame}
+
+
+%___________________________________________
+\subsection{Troubleshooting}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Most Common Problem: ``File not found''}
+
+  Suppose you try to load a file and this bad thing happens?
+
+\begin{Schunk}
+\begin{Sinput}
+>  dat <- read.table(file="nonexistant.txt", header=T)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Soutput}
+ Error in file(file, "rt") : cannot open the connection
+ In addition: Warning message:
+ In file(file, "rt") :
+   cannot open file 'nonexistant.txt': No such file or directory
+\end{Soutput}
+\end{Schunk}
+
+  \begin{itemize}
+  \item First, check that the file is in the current working directory
+
+  \texttt{list.files()}
+
+  \item Did you misspell something?
+  \end{itemize}
+\end{frame}
+
+%___________________________
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{What to do if you don't see the file $\ldots$}
+
+  You have at least 3 options. I strongly recommend the first
+  as a part of your file organization scheme.
+     \begin{enumerate}
+     \item Move the file into the current working directory
+
+     Ask ``where am I are now?'':
+<<dat85,eval=F>>=
+getwd()
+@
+
+     And copy the file in there (or into a subfolder in there)!
+
+     If you ever say ``I don't know what my working directory is'' it
+     means you aren't doing your work properly.  Consider changing
+     your work habits: Open an R file in an editor that knows about R
+     and helps R start in that location (i.e, do NOT start R from an
+     icon on the desktop that is disconnected from the folder in which
+     you intend to work).
+
+   \item Change the current working directory
+\begin{Soutput}
+> setwd("a-valid-path-specifier-here")
+\end{Soutput}
+\begin{Soutput}
+> setwd("/home/pauljohn/Wherever")
+\end{Soutput}
+    R can talk to Windows directories, use forward slashes
+\begin{Soutput}
+> setwd("c:/Users/pauljohn/Wherever")}
+\end{Soutput}
+   \item Revise the file option to specify a full path.
+\begin{Sinput}
+> ffn <- paste("c:/Users/pauljohn/XYZ/practiceData.txt")}
+> read.table(file= ffn, header=T)}
+\end{Sinput}
+   \end{enumerate}
+   \begin{itemize}
+   \item Method 1 is best: keeps everything together.
+   \item I only use Method 3 when there is one data frame being used
+     among several separate R projects.
+   \end{itemize}
+\end{frame}
+
+%________________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{What if You Have Compressed Text Files?}
+  \begin{itemize}
+  \item Some programs generate huge text files and disk space is
+    gobbled up!
+  \item We should compress files with programs like gzip or bzip2
+  \item These are preferred to the proprietary ``zip'' compression format.
+  \item Free/Open Source programs available for all platforms,
+    ``7-zip'', etc.
+  \item R can read in a compressed file like so:
+
+<<dat90>>=
+dat2 <- read.table(file=gzfile("examples/practiceData.txt.gz"), header=T)
+identical(dat, dat2)
+@
+
+  \item For bz2 files, use \texttt{bzfile} instead of \texttt{gzfile}
+
+  \item R can also create compressed files, so that saving text output
+    may not cause the disk to fill up.
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Need to Download a File?}
+
+  \begin{itemize}
+    \item Possible to read from Web files ``on the fly'' like so
+<<dat95,eval=F>>=
+dat <- read.table(url("http://pj.freefaculty.org/guides/Rcourse/data-1/examples/practiceData.txt"), sep = ",", header = TRUE)
+@
+    \item Disadvantages
+      \begin{itemize}
+      \item nothing ``saved''
+      \item requires always-on Internet
+      \item difficult to debug
+      \end{itemize}
+
+
+      \item Instead, I suggest
+<<dat100,eval=F>>=
+download.file("http://pj.freefaculty.org/guides/Rcourse/data-1/examples/practiceData.txt", destfile = "practiceData.txt")
+@
+
+Then use \texttt{read.table()} to import that.
+   \item Abstract the file name definitions, look more ``professional''
+
+<<dat105,eval=F>>=
+fn1 <- "practiceData.txt"
+addr <- "http://pj.freefaculty.org/guides/Rcourse/data-1/examples"
+download.file(paste0(addr, fn1), destfile = fn1)
+dat <- read.table(fn1, header = TRUE, sep = ",")
+@
+\end{itemize}
+\end{frame}
+
+
+% _____________________________________
+
+
+\section{Recoding}
+
+\subsection{Alter Columns}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{Easy to Add and Remove Variables}
+  \begin{itemize}
+
+    \item To remove a variable, simply set it to NULL. Any of these will
+      work:
+\begin{Sinput}
+dat$ed <- NULL
+dat[[``ed'']] <- NULL
+dat[ , c(``ed'')] <- NULL
+\end{Sinput}
+
+    \item Add a variable. Name a column using any of
+      the usual methods.  For example,
+
+<<dat110, echo=T>>=
+dat$noise <- rnorm(nrow(dat), m = 444, sd = 234)
+dat[["moreNoise"]] <- rnorm(nrow(dat), m = 0, sd = 1)
+@
+
+
+  \item Copy ed to a new variable name
+<<dat115, echo=T>>=
+dat$newed <- dat$ed
+@
+  \item Remove the original ed
+<<dat120, echo=T>>=
+dat[["ed"]] <- NULL
+@
+
+  \item I'll undo this damage to \texttt{dat} later.
+\def\Sweavesize{\scriptsize}
+<<dat130>>=
+colnames(dat)
+rockchalk::summarize(dat)
+@
+\end{itemize}
+\end{frame}
+
+
+
+
+%_________________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{What If the Data Frame has the Wrong Column Names?}
+
+  \begin{itemize}
+    \item Recall, colnames() displays the names.
+    \item R philosophy: provide similarly named assignment function
+      \begin{itemize}
+        \item Re-name all of them in one swipe:
+
+<<ren25, eval=F>>=
+colnames(dat) <- c("colone", "coltwo", "three", "andSoForth")
+@
+
+        \item Just rename one at a time, for example, change the
+          second column name to ``columntwo''
+
+\begin{Sinput}
+colnames(dat)[2] <- ``columntwo''
+\end{Sinput}
+     \end{itemize}
+
+    \item Because this is error prone, I tend to be more verbose
+      about when I really want to get it right.
+      \begin{itemize}
+        \item First, Catch that vector of names and look it over
+
+<<ren30, echo=T>>=
+   mycolnames <- colnames(dat)
+   mycolnames
+@
+
+       \item Edit the vector of names
+<<ren40, eval=T>>=
+origname <- mycolnames[2] ##need a copy
+mycolnames[2] <- "WhateverPJSays"
+colnames(dat) <- mycolnames
+colnames(dat)
+@
+
+    \item Better put it back the way it was (or else the rest of the
+  program won't work). And I'd better restore the ed variable while
+  I'm at it.
+
+<<ren50, echo=T>>=
+colnames(dat)[2] <- origname
+dat$ed <- dat$newed
+colnames(dat)
+@
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Typos}
+
+%_____________________________________
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Cleaning Up Typographical Errors in Data}
+
+  \begin{itemize}
+    \item Resist the temptation to edit the data file directly with
+      Excel or such (non-traceable changes are dangerous)
+    \item Use any preferred method to scan data and detect troubles.
+    \item Write code to recode for typographical errors.
+
+    \item Example: Change the value of dat\$ed from 47 to 17.
+
+      \begin{itemize}
+        \item Recode: take the column ``ed'' (as dat\$ed)
+          and then, in that vector, find the index of values that are
+          equal to 47, and change them to 17.
+
+<<recode10,eval=F>>=
+dat$ed[dat$ed == 47] <- 17
+@
+
+        \item That is two equal signs together
+        \item Equivalent alternative coding
+
+<<recode15,eval=F>>=
+dat[dat$ed == 47, "ed"] <- 17
+@
+%$
+        \end{itemize}
+
+     \item We can grab particular row and column values by their
+       numerical position if we want
+
+<<recode20,eval=F>>=
+dat[7, 2] <- 17
+@
+
+  \item Use \%in\%: Its a Multiple Matcher!
+
+<<recode25,eval=F, include=T>>=
+dat$ed[dat$ed %in% c(190, 191, 192, 200) ] <- 99
+@
+
+  \end{itemize}
+\end{frame}
+
+
+\subsection{Missings}
+
+% _____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Maybe There Are Missing Value Indicators?}
+
+  \begin{itemize}
+
+  \item Out-of-range scores like ``99'' or ``999'' may mean ``unavailable''
+    or ``don't know'' or  some other ``missing value''
+  \item It may be necessary to manually mark those scores as missing
+  \item R uses NA as the value for missings
+  \item NA is a ``symbol'', can be assigned as if it were a numerical value
+
+<<recode30, echo=T>>=
+dat$ed[dat$ed == 99] <- NA
+@
+
+  \item Call any \texttt{dat\$noise} value bigger than the mean a missing
+
+<<recode35, echo=T>>=
+dat$noise[dat$noise > mean(dat$noise)] <- NA
+@
+
+  \item Or use \%in\% to collect mutiple discrete values
+
+<<recode40, eval=F>>=
+dat$ed[dat$ed %in% c(110, 190, 191, 192, 200) ] <- NA
+@
+
+
+\end{itemize}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Anticipate Missing Codes when Importing Data}
+
+  \begin{itemize}
+    \item Suppose some SAS user gives you a file with some periods where
+      you wish you had NA
+
+    \item R won't understand that:
+
+<<recode45, echo=T>>=
+dat2 <- read.table("examples/newp.sas.txt",header=T,sep="|")
+str(dat2$noise)
+@
+    \item R treats period ``.'' as a letter, so the whole column is
+  treated as a character variable (which, by default, is converted to
+  a factor)
+
+    \item Don't manually edit the file
+    \item Do revise your R code: Specify the missing strings and it will be OK!
+
+<<recode50,echo=T>>=
+dat2 <- read.table("examples/newp.sas.txt", header = TRUE, sep = "|", na.strings = c("NA","."))
+str(dat2$noise)
+@
+\end{itemize}
+\end{frame}
+
+%__________________________________
+\subsection{Recoding Numbers}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Numbers are Easy}
+
+  \begin{itemize}
+    \item First, make sure a variable really is a number. Should have
+      no attributes:
+<<recode55, echo=T>>=
+   attributes(dat$ed)
+   is.numeric(dat$ed)
+   is.factor(dat$ed)
+@
+   \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Numerical Recoding: As Easy as Math}
+
+  \begin{itemize}
+   \item Want the log?
+<<recode60, echo=T, include=F>>=
+   dat$edlog <- log(1 + dat$ed)
+   dat$edsqrt <- sqrt(dat$ed)
+   dat$edexp <- exp(dat$ed)
+   head(dat)
+@
+\def\Sweavesize{\tiny}
+\input{plots/t-recode60}
+  \item NB 1: I don't usually obliterate old variables. Create new instead.
+
+  \item NB 2: Suggested naming scheme keeps original variable name and
+    appends new letters. This keeps similar variables alphabetically
+    grouped. (Do NOT use dat\$loged.  DO use dat\$edlog).
+
+  \end{itemize}
+\end{frame}
+
+
+\subsection{Factor Recoding}
+
+\begin{frame}
+  \frametitle{What is a Factor?}
+  \begin{columns}
+
+  \begin{column}{6cm}
+  \begin{itemize}
+  \item A factor is a structured thing (``look-up table''), with numbers and labels.
+    \begin{itemize}
+    \item R's internal numerical score, always 1, 2, 3, 4, $\ldots$ %'
+    \item A list of labels of ``levels'' for each number
+    \item The idea behind factors is that statistical routines should
+      be \emph{smart} enough to give you the correct answer, depending
+      on whether your data is numeric or categorical.
+    \end{itemize}
+  \end{itemize}
+  \end{column}
+  \begin{column}{6cm}
+
+  \begin{tabular}{|c|r|}
+\hline
+Internal Value & Label\tabularnewline
+\hline
+1 & Catholic\tabularnewline
+2 & Protestant\tabularnewline
+3 & Muslem\tabularnewline
+4 & Hindu\tabularnewline
+5 & Jewish\tabularnewline
+\hline
+\end{tabular}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Little Factor Wrinkles}
+
+  \begin{itemize}
+  \item Unlike SPSS, where users can assign any numerical scores they
+    want for values, R always uses consecutive 1,2,3, $\ldots$
+
+  \item Those internal scores are what you get when you use
+    \texttt{as.numeric()} on a factor.
+  \item So, if you ``import'' an SPSS dataset and allow R to convert
+    those variables to factors, the SPSS coded values
+    1, 3, 5, 7, 9 will be lost forever, R will internally re-number
+    that 1, 2, 3, 4, 5. You can NEVER recover the SPSS numeric scores.
+  \item R gets the labels right. From R's point of view, the separate
+    labels are the only important information. The numbering is not
+    important. (Only silly people base any work on the integers
+    associated with factor levels.)
+  \end{itemize}
+\end{frame}
+
+
+% ___________________________________
+
+\begin{frame}
+  \frametitle{Convert Numeric to Factor}
+
+  This arises in 2 contexts, which we treat separately.
+  \begin{enumerate}
+    \item A numeric variable coded {1, 2, 3} should become a factor
+      variable with discrete labels like c(``Catholic'' ``Protestant''
+      ``Muslem'') or c(``Midwest'',''South'', ``East'').
+    \item A numeric variable has to be grouped into ranges (``low'',
+      ``medium'', and ``high'')
+    \end{enumerate}
+ \end{frame}
+
+
+\subsubsection{Convert to Factor, case 1}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Convert ``grp'' into R factor}
+  \begin{itemize}
+      \item Recall dat's variable grp
+<<str>>=
+dat$grp
+@
+      \item We want to faithfully reproduce that, without re-grouping
+        or losing values.
+   \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The \texttt{factor()} function}
+     \begin{itemize}
+      \item The \texttt{factor} function converts existing values into
+        characters and enters them as factor levels, alphabetically
+      \item Try that without entering any detailed arguments
+
+<<echo=T>>=
+dat$grpfac1 <- factor(dat$grp)
+str(dat$grpfac1)
+with(dat, table(grpfac1, grp))
+@
+
+     \item That's treating 1 as a character, "1", etc.
+   \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Assign More Meaningful Labels for the Levels}
+  \begin{itemize}
+  \item Let's be very concrete about this:
+
+<<echo=T>>=
+dat$grpfac1 <- factor(dat$grp, labels = c("Number1", "Number2", "Number3"))
+str(dat$grpfac1)
+with(dat, table(grp, grpfac1))
+@
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{The factor function's levels argument RE-ORDERS the input!}
+  \begin{itemize}
+    \item Common mistake, to mis-understand difference between
+      \texttt{levels()} function and levels argument in
+      \texttt{factor()} function.
+    \item In \texttt{factor}, the levels argument indicates which
+      existing scores are to be included, \emph{and in which order}.
+
+<<echo=T>>=
+dat$grpfaco <- factor(dat$grp, levels = c("2","1","3"), labels = c("Number2", "Number1", "Number3"))
+str(dat$grpfaco)
+
+@
+   \item Note that the labels were re-arranged accordingly.
+<<>>=
+with(dat, table(grp, grpfaco))
+@
+
+   \item Now inside grpfaco, the internal numbering of the scores is
+     changed. The labes are correct:
+<<>>=
+head(dat[  , c("grp", "grpfaco", "grpfac1")])
+@
+   \item But the internal numeric scores have changed
+<<>>=
+rbind(grp = dat$grp, grpfaco = as.numeric(dat$grpfaco))[ ,1:6]
+@
+
+    \item The ordering can be important. Statistical procedures will
+      generally us the first one as the baseline and provide estimates
+      of the other levels as ``contrasts''.  The way procedures handle
+      factors is controlled by the session \texttt{options()}.
+
+  \end{itemize}
+\end{frame}
+
+
+\subsubsection{Collapse into Factor (case 2}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Collapse a numeric range into a Factor}
+  \begin{itemize}
+    \item Sometimes researchers want to convert temperature scores
+      from numeric to c(``cold'',''warm'',''hot'') or such.
+    \item R provides a function called \texttt{cut()} that is intended
+      for that purpose.
+    \item The user must supply \texttt{breaks} so that the scores are
+      subdivided.
+
+    \item Labels for the levels of the new factor will be supplied
+      automatically, but many users will not like them.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Let's convert noise into a new factor}
+  \begin{itemize}
+    \item Recall dat\$moreNoise
+<<>>=
+quantile(dat$moreNoise)
+@
+    \item Let's create 5 groupings
+<<>>=
+dat$mn1 <- cut(dat$moreNoise, breaks = c(-10, -1, -0.3, 0.7, 1, 10))
+table(dat$mn1)
+levels(dat$mn1)
+@
+    \item Because the labels are so ugly, many people will change them
+      either
+      \begin{itemize}
+
+        \item  at the time of creation
+<<eval=F>>=
+dat$mn1 <- cut(dat$moreNoise, breaks = c(-10, 1, -0.3, 0.7, 1, 10),
+labels = c("never", "seldom", "some", "freq", "often"))
+@
+        \item after creation
+
+<<eval=F>>=
+levels$mn1 <- c("never", "seldom", "some", "freq", "often")
+@
+
+      \end{itemize}
+
+  \end{itemize}
+\end{frame}
+
+
+\subsubsection{Clarifying Factor Coding}
+
+\begin{frame}
+  \frametitle{Brief Exercise: Run these commands (chunk exercise10 in R file)}
+
+<<exercise10, eval=F>>=
+x <- c("Y","N","Y","Y","F","N")
+is.factor(x)
+is.character(x)
+xf1 <- factor(x)
+xf1
+levels(xf1)
+x[1] <- "P"
+xf1[1] <- "P"
+xf1[1] <- "F"
+xf1levs <- levels(xf1)
+xf1[1] <-  xf1levs[2]
+xf2 <- factor(x, levels = c("Y","N","anything"), labels  = c("HECK","YES","irrelevant"))
+table(x, xf2, exclude = NULL)
+xf2[1] <- "Y"
+levels(xf2)
+xf2[1] <- "HECK"
+xf2
+@
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Create a character variable and convert it to a factor}
+  \begin{itemize}
+  \item Begin with a character vector
+<<echo=T>>=
+ x <- c("Y","N","Y","Y","F","N")
+
+is.factor(x)
+is.character(x)
+@
+  \item Turn that into a factor, using defaults
+
+<<echo=T>>=
+xf1 <- factor(x)
+xf1
+levels(xf1)
+@
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Notice What R No Longer Allows}
+
+  \begin{itemize}
+    \item x will still let us write anything we want
+<<echo=T>>=
+x[1] <- "P"
+@
+   \item But xf1 will refuse any assignment that is not a valid level.
+
+   \item Why? xf1 is not an ordinary character vector anymore. It has levels
+  that must be used for values.
+
+<<echo=T>>=
+levels(xf1)
+@
+
+\item Try to set xf1 to a value that is not in levels(xf1)
+<<echo=T, eval=F>>=
+xf1[1] <- "P"
+@
+
+\begin{Soutput}
+Warning message:
+In `[<-.factor`(`*tmp*`, 1, value = "P") :
+  invalid factor level, NAs generated
+\end{Soutput}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Assigning Values To Factors}
+  \begin{itemize}
+
+\item Assign new value either with properly quoted, legal label, as in
+<<echo=T>>=
+xf1[1] <- "F"
+@
+
+\item If the level were longer, or had spaces or other details that
+  might cause danger of typographical errors, it is better to review
+  the levels and then take the one you want. Examples:
+
+<<echo=T>>=
+xf1levs <- levels(xf1)
+xf1[1] <-  xf1levs[2]
+@
+\item Or in one step, put the value of xf1[1] to level 2
+<<echo=T>>=
+xf1[1] <- levels(xf1[1])[2]
+@
+
+\item That is better because it avoids danger of typographical errors
+  in long labels
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The ``drop unused levels'' controversy}
+
+  \begin{itemize}
+  \item ``levels'' Orders the new vactor using the pre-existing variable.
+  \item ``labels'' Supplies new labels of this new variable
+
+<<echo=T>>=
+xf2 <- factor(x, levels=c("Y","N","anything"), labels=c("HECK","YES","irrelevant"))
+table(x, xf2, exclude = NULL)
+@
+  \item The levels argument includes an ``unobserved'' level.
+  \item If we run the factor through factor(), it will ``drop unused levels''.
+
+<<>>=
+xf2 <- factor(xf2)
+table(x, xf2, exclude = NULL)
+@
+Values listed for xf2 only include ``HECK'' and ``YES'', the
+levels that are obseved in xf2.
+
+\item This fails
+
+<<echo=T,eval=F>>=
+xf2[1] <- "anything"
+@
+
+\begin{Soutput}
+  Warning message:
+  In `[<-.factor`(`*tmp*`, 1, value = "anything") :
+  invalid factor level, NAs generated
+\end{Soutput}
+
+ \item Better check the valid levels
+
+<<echo=T>>=
+levels(xf2)
+@
+
+\item But this is OK
+<<echo=T>>=
+  xf2[1] <- "HECK"
+@
+
+\item See?
+<<echo>>=
+ xf2
+@
+\end{itemize}
+\end{frame}
+
+\subsubsection{Adding Levels}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Add New Values: Requires a ``fiddle'' with Levels}
+
+  \begin{itemize}
+    \item Copy xf2 to xf3, then append a new level ``Denver''
+
+<<echo=T>>=
+xf3 <- xf2
+levels(xf3) <- c(levels(xf3), "Denver")
+xf3[5] <- "Denver"
+data.frame(x, xf1, xf2, xf3)
+@
+
+\end{itemize}
+\end{frame}
+
+%___________________________________
+
+\begin{frame}
+  \frametitle{Practice this: Choose Your Names. Choose Your Order}
+
+  \begin{itemize}
+  \item \texttt{factor()} levels and labels must match.
+
+<<echo=T>>=
+dat$grpfac2 <- factor(dat$grp, levels = c(2,1,3), labels = c("Western","Midwest","Eastern"))
+str(dat$grpfac2)
+with(dat, table(grpfac2, grp))
+@
+
+\end{itemize}
+\end{frame}
+
+%___________________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Now, suppose you want to re-order the levels}
+
+  \begin{itemize}
+  \item Everybody has made this mistake at
+    least once (Maybe twice):
+
+    It is VERY tempting to do something like
+
+<<eval=F>>=
+levels(dat$grpfac2) <- c("Midwest", "Eastern", "Western")
+@
+   \item Caution. Disaster occurred!
+
+<<echo=T>>=
+dat$grpfac3 <- dat$grpfac2
+levels(dat$grpfac3) <- c("Midwest","Western","Eastern")
+str(dat$grpfac3)
+with(dat, table(grpfac3, grpfac2))
+@
+
+  \item Big point: \texttt{"levels()"} does not ``reorganize'' the
+    information. It just changes the labels of the current order.
+
+  \end{itemize}
+\end{frame}
+
+%_______________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Why would you want to use \texttt{levels()}?}
+  \begin{itemize}
+
+  \item I use levels \emph{ALMOST EXCLUSIVELY}  to review existing
+    variables (not to set new levels)
+<<eval=F>>=
+levels(dat$grpfac3)
+@
+is perfectly safe
+ \item Putting an argument on the right hand side can be tricky. Do
+   that in order to
+   \begin{itemize}
+    \item To rename (respell) same level in the same order
+
+    \item Perhaps you want shorter strings. This is automatic
+\begin{Sinput}
+shortLabels <- abbreviate( levels(dat$grpfac3),
+minlength= 1)
+levels(dat$grpfac3) <- shortLabels
+\end{Sinput}
+
+  \item Same to do it manually, but perhaps more error prone because
+    we might type W, M and E ``out of order''
+
+\begin{Sinput}
+levels(dat$grpfac3) <- c("M","W","E")
+\end{Sinput}
+%$
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+% _________________________________________
+
+\begin{frame}[containsverbatim]
+ \frametitle{You Can Reorganize Factor Variables, However $\ldots$}
+  \begin{itemize}
+  \item At create time, use the levels argument.
+
+<<reorg10, eval=F>>=
+newFactor <- levels(oldFactor, levels=c("C", "B", "A"), labels=c("car", "bus", "auto"))
+@
+
+  \item Suppose the current levels of grpfac2 are
+
+<<reorg20,echo=T>>=
+levels(dat$grpfac2)
+@
+
+ \item create grpfac4 by re-ordering
+
+<<reorg30, echo=T>>=
+dat$grpfac4 <- with(dat,  factor(grpfac2, levels=c("Eastern","Western","Midwest")))
+with(dat, table(grpfac4, grpfac2))
+@
+
+  \item Effect: Changes the way results are reported (plots, regression)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+ \frametitle{\texttt{relevel} function is a convenience function}
+    \begin{itemize}
+
+    \item For unordered factors,\texttt{"relevel()"} can be used to
+      properly re-sort a variable so that one value ``comes first''
+
+<<echo=T>>=
+dat$grpfac5 <- with(dat,  relevel(grpfac2, ref="Eastern"))
+with(dat, table(grpfac5, grpfac2))
+@
+
+    \item Has very limited effect of moving one value to the front of
+      the levels
+    \item Effect: Changes regression tables
+
+\end{itemize}
+\end{frame}
+
+
+%_________________________________
+\begin{frame}
+ \frametitle{grpfac2 has ``Western'' as the Reference Category}
+
+<<echo=T>>=
+coef(summary(lm(newed ~ grpfac2, data = dat)))[ ,1:2]
+@
+
+\end{frame}
+
+
+%__________________________________
+\begin{frame}
+ \frametitle{grpfac4 has ``Eastern'' as the Reference Category}
+
+<<echo=T>>=
+coef(summary(lm(newed ~ grpfac4, data = dat)))[,1:2]
+@
+
+\end{frame}
+
+
+%_____________________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+ \frametitle{The Problem of ``combining'' levels}
+  \begin{itemize}
+    \item Suppose you have a factor variable with 3 levels
+
+<<comb10>>=
+x <- c("A","B","C","B","C")
+@
+
+    \item However, ``C'' is a redundant scoring. It is really same as B.
+
+    \item We want to put ``C'' cases into ``B''.
+      The ``obvious approach'' fails.
+<<eval=F>>=
+f <- factor(x, levels = c("A","B","C"), labels = c("A","B","B"))
+@
+\begin{Schunk}
+\begin{Soutput}
+  Warning message:
+In `levels<-`(`*tmp*`, value = if (nl == nL) as.character(labels) else paste0(labels, :  duplicated levels will not be allowed in factors anymore
+\end{Soutput}
+\end{Schunk}
+
+\item Its necessary to ``create'' a new level, then recode to use it
+  (seems tedious).
+<<>>=
+levels(x) <- c(levels(x), "BorC")
+x[ x %in% c("B", "C")] <- "BorC"
+x <- factor(x)
+table(x)
+@
+  \item The use of factor(x) causes the old, unused levels ``B'' and
+    ``C'' to be removed.
+<<>>=
+levels(x)
+levels(x) <- c("A","B")
+table(x)
+@
+
+   \item Package rockchalk has a function called
+     \texttt{combineLevels()} that is intended to automate
+     this. Example usage
+<<combineLevels>>=
+x <- factor(c("A","B","C","B","C","A"))
+xrc <- rockchalk::combineLevels(x, c("B","C"), "BorC")
+table(xrc, x)
+@
+
+\end{itemize}
+\end{frame}
+
+
+
+%____________________________________
+
+\section{R Format}
+
+\begin{frame}
+  \frametitle{R has its Own Data Storage Formats}
+
+  \begin{itemize}
+  \item R's \texttt{save()} and \texttt{load()}
+  \item Correct suffixes: ``RData'' and ``rda''. NOT ``Rdata'' (as I
+    often do mistakenly)
+  \item Objects saved in this way are compressed
+  \item Are compatible across platforms: Can email from Mac user to
+    Linux user and R can load ``as if'' it were created there.
+  \end{itemize}
+\end{frame}
+
+%_____________________________________________
+\begin{frame}
+  \frametitle{Try this magic trick}
+
+  \begin{itemize}
+  \item Suppose ``dat'' is a data frame
+
+<<echo=T, eval=F>>=
+save(dat, file="practiceData.RData")
+@
+
+\item Remove the \texttt{dat} object from memory
+<<echo=T, eval=F>>=
+  rm(dat)
+@
+
+\item Get it back
+<<echo=T, eval=F>>=
+load("practiceData.RData")
+str(dat)
+@
+
+\end{itemize}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{Lately I prefer RDS format (\texttt{saveRDS()})}
+
+  \begin{itemize}
+    \item Shortcoming of \texttt{load()}: the collection of saved objects is
+      restored into memory and existing objects with same names are \emph{obliterated!}
+    \item See ?saveRDS, which describes a way to save a single R
+      object, along with the \texttt{readRDS()} that can restore an
+      object and re-name it in the process.
+
+    \item File name suffix standard is ``rds''.
+<<saveRDS>>=
+saveRDS(dat, "practiceData.rds")
+dat99 <- readRDS("practiceData.rds")
+str(dat99)
+identical(dat, dat99)
+@
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+% ==========================================================
+\end{document}
