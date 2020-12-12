@@ -1,0 +1,475 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{ragged2e}
+\RaggedRight
+\setlength{\parindent}{1 em}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme times
+\graphics default
+\paperfontsize 12
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Notes from PJ
+\end_layout
+
+\begin_layout Standard
+Suppose you don't want numbers on the screen.
+ You want them in a file.
+ Hereis the simplest, "brute force" way to do it.
+\end_layout
+
+\begin_layout Standard
+In the interface ( .h) file of a class, you create two variables.
+ One is a FILE, and the other is a character array that will serve as the
+ file's name.
+ Like so:
+\end_layout
+
+\begin_layout Quote
+FILE *outputFile;
+\end_layout
+
+\begin_layout Quote
+char outputFileName[50];
+\end_layout
+
+\begin_layout Standard
+You need those in the .h file because you will probably need to reference
+ them from within several methods.
+\end_layout
+
+\begin_layout Standard
+Then in the implementation (.m) file, you do three kinds of things.
+\end_layout
+
+\begin_layout Enumerate
+In buildObjects, or some other method that runs one time when the object
+ is created, do this:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+A.
+ Set the value of outputFileName.
+ You can use sprintf, like so:
+\end_layout
+
+\begin_deeper
+\begin_layout Quotation
+sprintf(outputFileName, "BozoTheClownData");
+\end_layout
+
+\begin_layout Standard
+(This is the same effect as strcpy(outputFileName, "BozoTheClownData");
+\end_layout
+
+\begin_layout Standard
+And if you want to tack on a magic number, you can, as in
+\end_layout
+
+\begin_layout Standard
+sprintf(outputFileName, "BozoTheClownData%d", 23);
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Use the fopen command to create a writable file called"BozoTheClownData"
+ in the current directory.
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+outputFile = fopen (outputFileName,"w+");
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+This is optional, but you could write a method "writeReportDataHeader",
+ which is a list of variable names in row one of the output, and then call
+ it with this: 
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+[self writeReportDataHeader];
+\end_layout
+
+\begin_layout Enumerate
+Fancy note.
+ I see many different ways people try to avoid overwriting data sets.
+ I use the time() function, which gives the number of seconds since 1970,
+ and tack it onto the file name.
+ Unless I've passed in a run number to my Parameter manager, in which case
+ I tack on the run number.
+ So I've got one program like this: 
+\end_layout
+
+\begin_layout Quote
+if(getInt(arguments,"run")!= -1) //if run not equal to -1, use it
+\end_layout
+
+\begin_layout Quote
+sprintf(outputFileName, "DataRecruiter%d", getInt(arguments,"run"));
+\end_layout
+
+\begin_layout Quote
+else //otherwise, use time(0).
+ Include misc.h above for this
+\end_layout
+
+\begin_layout Quote
+sprintf(outputFileName, "DataRecruiter%d", (int)time(0));
+\end_layout
+
+\begin_layout Quote
+outputFile = fopen (outputFileName,"w+");
+\end_layout
+
+\begin_layout Quote
+[self writeReportDataHeader];
+\end_layout
+
+\begin_layout Standard
+Here is an example of writeDataReportHeader:
+\end_layout
+
+\begin_layout Quotation
+-(void) writeReportDataHeader
+\end_layout
+
+\begin_layout Quotation
+{ 
+\end_layout
+
+\begin_layout Quotation
+fprintf( outputFile,
+\end_layout
+
+\begin_layout Quotation
+"Time Group Memb Pos1 Pos2 Group Memb Pos1 Pos2 
+\backslash
+n" );
+\end_layout
+
+\begin_layout Quotation
+}
+\end_layout
+
+\begin_layout Standard
+Simple, clean neat!
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+create a method that writes out the data you need to write, and then schedule
+ the program to write when you want.
+ In one of my projects, my method to write data is called "logResults",
+ so my buildActions method of modelSwarm has this:
+\end_layout
+
+\begin_deeper
+\begin_layout Quotation
+[modelActions createActionTo: self message: M(logResults)];
+\end_layout
+
+\begin_layout Standard
+In that model, the modelActions is an ActionGroup that executes repeatedly.
+ 
+\end_layout
+
+\begin_layout Standard
+Here is a very simple example of a logResults method:
+\end_layout
+
+\begin_layout Quote
+-(void) logResults { 
+\end_layout
+
+\begin_layout Quote
+int q;
+\end_layout
+
+\begin_layout Quote
+fprintf ( outputFile,"%ld ", getCurrentTime() );
+\end_layout
+
+\begin_layout Quote
+fprintf ( outputFile,"%d ", 1);
+\end_layout
+
+\begin_layout Quote
+for(q=0;q<[recruiterList getCount];q++){
+\end_layout
+
+\begin_layout Quote
+fprintf ( outputFile,"%d %d 
+\backslash
+n", [[recruiterList atOffset:q]
+\end_layout
+
+\begin_layout Quote
+getGrpNumber], 
+\end_layout
+
+\begin_layout Quote
+[[recruiterList atOffset:q] getMembershipLevel]);
+\end_layout
+
+\begin_layout Quote
+}
+\end_layout
+
+\begin_layout Quote
+fflush (outputFile); 
+\end_layout
+
+\begin_layout Quote
+}
+\end_layout
+
+\begin_layout Standard
+I'm using the Swarm getCurrenTime() function to keep track of the timestep.
+ THen I throw in a 1 (indicating the first record for that date) and the
+ fprintf.
+ fprintf works like printf.
+ You can add one after the other, they will not go to a new line unless
+ you tell them to.
+ If you want to control the decimal points, you can include format options
+ after the % signs.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+A Fancy example
+\end_layout
+
+\begin_layout Standard
+The Opinion model has a relatively more complicated setup, as in:
+\end_layout
+
+\begin_layout LyX-Code
+-(void) writeReportDataHeader 
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+int i,j;
+\end_layout
+
+\begin_layout LyX-Code
+char basename[40]; 
+\end_layout
+
+\begin_layout LyX-Code
+char featurename[20];
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile,
+\end_layout
+
+\begin_layout LyX-Code
+"T Run Seed IntAct Change " );
+\end_layout
+
+\begin_layout LyX-Code
+for(i = 0; i<numCultureFeatures; i++)
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+sprintf (featurename,"f%d",i);
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile, "%s ",featurename);
+\end_layout
+
+\begin_layout LyX-Code
+for (j=0; j< numCultureTraits; j++)
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+sprintf (basename,"f%dT%d",i,j);
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile, "%s ", basename);
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile, "average%d variance%d relentropy%d ",i,i,i );
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile, "totalEntropy acquaint harmony identical 
+\backslash
+n");
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+-(void) stepReport {
+\end_layout
+
+\begin_layout LyX-Code
+if ( getCurrentTime() % 1 == 0 ) 
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+fprintf ( outputFile,
+\end_layout
+
+\begin_layout LyX-Code
+" %5ld", getCurrentTime() );
+\end_layout
+
+\begin_layout LyX-Code
+[self writeReportData];
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+-(void) writeReportData 
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+int i,j;
+\end_layout
+
+\begin_layout LyX-Code
+fprintf( outputFile,
+\end_layout
+
+\begin_layout LyX-Code
+" %d %d %8d %8d ",[arguments getRunArg],[arguments getSeedArg],
+\end_layout
+
+\begin_layout LyX-Code
+numberOfInteractionsThisStep, 
+\end_layout
+
+\begin_layout LyX-Code
+numberOfChangesThisStep 
+\end_layout
+
+\begin_layout LyX-Code
+);
+\end_layout
+
+\begin_layout LyX-Code
+for(i = 0; i< numCultureFeatures; i++)
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_layout LyX-Code
+fprintf( outputFile, "f%d", i);
+\end_layout
+
+\begin_layout LyX-Code
+for(j=0; j< numCultureTraits; j++)
+\end_layout
+
+\begin_layout LyX-Code
+fprintf( outputFile, " %ld ", tabulator[i][j]);
+\end_layout
+
+\begin_layout LyX-Code
+fprintf( outputFile, " %f %f %f ", [self getAverageFeature: i],
+\end_layout
+
+\begin_layout LyX-Code
+[self getVarianceFeature:i],[self getEntropyFeature: i]);
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+fprintf(outputFile, "%f %f %f %f 
+\backslash
+n", [self getMultidimensionalEntropy],[self getAcquaintanceAvg], [self getHarmon
+yAvg],[self getIdenticalAvg] );
+\end_layout
+
+\begin_layout LyX-Code
+fflush( outputFile );
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\end_body
+\end_document

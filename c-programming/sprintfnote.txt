@@ -1,0 +1,60 @@
+Notes from PJ!
+
+Sprintf
+
+Learn it. Love it. Use it instead of asprintf.
+
+
+Q: How do you make a number into a filename?
+
+A: Use "sprintf ()", a function from C.
+
+
+Step 1. Declare a "character array" to hold a file name, as in
+
+char filename[10];
+
+This one is 10, you can allocte more for longer file names.
+
+Then use sprintf to set the array's content.  We only refer to the
+array's base name, filename.  Suppose I have a variable called
+"grpNumber" and I need a character variable "M%d".  Here is what I
+would do:
+
+ sprintf (filename,"M%d.png",grpNumber);
+
+Like a printf statement, this fills in the %d with the grpNumber that
+follows. And so the value of filename is "M0.png".
+
+I use constructions like this all the time.  For example, in a model
+with may agents, I might assign a pixmap to each one with a method
+like this:
+
+
+
+- _getPolPixmap_: r
+{  
+  char filename[10];
+  //  int space;
+
+  sprintf (filename,"M%d.png",grpNumber);
+
+       polPixmap = [Pixmap createBegin: [self getZone]];
+       [polPixmap setDirectory: "/swarm/pixmaps"];
+       [polPixmap setFile: filename];
+      
+       polPixmap= [polPixmap createEnd]; 
+       
+       [polPixmap setRaster: r];
+
+ printf("GROUP NUMBER IN PIXMAP IS %d and filename is %s:",
+                  grpNumber,filename);
+
+return polPixmap;
+}
+
+If you didn't use this approach, you'd have to write in the filename, as in 
+
+        [polPixmap setFile: "M0.png"];
+
+or something silly like

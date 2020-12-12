@@ -1,0 +1,173 @@
+Notes from PJ
+
+You don't want numbers on the screen. You want them in a file.  Here
+is the simplest, "brute force" way to do it.
+
+In the interface ( .h) file of a class, you create two variables. One
+is a FILE, and the other is a character array that will serve as the
+file's name.  Like so:
+
+
+    FILE *outputFile;
+    char outputFileName[50];
+
+You need those in the .h file because you will probably need to
+reference them from within several methods.
+
+
+Then in the implementation (.m) file, you do three kinds of things.
+
+1. In buildObjects, or some other method that runs one time when the
+   object is created, do this:
+
+   A. Set the value of outputFileName. You can use sprintf, like so:
+
+   sprintf(outputFileName, "BozoTheClownData");
+
+(This is the same effect as strcpy(outputFileName,
+      "BozoTheClownData");
+
+And if you want to tack on a magic number, you can, as in
+
+   sprintf(outputFileName, "BozoTheClownData%d", 23);
+
+   B. Use the fopen command to create a writable file called
+ "BozoTheClownData" in the current directory.
+
+  outputFile = fopen (outputFileName,"w+");
+ 
+   C. This is optional, but you could write a method
+  "writeReportDataHeader", which is a list of variable names in row
+  one of the output, and then call it with this: 
+
+   [self writeReportDataHeader];
+
+   
+Fancy note.  I see many different ways people try to avoid overwriting
+data sets.  I use the time() function, which gives the number of
+seconds since 1970, and tack it onto the file name.  Unless I've
+passed in a run number to my Parameter manager, in which case I tack
+on the run number.  So I've got one program like this:
+
+  if(getInt(arguments,"run")!= -1)    //if run not equal to -1, use it
+    sprintf(outputFileName, "DataRecruiter%d", getInt(arguments,"run"));
+  else           //otherwise, use time(0).  Include misc.h above for this
+    sprintf(outputFileName, "DataRecruiter%d", (int)time(0));
+
+  outputFile = fopen (outputFileName,"w+");
+  [self writeReportDataHeader];
+
+
+Here is an example of writeDataReportHeader:
+
+-(void) writeReportDataHeader
+{ 
+   fprintf( outputFile,
+    "Time Group Memb Pos1 Pos2 Group Memb Pos1 Pos2 \n" );
+}
+
+Simple, clean neat!
+
+
+2. Create a method that writes out the data you need to write, and
+   then schedule the program to write when you want.  In one of my
+   projects, my method to write data is called "logResults", so my
+   buildActions method of modelSwarm has this:
+
+  [modelActions createActionTo: self message: M(logResults)];
+
+
+  In that model, the modelActions is an ActionGroup that executes
+  repeatedly.  Here is a very simple example of a logResults method:
+
+-(void) logResults { 
+    int q;
+
+    fprintf ( outputFile,"%ld ", getCurrentTime() );
+
+    fprintf ( outputFile,"%d  ", 1);
+
+    for(q=0;q<[recruiterList getCount];q++){
+      fprintf ( outputFile,"%d %d \n", [[recruiterList atOffset:q]
+      getGrpNumber], 
+                [[recruiterList atOffset:q] getMembershipLevel]);
+    }
+
+    fflush (outputFile); 
+}
+
+
+I'm using the Swarm getCurrenTime() function to keep track of the
+timestep.  THen I throw in a 1 (indicating the first record for that
+date) and the fprintf.  fprintf works like printf. You can add one
+after the other, they will not go to a new line unless you tell them
+to.  If you want to control the decimal points, you can include format
+options after the % signs.
+
+
+3.  A Fancy example
+
+The Opinion model has a relatively more complicated setup, as in:
+
+
+-(void) writeReportDataHeader 
+{
+   int i,j;
+   char basename[40]; 
+   char featurename[20];
+   fprintf ( outputFile,
+  "T Run Seed  IntAct  Change " );
+  for(i = 0; i<numCultureFeatures; i++)
+    {
+      sprintf (featurename,"f%d",i);
+      fprintf ( outputFile, "%s ",featurename);
+      for (j=0; j< numCultureTraits; j++)
+       {
+	 
+       sprintf (basename,"f%dT%d",i,j);
+       fprintf ( outputFile, "%s ", basename);
+	}
+      fprintf ( outputFile, "average%d variance%d relentropy%d ",i,i,i );
+    }
+  fprintf ( outputFile, "totalEntropy acquaint harmony identical \n");
+}
+
+
+-(void) stepReport {
+ 
+
+         if ( getCurrentTime() % 1 == 0 ) 
+	 {
+                fprintf ( outputFile,
+                          " %5ld", getCurrentTime() );
+                 [self writeReportData];
+         }
+
+ }
+
+
+
+-(void) writeReportData 
+{
+  int i,j;
+  fprintf( outputFile,
+	   " %d %d  %8d  %8d ",[arguments getRunArg],[arguments getSeedArg],
+	    numberOfInteractionsThisStep, 
+	   numberOfChangesThisStep 
+	   );
+  for(i = 0; i< numCultureFeatures; i++)
+    {
+      fprintf( outputFile, "f%d", i);
+      for(j=0; j< numCultureTraits; j++)
+	fprintf( outputFile, " %ld ", tabulator[i][j]);
+        fprintf( outputFile, " %f %f %f ", [self getAverageFeature: i],
+	       [self getVarianceFeature:i],[self getEntropyFeature: i]);
+    }
+
+  fprintf(outputFile, "%f %f %f %f \n", [self getMultidimensionalEntropy],[self getAcquaintanceAvg], [self getHarmonyAvg],[self getIdenticalAvg] );
+
+  fflush( outputFile );
+}
+
+
+

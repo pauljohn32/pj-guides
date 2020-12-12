@@ -1,0 +1,341 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass scrartcl
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Rcpp Notes
+\end_layout
+
+\begin_layout Author
+Paul Johnson <pauljohn@ku.edu>
+\end_layout
+
+\begin_layout Date
+2013-12-09
+\end_layout
+
+\begin_layout Standard
+Suppose you've reviewed my C++ notes and reviewed the material under Rcourse/ffi
+-1.
+\end_layout
+
+\begin_layout Section
+Remember about using C from R?
+\end_layout
+
+\begin_layout Standard
+Recall the basic process is
+\end_layout
+
+\begin_layout Enumerate
+Write some C code
+\end_layout
+
+\begin_layout Enumerate
+Compile that into a shared library object file (Linux: *.so, Windows: *.dll)
+\end_layout
+
+\begin_layout Enumerate
+Start R, use dynamic loader to tell R to look for functions in there
+\end_layout
+
+\begin_layout Enumerate
+Use .Call or .C to actually run the C function and grab the results into R
+\end_layout
+
+\begin_layout Standard
+Using C++ from R is basically the same, except that R cannot directly talk
+ to a C++ object.
+ Instead, the C++ function has to be 
+\begin_inset Quotes eld
+\end_inset
+
+wrapped
+\begin_inset Quotes erd
+\end_inset
+
+ in a way that makes it appear as a C function (the keywork there is extern).
+ 
+\end_layout
+
+\begin_layout Standard
+Look in the C++ based package RSiena, for example.
+ 
+\end_layout
+
+\begin_layout Section
+Where does Rcpp fit into this?
+\end_layout
+
+\begin_layout Standard
+There are 2 levels where we benefit from Rcpp.
+ 
+\end_layout
+
+\begin_layout Subsection
+The superficial: Avoiding the in-convenience of C
+\end_layout
+
+\begin_layout Standard
+Rcpp allows one to write a C++ function in the text of the R file, and Rcpp's
+ cxxfunction will handle the dirty work of putting that text into a C++
+ file, creating the so file, and putting it to use.
+ 
+\end_layout
+
+\begin_layout Standard
+The package 
+\begin_inset Quotes eld
+\end_inset
+
+inline
+\begin_inset Quotes erd
+\end_inset
+
+, a makes this one step more convenient.
+\end_layout
+
+\begin_layout Standard
+I'm saying this is superficial, but not in an unkind way.
+ It is superficial because people who understand C++ and R together will
+ simply appreciate the convenience.
+ 
+\end_layout
+
+\begin_layout Standard
+This is not a conceptual contribution of Rcpp, it is a handy feature.
+\end_layout
+
+\begin_layout Standard
+something users could replace if they were willing to learn enough about
+ programming with C++ and R together.
+\end_layout
+
+\begin_layout Standard
+To some people, the major benefit of Rcpp is that one can hid the dirty
+ details.
+ That is a pleasant benefit, but to me, it is somewhat superficial.
+ 
+\end_layout
+
+\begin_layout Standard
+Why? I suppose that any really serious computation in R will have you building
+ an R package, and thus the 
+\begin_inset Quotes eld
+\end_inset
+
+convenient
+\begin_inset Quotes erd
+\end_inset
+
+ emphasis disappears.
+ You do have to write out the C++ file, learn how to build a package.
+\end_layout
+
+\begin_layout Subsection
+Not superficial: Facilitating information transfer between R and C++
+\end_layout
+
+\begin_layout Subsubsection
+C: PROTECT and UNPROTECT.
+ OMG, there's a hassle
+\end_layout
+
+\begin_layout Standard
+If you are using R's .Call interface, then you know of these issues.
+ R's garbage collector might be activated and it will obliterate your C
+ memory allocation.
+ Hence PROTECT.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Dealing with SEXP objects in C.
+ OMG, there's a hassle
+\end_layout
+
+\begin_layout Standard
+Also, while working with R objects on the C side, there are quite a few
+ C functions provided with the R development materials.
+ Learning these can be very complicated.
+\end_layout
+
+\begin_layout Subsubsection
+Rcpp classes
+\end_layout
+
+\begin_layout Standard
+Rccp provides a very versatile set of classes, with a full compliment of
+ methods, that will make it unnecessary to learn those C-language idioms
+ of R programming.
+ 
+\end_layout
+
+\begin_layout Standard
+This makes it more-or-less 
+\begin_inset Quotes eld
+\end_inset
+
+transparent
+\begin_inset Quotes erd
+\end_inset
+
+ to the user, than an R object (say, a vector), comes into the C++ side
+ of things, because Rcpp offers a class for that vector to go into.
+\end_layout
+
+\begin_layout Standard
+Rcpp classes worth mentioning
+\end_layout
+
+\begin_layout Standard
+IntegerVector
+\end_layout
+
+\begin_layout Standard
+NumericVector
+\end_layout
+
+\begin_layout Standard
+CharacterVector
+\end_layout
+
+\begin_layout Standard
+That's not superficial.
+\end_layout
+
+\end_body
+\end_document

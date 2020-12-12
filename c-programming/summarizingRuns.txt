@@ -1,0 +1,284 @@
+Paul Johnson
+"Summarizing Runs of an Agent-Based Model"
+Pols 909 "Agent-Based Modeling"
+April 29, 2003
+
+The newest version of this writeup is saved in (all one line):
+
+http://lark.cc.ku.edu/~pauljohn/ps909/
+                 Agent-Based_Models/summarizingRuns.txt
+
+With simulations, it is often necessary to run models over and over
+and then compare the results.  I compare many runs for each
+combination of parameter settings in order to find out if the luck of
+the draw--pure randomness--is having a significant impact.  That is
+also a way to assess "path dependence".  Then I also compare outcomes
+across parameter settings to find out if parameters have an impact on
+averages across runs.
+
+How to do this?
+
+First, in the ModelSwarm I typically use some plain old C code to with
+fprintf to write summary measures from the model out to a file.  I
+described that here:
+
+http://lark.cc.ku.edu/~pauljohn/ps909/Agent-Based_Models/fprintfnote.txt
+
+Swarm can also output data from EZGraphs in HDF5 format and that works
+great too, especially if you are wanting to make plots of time series.
+The artificial stock market (ASM: http://ArtStkMkt.sourceforge.net)
+shows how to do both of these approaches.
+
+In my opinion research model, runs generate a stream of files, one
+for each run, and they are named like this:
+
+DataCulture1
+DataCulture2
+DataCulture3
+...
+
+If I run the model for many parameter
+combinations, then there are many directories full of these files.
+
+Just so you can experiment, I copied 10 of these output files from 
+one directory up here:
+
+
+http://lark.cc.ku.edu/~pauljohn/ps909/Agent-Based_Models/DataCulture
+
+The other scripts and programs I describe below are in there.
+
+***Task 1*** Summarize/Compare outcomes across runs
+
+
+The last line in each of these files can be thought of as a "snapshot"
+at termination time, so often the first task is to collect up those
+last lines and then build summaries of them.  Here is a script I wrote
+that you run in the directory where the DataCulture files are. It will
+grab the first line out of the first data file and use that to create
+a row of variable names, and then it will tack on the last line from
+each file to make a summary data set.
+
+Here is the program "grablastline," which you can put in a file, make
+it executable, and run then it.
+
+#!/bin/sh
+
+#grabLastLine.  
+
+echo "the input was $1"
+
+if [ -z $1 ]; then
+        echo "-z says there is no input 1=$1"
+        fn="lastline.dat"
+else
+     fn=$1
+fi
+
+   echo "Output name is $fn"
+
+sed 1q DataCulture1 > $fn
+
+for x in D*
+do
+tail -n 1 $x >> $fn
+done
+exit 0
+
+
+If you don't want the output file called "lastline.dat", you can give
+a command line argument and it will use that argument as the file
+name. If you have many directories of runs, I suggest you give your
+file a meaningful name, like "model2b04.dat".  Do that by typing:
+
+./grabLastLine  model2b04.dat
+
+You have to edit this grabLastLine program if your data output files
+are not called DataCultureX.  It is easy to see where. Change
+DataCulture to the root name of your output files and change "for x in
+D*" and replace the D* with the first name of your data sets.
+
+
+If you copy all of your *.dat files into a single "analysis"
+directory, you can use the statistical program R to make an easy
+summary of each file.  Here is an R program I have used in the past.
+It will, one by one, grab all the *.dat files, and for each one it
+will create an output file that gives the mean, standard deviation of
+the variables. It reads the first line in the datafile to find the
+variable names, and then those summaries are dumped out. This ignores
+non numeric variables.  I've been using this script for 2 or 3 years,
+several users in the R list gave me good tips in controlling the
+output.  The output *.dat.summary file easily can load into a word
+processor program or spreadsheet.
+
+Here is the file "Summary.R"
+
+---------------------------------------
+myDat<-list.files(pattern="*.dat$")
+
+#if you want a particular file summarized, say "Mod7.dat" replace the
+#previous with myDat<-list.files(pattern="Mod7.dat")
+
+createSummary <-function(dsName){
+  data<-read.table(dsName,header=T,as.is = TRUE)
+  indices<-1:dim(data)[2]
+  indices<-na.omit(ifelse(indices*sapply(data,is.numeric),indices,NA))
+  mean<-sapply(data[,indices],mean)
+  sd<-sapply(data[,indices],sd)
+  newOutput<-rbind(mean,sd)
+  newOutput<-round(newOutput,digits=6)
+  outputdsname<-c(paste(dsName,".summary",sep=""))
+  write.table(t(newOutput),file=outputdsname,quote=FALSE, sep="\t",col.names=FALSE)
+}
+
+
+processData <-function(dat){
+  for (i in 1:length(dat))
+  {
+    createSummary(dat[[i]])
+  }
+}
+
+processData(myDat)
+------------------------------------------------
+
+That takes each *.dat file in your current directory and creates a
+*.dat.summary file for it.  IT is just columns of means and standard
+deviations.  You can see in the "createSummary" method where you can
+add other numbers if you want.
+
+To use that program is very simple. You can type it in from the command line
+of R if you want to. But it is easier to just read in the file of commands.
+Just copy "Summary.R" into the directory where you
+collected up the *.dat files, then start R
+
+$ R
+
+And after R starts, you read in ("source") the program
+
+> source("Summary.R")
+
+That reads in and runs the program, and the *.summary files should have popped up already in
+your directory.
+
+Then quit R with
+
+> q()
+
+and answer "n" unless you want to save the workspace.  You probably don't want that.
+
+Note the summary files do exist!
+
+
+
+***Task 2*** 
+
+Sometimes we want more detailed analysis of a particular run of the
+model.  Suppse we want a time-series plot of several variables, and we
+want to see that plot for each of the many data sets.
+
+It turns out R is ideal for that procedure, because it makes it very
+easy to load and unload datasets.  I realize that my R code is not
+clever, but it works, and so I'm not apologizing for it.
+
+There is an example of one of these pictures here:
+
+http://lark.cc.ku.edu/~pauljohn/ResearchPapers/APSA01/apsa0105.gif
+
+I have many different pictures scattered throughout the various
+reports on that opinion model.
+
+Here is an R program I run on the DataCulture* datasets to make
+pictures like that.
+
+----------------------------------
+#"RHuckFigure2.R"
+
+run<-1
+updateDataSet <- function(run)
+  {
+    aChar<-character(1)
+    aChar<-as.character(run)
+    dsname<-c(paste("DataCulture",aChar,sep=""))
+    data<-read.table(dsname,header=T,as.is = TRUE)
+
+  }
+
+buildGraph <-function(data)
+{
+
+tmp1<-plot(data$acquaint~data$T,type='l', ylim=c(0,1),ylab="average
+proportion",xlab="PERIOD",lty=1,pch=1,main="")
+
+par("new"=TRUE)
+
+tmp2<-plot(data$harmony~data$T,type='l', ylim=c(0,1),ylab="average
+proportion",xlab="PERIOD",lty=2,pch=1,main="") 
+
+par("new"=TRUE)
+
+tmp3<-plot(data$identical~data$T,type='l', ylim=c(0,1),ylab="average
+proportion",xlab="PERIOD",lty=3,pch=1,main="") 
+
+par("new"=TRUE)
+
+tmp4<-plot(data$totalEntropy~data$T,type='l',ylim=c(0,1),ylab="",
+xlab="",lty=4,pch=1,main="",cex=10)
+
+#want a legend?
+#legend(max(data$T)/2,0.2,c("Acquaintance","Harmonious",
+                  "Identical","Entropy"),lty=1:4,xjust=1,yjust=1)
+#if you want to interact, do this:
+#legend(locator(1),c("Acquaintance","Harmonious","Identical"),lty=1:3)
+#or do this to place the lables, one after the other
+text(locator(4),c("Acquaintance","Harmony","Identical","Entropy"))
+
+}
+
+redraw<-function()
+  {
+    dsname<-updateDataSet(run)
+    buildGraph(dsname)
+  }
+
+new<-function()
+{
+  dsname<-updateDataSet(run)
+  buildGraph(dsname)
+  run <<- run+1
+}
+
+new()
+----------------------------------------
+
+This will cycle through all the DataCulture files and make a plot for
+each one. It lays the plots onto the same "piece of paper".  It begins
+with DataCulture1 and counts up to the last DataSet*.
+
+
+This one is a little tricky because I used R's "locator()"
+function. That is a special thing for commenting plots (putting text
+in) and you might comment it out with a pound sign if it bugs you.  It
+has the effect that, after the plot is created--the lines are
+drawn--then R stops and waits for you to click 4 times to tell it
+where to put the words.  You have to click 4 times because, in this
+example, it wants you to put in the text for 4 words, Acquaintance,
+Harmony, Identical, Entropy.  There's a comment in the code that says
+you can use the automatically generated R legend instead.
+
+
+To use that program, I copy the program RHuckFigure2.R into the
+directory where I have all the DataCulture files, I start R
+
+> R
+
+and then I read in that code
+
+> source("RHuckFigure2.R")
+
+then you see a picture, and when you want the next one, type
+
+> new()
+
+This code causes a plot that overlays several variables onto the same
+time series.

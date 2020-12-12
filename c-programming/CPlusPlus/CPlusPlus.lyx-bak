@@ -1,0 +1,1868 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass literate-article
+\begin_preamble
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+unlink("plots", recursive=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- c(5.1, 4.1, 1.0, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+C++ Notes
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Date
+2012
+\end_layout
+
+\begin_layout Section
+Superficially: Not so different from C.
+\end_layout
+
+\begin_layout Enumerate
+main() function.
+ Required.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+You don't have to fill in the parens if you don't want to, but if you want
+ to interact with the command line, put
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+main(int argc, char * argv[])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+See: example-2-arguments.cc
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+C and C++ both have header files, implementation files
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+C: suffixes .h and .c
+\end_layout
+
+\begin_layout Standard
+C++: usually .hh and .cc, but some prefer .h and .cpp
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Compiler only slightly different: g++ replaces gcc
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ gcc -Wall myFile.c -o myProgram
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ./myProgram
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ g++ -Wall myFile.cc -o myProgram
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ./my Program
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Functions
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+format
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+return-type function-name (type name, type name){
+\end_layout
+
+\begin_layout Plain Layout
+
+calculations here;
+\end_layout
+
+\begin_layout Plain Layout
+
+return something matching the promised return type;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+pass by value, or pass by reference
+\end_layout
+
+\begin_layout Enumerate
+const modifier for arguments to protect pointer arguments from modification
+\end_layout
+
+\begin_layout Enumerate
+prototypes
+\end_layout
+
+\begin_layout Enumerate
+Difference: C++ allows 
+\begin_inset Quotes eld
+\end_inset
+
+overloaded
+\begin_inset Quotes erd
+\end_inset
+
+ functions.
+ Use the SAME NAME for a function over and over again, and vary the argument
+ types.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+C variable types present in C++ as well
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+All of the types from C are available: int, float, double, char.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Math: * / % += *= ++i i++ 
+\end_layout
+
+\begin_layout Enumerate
+Control: if, else, for, while, do, ?:, and so forth
+\end_layout
+
+\begin_layout Enumerate
+Scope concepts same/similar.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Squiggly braces demarcate the area where local variables can live.
+ 
+\end_layout
+
+\begin_layout Standard
+Like in c, i only lives inside the braces
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int x;
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    int i = 7;
+\end_layout
+
+\begin_layout Plain Layout
+
+    cout << "i times x is" << x * i << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+//Note x still exists after that, but i was local to the scope.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Pointers.
+ Like C, C++ allows pointers.
+ Syntax is same.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type * x;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+type
+\begin_inset Quotes erd
+\end_inset
+
+ can be 
+\begin_inset Quotes eld
+\end_inset
+
+integer
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+double
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+ This creates a location in memory we call x, and the value at that point
+ is *x.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+&x
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Asks x what its memory location is.
+ Not used so often in most books as it is in Eubank and Kupresanin.
+ (my opinion).
+\end_layout
+
+\begin_layout Standard
+Use pointers, as in C
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int *x;
+\end_layout
+
+\begin_layout Plain Layout
+
+int i = 32;
+\end_layout
+
+\begin_layout Plain Layout
+
+x = &i; //x equals whatever was at the address of i
+\end_layout
+
+\begin_layout Plain Layout
+
+// I recall same as
+\end_layout
+
+\begin_layout Plain Layout
+
+*x = i; //dereference x, then set that location equal to i
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use pointers also to refer to more elaborate data structures (including
+ C++ classes, discussed below)
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Fixed size arrays created as in C
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int x[7];
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall this is 
+\begin_inset Quotes eld
+\end_inset
+
+local
+\begin_inset Quotes erd
+\end_inset
+
+ to a scope, it ceases to exist when C++ exists from scope.
+ 
+\end_layout
+
+\begin_layout Standard
+To pass vector to another function, or to grab a 
+\begin_inset Quotes eld
+\end_inset
+
+really large
+\begin_inset Quotes erd
+\end_inset
+
+ amount of storage, need to dynamically allocate memory from the 
+\begin_inset Quotes eld
+\end_inset
+
+heap
+\begin_inset Quotes erd
+\end_inset
+
+ of RAM.
+ 
+\end_layout
+
+\begin_layout Standard
+Allocation of pointers different in C++, we don't use 
+\begin_inset Quotes eld
+\end_inset
+
+malloc
+\begin_inset Quotes erd
+\end_inset
+
+, instead, use new.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Initially Noticed Differences from C
+\end_layout
+
+\begin_layout Enumerate
+namespaces and include statements.
+ The Superficial difference is the syntax.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+C: #include <stdlib.h>
+\end_layout
+
+\begin_layout Standard
+C++: #include <iostream>
+\end_layout
+
+\begin_layout Standard
+Note: no 
+\begin_inset Quotes eld
+\end_inset
+
+.h
+\begin_inset Quotes erd
+\end_inset
+
+ in C++, and common includes have different names
+\end_layout
+
+\begin_layout Standard
+C++ includes a Standard Library, which is larger than the C standard library.
+\end_layout
+
+\begin_layout Standard
+Many C libraries adapted for use within C++
+\end_layout
+
+\begin_layout Standard
+C: #include <cstdlib>
+\end_layout
+
+\begin_layout Standard
+More Substantial Difference is problem that simply including a header file
+ does not make its functions 
+\begin_inset Quotes eld
+\end_inset
+
+ready to use
+\begin_inset Quotes erd
+\end_inset
+
+.
+ That is discussed next.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Functions and variables can be organized within 
+\begin_inset Quotes eld
+\end_inset
+
+namespaces
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The using keyword tells the compiler to look for otherwise unfound functions
+ in a namespace.
+ Here, 
+\begin_inset Quotes eld
+\end_inset
+
+std
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/from http://www.cplusplus.com/doc/tutorial/namespaces
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <iostream>
+\end_layout
+
+\begin_layout Plain Layout
+
+using namespace std;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+namespace first
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  int var = 5;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+namespace second
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  double var = 3.1416;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int main () {
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << first::var << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << second::var << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And the using keyword can 'pick and choose' or just use all of the things
+ in a namespace:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// using
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <iostream>
+\end_layout
+
+\begin_layout Plain Layout
+
+using namespace std;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+namespace first
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  int x = 5;
+\end_layout
+
+\begin_layout Plain Layout
+
+  int y = 10;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+namespace second
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  double x = 3.1416;
+\end_layout
+
+\begin_layout Plain Layout
+
+  double y = 2.7183;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int main () {
+\end_layout
+
+\begin_layout Plain Layout
+
+  using namespace first;
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << x << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << y << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << second::x << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  cout << second::y << endl;
+\end_layout
+
+\begin_layout Plain Layout
+
+  return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+cout, endl, cin are in the namespace 
+\begin_inset Quotes eld
+\end_inset
+
+std
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The C++ standard library puts everything in std.
+\end_layout
+
+\begin_layout Enumerate
+This makes ALL of the functions in the std namespace available:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+using namespace std;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Eubank & Kupresanin say this is 
+\begin_inset Quotes eld
+\end_inset
+
+overkill
+\begin_inset Quotes erd
+\end_inset
+
+ because it gives access to the whole standard template library.
+ In various C++ Web forums, I find authors going further, arguing it is
+ generally 
+\begin_inset Quotes eld
+\end_inset
+
+bad form
+\begin_inset Quotes erd
+\end_inset
+
+ to do this with any namespaces, because it gives the author poor control
+ over access to function names.
+ Suppose there are several 
+\begin_inset Quotes eld
+\end_inset
+
+using
+\begin_inset Quotes erd
+\end_inset
+
+ statements and there are functions with the same name in each? All hell
+ breaks loose.
+ See 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://stackoverflow.com/questions/1452721/why-is-using-namespace-std-considered-
+a-bad-practice-in-c
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+2 alternatives
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Don't use a namespace at all, but explicitly refer to the functions by their
+ full names, like this:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+std::cout or std::endl
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example usage
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+std::cout << "some silly message" << std::endl;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That seems verbose to me, but it seems to be what the experts prefer for
+ clarity.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Don't grab the whole namespace: Use a more focused using statement
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+using std::cout; 
+\end_layout
+
+\begin_layout Plain Layout
+
+using std::endl;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+tells compiler where to look for functions cout and endl.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+Discourages printf, instead uses <iostream> functions
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+cout
+\end_layout
+
+\begin_layout Standard
+endl
+\end_layout
+
+\begin_layout Standard
+with << between pieces.
+ Somewhat reminiscent of Perl string printing (IMHO).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cout << "Some message to user" << x << y << endl;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I wish I could just ignore that, and use printf or Rprintf() instead.
+ I honestly see no benefit in having a new way to do the old thing.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Strings!: More convenient usage of character strings
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+#include <string>
+\end_layout
+
+\begin_layout Standard
+Code allows new variable type
+\end_layout
+
+\begin_layout Standard
+sting s = 
+\begin_inset Quotes eld
+\end_inset
+
+whatever you want in parens
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+And s can be printed with cout.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+new and delete: replacements for malloc and free.
+\end_layout
+
+\begin_layout Enumerate
+Use new to allocate memory for pointer variables.
+ Don't use 
+\begin_inset Quotes eld
+\end_inset
+
+malloc
+\begin_inset Quotes erd
+\end_inset
+
+ to allocate dynamic memory.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Allocate a pointer to a single variable:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+double *myX = new double;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When finished, remove it from memory.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+delete x;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+double *x = new double[n];
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Treat that like a pointer, just like in C.
+ x[0] grabs the first element.
+ 
+\end_layout
+
+\begin_layout Standard
+When finished, remove it from memory.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+delete[] x;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Summary: No malloc, the allocation of arrays uses new instead.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Recall in C, a two dimensional array (a matrix) is handled in either of
+ 2 ways
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Create a 1 dimensional array, and then get good at 
+\begin_inset Quotes eld
+\end_inset
+
+stride
+\begin_inset Quotes erd
+\end_inset
+
+ calculations to find the value that would be in row i, column j if it were
+ a matrix.
+ This is how FAST calculations are done in C programs.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+C++ can do that, of course.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Create a 'star star' pointer, and use malloc to first allocate the initial
+ positions of the columns, then add a for loop to allocate the storage for
+ each column.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Recall in C we used this idiom to create a matrix 
+\begin_inset Quotes eld
+\end_inset
+
+myDynamArray
+\begin_inset Quotes erd
+\end_inset
+
+, which will have 10 rows and 5 columns.
+ This was done with malloc:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//C 2 dimensional array
+\end_layout
+
+\begin_layout Plain Layout
+
+int nRows = 10; int nCols = 5
+\end_layout
+
+\begin_layout Plain Layout
+
+int i = 0, j = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+double ** myDynamArray;
+\end_layout
+
+\begin_layout Plain Layout
+
+myDynamArray = malloc(nRows * sizeof(double *));
+\end_layout
+
+\begin_layout Plain Layout
+
+if (!myDynamArray) {printf("Memory alloc failed"); exit(0);}
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i = 0; i < nCols; i++)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+        myDynamArray[i] = malloc(5 * sizeof(double));
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(!myDynamArray[i]) exit(0);
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The C++ variant is a bit simpler looking.
+ The new operator knows how much space to claim.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int i; nRows = 10; int nCols = 5;
+\end_layout
+
+\begin_layout Plain Layout
+
+double **myDynamArray;
+\end_layout
+
+\begin_layout Plain Layout
+
+myDynamArray = new int* [nRows];
+\end_layout
+
+\begin_layout Plain Layout
+
+for (i = 0; i < nRows; i++)
+\end_layout
+
+\begin_layout Plain Layout
+
+    { 
+\end_layout
+
+\begin_layout Plain Layout
+
+        myDynamArray[i] = new double[nCols];
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+Standard Library
+\end_layout
+
+\begin_layout Standard
+The Standard Template Library was an early attempt to provide a standard,
+ large set of functions and data structures.
+ Poor, incomplete, implementations of the STL caused me a lot of frustration
+ when I started programming, I decided it was better to use C and then get
+ best-of-breed addon libraries to fill the gaps that the STL had offered.
+\end_layout
+
+\begin_layout Standard
+The current C++ Standard Library is a large set of things, similar to the
+ STL.
+ Until very recently, I had believed they were the same thing.
+ The C++ Standard Library made part of the ISO C++ standard, the STL is
+ not.
+ 
+\end_layout
+
+\begin_layout Standard
+See:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://en.wikipedia.org/wiki/C++_Standard_Library
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Highlights: Collections, 
+\begin_inset Quotes eld
+\end_inset
+
+doubly-linked lists
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+set
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+map
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+vector
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C's Standard Library 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://en.wikipedia.org/wiki/C_Standard_Library
+\end_layout
+
+\end_inset
+
+ is also included.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Each header from the C Standard Library is included in the C++ Standard
+ Library under a different name, generated by removing the .h, and adding
+ a 'c' at the start; for example, 'time.h' becomes 'ctime'.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note: C's Standard Library is a large list of header files, only one of
+ which is 
+\begin_inset Quotes eld
+\end_inset
+
+stdlib.h
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Big Change: Classes
+\end_layout
+
+\begin_layout Enumerate
+In C, we can approximate object-oriented computing, but the syntax and design
+ may be tedious.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+In C, we usually think of a function as a thing with no 
+\begin_inset Quotes eld
+\end_inset
+
+state
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We put arguments in, results come out.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+We have to pass in ALL of the values that are required to make a calculation.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Pass by reference is one way to create illusion of continuity, to 
+\begin_inset Quotes eld
+\end_inset
+
+remember
+\begin_inset Quotes erd
+\end_inset
+
+ by revising variables.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+We have a pointer to some data, say a large struct containing all of our
+ instance variables.
+\end_layout
+
+\begin_layout Enumerate
+we pass that pointer to a function, 
+\end_layout
+
+\begin_layout Enumerate
+the function dereferences the data to create new values, 
+\end_layout
+
+\begin_layout Enumerate
+and the pointer variable's values themselves might be changed.
+\end_layout
+
+\begin_layout Enumerate
+Example: Recall the random generator functions in L'Ecuyer's MCRG generator
+ keeps the internal state of the generator in a pointer variable, that is
+ passed to every function that does work to generate random numbers.
+\end_layout
+
+\begin_layout Enumerate
+Problem: this is a bit of a 
+\begin_inset Quotes eld
+\end_inset
+
+mental stretch
+\begin_inset Quotes erd
+\end_inset
+
+ and not convenient to manage lots of variables.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+variables can be declared 
+\begin_inset Quotes eld
+\end_inset
+
+static
+\begin_inset Quotes erd
+\end_inset
+
+ so that values calculated in the function are 
+\begin_inset Quotes eld
+\end_inset
+
+remembered
+\begin_inset Quotes erd
+\end_inset
+
+ and put to use the next time the function is called.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+problem: that 
+\begin_inset Quotes eld
+\end_inset
+
+static
+\begin_inset Quotes erd
+\end_inset
+
+ value is not selectively remembered.
+ It will be available to any caller of the function who comes along.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Function names cannot be re-used, there is no 
+\begin_inset Quotes eld
+\end_inset
+
+overloading
+\begin_inset Quotes erd
+\end_inset
+
+ that allows one function name to be used with various argument types.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+A class
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+instance variables
+\end_layout
+
+\begin_layout Enumerate
+constructor function.
+ (Every class must have one, at least)
+\end_layout
+
+\begin_layout Enumerate
+destructor function.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+member functions
+\begin_inset Quotes erd
+\end_inset
+
+ aka 
+\begin_inset Quotes eld
+\end_inset
+
+methods
+\begin_inset Quotes erd
+\end_inset
+
+ aka 
+\begin_inset Quotes eld
+\end_inset
+
+method functions
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+public
+\end_layout
+
+\begin_layout Enumerate
+private
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The things I called 
+\begin_inset Quotes eld
+\end_inset
+
+class variables
+\begin_inset Quotes erd
+\end_inset
+
+ (variables common among all instances of a class) can be created by the
+ static modifier.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+this
+\begin_inset Quotes erd
+\end_inset
+
+ a self-referential keyword.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+structs are similar to C, but slightly different in C++
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Like C, a struct combines different variables into one 
+\begin_inset Quotes eld
+\end_inset
+
+thing
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C++ struct also may include function names within a struct.
+ 
+\end_layout
+
+\begin_layout Standard
+In fact, a struct in C++ is simply a class with the member variables and
+ functions 
+\begin_inset Quotes eld
+\end_inset
+
+public
+\begin_inset Quotes erd
+\end_inset
+
+ (Eubank and Kupresanin, p.
+ 60)
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
