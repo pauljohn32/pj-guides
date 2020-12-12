@@ -1,0 +1,562 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,canadian,english]{beamer}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[authoryear]{natbib}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ % (ERT) argument for the TOC
+ \AtBeginDocument{%
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \newenvironment{lyxcode}
+   {\par\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \setlength{\listparindent}{0pt}% needed for AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \def\{{\char`\{}
+    \def\}{\char`\}}
+    \def\textasciitilde{\char`\~}
+    \item[]}
+   {\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+%\newcommand{\vn}[1]{\mbox{{\it #1}}}
+%\newcommand{\vb}{\vspace{\baselineskip}}
+%\newcommand{\vh}{\vspace{.5\baselineskip}}
+%\newcommand{\vf}{\vspace{\fill}}
+%\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+\usepackage{Sweavel}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+
+
+
+%% Changes to alter Beamer's behavior
+\usetheme{Antibes}
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+%%not for article, but for presentation
+\mode<presentation>
+%%\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+
+
+
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+\makeatother
+
+\usepackage{babel}
+\usepackage{listings}
+\addto\captionscanadian{\renewcommand{\lstlistingname}{Listing}}
+\addto\captionsenglish{\renewcommand{\lstlistingname}{Listing}}
+\renewcommand{\lstlistingname}{Listing}
+
+\begin{document}
+
+
+\title{Refine the Beamer Template}
+
+\subtitle{Sweavel and Beamer Customizations}
+
+\author{Paul Johnson\inst{1} \inst{2}}
+
+\institute[Universities of Somewhere and Elsewhere]{\inst{1}Department of Political Science\\
+University of Kansas\and \inst{2}Center for Research Methods and
+Data Analysis\\
+University of Kansas}
+
+\date[2017]{Conference on \LyX{} Presentations, 2017}
+
+\makebeamertitle
+
+%\pgfdeclareimage[height=0.5cm]{institution-logo}{institution-logo-filename}
+
+%\logo{\pgfuseimage{institution-logo}}
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\selectlanguage{canadian}%
+
+\selectlanguage{english}%
+\global\long\def\vb#1{\bm{\mathrm{#1}}}
+
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+\begin{frame}{Outline}
+
+\tableofcontents{}
+\end{frame}
+
+\section{Document Preamble Changes}
+\begin{frame}{A Boilerplate for the preamble.}
+
+\begin{enumerate}
+\item Instead of using the R-provided Sweave.sty file to structure the output,
+we use Frank Harrell's Sweavel.sty (after a few changes to suit my
+taste).
+
+\begin{itemize}
+\item Based on the \LaTeX{} Listings package. \url{http://biostat.mc.vanderbilt.edu/wiki/Main/SweaveTemplate}
+
+\begin{itemize}
+\item shaded backgrounds
+\item line-breaking for long lines
+\item more beautiful symbols (with customization)
+\end{itemize}
+\end{itemize}
+\item Several Beamer customizations to make the output more pleasant (in
+my eye).
+
+\begin{itemize}
+\item theme changes
+\item alter the continuation
+\item insert slide numbers
+\end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Preamble Changes to work with Sweavel.sty}
+
+\begin{lstlisting}[basicstyle={\footnotesize},breaklines=true]
+\usepackage{Sweavel}
+\fvset{listparameters={\setlength{\topsep}{0em}}} 
+\def\Sweavesize{\normalsize}  
+%% or
+%% \def\Sweavesize{\scriptsize}  
+\def\Rcolor{\color{black}}  
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx} 
+\usepackage{listings} 
+\lstset{tabsize=2, breaklines=true, style=Rstyle} 
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Preamble Changes to improve Beamer}
+
+\begin{lstlisting}[basicstyle={\scriptsize},breaklines=true]
+\usetheme{Antibes} %% Value judgement
+
+%% allowframebreaks beautification:
+%% Change Roman I II III to dot-dot-dot
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%% I want slide numbers displayed
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{You need the complete LaTeX Setup, of course}
+\begin{itemize}
+\item If you don't have the listings package for \LaTeX{}, this will be
+an epic fail
+\item You need the Sweavel.sty file.
+
+\begin{itemize}
+\item in your current working directory for short-term use
+\item copy it into your \LaTeX{} setup (generally under ``tex/latex''
+will suffice) and run reconfigure (texhash).
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Top of Document Boilerplate}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Changes for the beginning of the document}
+\begin{itemize}
+\item Make sure an output directory exists from R's current working directory.
+Tell R to not use ``line breaks'', we will let Sweavel handel it.
+
+<<Rfirst,echo=T>>=
+dir.create("plots", showWarnings=F)
+options(width=160, prompt=" ", continue="  ")
+@
+\item This is a \LaTeX{} statement, which R and the Sweaving process will
+take into account. (I don't understand how a \LaTeX{} macro gets
+translated to the R session.)
+\end{itemize}
+\textbackslash{}SweaveOpts\{prefix.string=plots/t,split=T,ae=F,height=4,width=6\}
+
+\newpage{}
+\begin{itemize}
+\item Why that's important:
+
+\begin{enumerate}
+\item all R elements are written to a string prefixed ``plots/t'', folder=''plots'',
+common prefix letter ``t''
+\item ae=F prevents R and Sweave from putting in a bunch of workarounds
+into the \LaTeX{} code.
+\item default height and width of figures can be adjusted for each particular
+figure.
+\end{enumerate}
+\end{itemize}
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=F,ae=F,height=4,width=6}
+\begin{itemize}
+\item The first R code chunk sets the defaults that cooperate with Sweavel
+and Listings
+\end{itemize}
+<<Roptions, echo=T>>=
+## Other settings I like
+options(device = pdf)
+options(useFancyQuotes = FALSE) 
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Get that R code again}
+
+<<>>=
+set.seed(234234)
+x1 <- rnorm(1000)
+mean(x1)
+sd(x1)
+se <- 1.5
+b0 <- 0.7
+b1 <- 0.04
+y <- b0 + b1 * x1 + se * rnorm(1000)
+dat <- data.frame(x1, y)
+m1 <- lm(y ~ x1, data = dat)
+summary(m1)
+dat$x2 <- rpois(1000, lambda = 2)
+m2 <- lm(y ~ x1 + x2, data = dat)
+summary(m2)
+anova(m2, m1, test = "F")
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I want a figure now}
+
+The figure comes out much too huge.
+
+<<fig=T>>=
+library(rockchalk)
+plotSlopes(m2, plotx = x1, modx = x2, interval = "confidence")
+@
+
+\end{frame}
+
+\section{Final Idioms}
+
+\subsection{Figure Customization}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Working with Figures}
+
+I want figures saved separately, and I'll insert them however I like. 
+\begin{itemize}
+\item Change the chunk invocation, insert ``include=F''. The figure is
+created, but not displayed here
+\end{itemize}
+$<<$ps50, fig=T, include=F$>>=$
+
+The image will be named ``plots/t-ps50.pdf'' 
+\begin{itemize}
+\item We include the figure-generator code thus:
+\end{itemize}
+\begin{lyxcode}
+$<<$ps50,fig=T,include=F$>>=$
+
+plotSlopes(m2,~plotx~=~x1,~modx~=~x2,~predVals=\textquotedbl{}std.dev.\textquotedbl{},~interval~=~\textquotedbl{}confidence\textquotedbl{})
+
+$@$
+\end{lyxcode}
+<<ps50,fig=T,include=F>>=
+plotSlopes(m2, plotx = x1, modx = x2, predVals="std.dev.", interval = "confidence")
+@
+
+And then the standard methods of inserting the figure into the document
+are used
+
+\begin{lstlisting}
+\includegraphics[width=10cm]{plots/t-ps50}
+\end{lstlisting}
+
+\includegraphics[width=10cm]{plots/t-ps50}
+
+But if I was feeling spunky, I could put 2 pictures on one slide as
+well.
+
+<<ps60,fig=T,include=F>>=
+plotSlopes(m2, plotx = x2, modx = x1, predVals="std.dev.", interval = "confidence")
+@
+
+\includegraphics[width=6cm]{plots/t-ps50}
+\includegraphics[width=6cm]{plots/t-ps60}
+
+\end{frame}
+
+\subsection{Caching Results and Calculations}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Long R Jobs = Unhappy Sweaving}
+\begin{itemize}
+\item If your R code takes more than a minute or two, then working with
+Sweaved calculations can be very frustrating. 
+\item There are 3 ideas I've tried.
+
+\begin{enumerate}
+\item Some R packages exist which are supposed to make Sweave smarter so
+that it does not re-calculate all results. They cache calculations
+from unaltered code chunks. I like the idea, but have not had great
+experience with it. The knitr package tries to do that as well.
+\item In the \LyX{} document, use the Document Branches feature to separate
+long-running code chunks. When they run, write the results into the
+``plots'' folder, and then Disable the branch until you need to
+run it again. I think this is the easiest way to manage this without
+straining yourself.
+\item Write two documents, one \LaTeX{} document with the R code and the
+Sweaving commands. 
+
+\begin{enumerate}
+\item Be sure to label all of the code chunks, so they are written into
+``plots''.
+\item Then in the presentation document, simply use the results from ``plots''
+as you want to include them in the document. 
+\item This is the best of both worlds. The R run is completely replicable.
+And the \LaTeX{} document does not need to wait for R to run.
+\end{enumerate}
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\subsection{Changes for You}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Changes that You Should Try}
+\begin{enumerate}
+\item Change your Beamer theme. 
+
+\begin{enumerate}
+\item I changed from the ``Warsaw'' theme that the \LyX{} team preferred
+to the ``Antibes'' theme, which is a bit less intrusive (IMHO)
+\item In the R Summer Program, Pascal Deboeck and I have used a theme we
+adapted (which he obtained from his advisor at ND).
+\item Why don't you try that one out. I've left a copy of the beamerthemeku.sty
+file in this directory, so all you should need to do is to change
+your preamble to read
+
+\textbackslash{}usetheme\{KU\}
+
+\textbackslash{}usecolortheme\{dolphin\}
+
+This will only work if your system has the beamerthemeku.sty file,
+but there's a copy in the directory where you find this presentation.
+\item That theme has top and bottom banners. I recall we hacked it to make
+the top banner show the sections, but I grew bored with the crowding
+it would cause.
+\end{enumerate}
+\item Fiddle with colors and sizes for R listings.
+
+\begin{enumerate}
+\item I buried the color settings in the Preamble. At some times, I've had
+them in the top part of the document itself. 
+\item In the preamble find this piece
+\end{enumerate}
+\begin{lstlisting}
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}} 
+\end{lstlisting}
+
+You can change the word black to ``purple'' and the number 0.95
+to 0.70, for example.
+\begin{enumerate}
+\item Fiddle with the text size in the R chunk displays.
+\item In the Preamble, find this:
+\end{enumerate}
+\begin{lstlisting}
+\def\Sweavesize{\normalsize} 
+\end{lstlisting}
+
+And change to this
+
+\begin{lstlisting}
+\def\Sweavesize{\scriptsize} 
+\end{lstlisting}
+
+At some times, I have done that same thing INSIDE documents for particular
+pieces of output, but maybe you want to change the whole document.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{If you are Going to Fiddle with a Document}
+\begin{itemize}
+\item Put the document in a version management system like GIT or SVN, so
+you can go back in history to trace your changes
+\item This will happen. You have a deadline. An emergency, and 
+
+\begin{itemize}
+\item a big important document won't compile, and 
+\item the error messages are completely not understandable to you
+\end{itemize}
+\item Here is what I do: 
+
+\begin{enumerate}
+\item Catch your breath. Save the document. Relax, leave your computer for
+a few minutes on meditate about the changes you made in the time since
+the document did compile and when it did not. 
+
+\begin{itemize}
+\item Then go back to the document, delete or comment out (or mark as Lyx-Notes)
+the suspicious bits and try to compile.
+\item If the document is in Version Control, you can step back in history,
+see what you did.
+\end{itemize}
+\item If that does not work, Bisect the document.
+
+\begin{itemize}
+\item Remember the error messages don't tell you where your mistake IS,
+they tell you when the \LaTeX{} system finally notices them. 
+\item Highlight the last 95\%, delete it, and see if the document compiles.
+\item That narrows it down a bit.
+\item Paste the deleted part back, and then delete the last 75\%, try to
+compile. Repeat until victory obtains.
+\end{itemize}
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}
+\frametitle{There Exist Helpful Customizations}
+\begin{itemize}
+\item You know everything I know, now
+\item And you can know everything I used to know too:
+
+\begin{itemize}
+\item If you find one of my presentations under \url{http://pj.freefaculty.org/guides}
+and the PDF looks different, I left the source code there so you can
+find out what I was doing differently way back when.
+\end{itemize}
+\item To become truly proficient at this, all you need is the firm belief
+that you can eventually make it work. And to sustain that belief,
+all you need is an example that compiles.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{There Exist Helpful Customizations}
+
+I am between 2 extremes.
+\begin{itemize}
+\item Some people understand \LaTeX{} markup and like looking at it. They
+feel comfortable with that.
+\item Some people can't comprehend it at all and they use MS Word (fingerpainters)
+\item I can understand enough \LaTeX{} to make a few customizations in
+these documents, but I have not studied hard enough to do a heck of
+a lot.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Document Liferaft}
+\begin{itemize}
+\item If you are closer to the 2'nd type of person, as most are, then here
+is the right path to follow. 
+\item Find people who make documents you admire. Get their source code.
+Cling to the working example like a liferaft.
+\item Then make a small changes, one by one, to make sure it still compiles. 
+\item DO NOT surf the Internet and find ``code snippits'' from other people
+that work for them, and paste them into your document, unless you
+are ready to work hard to make them work for you.
+\end{itemize}
+\end{frame}
+\begin{frame}{References}
+
+\bibliographystyle{apalike}
+\nocite{*}
+\bibliography{beamer}
+\end{frame}
+
+\end{document}

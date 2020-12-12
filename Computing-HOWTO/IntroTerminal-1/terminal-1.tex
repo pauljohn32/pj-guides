@@ -1,0 +1,1433 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Paul E. Johnson <pauljohn@ku.edu>
+
+%%%%%%%%%%%%
+\documentclass[English]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+
+\usepackage[utf8]{inputenc}
+%\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{multimedia}
+\usepackage{multicol}
+\usepackage{mathptmx}
+%%\usepackage{color}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{graphicx}
+%%\usepackage{enumitem}
+
+\usepackage[english]{babel} % or whatever
+ 
+%\usepackage{geometry}
+\usepackage{multicol}
+
+\definecolor{lightgrey}{rgb}{0.93,0.93,0.93}
+\definecolor{darkgreen}{rgb}{0,0.6,0}
+
+\lstset{language=bash,
+basicstyle={\small},
+numbers=none,
+breaklines=true,
+keywordstyle=\color{darkgreen},
+commentstyle=\color{red},
+otherkeywords={$, \{, \}, \[, \]},
+frame=none,
+tabsize=2,
+literate={--}{{-\,-}}1,
+backgroundcolor=\color{lightgrey}}
+%$
+
+%=============================================================================
+
+
+\definecolor{gray1}{gray}{0.75}
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\providecommand{\Rcolor}{\color[rgb]{0, 0.5, 0.5}}
+\providecommand{\Routcolor}{\color[rgb]{0.461, 0.039, 0.102}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.043, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.91}}
+\providecommand{\Routbackground}{\color[gray]{0.935}}
+
+\lstdefinestyle{Rstyle}{fancyvrb=false,escapechar=`,language=R,%
+                        basicstyle={\Rcolor\Sweavesize},%
+                        backgroundcolor=\Rbackground,%
+                        showstringspaces=false,%
+                        keywordstyle=\Rcolor,%
+                        commentstyle={\Rcommentcolor\ttfamily\itshape},%
+                        literate={<-}{{$\leftarrow$}}2{<<-}{{$\twoheadleftarrow$}}2{~}{{$\sim$}}1{<=}{{$\leq$}}2{>=}{{$\geq$}}2{^}{{$^{\scriptstyle\wedge}$}}1,%
+                        alsoother={$},%
+                        alsoletter={.<-},%
+                        otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+                        escapeinside={(*}{*)}}%
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routstyle}{fancyvrb=false,literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+ frame=single,framerule=0.2pt,framesep=1pt,basicstyle=\Routcolor\Sweavesize,%
+ backgroundcolor=\Routbackground}
+
+
+\lstnewenvironment{Sinput}{\lstset{style=Rstyle}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rstyle}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routstyle}}{}
+
+%===============================================================
+% 
+
+\title[Terminal 1] % (short title, use only with long paper titles)
+{Terminal 1: The Shell and Scripting}
+
+\subtitle{Stuff Worth Knowing, Chapter 1}
+
+\author[Johnson] { Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science 
+  \and \inst{2}Center for Research Methods and
+  Data Analysis \\
+  University of Kansas} % (optional, but mostly needed)
+
+\date[2016] % (optional, should be abbreviation of conference name)
+{2016}
+
+\subject{Terminal and Shell}
+
+%====================================
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+ 
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+
+\section{Introduction: Why Look Behind the GUI Curtain?}
+
+\begin{frame}
+  \frametitle{Practical Reasons to explore the Command Line}
+
+  \begin{itemize}
+  \item Some tools only available for ``command line interface''
+    \begin{itemize}
+    \item rsync
+    \end{itemize}
+  \item Some chores too tedious for ``point and click''
+    \begin{itemize}
+    \item find all files with letters ``doc'' and change to ``odt''
+    \item download 33000 Ukrainian election data files and squeeze
+      out data
+    \item resize 1000 images to change their resolution from 1600x1200
+      to 800x600
+    \item count the number of pdf files produced by a program that
+      creates 1000s of directories and subdirectories
+    \item find the longest length of filename in a giant file hierarchy
+    \end{itemize}
+  \item Only way to see ``error'' output in many programs.
+  \item GUI always lags behind what's possible in the ``command line''
+  \end{itemize}
+\end{frame}
+
+%___________________________________
+
+\begin{frame}
+  \frametitle{More Practical Reasons}
+
+  \begin{itemize}
+  \item Networking may not allow a GUI remote connection
+    (May need to get by without a GUI or mouse)
+  \item GUI may ``crash'' or ``stall'', but CLI access may still work.
+  \item Linux is the standard Web server platform. 
+  \item Linux is the High Performance Computing platform.
+  \item Linux is development environment preferred in neuro-science (\url{http://neuro.debian.net})
+  \end{itemize}
+\end{frame}
+
+%___________________________________
+\begin{frame}
+  \frametitle{There is Always a Terminal (Under There, Somewhere)}
+  \begin{columns}
+    \column{5cm}
+  \begin{itemize}
+  \item Microsoft ``DOS Box'' is a terminal program 
+    \begin{itemize}
+     \item Menu: Under Start Menu/Accessories
+     \item Run prompt: ``command''   
+     \end{itemize}
+   \item ``Command'' is the default ``shell'' program on MS Windows,
+     but there are others.
+     
+  \end{itemize} 
+   \column{6cm}
+    \begin{itemize}
+     \item Mac also supplies a Terminal program
+     \item Linux/Unix systems (of course) also offer many terminal
+       programs.
+       \begin{itemize}
+       \item Every desktop framework chooses its own favorite
+       \item I like ``MLterm'' because of multi language support and
+         Graphics options
+       \item Emacs (text editor) is delivered with its own
+         terminal programs ``M-x shell'' and ``M-x eshell''
+       \end{itemize}
+     \end{itemize}
+   \end{columns}
+\end{frame}
+%___________________________________
+
+\begin{frame}[allowframebreaks]
+  \frametitle{What is a (Virtual) Terminal?}
+  AKA: Terminal Emulator or Console
+  \begin{itemize}
+  \item Olden days: A terminal is box with keyboard.
+\includegraphics[width=7cm]{importfigs/console-1980.jpg}
+  \item Now: A terminal emulator is a box on the screen, showing this
+    or another computer (It as if she were sitting in front
+    of the remote system.)
+
+\includegraphics[width=7cm]{importfigs/gnome-terminal.png} 
+
+  \item Only rely on secure shell connections
+    \begin{itemize}
+    \item ``Secure Shell'' means that the user's
+      password is never ``exposed'' as non-encrypted text as it travels. 
+    \item \textbf{ssh login2.acf.ku.edu} \# goes to our ACF headnode
+    \item \textbf{rsync -e ssh -rav some-dir login2.acf.ku.edu:} \# copies
+      updates in folder some-dir to my accoung on ACF
+    \item \textbf{scp -r some-dir login2.acf.ku.edu: }\# almost same as
+      rsync, but this copies even files that are the same.
+    \end{itemize}
+  \item  ``telnet'' and ``ftp'' are old fashioned protocols,
+    considered insecure because the password is not encrypted. Avoid
+    if possible. 
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Difference between ``Terminal'' and ``Shell''}
+  
+    \begin{description}
+      \item[terminal] A program that prompts, accepts input, renders
+        output. It immitates a ``physical terminal'' connected to a computer.
+        
+      \item[shell] A program that interprets user commands, supplies
+        information to programs.
+        
+      \item[environment] A collection of settings that ``exist'' for
+        access by programs and can be set by users
+      \item  Run: ``env'' or ``set'' to see the environment.
+    \end{description}
+\end{frame}
+
+%___________________________________
+
+
+%% 2 columns, blank slide
+\begin{frame}
+  \frametitle{Examine Your Environment}
+  \begin{columns}
+    \column{5cm}
+  In Windows
+  \begin{itemize}
+  \item Open a Command Shell
+  \item Type ``set''
+  \item Run a program: Type ``notepad'' or the name of any other
+    ``exe'' file you see in the Windows folder. Or ``iexplore''.
+  \item Control Panel -> System -> Advanced -> Environment
+  \end{itemize} 
+  \column{6cm}
+    In Mac or Linux
+    \begin{itemize}
+    \item Open a Terminal (many ways to do it).
+    \item Type ``env'' and ``env | grep PATH'' or ``env | grep HOME''
+    \item type one letter and hit TAB a few times. A list of programs appears.
+    \item Run some programs. Try ``firefox'' or ``safari''
+    \end{itemize}
+  \end{columns}
+ 
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Shell Features: Tab Completion and Command History}
+\begin{itemize}
+  \item   All Terminal programs (as of 2009) had ``tab completion'' of
+    program and file names.
+  \item All Terminal programs had ``command  history''. Usually
+    up-arrow cycles through past commands
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Things to remember about Command Line Interaction: \&}
+
+  \begin{itemize}
+  \item By default, most programs ``occupy'' the shells until they are
+    closed
+  \item Hence, user cannot run new commands until previous is
+    finished. 
+  \item Workaround: Put function into shell's background by appending \& 
+    
+    \begin{itemize}
+    \item Example: I can't run any new commands until I close emacs
+
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ emacs myFabulousProgram.R
+\end{lstlisting}  
+%$
+
+    \item This free's up the command line
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ emacs myFabulousProgram.R &
+\end{lstlisting}  
+%$
+    \item At one time, it seemed as though all GUI programs would
+      ``control'' the terminal, however, some programs now will
+      automatically background themselves. 
+
+    \item Example: \emph{gvim} will free the terminal once it is launched
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ gvim myFabulousProgram.R
+$ 
+\end{lstlisting}  
+%$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Things to remember about Command Line Arguments}
+  \begin{itemize}
+    \item ls lists files, but
+    \item "ls -la"  
+    \begin{itemize}
+    \item -a  show all files \& directories, including hidden files (begin
+      with a period)
+    \item -l  detailed listing includes ownership, file size information
+    \end{itemize}
+   \item "ls -la --color=no" or "ls -la --color=yes" or $\ldots$
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Things to remember about Command Line Interaction: - or -{}-}
+
+  Unfortunate: There are quite a few ways to give command line
+  arguments
+
+  \begin{itemize}
+  \item R, itself
+    
+    \begin{itemize}
+    \item R CMD \_\_\_<one of: BATCH, INSTALL, build, check, Sweave, Stangle>\_\_\_
+
+      \begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ R CMD BATCH myFabulousProgram.R
+#or
+$ R CMD INSTALL rockchalk_1.9.tar.gz
+\end{lstlisting}  
+      % $ #
+
+\item single dash with a script file name 
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ R -f myFabulousProgram.R
+\end{lstlisting}  
+%$
+
+\item double dash with no argument
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ R --vanilla -f myFabulousProgram.R
+\end{lstlisting}  
+%$
+\end{itemize}
+
+\item qxlogin
+    \begin{itemize}
+      \item Ever notice that the ACF qxlogin accepts arguments like this:
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ qxlogin 1 1
+\end{lstlisting}  
+%$
+
+or this
+
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ qxlogin 1 2,program=mplus
+\end{lstlisting}  
+%$
+\end{itemize}
+  \item GNU style \{is, was, has been\} an effort to standardize this
+    \begin{itemize}
+    \item Relatively widely practiced style.
+    \item Two dashes and an equal sign and an argument
+        
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ myprogram --avar=1 --bvar=2
+\end{lstlisting}  
+%$
+
+or
+
+    \item One dash with no equal sign, as a flag:
+
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ myprogram -a -b
+\end{lstlisting}  
+%$
+
+\item One dash with a value smashed up against the argument (no equal
+  sign or space between)
+
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+$ myprogram -a1 -b2
+\end{lstlisting}  
+%$
+
+\item Many GNU programs have both the 
+
+  \begin{itemize}
+  \item verbose --argument=1 style
+  \item less verbose -a1 style
+  \end{itemize}
+\end{itemize}
+
+ \item Some programs do whatever they want
+   \begin{itemize}
+   \item ps ``ps -aux'' or ``ps aux''
+   \item tar
+   \item java,  -option=value
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+  
+
+
+%% 2 columns, blank slide
+\begin{frame}[containsverbatim]
+  \frametitle{Important Concepts in All Shells in Any OS}
+  \begin{columns}
+    \column{5cm}
+    \begin{itemize}
+    \item PATH: list of directories where OS searches for programs
+   
+    \item Linux path is colon separated list, eg: mine is:
+
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+PATH=/home/pauljohn/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+\end{lstlisting}  
+     \item Referred to as \$PATH in other commands
+%$
+
+\end{itemize} 
+\column{6cm}
+ \begin{itemize}
+    \item In Windows, the semicolon is a separator, slashes backwards
+\begin{lstlisting}[basicstyle={\small},breaklines=true,language=bash]
+PATH=C:\Windows;C:\Windows\system32;C:\Program Files\Mozilla Firefox;
+\end{lstlisting}   
+\item Referred to in other commands as \%PATH\%
+
+  \end{itemize} 
+ 
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Home, Working Directory}
+\begin{itemize}
+      \item HOME. User's personal ``folder'', default place where
+        files go.
+      \item Working Directory.  Most programs will read \& write from
+        current working directory
+      \item \textbf{pwd} \# lists the working directory
+      \item \textbf{cd} \# sets the working directory
+      \item Windows Icon GUI calls this ``Start In'' option
+    \end{itemize}
+\end{frame}
+
+\begin{frame} 
+  \frametitle{Is the current working directory in the path? Maybe}
+  \begin{itemize}
+  \item Suppose you install a program that is not in the path. What happens?
+  \item Can run by typing full address of program
+    \begin{itemize}
+    \item ``C:\textbackslash{}Program Files\textbackslash{}GNU Emacs 23.2\textbackslash{}bin\textbackslash{}runemacs.exe''
+    \item /usr/bin/emacs
+    \end{itemize}
+    Suppose you cd to that folder
+    \begin{itemize}
+    \item Windows allows to run by ``name'' b/c current dir is in path
+    \item Linux does not have current dir in path, hence, run as:
+      ./name
+    \end {itemize}
+    \item The inherent problem with spaces and special characters in directory or
+      file names. We can workaround, but don't create work for yourself
+  \end{itemize}
+\end{frame}
+
+\section{VITALS}
+
+\begin{frame}
+ \frametitle{Things to Keep on the Tip of Your Tongue}
+
+ \begin{description}
+ \item[1. ls] list directory contents
+ \item[2. mkdir] create a directory
+ \item[3. cd] change the current working directory
+ \item[4. mv] move (for renaming files or relocating directories)
+ \item[5. cp] copy
+ \item[6. rm] remove
+ \end{description}
+\end{frame}
+
+%% 2 columns, blank slide
+\begin{frame}
+  \frametitle{1. ls :List Files}
+  
+  \begin{itemize}
+  \item ls
+  \item ls -la
+  \item ls -la | more
+  \item ls -s1
+  \item ls -{}-color=auto
+  \item ls -{}-color=no
+  \end{itemize} 
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{View Permissions with ``ls -la''}
+
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash]
+
+$ ls -la
+total 89724
+drwxr-xr-x 182 pauljohn pauljohn    20480 2011-01-24 01:28 .
+drwxr-xr-x   7 root     root         4096 2010-11-16 20:41 ..
+-rw-r--r--   1 root     root         3460 2010-11-07 22:55 50emacs-ess-ku.el
+-rw-r--r--   1 pauljohn pauljohn    19661 2010-07-26 11:37 ABM.bib
+drwx------   5 pauljohn pauljohn     4096 2010-10-03 21:48 .adobe
+drwxr-xr-x   3 pauljohn pauljohn     4096 2009-08-03 21:37 Adobe
+-rw-r--r--   1 pauljohn pauljohn       15 2010-12-13 01:57 #adsf.R#
+-rw-r--r--   1 pauljohn pauljohn      120 2009-07-19 13:27 .album.conf
+drwxr-xr-x  25 pauljohn pauljohn     4096 2009-02-28 23:38 .amaya
+-rw-r--r--   1 pauljohn pauljohn      528 2011-01-23 15:36 .anyconnect
+-rw-r--r--   1 pauljohn pauljohn      406 2010-12-31 23:33 #armani.txt#
+\end{lstlisting}
+%$
+
+perms         owner     group      filesize  date   filename
+
+\begin{itemize}
+\item ``.'' at top is current working directory name
+\item ``..'' in 2nd line is directory above corrent working directory
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Focus on ``drwxr-xr-w''}
+
+ There are 3 types of Users declared for each file or directory
+  \begin{itemize}
+  \item owner
+  \item group
+  \item others: every account excluding owner \& group
+  \end{itemize}
+\begin{description}
+\item[d] is it a directory (if -, a file)
+\item[rwxr-xr-x] permissions of 3 user types
+  \begin{itemize}
+  \item r: read, w: write, x: execute
+  \item owner has rwx
+  \item group members have only rx
+  \item others (the ``world'') have only rx
+  \item permissions can be revised by the program ``chmod''
+  \item ownership can be revised by ``chown'' or ``chgroup''
+\end{itemize}
+\end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Regular and Hidden and Backup Files}
+  \begin{description}
+  \item[.] dot files, by custom are hidden (not displayed by ``ls''
+    unless you specifically ask for them). Used for configurations
+    
+  \item[\#] backup files, created by editors.
+\end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{2. mkdir : Make directory}
+  directory = ``folder'' = collection of files and directories
+  \begin{itemize}
+  \item\textbf{ mkdir \emph{some-dir-name}} \# creates directory \emph{some-dir-name}
+  \item \textbf{mkdir -p  \emph{some-dir-name}/ \emph{sub-dir-name}/ \emph{sub-sub-dir}}
+  \end{itemize} 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{3. cd : change directories}
+  
+  \begin{itemize}
+
+  \item \textbf{cd \emph{some-dir-name}} \#changes current working directory to  \emph{some-dir-name}
+  \item \textbf{cd }  \# changes to user's HOME
+  \item \textbf{ cd /} \#  changes to ``top level''
+  \item \textbf{cd \emph{some-dir-name/subdir-name/subsub-name}} \# ok to nest
+  \item \textbf{cd ../} \# changes to higher directory
+  \item \textbf{cd ../../\emph{some-dir-name}} \#  2 dir up, down into \emph{some-dir-name}
+  \end{itemize} 
+ 
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle {4. mv: move file or directory}
+  \begin{itemize}
+    
+  \item \textbf{mv \emph{some-file-name} \emph{some-other-name}} \#
+    ``renames'' file
+    
+  \item \textbf{mv \emph{some-dir} \emph{some-other-dir}}  
+    \begin{itemize}
+    \item If \emph{some-other-dir} exists, this 
+      relocates \emph{some-dir} inside \emph{some-other-dir}
+    \item If \emph{some-other-dir} does not exist, this effectively
+      ``renames'' \emph{some-dir} as  \emph{some-other-dir}.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+  
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  
+  \frametitle {Moving Example} 
+  
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash]
+    
+$ mkdir test
+$ cd test
+$ mkdir a
+
+$ mkdir b
+$ ls -la
+total 16
+drwxr-xr-x 4 pauljohn pauljohn 4096 2011-01-24 01:11 .
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:10 ..
+drwxr-xr-x 2 pauljohn pauljohn 4096 2011-01-24 01:10 a
+drwxr-xr-x 2 pauljohn pauljohn 4096 2011-01-24 01:11 b
+
+$ mv a b
+$ ls -la 
+total 12
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 .
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:10 ..
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 b
+
+$ ls b
+a
+$ ls -la b
+total 12
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 .
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 ..
+drwxr-xr-x 2 pauljohn pauljohn 4096 2011-01-24 01:10 a
+
+$ mv b c
+$ ls -la
+total 12
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 .
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:10 ..
+drwxr-xr-x 3 pauljohn pauljohn 4096 2011-01-24 01:11 c
+
+\end{lstlisting}
+%$
+ 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle {5. cp: copy file or directory}
+  \begin{itemize}
+    
+  \item \textbf{cp \emph{some-file-name} \emph{some-other-name}}
+    
+    
+  \item \textbf{cp \emph{some-dir} \emph{some-other-dir}} \# does not work 
+
+  \item \textbf{cp -R \emph{some-dir} \emph{some-other-dir}} \# -R
+    means ``recursive''
+  \item \textbf{cp -a \emph{some-dir} \emph{some-other-dir}} \# -a
+   recursive and also preserves file attributes (modification time, etc)
+   \item like mv in semantics:
+  \begin{itemize}
+    \item If \emph{some-other-dir} exists, this 
+       creates a copy of \emph{some-dir} inside \emph{some-other-dir}
+    \item If \emph{some-other-dir} does not exist, this creates a copy
+       of \emph{some-dir} called  \emph{some-other-dir}.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {6. rm: remove}
+  \begin{itemize}
+
+  \item \textbf{rm \emph{some-file-name} \emph{some-other-name}}
+    
+  \item \textbf{rm} may be very dangerous, can remove things
+     immediately, without confirmation 
+
+   \item Run like this to ask for interactive yes/no approval: \textbf{rm -i}
+
+   \item I forget that, so on my systems, I insert a fail-safe that
+     asks for confirmation of deletions.  I suggest all Linux systems should
+     do this, an surprised many do not.
+
+    Find out if your system is ``safe'': Run ``type rm''
+
+ On my System, I get 
+
+``rm is aliased to `rm -i''
+
+
+  \item \textbf{rm -f \emph{some-file-name} \emph{some-other-name}} \# -f=force 
+
+  \item \textbf{rm -rf \emph{some-dir}} \# removes directory, -r
+    means ``recursive''
+
+\item If you forget the -f
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash] 
+$ mkdir a
+pauljohn@pols124:tmp$ rm a
+rm: cannot remove `a': Is a directory
+\end{lstlisting}
+  \end{itemize}
+\end{frame}
+
+\section{IMPORTANTs}
+
+\begin{frame}
+ \frametitle{Important, Useful, Handy (but not quite Vital)}
+
+ \begin{description}
+ \item[cat] dump file output to the screen
+ \item[grep] scan text for terms
+ \item[|] the pipe
+ \item[>] redirect to new file
+ \item[>>] redirect and augment file
+ \item[find] find files by various characteristics
+ \item[tar] contraction of ``tape archive''
+ \item[df] report disk usage (``disk free'')
+ \item[free] report on free memor (``RAM'')
+ \item[top] display running programs and memory usage
+ \item[kill] kill a program by PID
+ \item[ps] ps displays running processes (ps aux)
+ \end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{cat}
+  \begin{itemize}
+  \item Suppose a file ``whatever.txt'' exists
+  \item List file contents on the screen
+\begin{lstlisting}
+$ cat whatever.txt
+\end{lstlisting}
+% $
+ 
+  \item more and less are 2 competing ``text pagers''. more was
+    commercial, so less was offered as a free competitor  
+\begin{lstlisting}
+$ cat whatever.txt | less
+$ cat whatever.txt | more
+\end{lstlisting}
+
+  \item Either will break up cat output into screen-sized pages
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{grep: Text scanning}
+  \begin{itemize}
+  \item scans all non-hidden files for text string ``flopper''
+\begin{lstlisting}[breaklines=true,language=bash]
+  $ grep flopper *
+\end{lstlisting}
+%$
+  \item  Sends cat output to grep for line-by-line scanning to check
+    for ``flopper''
+\begin{lstlisting}[breaklines=true,language=bash]
+  $ cat some-file | grep flopper
+\end{lstlisting}
+%$
+  \item \textbf{ | } is pronounced ``pipe''
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+ \frametitle{The Difference between > and >{}>}
+
+ \begin{itemize}
+   \item Append from output from cat|grep into a text file
+\begin{lstlisting}[breaklines=true,language=bash]
+  $ cat some-file | grep flopper >> newfile.txt
+\end{lstlisting}
+%$
+  \item Erases original ``newfile.txt'', writes output into newfile.txt 
+\begin{lstlisting}[breaklines=true,language=bash]
+  $ cat some-file | grep flopper > newfile.txt
+\end{lstlisting}
+%$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{ The Mighty Pipe: | }
+  \begin{description}
+  \item[prog | other program]  The ``pipe'', diverts
+    ``stdout'' from \textbf{prog} to \textbf{program} after pipe
+    \begin{itemize}
+    \item stdout: ``standard output''
+    \item stderr: ``standard error''
+    \end{itemize}
+  \end{description}
+
+ Example: Handle a tar.gz ``tarball''.
+  \begin{itemize}
+   \item What is a tarball?
+     \begin{itemize}
+     \item tar groups files together into an archive
+     \item gzip is a compression program.
+     \item A tar.gz file is the result of ``tarring'' and ``gzipping''
+     \end{itemize}
+
+   \item Could do this in 2 steps
+\begin{lstlisting}[breaklines=true,language=bash]
+ $ gzip -d file.tar.gz  ## decompresses to create "file.tar"
+ $ tar xvf file.tar  ## de-archives file.tar
+\end{lstlisting}
+
+\item Do this in 1 step with pipe
+  \begin{lstlisting}[breaklines=true,language=bash] 
+   $ gzip -dc file.tar.gz | tar xvf -
+ \end{lstlisting}
+%$
+ \begin{description}
+\item[c] the gzip option -c means send results to standard output
+ \item[-] the minus sign on tar means ``standard input''
+ \end{description}
+
+\item tar authors noticed complications and created command line
+  options to handle decompression without pipe (see below).
+
+  \item I use grep that way all the time to scan stdout 
+     \begin{lstlisting}[breaklines=true,language=bash]
+ $ whatever | grep magicWord 
+     \end{lstlisting}
+%$
+   \end{itemize}
+ \end{frame}
+
+
+
+%%tried enumitem to flush left descriptions, killed bullets.
+%% now workaround
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Check what's running: \textbf{ps} }
+ 
+\textbf{ps} lists processes that are running under user's name in the
+     current shell
+     \begin{lstlisting}[breaklines=true,language=bash]
+$ ps
+  PID TTY          TIME CMD
+18023 pts/17   00:00:00 bash
+18034 pts/17   00:00:00 ps
+     \end{lstlisting}
+% $
+  
+\textbf{ps} Run something, so you can see the effect
+     \begin{lstlisting}[breaklines=true,language=bash]
+$ emacs &
+$ ps
+  PID TTY          TIME CMD
+16912 pts/13   00:00:00 bash
+18095 pts/13   00:00:00 emacs
+18104 pts/13   00:00:00 ps
+     \end{lstlisting}
+% $
+
+\textbf{ps aux} list processes by all users
+     \begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash]
+$ ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0 182852  5640 ?        Ss   Sep10   0:11 /sbin/init splash
+root      1339  0.0  0.0 167144  6540 ?        Sl   Sep10   0:00 lightdm --session-child 12 19
+pauljohn  1373  0.0  0.6 1660908 53344 ?       S<l  Sep13   0:14 /usr/NX/bin/nxnode.bin
+root      1401  0.0  0.1 335628  9588 ?        Ssl  Sep10   0:14 /usr/lib/upower/upowerd
+pauljohn  1414  0.0  0.4 1542012 35744 ?       Sl   Sep13   0:04 /usr/NX/bin/nxclient.bin --monitor --pid 24
+rtkit     1432  0.0  0.0 168956  2592 ?        SNsl Sep10   0:02 /usr/lib/rtkit/rtkit-daemon
+root      1444  0.0  0.1 2103936 8484 ?        Ssl  Sep10   0:02 /usr/sbin/console-kit-daemon --no-daemon
+     \end{lstlisting}
+%$
+  
+\textbf{pipe and filter}  Scan for programs running that have letters ``fire''
+  \begin{lstlisting}[breaklines=true,language=bash]
+$ ps aux | grep fire
+\end{lstlisting}
+%$
+
+
+\textbf{kill} To eliminate an undesired program, run the kill function.
+  \begin{lstlisting}[breaklines=true,language=bash]
+$ kill -9 1373
+\end{lstlisting}
+%$
+
+\textbf{kill} sounds violent, but it is a standard shutdown signal to programs.
+
+\textbf{-9} is violent/agressive, however. It means ``get out and
+don't try to save your work''
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{\textbf{top}: a more interactive sort of ps }
+\includegraphics[width=10cm]{importfigs/top-1.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Keyboard interaction with top}
+\begin{itemize}
+
+\item kill. Letter k causes a prompt to ask which process should be
+  killed.
+
+\item Then it asks how severely do you mean that. -9 is an aggressive
+  choice for stalled programs.
+
+\item q to quit
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{find}
+  \begin{itemize}
+    \item \textbf{find . -iname ``*some*''}
+
+    Beginning in ``.'', the current directory
+    Scan file names, ignoring capitalization, for all files that have
+    the letters ``some'' anywhere in them. 
+
+   \item \textbf{find . -name ``*some*''}
+
+     Capitalization counts.
+
+   \item \textbf{find /usr/local -name ``*some*''}
+
+     Search in /usr/local instead
+     
+   \item \textbf{find . -name ``*some*'' -exec emacs \{\} \textbackslash; }
+
+     Opens the selected files in Emacs.
+
+   \item find has many search options, to look for files by size,
+     modification time, or other details.
+   \item Many systems have a less formal/powerful alternative ``locate''
+   \end{itemize}
+ \end{frame}
+
+
+\begin{frame}[allowframebreaks,containsverbatim]
+  \frametitle{ find has many super powers that can save you}
+
+Examples based on the DLM project Summer 2015
+\begin{itemize}
+
+    \item  Program creates 100s of directories, 1000s of
+      subdirectories inside them, then writes pdf files (and other
+      files in there). 
+    \item Question: How many pdfs are there altogether in a directory
+      structure
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find myoutdir -name "*.pdf" | wc  
+\end{lstlisting}
+%$
+   \item Question: Drop a list of those pdfs into a text file
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find myoutdir -name "*.pdf" > reports.txt 
+\end{lstlisting}
+%$
+    \item Question: List pdfs have total names (directory path
+      beginning at current location) longer than 200 characters:
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find -regextype posix-extended -regex '.{200,}'
+\end{lstlisting}
+%$
+   \item Question: List files with the name ``Jerry'' in them:
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find . -name "*Jerry*.pdf"
+\end{lstlisting}
+%$
+
+
+    \item Question: List files created within the last 60 minutes
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find . -cmin -60
+\end{lstlisting}
+%$
+ 
+cmin: creation time
+
+mmin: modification time
+
+  \item Question: find all the files named \*.log and delete them
+
+\begin{lstlisting}[breaklines=true,language=bash]
+$ find . -name "*.log" --delete
+\end{lstlisting}
+%$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{tar: ``tape archive'' program}
+  \begin{itemize}
+    \item \textbf{tar czvf progs-2011.tar.gz some-dir-name}
+
+      Creates a GNU zipped archive of a folder ``some-dir-name''
+
+    \item \textbf{tar tzvf progs-2011.tar.gz}
+
+      Scans and lists the contents of ``progs-2011.tar.gz''
+      
+
+   \item \textbf{tar xzvf progs-2011.tar.gz}
+
+     Decompresses and un-tars the files. Creates ``some-dir-name''
+
+     
+   \item tar can deal with other types of compression
+     \begin{itemize}
+       
+     \item bzip: \textbf{tar xjvf  progs-2011.tar.bz2}
+     \item see man tar for other types
+     \end{itemize}
+  
+  
+   \end{itemize}
+ \end{frame}
+
+ \begin{frame}
+   \frametitle{Zip files less common, but still encountered}
+   \begin{itemize}
+   \item ``zip'': Archives created by proprietary algorithm PK-zip
+   \item \textbf{unzip -t whatever-2011.zip} \# tests the archive
+
+   \item \textbf{unzip whatever-2011.zip} \# extracts the archive
+   \end{itemize}
+ \end{frame}
+
+\begin{frame}
+ \frametitle{Emacs has shells built in}
+ Start Emacs, run
+
+ M-x shell
+
+or
+
+ M-x eshell
+
+and it will be obvious how you can keep records on your sessions.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Difference between > and 2>\&1 }
+\begin{itemize}
+\item\textbf{ prog > file.txt } \# only diverts stdout into file.txt
+  \item\textbf{ prog > file.txt 2>\&1} \# diverts stdout and stderr
+    into file 
+  \item Example usage: run ``make'' on a huge program, tons of output
+    appears on screen
+  \item run ``make > build.out 2>\&1 `` and all output goes into file.
+  \end{itemize}
+
+\end{frame}
+
+
+
+
+\section{Scripting}
+
+\begin{frame}
+  \frametitle{Do I Love Perl More Than Bash? Does Bash Mind?}
+  \begin{itemize}
+  \item Bash shell is the Linux default shell
+  \item see ``man bash''
+  \item For simple chores, Bash scripts are sufficient
+  \item Interesting exercise: Convert a DOS script into a Linux shell script.
+  \item For elaborate scripting, I have much more experience with
+    Perl
+  \item Perl-CGI was (in 2000) the predominant approach for writing
+    interactive Web pages
+  \item Many other scripting languages have their advocates, I don't
+    intend to disparage (Python)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Example Bash scripting exercise}
+  \begin{itemize}
+    \item Vacation photos too huge to email to family
+    \item Need to shrink them
+
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash] 
+
+#!/bin/bash
+
+for i in *.jpg; do base=`basename $i .jpg`; 
+  convert $i -resize 800x600 -quality 85 $base-800x600.jpg; 
+  done
+\end{lstlisting}
+%$
+
+\item Method 1: Executable script
+  \begin{itemize}
+  \item Save that in a file ``resize.sh''
+  \item Use chmod to make it executable
+  \item Run with ./ 
+ \end{itemize}
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash] 
+$ chmod +x resize.sh
+$ ./resize.sh
+\end{lstlisting}
+ 
+\item Method 2: Run a shell, which executes this program. 
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash] 
+$ sh resize.sh
+\end{lstlisting}
+%$
+
+\item Result: All jpg in current directory will have smaller versions
+  written.
+\item 2 details worth mentioning
+  \begin{itemize}
+  \item The script ``resize.sh'' is not executable, and it is not in
+    the path.
+  \item Method 1 uses chmod to make it executable, and then runs it
+    with the ``./'' prefix.  That means ``In the current directory,
+    find this program.''
+  \item The OS reads the ``shebang'' line,  \#!/bin/bash, and is uses
+    the bash program to run the script. 
+  \item Method 2. Note that ``bash'' is a shell program, and ``sh'' is
+    also a shell program.  I'm in the habit of using ``sh'' to run
+    things, but ``bash'' would be more correct.  Both work in this
+    case because the script does not use any special features that are
+    unique to bash (so sh can do the job). 
+  
+  \end{itemize}
+\item If we were doing this over and over, we should
+  \begin{itemize}
+  \item Move the file into the path, say in \$HOME/bin
+  \item Make sure the file is executable (chmod)
+  \end{itemize} 
+\end{itemize}
+\end{frame}
+
+%-------------------------------------------------
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{rename-perl.pl: A Perl Gem}
+
+  \begin{itemize}
+  \item This was written by the authors of Perl, and was distributed as
+  ``rename'' on most Linux systems in the olden days. 
+  \end{itemize}
+  
+  
+  \begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash] 
+    #!/usr/bin/perl
+    
+    # Example usage: rename script examples from lwall:
+    #rename-perl 's/\.orig$//' *.orig
+    
+    $op = shift;
+    for (@ARGV) {
+      $was = $_;
+      eval $op;
+      die $@ if $@;
+      rename($was,$_) unless $was eq $_;
+    }
+  \end{lstlisting}
+  % $
+  
+  \begin{itemize}
+  \item Line 1 is the "shebang" line
+  \item When this script is executed, like this
+    \begin{lstlisting}
+  $ rename-perl.pl some-options-here  
+\end{lstlisting}
+% $
+   The OS reads line 1 and executes this for us:
+    \begin{lstlisting}
+      perl rename-perl.pl some-options-here
+    \end{lstlisting}
+  \item That only works because the script is executable. Otherwise,
+    we'd have to explicitly call perl, like so:
+\begin{lstlisting}
+$ perl rename-perl.pl some-options-here
+\end{lstlisting}
+% $
+  \item The latter approach does NOT require that rename-perl.pl is an
+    executable file. 
+  \end{itemize}
+
+\end{frame}
+
+%-------------------------------------------------
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{rename-perl.pl Travels With Me}
+
+  \begin{itemize}
+  \item I keep "rename-perl.pl" in
+    the \$HOME/bin folder on any system I go to.
+  \item I make sure it is an executable file 
+
+  \item rename-perl is a SUPER powerful, easy to customize approach
+    for renaming lots of files.
+    
+  \item Suppose you accidentally put the wrong number in a lot of file names
+    
+\begin{lstlisting}[basicstyle={\scriptsize},breaklines=true,language=bash] 
+$ ./rename-perl s/1988/1993/ baseball*      
+\end{lstlisting} 
+    % $
+  \item The "s" notation means "here is a sed script".  Sed is a very powerful
+    text manipulation framework. Here, we scan for the "1988" and
+    replace with "1993".
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{I use rename-perl ALL THE TIME}
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash]
+
+$ ls -la
+total 572
+drwxr-xr-x  3 pauljohn pauljohn   4096 Jul 26 14:33 .
+drwxr-xr-x 11 pauljohn pauljohn   4096 Aug 12 13:07 ..
+-rw-r--r--  1 pauljohn pauljohn  52778 Mar  2 13:41 hpcexample-1.lyx
+-rw-r--r--  1 pauljohn pauljohn  48753 Feb 26 16:41 hpcexample-1.lyx~
+-rw-r--r--  1 pauljohn pauljohn 468913 Mar  2 13:41 hpcexample-1.pdf
+drwxr-xr-x  6 pauljohn pauljohn   4096 Aug 12 13:06 .svn
+% $
+\end{lstlisting}
+
+\begin{itemize}
+\item I want to change the basename of all of these files from
+``hpcexample'' to ``HPC-Overview'' 
+\item A silly Windows/Mac user would click each one individually and
+  re-type
+\item If there were 1000 files, the Windows/Mac user would be discouraged.
+\end{itemize}
+
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=bash]
+$ rename-perl s/hpcexample/HPC-Overview/ *
+
+$ ls -la
+total 572
+drwxr-xr-x  3 pauljohn pauljohn   4096 Aug 12 13:08 .
+drwxr-xr-x 11 pauljohn pauljohn   4096 Aug 12 13:07 ..
+-rw-r--r--  1 pauljohn pauljohn  52778 Mar  2 13:41 HPC-Overview-1.lyx
+-rw-r--r--  1 pauljohn pauljohn  48753 Feb 26 16:41 HPC-Overview-1.lyx~
+-rw-r--r--  1 pauljohn pauljohn 468913 Mar  2 13:41 HPC-Overview-1.pdf
+drwxr-xr-x  6 pauljohn pauljohn   4096 Aug 12 13:06 .svn
+
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{More about Perl}
+  \begin{itemize}
+  \item I've used Perl to manage computer simulations (earmark:
+    "replicator.pl")
+  \item Perl is fairly widely used, plenty of documentation
+  \item Somewhat "dangerous" because of changing styles and bad habits
+    of authors who offer advice on Iternet
+  \item Self defense in "use strict" and warnings pragma.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{In the old MP3 days}
+
+  \begin{itemize}
+  \item One could use Napster (or similar) to download songs in MP3
+    format
+  \item Challenge: convert those to the right format and put on an
+    audio CD
+  \item Before writing MP3 -> CDROM, it is good to know if all of the
+    songs ``fit'' on the disk.
+  \end{itemize}
+
+\begin{lstlisting}[basicstyle={\tiny},breaklines=true,language=Perl] 
+
+#!/usr/bin/perl
+#This mp3estimate perl program just checks whether a directory
+#of mp3's will fit on a disk.
+
+#Determine whether MPEG::MP3Info is present and load it
+$no_mp3info = 1;
+eval "use MPEG::MP3Info;";
+unless ($@) {
+  undef $no_mp3info;
+  use MPEG::MP3Info;
+}
+use Getopt::Std;
+use File::Basename;
+
+my $time_allocated = "74:00";
+
+getopts('ac:dt:o:', \%opts);
+
+($min,$sec)=split(/\:/,$time_allocated);
+
+my @mp3list = <*.mp3>;
+
+for($i = 0; $i <= $#mp3list; $i++) {		
+  die "$mp3list[$i] does not exist" unless (-f $mp3list[$i]); #Check to see if file exists
+  $fifo[$i] = $tmpdir . basename $mp3list[$i];	#set the names of the fifos
+  $fifo[$i] =~ s/mp3$/cdr/i;		#foo.mp3 -> foo.cdr
+  if ($sec) {	
+    if (-l $mp3list[$i]) {		#mp3info doesn't work on symlinks
+      $file = readlink $mp3list[$i];
+    } else {
+      $file = $mp3list[$i];
+    }
+    $info = get_mp3info $file; #Let's get the mp3's time
+    $totsecs += ($info->{MM}*60) + $info->{SS} + 4; #Calculate total time adding a fudge factor of 4 secs
+  }
+}
+
+$totmin=int $totsecs/60;
+$totsec=$totsecs % 60;
+if (($totsecs > (($min*60)+$sec)) && $sec) {
+  printf "The max time allocated was [%d:%.2d].\n",$min,$sec;
+  printf "The total time came to [%d:%.2d].\n",$totmin,$totsec;
+}
+if ($sec){
+  printf "Total time is [%d:%.2d]\n",$totmin,$totsec;
+}
+\end{lstlisting}
+
+
+\begin{itemize}
+\item Perl names 
+  \begin{itemize}
+  \item variables: dollar signs (\$)
+  \item arrays: at signs (@)
+  \end{itemize}
+\item Hash symbol (\#) begins comments
+\item "use" accesses modules that are found elsewhere
+\item Many customs common across computer languages
+  \begin{itemize}
+  \item Conditional "if" "then"
+  \item Note "+=": Add following to previous
+  \item printf similar to C (note \% format for variables)
+  \end{itemize}
+\item Some weird unique-to-Perl
+  \begin{description}
+  \item[\$@] most recently evaluated result
+  \item[my] declaration for variables (otherwise global!)
+  \item[die, unless] stops program gracefully
+  \end{description}
+\end{itemize}
+\end{frame}
+
+
+
+%% 2 columns, blank slide
+\begin{frame}
+  \frametitle{Template for two-column slide: Blank}
+  \begin{columns}
+    \column{5cm}
+  \begin{itemize}
+  \item item
+  \item item
+  \end{itemize} 
+  \column{6cm}
+    Right column
+   \end{columns}
+\end{frame}
+
+
+
+
+% ===================================================
+\end{document}

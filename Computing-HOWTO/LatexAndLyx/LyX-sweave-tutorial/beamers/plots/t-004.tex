@@ -1,0 +1,81 @@
+\begin{Schunk}
+\begin{Sinput}
+ set.seed(234234)
+ x1 <- rnorm(1000)
+ mean(x1)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.01746376
+\end{Soutput}
+\begin{Sinput}
+ sd(x1)
+\end{Sinput}
+\begin{Soutput}
+[1] 1.007385
+\end{Soutput}
+\begin{Sinput}
+ se <- 1.5
+ b0 <- 0.7
+ b1 <- 0.04
+ y <- b0 + b1 * x1 + se * rnorm(1000)
+ dat <- data.frame(x1, y)
+ m1 <- lm(y ~ x1, data = dat)
+ summary(m1)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = y ~ x1, data = dat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.5454 -1.0726 -0.0398  1.0519  4.6467 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.66429    0.04717  14.082   <2e-16 ***
+x1          -0.00951    0.04684  -0.203    0.839    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.491 on 998 degrees of freedom
+Multiple R-squared:  4.13e-05,	Adjusted R-squared:  -0.0009607 
+F-statistic: 0.04122 on 1 and 998 DF,  p-value: 0.8391
+\end{Soutput}
+\begin{Sinput}
+ dat$x2 <- rpois(1000, lambda = 2)
+ m2 <- lm(y ~ x1 + x2, data = dat)
+ summary(m2)
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = y ~ x1 + x2, data = dat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.5306 -1.0589 -0.0347  1.0488  4.6466 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.693501   0.082888   8.367   <2e-16 ***
+x1          -0.009255   0.046865  -0.197    0.843    
+x2          -0.014654   0.034180  -0.429    0.668    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.492 on 997 degrees of freedom
+Multiple R-squared:  0.0002256,	Adjusted R-squared:  -0.00178 
+F-statistic: 0.1125 on 2 and 997 DF,  p-value: 0.8936
+\end{Soutput}
+\begin{Sinput}
+ anova(m2, m1, test = "F")
+\end{Sinput}
+\begin{Soutput}
+Analysis of Variance Table
+
+Model 1: y ~ x1 + x2
+Model 2: y ~ x1
+  Res.Df    RSS Df Sum of Sq      F Pr(>F)
+1    997 2219.6                           
+2    998 2220.0 -1  -0.40922 0.1838 0.6682
+\end{Soutput}
+\end{Schunk}

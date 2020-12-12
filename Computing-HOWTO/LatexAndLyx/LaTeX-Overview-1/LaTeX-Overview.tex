@@ -1,0 +1,527 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+% this default might be overridden by plain title style
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+% (ERT) argument for the TOC
+\AtBeginDocument{%
+  \let\origtableofcontents=\tableofcontents
+  \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+  \def\gobbletableofcontents#1{\origtableofcontents}
+}
+\providecommand*{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true, basicstyle=\scriptsize}
+\usetheme{Antibes}
+% or ...
+
+\mode<presentation>
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listing}
+
+\begin{document}
+\title[\LaTeX]{\LaTeX : The Bare Minimum }
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+\date[2016]{2016}
+
+\makebeamertitle
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+\section{Why?}
+\begin{frame}{MS Word is Finger Painting}
+
+\begin{itemize}
+\item It is easier to write a letter to Mom with Word, more difficult to
+produce a systematic, uniformly formatted documents.
+\item Too easy to accidentally ``reformat'' particular pieces in inconsistent
+ways.
+\item Pasting imports inconsistent, hidden style \& structure
+\item Equations are tedious, unpredictable when exported
+\item Non-reproducible documents.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{We've Lost the Separation of Content and Structure}
+
+\begin{itemize}
+\item Word, and Word Perfect, were not always so GUI. 
+
+\begin{itemize}
+\item Text was created and marked by its style, and it stayed that way
+\item Reformatting was done by revising the style sheet
+
+\begin{itemize}
+\item Example: if you want to change all italicized words to bold italics,
+change the style, not the document
+\end{itemize}
+\end{itemize}
+\item The separation of ``content'' from ``format'' was possible, as
+late as 1992 (or so).
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The \TeX{} Idea}
+
+\begin{itemize}
+\item Donald Knuth, Stanford professor, developed \TeX{}
+\item Stated objective: let authors focus on the content of their words
+and equations
+\item Publisher standards for margins, indentation, table placement, etc,
+were wrapped up in ``Style'' or ``Class'' packages.
+\item \LaTeX{} is the newer edition of \TeX{} (both name files {*}.tex)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Brief Historical Detour}
+
+\begin{columns}[t]
+
+
+\column{6cm}
+
+Original workflow was
+
+\LaTeX{} $\rightarrow$DVI$\rightarrow$Postscript
+\begin{enumerate}
+\item DVI: ``device independent format''
+\item A program named ``latex'' converted ``{*}.tex'' $\rightarrow$
+``{*}.dvi'' 
+\item One would view the dvi, much the same as one views PS or PDF today
+\item Follow up programs convert: DVI $\rightarrow$PS
+\end{enumerate}
+
+\column{6cm}
+\begin{itemize}
+\item Today, English speakers more likely use ``pdflatex'' \LaTeX{} $\rightarrow$PDF
+\item New development focus in on incorporation of international character
+sets (Xe\TeX{} and Lua\TeX )
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Different from MS Word?}
+
+\begin{itemize}
+\item The {*}.tex document is plain text (has no hidden fields, markup)
+\item Blank lines separate paragraphs, etc
+\item Can edit with any ``flat text editor'' program (Emacs, TexMaker
+or TexWorks or TexShop or TexStudio $\ldots$)
+\item Does not ``absorb'' graphics to make on giant {*}.tex file. Rather,
+the {*}.tex file refers to other files.
+\item Authors ``compile'' the document into PDF or HTML or ... 
+\item Word can be used more systematically, but most users never bother
+to learn how
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Most \LaTeX{} Projects Begin with a Template}
+
+\begin{itemize}
+\item As we will see, a \LaTeX{} document has some ``boilerplate'' that
+is required.
+\item Because that boilerplate is difficult to produce and use, most users
+find example documents that meet their requirements and they revise
+from there.
+\item The KU Dissertation Thesis Template project is in that vein, providing
+a working document.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{A \LaTeX{} Distribution}
+
+\begin{itemize}
+\item Distribution is a big\emph{ish }collection of programs and format
+files
+\item Consider ``Mik\TeX '', a large, free distribution of \LaTeX{} software
+for MS Windows
+\end{itemize}
+\begin{columns}
+
+
+\column{6cm}
+\begin{itemize}
+\item Look under Mik\TeX 's install, eg ``C:\textbackslash Program Files(x86)\textbackslash Mik\TeX ''
+\item Folder Mik\TeX /miktex/bin: executables (exe files)
+
+\begin{itemize}
+\item Processors: latex, pdftex, dvips, xetex, tex4ht, oolatex
+\item Viewers: yap (for dvi and ps)
+\item Editors: \TeX works
+\end{itemize}
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item Folder ``tex'' is collection of packages. 
+\item Look under tex/latex, one folder per addon package
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Extensible: The Good and the Bad}
+
+\begin{itemize}
+\item CTAN: Comprehensive \TeX{} Archive Network: 1000s of packages
+
+\begin{itemize}
+\item There is no ``corporate regulation'' of the \LaTeX{} ``thing''.
+New compilers, packages, scripts, pop up all the time.
+\end{itemize}
+\item \textbf{The Good}:
+
+\begin{itemize}
+\item Packages for many specific purposes
+\item Scholars/Universities/companies/journals can create customized document
+styles
+\item Example: Beamer \LaTeX{} framework (this document)
+\end{itemize}
+\item \textbf{The Bad}:
+
+\begin{itemize}
+\item Some packages don't work, are not up-to-date
+\item User documents are ``broken'' by slapping together contradictory
+packages.
+\item Some obvious features unavailable (nobody pays package developer).
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Structure of a \protect\LaTeX{} Document}
+
+\begin{frame}[containsverbatim]
+\frametitle{Simplest Possible LaTeX Document}
+\begin{columns}
+
+
+\column{4cm}
+\begin{itemize}
+\item Beginning: 
+
+\begin{itemize}
+\item a document declaration
+\item ``Preamble''
+\end{itemize}
+\item Middle: 
+
+\begin{itemize}
+\item content!
+\end{itemize}
+\item End: 
+\end{itemize}
+
+\column{8cm}
+
+\begin{lstlisting}[basicstyle={\scriptsize}]
+\documentclass{article}
+%%1. This is the boiler-plate part, a preamble
+%%Usually there will be many lines with \usepackage{}
+\makeatletter
+\makeatother
+
+%%2. middle
+\begin{document}
+\author{Paul Johnson}
+\date{January 16, 2008}
+\title{Very Short Document in \LaTeX{}}
+\maketitle
+Here's the smallest \LaTeX{} document I can provide.
+
+Type any crap you want here.
+Use blank lines to separate paragraphs.
+Test some math $\\pi R^2$
+%%3.ending
+\end{document}
+\end{lstlisting}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Macros, Environments, etc}
+\begin{itemize}
+\item Comments prefixed by \%
+\item A \LaTeX{} Macro: backslash-argument\{content\}: \textbackslash author\{Paul
+Johnson\}
+\item An environment is text bracketed by ``begin'' and ``end'' statements
+
+\begin{lstlisting}
+\begin{frame}
+\frametitle{Macros, Environments, etc}
+\begin{itemize} 
+\item Comments prefixed by \% 
+\item A \LaTeX{} Macro: backslash-argument{content}: \author\{Paul Johnson\}
+\item An environment is text bracketed by ``begin'' and ``end'' statements 
+\end{itemize}
+\end{frame}
+\end{lstlisting}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Save That, Compile it}
+\begin{itemize}
+\item In the terminal, the user runs ``pdflatex example.tex''
+
+\begin{itemize}
+\item latex $\Longrightarrow$ pdf
+\end{itemize}
+\item Looks like this, if you can see the input \& output.
+
+\begin{lstlisting}[basicstyle={\scriptsize}]
+$ pdflatex example.tex 
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/Debian) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(./example.tex
+LaTeX2e <2014/05/01>
+Babel <3.9k> and hyphenation patterns for 4 languages loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo))
+No file example.aux.
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./example.aux) )</usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmr7.pfb>
+Output written on example.pdf (1 page, 60271 bytes).
+Transcript written on example.log.
+\end{lstlisting}
+
+\item Running pdflatex produces several intermediate files:
+
+\begin{lstlisting}
+-rw-rw-r--   1      8 2015-04-17 13:39 example.aux
+-rw-rw-r--   1   3319 2015-04-17 13:39 example.log
+-rw-r--r--   1  60271 2015-04-17 13:39 example.pdf
+\end{lstlisting}
+
+\item A more complicated document may require repeated runs of ``pdflatex''
+and ``bibtex'' to make all of the separate pieces work together.
+\item To avoid manually running those separate bits, many people use a convenience
+scripts like ``texi2pdf''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Editors to Facilitate LaTeX Work}
+\begin{columns}
+
+
+\column{6cm}
+\begin{itemize}
+\item TexShop, TextMate for Macintosh
+\item Multiplatform General Purpose Editors
+
+\begin{itemize}
+\item Emacs (The editor of the gods) with ``Auc\TeX '' mode
+\item Eclipse (a programming IDE)
+\end{itemize}
+\item \LaTeX{} Specific
+
+\begin{itemize}
+\item TexMaker (I like that one)
+\item TexStudio
+\end{itemize}
+\item Windows
+
+\begin{itemize}
+\item \TeX Works (delivered with Mik\TeX )
+\end{itemize}
+\end{itemize}
+
+\column{6cm}
+
+Gotchas:
+\begin{itemize}
+\item Assumes user has medium/deep understanding of computer
+\item Editing: Lots of ``boilerplate'' details
+\item Preamble has \textbackslash usepackage\{\} statement for each package
+
+\begin{itemize}
+\item Each macro or environment comes from some package
+\item Users must learn how to install packages (hassle...)
+\end{itemize}
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Software to Facilitate Producing LaTeX Documents}
+\begin{columns}
+
+
+\column{6cm}
+\begin{itemize}
+\item \LyX{} (Open Source, Multiplatform): can export to \LaTeX{}
+
+\begin{itemize}
+\item a ``document processor'' with some point-and-click features
+\item Allows to write ``real \LaTeX '' as well inside \LyX{} document
+\item Version 2 introduced the ``on the fly'' spell-checking
+\end{itemize}
+\item Scientific Word (Commercial, MS Windows)- A MS Word look-alike that
+can create \LaTeX{} documents
+\item \TeX Macs (Open Source) Similar in concept to \LyX , developed by
+a smaller team of programmers
+\end{itemize}
+
+\column{6cm}
+
+Generally, these provide
+
+\begin{itemize}
+\item Document ``templates'', pre-formatted examples that work
+\item Facilitators for entry of formulae and special formatting
+\item I often use \LyX , and export documents to \LaTeX{} format.
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When Do I Edit with Emacs, not LyX?}
+\begin{itemize}
+\item Some document types--multiple choice exams--have specialized \LaTeX{}
+classes for which \LyX{} has no ``customization'' or ``layout''
+\item My co-author is a \LaTeX{} writer who has invested years to learn how
+that works and refuses to try \LyX{}
+\item \LyX{} has a bug that I can't work around.
+\item \LyX{} upgrades and I don't like their ``enhancements'' as much as
+raw \LaTeX .
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Raw TeX Exercise: Compile My Terminal-1 lecture}
+\begin{itemize}
+\item Edit and Compile a \LaTeX{} file. In my Guides repository, look for
+the folder \code{Computing\_HOWTO/IntroTerminal-1}. Find the file
+``\code{terminal-1.tex}''. 
+
+\begin{itemize}
+\item Make a directory in your computer
+\item Download \code{terminal-1.tex} and \code{beamerthemeKU.sty} in there.
+\item You also need to copy the sub-directory ``importfigs''. Those graphics
+were recently added to beautify this.
+\end{itemize}
+\item Figure out how to open and compile the document.
+
+\begin{itemize}
+\item Open a terminal, run ``pdflatex terminal-1.tex'', for example.
+\end{itemize}
+\item Because that file has a table of contents, it is necessary to run
+\code{pdflatex} twice
+
+\begin{itemize}
+\item If your computer has a copy of the program ``\code{texi2pdf}'',
+use that instead, it will run \code{pdflatex} as many times as necessary.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{What to do next? Followup Presentations Needed}
+\begin{itemize}
+\item This will become the organizing location of \LaTeX{} support documents.
+\url{http://crmda.ku.edu/guides/latex-help}
+\item In the past, and probably for a while, most of my \LaTeX{} support
+material has been hosted at \url{http://pj.freefaculty.org/latex}
+\item Notes ``\LyX{} for Beginners'' 
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LyX-Beginner}
+\item Embarassingly, I forgot I had written those notes and agreed to give
+a \LyX{} presentation, so I made a new, possibly better version of
+the same (with a much more enticing title) ``How to Cheat on Your
+\LaTeX{} Homework''. This will be moved into the CRMDA guides soon.
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LyX-for_LaTeX_homework}
+\item \LyX -Intemediate!. You can monitor our progress here: 
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LyX-Intermediate}
+\item KU Thesis class \& example document
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/KU-thesis}
+\item Developing your own \LyX{} Template
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LyX-article-template}
+\item For ``reproducible research'' by the use of Sweave? Maybe knitr
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LyX-sweave-tutorial}
+\item KUant guide templates
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/KUant_template}
+
+\url{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/KUant_template_sweave}
+\end{itemize}
+\end{frame}
+\end{document}

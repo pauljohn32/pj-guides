@@ -1,0 +1,2290 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass extarticle
+\begin_preamble
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{graphbox}
+% $ This nullifies emacs subscripting in following%
+%%BEGIN: This begins the custom header
+\usepackage{array}
+\usepackage{xparse}
+\usepackage{babel}
+\usepackage{datetime}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[T1]{fontenc}
+
+\definecolor{darkblue}{HTML}{1e2277}
+\definecolor{kublue81186}{RGB}{0,81,186}
+\newdateformat{monddyyyy}{\shortmonthname[\THEMONTH].~\THEDAY,~\THEYEAR}
+
+
+%% BEGIN custom header
+\ExplSyntaxOn
+\NewDocumentCommand \guidesetup { m }
+ {
+  \keys_set:nn { guide } { #1 }
+ }
+
+\int_new:N \g_guide_authors_int
+\prop_new:N \g_guide_authors_prop
+\tl_new:N \l__guide_authors_tl
+
+\keys_define:nn { guide }
+ {
+  author .code:n =
+   {
+    \int_gincr:N \g_guide_authors_int
+    \keys_set:nn { guide / author } { #1 }
+   },
+  author/firstname .code:n = { \guide_add_author:nn { firstname } { #1 } },
+  author/lastname .code:n = { \guide_add_author:nn { lastname } { #1 } },
+  author/affiliation .code:n = { \guide_add_author:nn { affiliation } { #1 } },
+  author/email .code:n = { \guide_add_author:nn { email } { #1 } },
+  leftlogo .tl_set:N = \l_guide_leftlogo_tl,
+  rightlogo .tl_set:N = \l_guide_rightlogo_tl,
+  number .tl_set:N = \l_guide_number_tl,
+  title .tl_set:N = \l_guide_title_tl,
+  subtitle .tl_set:N = \l_guide_subtitle_tl,
+  keywords .tl_set:N = \l_guide_keywords_tl,
+  url .tl_set:N = \l_guide_url_tl,
+  title .initial:n = {TITLE~NEEDED},
+}
+\NewDocumentCommand \guidehdr { +O{} }
+ {
+  \group_begin:
+  \keys_set:nn { guide } { #1 }
+  \guide_hdr:
+  \group_end:
+ }
+
+\cs_new_protected:Nn \guide_hdr:
+ {
+  \centering
+  \begin{tabular}
+   {
+    |c
+    m{ \dim_eval:n { \textwidth - 2.5in - 6\tabcolsep - 2\arrayrulewidth } }
+    c|
+   }
+  \arrayrulecolor{kublue81186}\hline
+  &&\tabularnewline[-\dim_eval:n { -\normalbaselineskip + 3ex }]
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=.75in]{\l_guide_leftlogo_tl}
+  \end{tabular}
+  &
+  \centering
+    {\textsc{\large{}\l_guide_title_tl}}
+    \tl_if_empty:NF \l_guide_subtitle_tl
+    {
+      {\\\textsc{\large{}\l_guide_subtitle_tl}}
+    }
+  \\
+  \textcolor{kublue81186}{\rule[0.5ex]{1\linewidth}{0.7pt}}\\
+  \guide_print_authors:
+  %\vspace{\bigskipamount}
+  &
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=1.25in]{\l_guide_rightlogo_tl}
+  \end{tabular}
+  \tabularnewline
+  \tl_if_empty:NTF \l_guide_number_tl
+   { \leavevmode\vphantom{G}}
+   {\small\bfseries { Guide~No: ~ \tl_use:N \l_guide_number_tl }} & 
+   \tl_if_empty:NF \l_guide_keywords_tl
+   {\raggedright
+    \textbf{Keywords}: ~ \l_guide_keywords_tl}
+   & 
+   \small\bfseries\monddyyyy\today \tabularnewline
+   & \tl_if_empty:NF \l_guide_url_tl
+   {
+   \multicolumn{2}{>{\raggedright}p{4.5in}|}{
+    See ~ \url{\l_guide_url_tl} ~ for ~ updates.}
+   }
+  \tabularnewline
+  \hline 
+  \end{tabular}
+}
+
+\cs_new_protected:Nn \guide_add_author:nn
+ {
+  \prop_gput:Nxn \g_guide_authors_prop
+   { #1 \int_to_arabic:n { \g_guide_authors_int } }
+   { #2 }
+ }
+\cs_generate_variant:Nn \prop_gput:Nnn { Nx }
+\cs_new_protected:Nn \guide_print_authors:
+ {
+  \tl_clear:N \l__guide_authors_tl
+  \int_step_inline:nnnn { 1 } { 1 } { \g_guide_authors_int }
+   {
+    \tl_put_right:Nn \l__guide_authors_tl
+     {
+      \textbf
+       {
+        \prop_item:Nn \g_guide_authors_prop { firstname ##1 }~
+        \prop_item:Nn \g_guide_authors_prop { lastname ##1 },~
+       }
+      \prop_item:Nn \g_guide_authors_prop { affiliation##1 }~
+      <\prop_item:Nn \g_guide_authors_prop { email##1 }> \\
+     }
+   }
+   \tl_use:N \l__guide_authors_tl
+ }
+\ExplSyntaxOff
+%%END This ends the custom header
+
+
+\usepackage{ae,fancyvrb,relsize,listings}
+
+\providecommand{\Sweavesize}{\normalsize}
+\providecommand{\Rsize}{}
+\renewcommand{\Rsize}{\normalsize}
+\providecommand{\Routsize}{\scriptsize}
+
+\providecommand{\Rcolor}{\color[rgb]{0.1, 0.1, 0.1}}
+\providecommand{\Routcolor}{\color[rgb]{0.2, 0.2, 0.2}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.43, 0.432}}
+
+%% Create a Background color basic, common for input listings
+\definecolor{ltgraybg}{gray}{0.95}
+%% 20180301: wanted to unify code, but syntax tough
+\providecommand{\Rbackground}{\color[gray]{0.95}}
+\providecommand{\Routbackground}{\color[gray]{0.97}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+\lstdefinestyle{Rinput}{
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  basicstyle=\Rsize\Rcolor\ttfamily,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%,
+  commentstyle=\Rcommentcolor\ttfamily,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1{==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+  backgroundcolor=\Rbackground,%
+  numbers=left,% 
+  numberblanklines=false,
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}%
+
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routput}{fancyvrb=false,
+  literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+  basicstyle=\Routcolor\Routsize\ttfamily,%
+  backgroundcolor=\Routbackground,
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1 {==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},
+  numbers=left,
+  numberblanklines=false,
+  firstnumber=1,
+  stepnumber=5,
+  numberstyle={\tiny}
+}
+
+\lstset{tabsize=2, breaklines=true, style=Rinput, breakatwhitespace=true}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+
+\usepackage{realboxes}
+\providecommand*{\code}[1]{\texttt{#1}}
+\renewcommand{\code}[1]{%
+\Colorbox{ltgraybg}{#1}%
+}%
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{xparse}
+\usepackage{babel}
+
+\ExplSyntaxOn
+\NewDocumentCommand \footersetup { +m }
+{
+\keys_set:nn { footer } { #1 }
+}
+\keys_define:nn { footer }
+{	
+    leftside .code:n = {
+\keys_set:nn { footer / leftside } { #1 }
+},
+rightside .code:n = {
+\keys_set:nn { footer / rightside } { #1 }
+},
+    leftside / lone .tl_set:N = \l_footer_leftside_lone_tl,
+    leftside / ltwo .tl_set:N = \l_footer_leftside_ltwo_tl,
+    leftside / lthree .tl_set:N = \l_footer_leftside_lthree_tl,
+    rightside / rone .tl_set:N = \l_footer_rightside_rone_tl,
+    rightside / rtwo .tl_set:N = \l_footer_rightside_rtwo_tl,
+    rightside / rthree .tl_set:N = \l_footer_rightside_rthree_tl,
+    leftside .initial:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .initial:n = {rone = ~, rtwo = ~,  rthree = ~},
+    leftside .default:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .default:n = {rone = ~, rtwo = ~,  rthree = ~},
+}
+\NewDocumentCommand \guideftr { +o }
+{
+  \IfValueT { #1 } 
+  {
+    \keys_set:nn { footer } { #1 }
+  }
+  \guide_ftr:
+}
+\cs_new_protected:Nn \guide_ftr:
+{
+  % Now fancy header/footer settings
+  \lhead{}%
+  \chead{}%
+  \rhead{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \lfoot{}%
+  \cfoot{{Page} ~ \thepage {} ~ { of } ~ {} \pageref{LastPage}}%
+  \rfoot{}%
+
+  \fancypagestyle{firststyle}%
+  {%
+    \lhead{}%
+    \chead{}%
+    \rhead{}%
+    \lfoot{}%
+    \cfoot{}%
+    \rfoot{}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyfoot[L]{\l_footer_leftside_lone_tl {}\\%
+      \l_footer_leftside_ltwo_tl {}\\%
+      \l_footer_leftside_lthree_tl {}}%
+    \fancyfoot[R]{\l_footer_rightside_rone_tl {}\\%
+      \l_footer_rightside_rtwo_tl {}\\%
+      \l_footer_rightside_rthree_tl {}}%
+      \renewcommand{\footrulewidth}{.2pt}%
+  }%
+  \thispagestyle{firststyle}
+}
+\ExplSyntaxOff
+
+\pagestyle{fancy}
+
+\urlstyle{tt}
+\footersetup{
+  leftside={
+    lone={1425 Jayhawk Blvd., 470 Watson Library}, 
+    ltwo={Lawrence, KS 66045-7594}, 
+    lthree={\url{https://crmda.ku.edu}}},
+  rightside={
+    rone={\includegraphics[align=c, width=1.4cm, trim=0 0 0 0]{images/CClicense.png} This work is licensed under},
+    rtwo={a Creative Commons Attribution},
+    rthree={4.0 International License}}
+}
+\guideftr
+
+
+
+%\fancypagestyle{firststyle}
+%{
+%\lhead{}
+%\chead{}
+%\rhead{}
+%\lfoot{}
+%\cfoot{{Page} \thepage { of} \pageref{LastPage}}
+%\rfoot{}
+%\renewcommand{\headrulewidth}{0pt}
+%\renewcommand{\headrulewidth}{0pt}
+%
+%\fancyfoot[L]{1425 Jayhawk Blvd.\\470 Watson Library\\ Lawrence, KS 66045-7555}
+%\fancyfoot[R]{{\includegraphics[align=c, width=1.4cm, trim=0 0 0 0]{./images/CClicense.png}} This work is licensed under\\ a Creative Commons Attribution\\ 4.0 International License.}
+%\renewcommand{\footrulewidth}{.4pt}
+%}
+
+
+%graphics and such inside floats are centered by default
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+% \setlength{\belowcaptionskip}{\@tempdima}%
+}{%
+ \end@float
+}
+% Added by lyx2lyx
+\date{}
+
+
+\thispagestyle{firststyle}
+\end_preamble
+\use_default_options false
+\begin_modules
+logicalmkup
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "unicode=true,pdfusetitle,bookmarks=true,bookmarksnumbered=false, bookmarksopen=false,breaklinks=true, pdfborder={0 0 0},pdfborderstyle={}, backref=false,colorlinks=true, linkcolor=darkblue, urlcolor=darkblue, citecolor=darkblue"
+\papersize letterpaper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 0.75in
+\rightmargin 1in
+\bottommargin 1.25in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%% Fill in values of the arguments here, 
+\end_layout
+
+\begin_layout Plain Layout
+
+%% If blanks are needed, must insert value " ~ "
+\end_layout
+
+\begin_layout Plain Layout
+
+%% If comma needed inside value, wrap in {}.
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Delete secondauthor and thirdauthor if not needed
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidesetup{%
+\end_layout
+
+\begin_layout Plain Layout
+
+  author={
+\end_layout
+
+\begin_layout Plain Layout
+
+    lastname=Hrenchir, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    firstname=Kathleen, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    affiliation=CRMDA, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    email=katieh@ku.edu}, 
+\end_layout
+
+\begin_layout Plain Layout
+
+  author={
+\end_layout
+
+\begin_layout Plain Layout
+
+    lastname=Johnson,
+\end_layout
+
+\begin_layout Plain Layout
+
+    firstname=Paul, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    affiliation=CRMDA,
+\end_layout
+
+\begin_layout Plain Layout
+
+    email=pauljohn@ku.edu},
+\end_layout
+
+\begin_layout Plain Layout
+
+  author={
+\end_layout
+
+\begin_layout Plain Layout
+
+    lastname=Kite, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    firstname=Benjamin, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    affiliation=CRMDA,
+\end_layout
+
+\begin_layout Plain Layout
+
+    email=bakite@ku.edu},
+\end_layout
+
+\begin_layout Plain Layout
+
+  url={https://crmda.ku.edu/guides},
+\end_layout
+
+\begin_layout Plain Layout
+
+  keywords={Git, GitLab},
+\end_layout
+
+\begin_layout Plain Layout
+
+  title={GitLab Setup: Instructions for Getting Started},
+\end_layout
+
+\begin_layout Plain Layout
+
+  leftlogo={images/jayhawk.pdf},
+\end_layout
+
+\begin_layout Plain Layout
+
+  rightlogo={images/CRMDA_1PMS293_UnitHorz},
+\end_layout
+
+\begin_layout Plain Layout
+
+  number=34,
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1.5in}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidehdr
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.25in
+\end_inset
+
+GitLab is a Web program that makes it easier to manage teams of users and
+ many Git repositories.
+ GitLab makes it easy to create and manage repositories.
+ It is especially convenient to regulate user access to particular projects.
+ From the user perspective, GitLab is a place to find projects and request
+ permission to participate in them.
+ In other words, it is a 
+\begin_inset Quotes eld
+\end_inset
+
+front page
+\begin_inset Quotes erd
+\end_inset
+
+ for Git.
+ The CRMDA Git guide, 
+\emph on
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Git it Together! "
+target "http://crmda.dept.ku.edu/guides/31.git/31.git.pdf"
+
+\end_inset
+
+ 
+\emph default
+is available separately (CRMDA Guide 31).
+\end_layout
+
+\begin_layout Standard
+This write-up describes how to establish a user account on the KU CRMDA
+ GitLab server, which is available at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://gitlab.crmda.ku.edu
+\end_layout
+
+\end_inset
+
+.
+ The advice here will apply to other GitLab servers as well.
+\end_layout
+
+\begin_layout Section
+Access your GitLab Account on the CRMDA Server
+\end_layout
+
+\begin_layout Standard
+Browse to 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://gitlab.crmda.ku.edu"
+
+\end_inset
+
+, select the 
+\series bold
+LDAP
+\series default
+ login tab, and sign in using your KU online ID (e.g.
+ a012b345) and password.
+ You will not have access to projects until the administrator adds you as
+ a member.
+\end_layout
+
+\begin_layout Standard
+Inspect the GitLab Web interface.
+ There will be tools that appear in the left and the top.
+ In the top of the page, there is a navigation ribbon.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename images/gitlab-top.png
+	width 6in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the top left there is a project list, and on the top right there is a
+ main user menu 
+\begin_inset Graphics
+	filename images/gitlab-userconfig.png
+	height 0.4cm
+
+\end_inset
+
+.
+ That main user menu holds the all-important User Settings item that we
+ discuss below.
+\end_layout
+
+\begin_layout Standard
+In the main display, there may be some larger panels, one of which is 
+\begin_inset Quotes eld
+\end_inset
+
+Explore Public Projects
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If you find that and open it, there should be a tab named 
+\begin_inset Quotes eld
+\end_inset
+
+ALL
+\begin_inset Quotes erd
+\end_inset
+
+.
+ That tab displays all of the open projects on the server.
+ These are ones that are open to all participants.
+ Some of them are available more broadly to users anywhere.
+\end_layout
+
+\begin_layout Standard
+In the ALL list, we have some test repositories, one of which is 
+\begin_inset Quotes eld
+\end_inset
+
+spr2018
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We are using that public repository for Git teamwork training.
+ Feel free to clone it and practice your branch skills.
+\end_layout
+
+\begin_layout Standard
+The security protocols will allow you to clone the repo using the https
+ protocol, but in order to push changes back to the server, it will be necessary
+ to use SSH security keys.
+ In the next section, we describe the process of creating an SSH key and
+ troubleshooting the (seemingly inevitable) hiccups that arise.
+\end_layout
+
+\begin_layout Section
+Configure an SSH Key
+\end_layout
+
+\begin_layout Standard
+An SSH key pair is required to interact with the server.
+ A key pair is composed of two files stored in the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh
+\end_layout
+
+\end_inset
+
+ folder of your user account.
+ (Recall that 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ means the user HOME folder, which is likely to be 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+/Users/your-name
+\end_layout
+
+\end_inset
+
+ on Macintosh, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+C:
+\backslash
+Users
+\backslash
+your_name
+\end_layout
+
+\end_inset
+
+ on Windows, or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+/home/your_name
+\end_layout
+
+\end_inset
+
+ on Unix/Linux.) The public key file has the suffix 
+\begin_inset Quotes eld
+\end_inset
+
+.pub
+\begin_inset Quotes erd
+\end_inset
+
+, while the private key, which must never be shared to anyone, has no suffix.
+ By default, these will be named 
+\begin_inset Quotes eld
+\end_inset
+
+id_rsa.pub
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+id_rsa
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Below we suggest custom-naming your key, so the files might be 
+\begin_inset Quotes eld
+\end_inset
+
+pj_gitlab_20180228.pub
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+pj_gitlab_20180228
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+*.pub
+\begin_inset Quotes erd
+\end_inset
+
+ is to be shared with servers, which then identify you by matching the private
+ and public key parts.
+ 
+\end_layout
+
+\begin_layout Subsection*
+To create your SSH key
+\end_layout
+
+\begin_layout Enumerate
+Open a terminal.
+ (In Windows, use Git BASH.)
+\end_layout
+
+\begin_layout Enumerate
+Use the following command to create a new SSH key.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh-keygen -b 4096 -C "youremail@ku.edu" -f ~/.ssh/YourName_GitLab_YYYYMMDD
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We recommend you create a custom-named key by including 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+-f ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Otherwise, your key files will be named 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh/id_rsa.pub
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh/id_rsa
+\end_layout
+
+\end_inset
+
+.
+ In the course of your work, it may be necessary to create several keys
+ for several different purposes.
+ Give each one a unique name.
+ Choose any name you like.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Add a passphrase.
+ Do not leave this field empty.
+ 
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh-keygen -b 4096 -C "youremail@ku.edu" -f ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating public/private rsa key pair.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+Enter passphrase (empty for no passphrase):  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+No text will appear in the terminal when you type your passphrase.
+ You will be asked to retype your passphrase once.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The terminal will display a confirmation.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh-keygen -b 4096 -C "youremail@ku.edu" -f ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating public/private rsa key pair.
+\end_layout
+
+\begin_layout Plain Layout
+
+Enter passphrase (empty for no passphrase): 
+\end_layout
+
+\begin_layout Plain Layout
+
+Enter same passphrase again: 
+\end_layout
+
+\begin_layout Plain Layout
+
+Your identification has been saved in /home/yourname/.ssh/YourName_GitLab_YYYYMMD
+D.
+\end_layout
+
+\begin_layout Plain Layout
+
+Your public key has been saved in /home/yourname/.ssh/YourName_GitLab_YYYYMMDD.
+\end_layout
+
+\begin_layout Plain Layout
+
+The key fingerprint is:
+\end_layout
+
+\begin_layout Plain Layout
+
+SHA256:FRImSmfxh/CXWcXKB7BIECeGaJDCFM0mkdG0eTDi4yc youremail@ku.edu
+\end_layout
+
+\begin_layout Plain Layout
+
+The key's randomart image is:
+\end_layout
+
+\begin_layout Plain Layout
+
++---[RSA 4096]----+
+\end_layout
+
+\begin_layout Plain Layout
+
+|+OX=..@+*.o..o.
+  |
+\end_layout
+
+\begin_layout Plain Layout
+
+|+++**= X + *.
+ .
+  |
+\end_layout
+
+\begin_layout Plain Layout
+
+|.+oo..
+  = B.
+ o   |
+\end_layout
+
+\begin_layout Plain Layout
+
+|.
+ .
+ .
+    +  o .
+  |
+\end_layout
+
+\begin_layout Plain Layout
+
+| E .
+    S    .
+   |
+\end_layout
+
+\begin_layout Plain Layout
+
+|  o              |
+\end_layout
+
+\begin_layout Plain Layout
+
+|                 |
+\end_layout
+
+\begin_layout Plain Layout
+
+|                 |
+\end_layout
+
+\begin_layout Plain Layout
+
+|                 |
+\end_layout
+
+\begin_layout Plain Layout
+
++----[SHA256]-----+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Upload the SSH key
+\end_layout
+
+\begin_layout Enumerate
+From GitLab, open User Config 
+\begin_inset Graphics
+	filename images/gitlab-userconfig.png
+	height 0.4cm
+
+\end_inset
+
+ on the top right and access 
+\series bold
+Settings
+\series default
+.
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+Within Settings, select 
+\series bold
+SSH Keys
+\series default
+.
+ This may be represented by an icon of a key.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+There will be an open text box into which the key should be pasted.
+ If you are careful, a simple copy/paste from the public key file into the
+ server window will succeed.
+ However, users often have errors in pasting due to line breaks.
+ Because of some bad experiences, we are following the lead of the GitHub
+ and GitLab documentation, which suggests a platform specific approach.
+\end_layout
+
+\begin_layout Enumerate
+Copy the public key.
+ This can be done from the terminal.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Windows (Git BASH)
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cat ~/.ssh/YourName_GitLab_YYYYMMDD.pub | clip
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Mac 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pbcopy < ~/.ssh/YourName_GitLab_YYYYMMDD.pub
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Linux (using xclip package)
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+xclip -sel clip < ~/.ssh/YourName_GitLab_YYYYMMDD.pub
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These will work only if your system has the required clipboard software.
+ Linux does not have xclip installed by default.
+ One can either install it, or try the old fashioned method.
+ Open the public key file in an editor that does not impose linebreaks (e.g.,
+ Gedit, Emacs), then copy the key in its entirety.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Paste your key into the Key field of the GitLab form.
+ How to paste? Any of the usual ways seem to work.
+ A 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+right-click
+\end_layout
+
+\end_inset
+
+ -> 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+paste
+\end_layout
+
+\end_inset
+
+ works in any Web browser we have tried.
+ Give your key a descriptive title, then select 
+\series bold
+Add Key
+\series default
+.
+ The title is never used, except to remind yourself about which key is being
+ pasted in.
+ We suggest the custom name of your custom-named key for this, but anything
+ will work.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Access GitLab projects
+\end_layout
+
+\begin_layout Standard
+After the key is accepted, you are a fully functioning member of the community
+ on 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://gitlab.crmda.ku.edu
+\end_layout
+
+\end_inset
+
+.
+ Our GitLab server defaults to protect the master branch from commits by
+ all users except the owner or master.
+ Users are required to create branches, which they are allowed to push,
+ and for which they can file merge requests.
+\end_layout
+
+\begin_layout Standard
+As a test of your setup, try to clone the project named 
+\begin_inset Quotes eld
+\end_inset
+
+test/spr2018
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Open a terminal and run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ git clone git@gitlab.crmda.ku.edu:test/spr2018.git
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you are lucky, and your operating system cooperates, all is well if you
+ see:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Cloning into 'spr2018'...
+\end_layout
+
+\begin_layout Plain Layout
+
+X11 forwarding request failed on channel 0
+\end_layout
+
+\begin_layout Plain Layout
+
+remote: Counting objects: 3, done.
+\end_layout
+
+\begin_layout Plain Layout
+
+remote: Compressing objects: 100% (2/2), done.
+\end_layout
+
+\begin_layout Plain Layout
+
+remote: Total 3 (delta 0), reused 0 (delta 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+Receiving objects: 100% (3/3), done.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the other hand, if you see this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git@gitlab.crmda.ku.edu's password:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+it means that the SSH key setup needs some correction.
+\end_layout
+
+\begin_layout Section
+One Last Gotcha: The ssh-agent
+\end_layout
+
+\begin_layout Standard
+Here is the symptom.
+ The Git server responds like this to any git command (clone, pull, push,
+ or fetch):
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+git@gitlab.crmda.ku.edu's password:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Typing a password will not help.
+ The SSH key setup needs fixing.
+ 
+\end_layout
+
+\begin_layout Standard
+We'll guide you through some temporary adjustments and, if they work, we'll
+ make them permanent.
+\end_layout
+
+\begin_layout Enumerate
+Double-check that the SSH key was uploaded correctly.
+ Sometimes users accidentally insert a line break in the SSH key.
+ Open the key's .pub file in an editor.
+ Notice it is one really long line.
+ Check the server, make sure there are no accidental line breaks.
+\end_layout
+
+\begin_layout Enumerate
+Supposing you did not err at 1, then it is likely the ssh-agent program
+ is not running, or it does not know about the key you want to use.
+ We can fix that.
+\end_layout
+
+\begin_layout Enumerate
+Supposing you did not err at 1 or 2, then you have the 
+\begin_inset Quotes eld
+\end_inset
+
+too many keys
+\begin_inset Quotes erd
+\end_inset
+
+ problem.
+ We can fix that.
+\end_layout
+
+\begin_layout Standard
+This problem escaped our understanding for quite a long time because it
+ arises intermittently on different computers.
+ On a Linux system, the ssh-agent will generally be running.
+ However, in Windows and Macintosh it is more likely to be a problem.
+ On Linux under the XFCE4 desktop, users need to activate the option to
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Launch Gnome services on startup
+\begin_inset Quotes erd
+\end_inset
+
+ in the desktop settings (Sessions -> Advanced).
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Checking on the ssh-agent problem
+\end_layout
+
+\begin_layout Standard
+To read more about this, see 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Working with non-default SSH key pair paths"
+target "https://docs.gitlab.com/ce/ssh/README.html"
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ on the GitLab documentation site.
+ The same is discussed in the GitHub documentation, see 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Generating a new SSH key and adding it to the ssh-agent"
+target "https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/"
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The following are temporary changes that you run 
+\emph on
+within a single terminal
+\emph default
+ session.
+ They will not be remembered if you start a new terminal.
+\end_layout
+
+\begin_layout Standard
+First, launch the ssh-agent program:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ eval $(ssh-agent -s)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Second, tell SSH about your custom-named key.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh-add ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That works in Linux and Windows.
+ On a Macintosh computer, the 
+\begin_inset Quotes eld
+\end_inset
+
+-K
+\begin_inset Quotes erd
+\end_inset
+
+ flag is needed:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh-add -K ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Type your SSH key's passphrase when requested.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's an example of a success on a Windows computer:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ eval $(ssh-agent -s)
+\end_layout
+
+\begin_layout Plain Layout
+
+Agent pid 6276
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ssh-add ~/.ssh/Paul_Johnson-windowsvm-20180318
+\end_layout
+
+\begin_layout Plain Layout
+
+Enter passphrase for /c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318:
+\end_layout
+
+\begin_layout Plain Layout
+
+Identity added: /c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318
+ (/c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again, these changes are temporary.
+ We will make them permanent, 
+\emph on
+if they work
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Testing the ssh-agent
+\end_layout
+
+\begin_layout Standard
+Run an ssh function that attempts to interact with the server as the user
+ 
+\begin_inset Quotes eld
+\end_inset
+
+git
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Try the following: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh -T git@gitlab.crmda.ku.edu
+\end_layout
+
+\begin_layout Plain Layout
+
+Welcome to GitLab, Paul E.
+ Johnson!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's a success.
+ We understand what went wrong and, in section 
+\begin_inset Quotes eld
+\end_inset
+
+Make a Permanent Setup for ssh-agent
+\begin_inset Quotes erd
+\end_inset
+
+ below, we will explain how to make a permanent solution.
+\end_layout
+
+\begin_layout Standard
+On the other hand, the problem is not fixed if you again see:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh -T git@gitlab.crmda.ku.edu
+\end_layout
+
+\begin_layout Plain Layout
+
+git@gitlab.crmda.ku.edu's password:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use Ctl-c to break out of that.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+The 
+\begin_inset Quotes eld
+\end_inset
+
+Too Many keys
+\begin_inset Quotes erd
+\end_inset
+
+ Problem
+\end_layout
+
+\begin_layout Standard
+If your key was uploaded correctly, and your ssh-agent is configured correctly,
+ you may have too many keys.
+ Do you have several keys? SSH uses an odd sequential key checking process.
+ Your system offers your keys one-by-one, as if it is a drunk trying every
+ key on the ring to open the front door.
+ If your custom-named key is at the end of the list of keys, the server
+ may disconnect before your key is tried.
+ The server gives up asking for keys.
+ The administrator determines how many tries are allowed.
+\end_layout
+
+\begin_layout Standard
+Here's how to fix it.
+ Create a file named 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+config
+\end_layout
+
+\end_inset
+
+ in the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh
+\end_layout
+
+\end_inset
+
+ folder.
+ Put a stanza in there like this
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Host gitlab
+\end_layout
+
+\begin_layout Plain Layout
+
+    HostName gitlab.crmda.ku.edu
+\end_layout
+
+\begin_layout Plain Layout
+
+    IdentityFile ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\begin_layout Plain Layout
+
+    KeepAlive yes
+\end_layout
+
+\begin_layout Plain Layout
+
+    IdentitiesOnly yes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Save that file.
+ On Linux and Macintosh, permissions on the .ssh folder should be 700 (no
+ read/write/execute for the group or the other users) and the SSH engine
+ may reject your config file.
+ To set permissions, run 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ chmod 700 config
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On Windows, we notice the permissions are not adjustable from the shell,
+ but the SSH engine does not seem to mind.
+\end_layout
+
+\begin_layout Standard
+This config file is not a supplement for running ssh-agent and ssh-add as
+ described above.
+ It is step which is done in addition.
+\end_layout
+
+\begin_layout Subsubsection*
+Suppose that did not fix it.
+ Try this!
+\end_layout
+
+\begin_layout Standard
+At some point, we have to say 
+\begin_inset Quotes eld
+\end_inset
+
+sorry
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We recommended a custom-named key, but some problem we don't understand
+ still remains.
+ Almost certainly, if you had created a key with the default name, this
+ would have worked by now.
+ Sorry again.
+ Like the noble leader says in Animal House, 
+\begin_inset Quotes eld
+\end_inset
+
+you 'screwed' up.
+ You trusted us.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is good news.
+ It is not necessary to go generate a new key named 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+id_rsa
+\end_layout
+
+\end_inset
+
+ and upload it again.
+ Go into the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh
+\end_layout
+
+\end_inset
+
+ folder and copy the custom key parts to 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+id_rsa
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+id_rsa.pub
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Don't alter the key files, just copy and rename them.
+ After that, test git or 
+\begin_inset Quotes eld
+\end_inset
+
+ssh -T
+\begin_inset Quotes erd
+\end_inset
+
+ again.
+ If the ssh connection succeeds, then we know the custom-named key is the
+ problem.
+\end_layout
+
+\begin_layout Subsubsection*
+After that, it still does not work? Troubleshooting
+\end_layout
+
+\begin_layout Standard
+Get some diagnostic output.
+ Run:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ssh -Tvv git@gitlab.crmda.ku.edu
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That will generate many lines (perhaps 150 or 200).
+ Let us see that.
+ We can check whether your SSH folder, ~/.ssh, was found, whether your config
+ file was found, and we can also see if keys were offered.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Make a Permanent Setup for ssh-agent
+\end_layout
+
+\begin_layout Standard
+Holy cow! I don't want to re-launch ssh-agent every time I open a terminal.
+ The change can be integrated into the login environment for the user account.
+\end_layout
+
+\begin_layout Standard
+In our Linux systems, the desktop usually has some startup code that launches
+ the ssh-agent in the background.
+ That's in Gnome Startup Services in the session managers.
+ It even remembers the passphrases between sessions.
+ On the Macintosh systems after Sierra, the same is true (the ssh-agent
+ is launched automatically and it remembers passphrases after the first
+ use).
+ 
+\end_layout
+
+\begin_layout Standard
+Adjustments in Windows can achieve the same benefits.
+ In Windows, the user account environment can be corrected by inserting
+ a file in the user home directory named 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.profile
+\end_layout
+
+\end_inset
+
+ (see 
+\begin_inset CommandInset href
+LatexCommand href
+name "Auto-launching ssh-agent on Git for Windows"
+target "https://help.github.com/articles/working-with-ssh-key-passphrases/#platform-windows"
+
+\end_inset
+
+).
+ We have tested this with success.
+ We use the standard program, with 
+\series bold
+one major exception
+\series default
+.
+ Our custom-named key must be named.
+ Twice! Notice lines 17 and 19 in the following.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "numbers=left,numberstyle={\tiny},stepnumber=1"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+env=~/.ssh/agent.env
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+agent_load_env () { test -f "$env" && .
+ "$env" >| /dev/null ; }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+agent_start () {
+\end_layout
+
+\begin_layout Plain Layout
+
+    (umask 077; ssh-agent >| "$env")
+\end_layout
+
+\begin_layout Plain Layout
+
+    .
+ "$env" >| /dev/null ; }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+agent_load_env
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# agent_run_state: 0=agent running w/ key; 
+\end_layout
+
+\begin_layout Plain Layout
+
+# 1=agent w/o key; 2= agent not running
+\end_layout
+
+\begin_layout Plain Layout
+
+agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+if [ ! "$SSH_AUTH_SOCK" ] || [ $agent_run_state = 2 ]; then
+\end_layout
+
+\begin_layout Plain Layout
+
+    agent_start
+\end_layout
+
+\begin_layout Plain Layout
+
+    ssh-add ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\begin_layout Plain Layout
+
+elif [ "$SSH_AUTH_SOCK" ] && [ $agent_run_state = 1 ]; then
+\end_layout
+
+\begin_layout Plain Layout
+
+    ssh-add ~/.ssh/YourName_GitLab_YYYYMMDD
+\end_layout
+
+\begin_layout Plain Layout
+
+fi
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+unset env
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Start a fresh Git BASH terminal and the user passphrase for the custom key
+ will be requested:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Enter passphrase for /c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318:
+\end_layout
+
+\begin_layout Plain Layout
+
+Identity added: /c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318
+ (/c/Users/pauljohn32/.ssh/Paul_Johnson-windowsvm-20180318)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That setup will ask for the passphrase every time you log in and try to
+ use Git BASH terminal.
+ When new terminals are launched, the passphrase will not be requested again
+ (until the user logs in to start a new session).
+ As a security feature, perhaps it is best to leave it that way.
+ However, there may be a way to cause it to remember the passphrase between
+ sessions.
+ One might try 
+\begin_inset CommandInset href
+LatexCommand href
+name "SSH Agent Helper"
+target "https://github.com/elsteelbrain/ssh-agent-helper"
+
+\end_inset
+
+, but we have not tried that.
+\end_layout
+
+\begin_layout Standard
+For Macintosh systems, there are threads about the problem for Macintosh
+ users, one of which we started:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Macintosh Git SSH key setup"
+target "https://stackoverflow.com/questions/40091879/macintosh-git-ssh-key-setup"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Mac OS X 1012: ssh-agent todes not automatically load"
+target "https://github.com/lionheart/openradar-mirror/issues/15361"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We'll pin down the Mac details, but we are certain the problem can be corrected
+ by adjusting the user account's environment.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Summary of this sub-section
+\end_layout
+
+\begin_layout Standard
+If the server asks for a password for a user named 
+\begin_inset Quotes eld
+\end_inset
+
+git
+\begin_inset Quotes erd
+\end_inset
+
+, it means that there is a configuration error in your computer.
+ Was the public key file uploaded without alteration? Perhaps the ssh-agent
+ program is not running.
+ Did you ssh-add the custom key? If you have too many other keys in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+~/.ssh
+\end_layout
+
+\end_inset
+
+ folder, you need to create an SSH config file to designate which key is
+ used with the server.
+ In our experience, over 5 years, this is an exhaustive list of the problems
+ and we believe they can all be overcome.
+\end_layout
+
+\end_body
+\end_document

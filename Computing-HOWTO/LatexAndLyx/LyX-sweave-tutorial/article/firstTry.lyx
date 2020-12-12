@@ -1,0 +1,539 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Sweave Step One
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Standard
+I use Sweave with a bunch of 
+\begin_inset Quotes eld
+\end_inset
+
+junked up
+\begin_inset Quotes erd
+\end_inset
+
+ settings and a different style called Sweavel.sty (Frank Harrell).
+ But I don't want to teach users to do all the details first.
+ 
+\end_layout
+
+\begin_layout Standard
+The user's first step should be to use the bare-bones of Sweave, and then
+ possibly later understand the complications.
+ So start with the smallest possible Rnw file.
+\end_layout
+
+\begin_layout Section*
+Smallest Worthwhile Sweave
+\end_layout
+
+\begin_layout Standard
+I'm creating this in LyX 2.0.2, and when I'm finished I'll save it as 
+\begin_inset Quotes eld
+\end_inset
+
+firstTry.lyx
+\begin_inset Quotes erd
+\end_inset
+
+ and export to Rnw as 
+\begin_inset Quotes eld
+\end_inset
+
+firstTry.Rnw
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Knowing that the results it generates are not perfect, and there may be
+ more details to finalize later.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<c10, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- c(1,2,3,4,5)
+\end_layout
+
+\begin_layout Plain Layout
+
+xmean <- mean(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+xsd <- sd(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(cbind(xmean, xsd))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<c20, echo=T, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+hist(x2, prob = TRUE, main="A histogram from Sweave", xlab="A Great Variable")
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(density(x2))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<c30, echo=T, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(y ~ x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x2)
+\end_layout
+
+\begin_layout Plain Layout
+
+abline(m1, lty=1, lwd=1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend=c("OLS"), lty=1, lwd=1.5)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is a bare minimum useful amount of Sweave.
+ It calculates some stuff.
+ It makes a figure or two.
+\end_layout
+
+\begin_layout Standard
+Note the output quality of the tilde symbol.
+\end_layout
+
+\begin_layout Section*
+What To Do With That?
+\end_layout
+
+\begin_layout Enumerate
+Convert from Rnw to tex
+\end_layout
+
+\begin_layout Enumerate
+Convert to pdf.
+\end_layout
+
+\begin_layout Standard
+I saved this file 
+\begin_inset Quotes eld
+\end_inset
+
+firstTry.lyx
+\begin_inset Quotes erd
+\end_inset
+
+ and the firstTry.Rnw.
+\end_layout
+
+\begin_layout Standard
+Then the R translating functions are put to use.
+ How?
+\end_layout
+
+\begin_layout Subsubsection*
+In the windows shell
+\end_layout
+
+\begin_layout Standard
+Are you good at the 
+\begin_inset Quotes eld
+\end_inset
+
+shell,
+\begin_inset Quotes erd
+\end_inset
+
+ the terminal where you can run commands? Under Program Files/Accessories,
+ find Command box.
+ If R.exe is in your 
+\begin_inset Quotes eld
+\end_inset
+
+PATH
+\begin_inset Quotes erd
+\end_inset
+
+, this will be easy.
+ Open a terminal, navigate to the place where the Rnw file is, and run:
+\end_layout
+
+\begin_layout Standard
+R CMD Sweave firstTry.Rnw
+\end_layout
+
+\begin_layout Standard
+That generates a tex file, firstTry.tex, and from there you can convert that
+ to pdf.
+ Many ways are available.
+\end_layout
+
+\begin_layout Standard
+pdflatex firstTry.tex
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+texi2pdf firstTry.tex
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+whatever-latex-script-you-like firstTry.tex
+\end_layout
+
+\begin_layout Standard
+Maybe the reader is frustrated with the 
+\begin_inset Quotes eld
+\end_inset
+
+Command Prompt
+\begin_inset Quotes erd
+\end_inset
+
+ and does not want to fight with it.
+ I don't like the windows shell much either, but I like Unix, this may be
+ a matter of taste.
+\end_layout
+
+\begin_layout Standard
+How to avoid working in the windows shell?
+\end_layout
+
+\begin_layout Subsubsection*
+In an R session.
+\end_layout
+
+\begin_layout Standard
+Suppose you saved firstTry.Rnw in a folder.
+ If you start R and make that same folder your working directory, then in
+ the R session, this command will work:
+\end_layout
+
+\begin_layout Standard
+Sweave(
+\begin_inset Quotes eld
+\end_inset
+
+firstTry
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+If the reader is alert, the following should be expected.
+ Save the trouble of typing that Sweave command by writing a second R script.
+ In that same folder, start another R file, say call it 
+\begin_inset Quotes eld
+\end_inset
+
+processFirstTry.R
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In that file, here's what you need to have
+\end_layout
+
+\begin_layout Standard
+Sweave(
+\begin_inset Quotes eld
+\end_inset
+
+firstTry
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+It is not necessary to include the Rnw suffix, but it is acceptable to do
+ so.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> Sweave("firstTry")
+\end_layout
+
+\begin_layout Plain Layout
+
+Writing to file firstTry.tex
+\end_layout
+
+\begin_layout Plain Layout
+
+Processing code chunks with options ...
+\end_layout
+
+\begin_layout Plain Layout
+
+ 1 : keep.source term verbatim
+\end_layout
+
+\begin_layout Plain Layout
+
+ 2 : echo keep.source term verbatim (label = c10)
+\end_layout
+
+\begin_layout Plain Layout
+
+ 3 : echo keep.source term verbatim pdf  (label = c20)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+You can now run (pdf)latex on 'firstTry.tex'
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From there, use whatever latex editor or compiler you want.
+ 
+\end_layout
+
+\begin_layout Standard
+There are many ways to knit together a script to handle this.
+\end_layout
+
+\begin_layout Subsection*
+In An 
+\begin_inset Quotes eld
+\end_inset
+
+IDE
+\begin_inset Quotes erd
+\end_inset
+
+ like RStudio
+\end_layout
+
+\begin_layout Standard
+In my experience, RStudio is pretty good at finding your LaTeX and R programs
+ and it should notice your Rnw file needs to be Sweaved.
+ 
+\end_layout
+
+\begin_layout Standard
+In the Internet, I find plenty of websites about how to make Sweave work
+ with LaTeX editor programs like TexNic or TexMaker or such.
+\end_layout
+
+\begin_layout Standard
+I find also miscellaneous advice about using programming editors like Emacs,
+ Eclipse, and so forth.
+ 
+\end_layout
+
+\begin_layout Standard
+In all of these exercises, the challenge is to make sure the R program is
+ found so it converts Rnw to tex, and after that some LaTeX processor has
+ to convert tex to pdf.
+\end_layout
+
+\begin_layout Section*
+Do Your Fonts Look Horrible?
+\end_layout
+
+\begin_layout Standard
+On my system, the default LaTeX fonts are horrible when converted to PDF.
+ So the first change make is to use the Latin Modern fonts instead.
+ Your Mileage may vary.
+\end_layout
+
+\begin_layout Section*
+Final Warning
+\end_layout
+
+\begin_layout Standard
+Be ready for hassles when working with Sweave, especially when you are making
+ presentations.
+ That part is a big hassle.
+ I can make it work, but I'm more determined than most people.
+ Maybe you are determined too, we can be friends.
+\end_layout
+
+\begin_layout Standard
+If you want to make Sweave presentations using LaTeX beamer or such, please
+ don't start with LaTeX and Sweave at that stage.
+ Work on some article documents first, then fight with beamer later.
+\end_layout
+
+\begin_layout Standard
+The concerns that you will run into later are discussed in the next step
+ in this tutorial, secondTry.
+\end_layout
+
+\end_body
+\end_document

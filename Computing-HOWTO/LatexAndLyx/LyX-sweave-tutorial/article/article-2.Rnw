@@ -1,0 +1,309 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Computing-HOWTO/LatexAndLyx/LyX-sweave-tutorial/article//}}
+\makeatother
+\documentclass[12pt,english,noae]{scrartcl}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[letterpaper]{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{url}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{enumitem}		% customizable list environments
+\newlength{\lyxlabelwidth}      % auxiliary length 
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+% \setlength{\belowcaptionskip}{\@tempdima}%
+}{%
+ \end@float
+}
+
+\usepackage{graphicx}
+\usepackage{Sweavel}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\global\long\def\vb#1{\bm{\mathrm{#1}}}
+
+
+
+\title{Enhanced Article Template Supporting Sweave}
+
+
+\author{Paul E. Johnson}
+
+
+\date{Oct 31, 2014}
+
+\maketitle
+I started with the template I made 2014-02-21. 
+
+
+\section{Changes}
+\begin{enumerate}
+\item Document -> Modules Sweave Add.
+\item Document -> Settings -> \LaTeX{} Preamble
+
+
+\inputencoding{latin9}\begin{lstlisting}
+\usepackage{graphicx} 
+\usepackage{Sweavel}
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}  
+\def\Rcolor{\color{black}}  
+\def\Rbackground{\color[gray]{0.95}}
+\usepackage{listings} 
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usepackage{dcolumn} 
+\usepackage{booktabs} 
+\end{lstlisting}
+\inputencoding{utf8}
+
+
+Your system needs Frank Harrell's Sweavel.sty in order for this to
+work. Or use the slightly modified Sweavel.sty I use (in same directory
+as this document). Dr Harrell's
+
+\item Insert some boilerplate at the top of the file. I usually put this
+where the text of the document would start.
+
+\begin{enumerate}
+\item An R code chunk. Create a directory ``plots'' where the individual
+chunk outputs will be saved
+
+
+$<<$echo=F$>>=$
+
+dir.create("plots", showWarnings=F)
+
+$@$
+
+\item \LaTeX{} macro that R reads and knows to save the elements in ``plots''
+with the prefix ``t''. Sets height and width default for figures,
+turns off the old fashioned ``ae'' correction. 
+\end{enumerate}
+
+\textbackslash{}SweaveOpts\{prefix.string=plots/t,split=T,ae=F,height=4,width=6\}
+\begin{enumerate}
+\item Another R code chunk with options that help with presentation. I don't
+want to see the R prompt ``>'', so that's replaced with a blank
+space, and I don't want to see the R continuation ``+'', now that
+becomes 3 spaces. In order for the the listings environment to break
+long lines, we need to tell R to write long lines. 
+
+
+$<<$Roptions, echo=F$>>=$
+
+options(width=100, prompt=" ", continue="  ")
+
+options(useFancyQuotes = FALSE) 
+
+set.seed(12345)
+
+\#\# Just for safe keeping, copy the par
+
+op <- par() 
+
+options(SweaveHooks=list(fig=function() par(ps=12)))
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+
+$@$
+
+
+It is not truly necessary to say useFancyQuotes=FALSE, but it is expedient.
+Instead, we could leave the fancy quotes on and then we'd have to
+make sure the document understands UTF-8 encoding. (Exercise for reader.
+Delete the useFancyQuotes thing from the R chunk, and then in Google
+for a while to figure out what you are supposed to do to make the
+document compile. I've found the answer. Can you? Hint: answer will
+involve encoding. 
+
+\end{enumerate}
+\end{enumerate}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+## Just for safe keeping, copy the par
+op <- par() 
+options(SweaveHooks=list(fig=function() par(ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\section{Now Try the Sweave Code from article-1}
+
+Come back to the document, hit Control-l, put in the code chunks.
+I think this is the most pleasant way, but some people think it is
+nicer to use the \LyX{} code chunk environment
+
+
+\subsubsection*{One}
+
+\begin{flushleft}
+$<<$ one $>>=$
+
+set.seed(234234)
+
+x <- rnorm(1000)
+
+mean(x)
+
+sd(x)
+
+$@$
+\par\end{flushleft}
+
+<<one>>=
+set.seed(234234)
+x <- rnorm(1000)
+mean(x)
+sd(x)
+@
+
+
+\subsection*{Two}
+
+I've added more arguments in the hist function so you can see how
+well listings handles the long line. Its awesome!
+
+\begin{flushleft}
+$<<$ two, fig=T $>>=$
+
+hist(x, xlab = "A very well constructed variable", prob = TRUE, ylab = "These are proportions, not densities", breaks = 25)
+
+$@$
+\par\end{flushleft}
+
+<<two, fig=T>>=
+hist(x, xlab = "A very well constructed variable", prob = TRUE, ylab = "These are proportions, not densities", breaks = 25)
+@
+
+
+\subsubsection*{Three}
+
+I split chunk three into 2 pieces here, one to show the way ordinary
+R output is handled and one to demonstrate the \LaTeX{} table.
+
+$<<$ three1 $>>=$
+
+dat <- data.frame(x1 = rnorm(1000), x2 = rnorm(1000))
+
+b0 <- 0.5; b1 <- 0.7; b2 <- 0.15; se <- 10
+
+dat\$y <- b0 + b1*dat\$x1 + b2*dat\$x2 + se*rnorm(1000)
+
+m0 <- lm(y ~ x1, data = dat)
+
+m1 <- lm(y ~ x1 + x2, data = dat)
+
+summary(m1)
+
+$@$
+
+$<<$ three2, results=tex $>>=$
+
+require(rockchalk)
+
+outreg(list("Model of Student Behavior" = m0, "A More Elaborate Model" = m1), varLabels = c("x1" = "Studying", "x2" = "Math Lessons"))
+
+$@$
+
+<<three1>>=
+dat <- data.frame(x1 = rnorm(1000), x2 = rnorm(1000))
+b0 <- 0.5; b1 <- 0.7; b2 <- 0.15; se <- 10
+dat$y <- b0 + b1*dat$x1 + b2*dat$x2 + se*rnorm(1000)
+m0 <- lm(y ~ x1, data = dat)
+m1 <- lm(y ~ x1 + x2, data = dat)
+summary(m1)
+@
+
+<<three2, results=tex>>=
+require(rockchalk)
+outreg(list("Model of Student Behavior" = m0, "A More Elaborate Model" = m1), varLabels = c("x1" = "Studying", "x2" = "Math Lessons"))
+@
+
+
+\section{Work is Done}
+
+This document reflects a lot of trial and error and a lot of changes
+in style. 
+
+For a long time, I followed a series of notes created by Ross Ihaka,
+``Customizing Sweave to Produce Better Looking \LaTeX{} Output''
+\url{http://www.stat.auckland.ac.nz/~stat782/downloads/Sweave-customisation.pdf}.
+In 2011, I found out about Sweavel, a \LaTeX{} style file replacement
+that makes nicer output. One can find more details here: \url{http://biostat.mc.vanderbilt.edu/wiki/Main/SweaveTemplate}
+
+The Sweavel style uses the \LaTeX{} listings package to get nicer
+looking, more customizable input and output markup. I think it is
+worth the effort. We get shading, customizable symbols, and line breaking.
+Ordinary latex with Verbatim will write off the edge of the right
+side of the page. But listings does not. 
+
+Sweavel also comes with some settings that Professor Harrell discovered
+that can make symbols look nicer. One of the customizations he uses,
+which I have erased, can make the ``<-'' symbol in R markup look
+smoother, like $\leftarrow$ . I think that's beautiful, but students
+were upset that they could not type$\leftarrow$ in their R programs
+and they were disconcerted when I said, ``type <-'' for that. It
+also addresses the problem that some symbols, like, $\sim$, are sometimes
+invisible. That is an error that is very difficult for a proof-reader
+to catch.
+\end{document}

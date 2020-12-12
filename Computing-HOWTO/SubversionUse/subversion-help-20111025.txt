@@ -1,0 +1,246 @@
+## Paul E. Johnson
+
+## 2011-10-26
+
+## Subversion help for CRMDA coders
+## Supposing you've glanced through my longer writeup on elementary
+## Subversion (the one in the crmda computing support web page).
+
+# In the usual course of business, we do 
+
+svn checkout [url] ## (svn co) to check out a copy of the repo
+
+## Suppose that downloads the repository's 3 main directories, "trunk",
+## "tags", "branches"
+
+## Most of the time, we are in trunk. Do things like  
+
+svn add [filename] # add a file or directory (recursive, unless run with -N)
+
+svn del [filename] 
+# remove file from SVN's tracking of current
+# working directory.
+
+svn st ## review status of current directory's files
+
+svn log -v ## reviews revision history
+
+svn diff ## shows difference versus repository
+
+svn commit ## sends revisions back to repository. Asks for "commit statement" for logs
+ 
+# download repo's newest version to current folder
+svn update
+
+
+
+
+## About Mistakes
+
+
+## Bad editing? No problem.
+## If user "makes mistakes" in files before committing, should just
+## delete manually and then remove the bad file and run update
+
+rm bad-file.txt
+svn update
+
+## will download fresh current versions. That is the same as
+##
+svn revert [filename]
+
+
+
+## Reverting to previous versions AFTER committing mistakes?
+
+## There's a section in the Subversion book
+##http://svnbook.red-bean.com/en/1.5/svn.branchmerge.basicmerging.html#svn.branchmerge.basicmerging.undo
+
+## Start entirely new working directory by checking out
+## a particular edition.
+## Do you want to erase everything and go back to the version
+## from last Tuesday? Or do you need to be more selective.
+
+## This will step back "one step" into the history
+
+svn merge -r COMMITTED:PREV [filename]
+
+## Type the capitalized words like that, it will get the
+## check-in before the most recent. That merges from 
+## COMMITTED to PREVIOUS.
+
+## If you don't trust the magic COMMITTED and PREV, you can
+## replace with version numbers. Suppose most recent checkout--the
+## bad one-- is 444, and you want to merge back in time
+
+svn merge -r 444:443 [filename]
+
+## Apparently, same as
+
+svn merge -c -444 [filename]
+
+## because merge -c means merge to remove effect of revision 444.
+
+
+## What if you need to go further back in time?
+
+## First, understand SVN creates a revision number for every
+## check in.
+## Run "svn log -v" to see them.
+
+## Do you want to just make a "fresh working directory"?
+
+## At any time, one can check out a copy of any release.  
+
+## If you do this to check out a copy of the current HEAD
+## svn co [url] somedirectory
+
+## change to insert "-r XXX" to grab release version XXX.
+
+## -r same as --revision, and a date can also work, as in:
+
+svn checkout --revision {2002-02-17}
+svn checkout --revision {15:30}
+svn checkout --revision {15:30:00.200000}
+svn checkout --revision {"2002-02-17 15:30"}
+
+## Ask svn what was the revision number current as of a particular date:
+
+svn log --revision {2002-11-28}
+svn log --revision {2002-11-28}:{2005-01-01}
+
+## Or ask for a past copy of a particular file [filename]
+
+##
+
+svn copy -r [revision number] [url of repo] [filename]
+
+
+
+
+## But what if you have made changes 10 commits in the past, 
+## and you don't want to throw all that work away since then.
+## You want to just remove that one edit, 10 times ago?
+
+## here is where the "merge" function in svn comes into play
+## Ordinarily, merge is used to combine a "branch" onto another
+## branch.
+## But it can also be used to remove changes.
+
+svn merge -c -432 .
+
+
+
+
+## Re-organize a repository
+
+svn remove [filename]  ## svn rm [filename]
+
+svn move [file or folder] [folder within current working repository]
+
+svn del [file] 
+## Does not obliterate file's history, just its presence in the
+## most recent version. Can be brought back later.
+
+
+
+
+
+## Saving a Milestone/Release version, Documenting the Release history
+## Working on a separate branch for updates. 
+
+## Tags and Branches
+## I am stumped now to offer a simple, clear explanation.
+## There are too many ways to do things, too many terminologies.
+
+## See the Subversion book 
+
+##http://svnbook.red-bean.com/en/1.1/ch04s02.html#svn-ch-4-sect-2.1
+##http://svnbook.red-bean.com/en/1.1/ch04s06.html
+
+## Then Google about. You might go insane too.
+
+## The custom is to develop current version ("HEAD") in the "trunk" directory.
+## On same level as trunk, the repo has "branch" and "tag".
+## The "branch" and "tags" directories are for creating "snapshot" versions.
+## The tags directory is for keeping full "version releases". Those
+## are not supposed to be edited. They are records. Name them
+## "Release-1.0" or something helpful.
+
+## A branch is created same way as a tag, but it is intended for
+## different use. This can be edited and revised. 
+## It is used for "bug fixing" and such. 
+
+## In a really big project, a developer may checkout the trunk
+## and make a copy for investigation and development.  THen
+## those changes might be "merged" back onto the trunk.
+
+## Create a Tag Version (Snapshot for a release version)
+
+## Create a tag in the remote repository, WITHOUT EVEN
+## checking anything out or changing anything.
+## In the svn book, they do it like this to copy the HEAD of trunk
+## into a tag folder called "release-XYZ". 
+
+svn copy [url of trunk directory] \
+      [url of tags directory/release-XYZ] \
+      -m "A version check-in description." 
+## As usual, the -m part is option, but svn will demand an explanation
+## later if you don't put one in the command. "\" means "continued
+## on the next line.
+
+
+
+
+
+## Creating a  branch for development
+
+## 
+svn copy [url/trunk] [url/branches/my-new-name] \
+  -m "Creates a copy of HEAD in "branches/my-new-name"
+
+## SVN book says that is the easy, obvious way, but
+## to me it is more intuitive to do it on my local folder
+## then commit back. Like so
+
+
+svn checkout [url] my-work-dir
+cd my-work-dir
+## my-work-dir has inside it folders "trunk" "tags" "branches"
+svn copy trunk branches/my-new-branch
+cd branches
+svn commit -m "here's my private branch"
+
+
+
+
+Recover a deleted file
+
+# Suppose user runs "svn del ". Then changes mind, wants file back.
+
+##cd into folder, review revisions history
+svn log -v  
+
+##doublecheck on location of repository
+svn info
+
+##
+
+svn copy -r [revision] [url]  [filename]
+
+##death follows to user who has a filename with a space in it
+##http://www.xenoveritas.org/node/331
+
+
+
+
+##Useful Links
+
+## The Subversion Book is the official standard reference:
+## http://svnbook.red-bean.com/en/1.1/index.html
+
+## http://maverick.inria.fr/~Xavier.Decoret/resources/svn/index.html
+
+## http://root.cern.ch/drupal/content/subversion-howto
+## http://onlamp.com/onlamp/2004/08/19/subversiontips.html
+

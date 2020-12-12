@@ -1,0 +1,495 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,english]{beamer}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[authoryear]{natbib}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ % (ERT) argument for the TOC
+ \AtBeginDocument{%
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usetheme{Warsaw}
+% or ...
+
+\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\usepackage[T1]{fontenc}
+
+\makeatother
+
+\usepackage{babel}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
+
+\begin{document}
+
+
+\title{Introduce Sweave into \LyX{} Beamer Template}
+
+\subtitle{I Think Subtitles are Pretentious}
+
+\author{Paul Johnson\inst{1} \inst{2}}
+
+\institute[Universities of Somewhere and Elsewhere]{\inst{1}Department of Political Science\\
+University of Kansas\and \inst{2}Center for Research Methods and
+Data Analysis\\
+University of Kansas}
+
+\date[2014]{Conference on \LyX{} Presentations, 2014}
+
+\makebeamertitle
+
+%\pgfdeclareimage[height=0.5cm]{institution-logo}{institution-logo-filename}
+
+%\logo{\pgfuseimage{institution-logo}}
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+%\beamerdefaultoverlayspecification{<+->}
+\begin{frame}{Outline}
+
+\tableofcontents{}
+\end{frame}
+
+\section{Sweave}
+\begin{frame}{What is Sweave?}
+
+\begin{itemize}
+\item We will write R code into a \LaTeX{} document
+\item When we compile the \LaTeX{} document, 
+
+\begin{itemize}
+\item the system will trigger an R run
+\item and the results are then ``automatically'' included in the document
+\end{itemize}
+\item This was invented by Friedrich Leisch (\citealp{lmucs-papers:Leisch:2002}).
+See the homepage: \url{https://www.stat.uni-muenchen.de/~leisch/Sweave}.
+\item A newer variant of the same idea is the R package knitr
+\item See vignette ``code\_chunks'' in the crmda stationery package.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}[containsverbatim]
+\frametitle{LyX is not Necessary for this}
+\begin{itemize}
+\item Can write in Raw LaTeX
+\item Instead of editing a {*}.tex file, edit an {*}.Rnw file. 
+\item Look for {*}.Rnw in my Rcourse notes: \url{http://pj.freefaculty.org/guides/Rcourse/plot-1}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here's the basic Sweave idea}
+
+Inside the document, there are ``code chunks'' in which we embed
+the R code.
+
+\inputencoding{latin9}\begin{lstlisting}[breaklines=true,showstringspaces=false,tabsize=2,extendedchars=true]
+ <<eval=F>>=
+ x <- rnorm(100)
+ mean(x)
+ @
+\end{lstlisting}
+\inputencoding{utf8}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Sweave Details}
+
+There are several arguments we can use inside the brackets. Trial
+and Error is required to master these. Here is a thumbnail sketch
+\begin{quote}
+\inputencoding{latin9}\begin{lstlisting}[breaklines=true,showstringspaces=false,tabsize=2]
+ <<chunk10, echo=TRUE, include=FALSE, fig=TRUE, height=4, width=5,eval=FALSE>>=
+ ##whatever
+ @
+\end{lstlisting}
+\inputencoding{utf8}\end{quote}
+\begin{description}
+\item [{chunk10}] The chunk's name. It is optional. No spaces or funny
+symbols, otherwise, do what you like. Name will be handle for the
+chunk when referred to in the future. Helps in fixing errors because
+chunks have names. 
+\item [{echo}] If you want the R commands to be shown in the document,
+say T. To Conceal, say F.
+\item [{include}] Set T if you want this chunk to show at the current location
+in the document. I often set to F so I can run something and manually
+insert results later
+\item [{fig}] if you want this chunk to produce an R graphic, must be T.
+Otherwise omit
+\item [{height,width}] In inches, size of graphic to be created
+\item [{eval}] If set to F, then chunk is not ``run'' through R, but
+it is syntax-inspected for legal format. Often used for ``teaching''
+purposes, where we don't want to launch a long calculation from a
+document, but we want to show the code.
+\end{description}
+At one time, it seemed necessary to use \code{T} and \code{F}, not
+``\code{TRUE}'' and ``\code{FALSE}'' in the bracketed Sweave
+chunk starters. That is not true now. Can write full words.
+\begin{description}
+\item [{Can~reuse~chunks}] later inside another chunk
+
+\inputencoding{latin9}\begin{lstlisting}
+ < <chunk30>>=
+    <<chunk10>>
+ @
+\end{lstlisting}
+\inputencoding{utf8}
+\end{description}
+\end{frame}
+
+\begin{frame}
+\frametitle{What is the document "workflow", then?}
+\begin{itemize}
+\item \LyX{}\ file: A \LyX{} document we edit. 
+
+\begin{itemize}
+\item In Ordinary \LyX{}, we then convert to \LaTeX{} and from there to
+PDF.
+\item In Sweave, the \LyX{} is converted to ``noweb'' literate programming
+document, Rnw
+\end{itemize}
+\item Compile from Lyx:
+\begin{itemize}
+\item export to ``Rnw''
+\item ``R CMD Sweave file.Rnw'' processes code chunks, inserts results,
+creating ``file.tex''
+\item ``pdflatex file.tex'' converts the tex to pdf
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Is this better/different than knitr?}
+\begin{itemize}
+\item There's a longish vignette about this in the crmda stationery package.
+\item knitr can also do the Rnw -> LaTeX conversion.
+\item knitr is distinguished by the fact that it can process documents prepared
+with both 
+\begin{itemize}
+\item LaTeX (Rnw files)
+\item Markdown (Rmd files)
+\end{itemize}
+\item In LaTeX documents, I've found Sweave more dependable (but perhaps
+that is just my age showing)
+\end{itemize}
+\end{frame}
+\begin{frame}{What's Good About Weaving (or knitting)?}
+
+\begin{itemize}
+\item Results and graphs are automatically updated presentations!
+\item Never a mismatch between ``pasted in'' code and actual results
+\item ``Literate Programming'' = ``Replicable Research Reports''
+\item This is easier to do in a \LaTeX{} article than in a presentation,
+I suggest you might study the article examples before you get too
+busy on presentations.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{This Sounds Easy, but}
+
+\begin{itemize}
+\item Writing Beamer Slides–even without Sweave–is the most difficult kind
+of \LaTeX{} work.
+
+\begin{itemize}
+\item Typos result in compilation failures with arcane error messages
+\end{itemize}
+\item Now we add
+
+\begin{itemize}
+\item R code, which must be correct
+\item Beamer markup must be customized to allow the Sweave
+\end{itemize}
+\item \LyX{} is a convenient \LaTeX{} editor, but it is perhaps not so
+wonderfully helpful with Sweave and Beamer slides as it is with Articles. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Document Stages where Failures can Occur}
+
+\begin{description}
+\item [{Rnw\ file:}] R code errors. No matter what, the Rnw file has to
+be passed to R for processing. 
+\item [{\TeX{}\ file:}] If we run ``R CMD Sweave yourFileHere.Rnw'',
+it creates yourFileHere.tex file. R also creates figures and they
+are set aside in separate files, default PDF. The \TeX{} file that
+R creates has elaborate markup that will collect the R code, results,
+plots, and so forth.
+\item [{PDF:}] Run pdflatex (or similar) to convert the \TeX{} file.
+\item [{LyX~has~exporter~for~the~Rnw~file:}] File -> Export -> Sweave
+\end{description}
+\end{frame}
+
+\section{Writing in \protect\LyX{}}
+\begin{frame}{Initiate Sweave}
+
+I have a template with bells and whistles, but if you start fresh
+this is not difficult.
+\begin{itemize}
+\item File -> New
+\item <1->Menu: Document -> Settings -> Module. Choose Sweave and ``Add''
+\item <2->For basic Sweave use, this is the only required change in the
+\LyX{} setup (since version 2.0.2 or so). 
+\item Hit Ctrl-l and type in a code chunk, all is well. I've been using
+\LyX{} with Sweave for a long time (wrote the original HOWTO on the
+\LyX{} Wiki), and the programmers have done a beautiful job of making
+this work with articles.
+\item Repeat: I don't use the LyX code chunk environment, I use ERT
+\end{itemize}
+%
+\end{frame}
+\begin{frame}
+\frametitle{Various other changes help}
+\begin{itemize}
+\item Document -> Settings -> Text Layout -> Vertical Space
+\item Document -> Settings -> Modules -> Logical Markup
+\end{itemize}
+\end{frame}
+\begin{frame}{Presentations are Problematic}
+
+\begin{itemize}
+\item Frames in \LaTeX{} must have begin and end statements, LyX GUI has
+tested various ways to do that. 
+\item \LyX{} 2.1 introduced a new frame setup. All content must be ``indented''
+in LyX, leading to giant margins in document while editing.
+\item Another problem is that the character styling on which R Sweave depends
+will not co-operate with a Beamer Frame.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The Error message you can expect}
+\begin{itemize}
+\item Output from R is rejected by Beamer slides
+\end{itemize}
+\inputencoding{latin9}\begin{lstlisting}[breaklines=true,tabsize=4]
+Paragraph ended before \FV@BeginScanning was complete.
+
+LaTeX Error: \begin{Sinput} on input line 134 ended by \end{beamer@framepause
+Extra }, or forgotten \endgroup.
+\end{lstlisting}
+\inputencoding{utf8}
+\begin{itemize}
+\item Sweave uses the \LaTeX{} package Verbatim to render input and output,
+and, unfortunately, Beamer frames are not compatible
+\item This is not a \LyX{} problem, it is a \LaTeX{}/Beamer problem
+\item Fix is to declare slides with an option, ``containsverbatim''. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ordinary Slide Frame Bookends.} 
+\begin{itemize}
+\item Begin
+\end{itemize}
+\inputencoding{latin9}\begin{lstlisting}
+\begin{frame}
+\frametitle{My fabulous Slide}
+\end{lstlisting}
+\inputencoding{utf8}
+\begin{itemize}
+\item end:
+\end{itemize}
+\inputencoding{latin9}\begin{lstlisting}
+\end{frame}
+\end{lstlisting}
+\inputencoding{utf8}
+\begin{itemize}
+\item Between those things, insert what you like
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{containsverbatim is a magic word}
+\begin{itemize}
+\item A \LyX{} Beamer document will fail if we don't adjust the begin command.
+This is the fix I incorporate:
+
+\inputencoding{latin9}\begin{lstlisting}
+\begin{frame}[containsverbatim]
+\end{lstlisting}
+\inputencoding{utf8}
+\item When I expect the output to go on for a few pages, I adjust the code
+like so
+
+\inputencoding{latin9}\begin{lstlisting}
+\begin{frame}[containsverbatim, allowframebreaks]
+\end{lstlisting}
+\inputencoding{utf8}
+\item ``allowframebreaks'' is helpful if you are working quickly and want
+to generate a lot of slides with same title.
+\end{itemize}
+\end{frame}
+\begin{frame}{Self Defense Mechanisms}
+
+\begin{itemize}
+\item I always start \LyX{} in a terminal. 
+
+\begin{itemize}
+\item The R errors are viewable there.
+\end{itemize}
+\item I configure the \LyX{} temp directory to a place in my home folder,
+so I can see all the intermediate steps.
+\end{itemize}
+\end{frame}
+
+\section{Let's Sweave}
+
+\begin{frame}[containsverbatim]
+\frametitle{Insert some R now}
+
+<<>>=
+x <- rnorm(1000)
+mean(x)
+sd(x)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Insert some more R now}
+
+<<>>=
+x1 <- rnorm(1000)
+mean(x1)
+sd(x1)
+se <- 1.5
+b0 <- 0.2
+b1 <- 0.04
+y <- b0 + b1 * x1 + se * rnorm(1000)
+dat <- data.frame(x1, y)
+m1 <- lm(y ~ x1, data = dat)
+summary(m1)
+dat$x2 <- rpois(1000, lambda = 2)
+m2 <- lm(y ~ x1 + x2, data = dat)
+summary(m2)
+anova(m2, m1, test = "F")
+@
+
+\end{frame}
+
+\subsubsection*{Pleasant Tables}
+
+\begin{frame}
+\frametitle{Insert LaTeX output from R straight into the Document}
+\begin{itemize}
+\item Many R functions exist that can write \LaTeX{} tables and other \LaTeX{}
+objects
+\item To let Sweave know this is happening, the chunk needs to include ``results=tex''.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Insert some more R now}
+
+<<results=tex,echo=F>>=
+require(rockchalk)
+or1 <- outreg(list("The Small Model" = m1, "The Big Model" = m2), varLabels = c("x1" = "Hippotomi", "x2" = "Elephants"))
+cat(or1)
+@
+
+\end{frame}
+
+\subsubsection*{Figures}
+
+\begin{frame}[containsverbatim]
+\frametitle{I want a figure now}
+
+I insert ``fig=T'' into the chunk declaration.
+
+Note how the command runs off the screen. That's a basic Sweave problem.
+
+<<fig=T>>=
+library(rockchalk)
+plotSlopes(m2, plotx = x1, modx = x2, interval = "confidence")
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{A histogram}
+
+<<fig40, fig=T, width=5, height=4>>=
+hist(x1, xlab="x1", main = "Histogram of x1", prob = TRUE)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Hopefully, you see the problem}
+\begin{itemize}
+\item Code chunks run out of the right margin. That's fatal. The Verbatim
+class has no ``automatic line breaks''.
+\item We can try to adjust the image shape and size when it is manufactured.
+\item We adjust the chunk
+
+$<<$fig=T,height=5,width=7$>>=$
+\item I generally find that does not come out ``quite right''. Resizing
+the output size often results in ridiculously large fonts. This time,
+however, the result is not so bad
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I want a figure now that's inside the borders}
+
+<<ps20,fig=T,height=4,width=6>>=
+plotSlopes(m2, plotx = x1, modx = x2, interval = "confidence")
+@
+
+\end{frame}
+
+\section{Summary}
+
+\begin{frame}[containsverbatim]
+\frametitle{Better than Mediocre}
+\begin{itemize}
+\item This is a good start for a new Beamer user.
+\item It is not perfect–not beautiful–but it is certainly better than PowerPoint.
+\item In beamer-3, I'll lay out some changes that can beautify the output
+and make the figures easier to wrangle.
+\end{itemize}
+\end{frame}
+\begin{frame}{References}
+
+\bibliographystyle{apalike}
+\nocite{*}
+\bibliography{beamer}
+\end{frame}
+
+\end{document}
