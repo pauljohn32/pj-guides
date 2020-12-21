@@ -1,0 +1,101 @@
+---
+title: "SEM Structural Models in R - Example 1"
+author:
+ - name: Ben Kite
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: bakite@ku.edu
+ - name: Chong Xing
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: cxing@ku.edu
+ - name: Paul Johnson
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: cxing@ku.edu
+
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: Structural Equation Modeling, R, lavaan 
+abstract:
+    This guide outlines how to fit a structural equation model with
+    measurement and structural components. In other words, a model
+    where latent variables are measured and then used in a regression
+    model.
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+date: "`r format(Sys.time(), '%Y %B %d')`"
+header-includes:
+    - \usepackage{tikz}
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+#### Package and Data {.bs-callout .bs-callout-grey}
+
+Load the lavaan package at the beginning of the session
+```{r}
+library(lavaan)
+```
+The data file is read in, columns are named, and missing values are specified.
+```{r }
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl",
+                   "wratcalc", "waiscalc", "waisspl",
+                   "edlevel", "newschl", "suspend",
+                   "expelled", "haveld", "gender", "age")
+
+dat[dat == 99999] <- NA
+
+dat$gender <- factor(dat$gender, labels = c("Male", "Female"))
+```
+
+#### A Path Diagram for the Model {.bs-callout .bs-callout-red}
+<img src="importfigs/sem-01-a.png">
+
+#### SEM in lavaan {.bs-callout .bs-callout-blue}
+This builds the SEM model
+```{r }
+SEMModel <-
+' MATH =~ wratcalc + wjcalc + waiscalc ## measurement model for MATH
+  SPELL =~ wratspl + wjspl + waisspl   ## measurement model for SPELL
+  MATH ~ edlevel + newschl + suspend + expelled + haveld + gender + age  ## MATH as an outcome
+  SPELL ~ edlevel + newschl + suspend + expelled + haveld + gender + age ## SPELL as an outcome
+  MATH ~~ SPELL ## correlation between MATH and SPELL
+'
+```
+
+Here the model is fitted and the summary is requested.
+```{r }
+output <- sem(model = SEMModel, data = dat, std.lv = TRUE,
+              missing = "fiml", mimic = "Mplus")
+summary(output, standardized = TRUE, fit.measures = TRUE)
+```
+
+#### Estimation Results in a Path Diagram{.bs-callout .bs-callout-red}
+<img src="importfigs/sem-01-b.png">
+
+#### Session Info {.bs-callout .bs-callout-grey}
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+

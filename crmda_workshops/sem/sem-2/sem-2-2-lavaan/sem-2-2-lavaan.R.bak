@@ -1,0 +1,312 @@
+### R code from vignette source 'sem-2-2-lavaan-uniquebackupstring.Rnw'
+### Encoding: UTF-8
+
+###################################################
+### code chunk number 1: sem-2-2-lavaan-uniquebackupstring.Rnw:36-37
+###################################################
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+
+
+###################################################
+### code chunk number 2: tmpout
+###################################################
+tmpout <- "tmpout"
+if(!dir.exists(tmpout)) dir.create(tmpout, showWarnings=FALSE)
+
+
+###################################################
+### code chunk number 3: excludemeRoptions
+###################################################
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+par.orig <- par(no.readonly = TRUE) 
+pjmar <- c(4.1, 4.1, 1.5, 2.1)
+par(mar=pjmar, ps=11)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+if(!file.exists("theme")) file.symlink("../../../../template/theme", "theme")
+if(!file.exists(tmpout)) dir.create(tmpout, showWarnings=F)
+
+
+###################################################
+### code chunk number 4: excludemezhidden
+###################################################
+opts.orig <- options()
+options(width=100, prompt="> ")
+
+
+###################################################
+### code chunk number 5: sem-2-2-lavaan-uniquebackupstring.Rnw:315-318
+###################################################
+ddir <- "data"
+fn <- "affect-2.csv"
+dat <- read.csv(file.path(ddir, fn))
+
+
+###################################################
+### code chunk number 6: agencyhead
+###################################################
+head(dat)
+
+
+###################################################
+### code chunk number 7: sem-2-2-lavaan-uniquebackupstring.Rnw:364-368
+###################################################
+library(lavaan)
+##Run:
+?lavaan
+?parameterEstimates
+
+
+###################################################
+### code chunk number 8: regr10
+###################################################
+mod1 <- lm(PosAFF1 ~ Agency1 + Intrin1, data = dat)
+summary(mod1)
+
+
+###################################################
+### code chunk number 9: regr20 (eval = FALSE)
+###################################################
+## fmla2 <- "PosAFF1 ~ Agency1 + Intrin1"
+## mod2 <- lm(fmla2, data = dat)
+
+
+###################################################
+### code chunk number 10: sem-2-2-lavaan-uniquebackupstring.Rnw:428-431 (eval = FALSE)
+###################################################
+## cfa.mod <- '
+## a_latent_variable =~ indicator1 + indicator2 + indicator3
+## '
+
+
+###################################################
+### code chunk number 11: sem-2-2-lavaan-uniquebackupstring.Rnw:441-444 (eval = FALSE)
+###################################################
+## cfa.mod <- '
+## Agency =~ Agency1 + Agency2 + Agency3
+## '
+
+
+###################################################
+### code chunk number 12: lav10
+###################################################
+cfa.mod <- '
+Agency =~ Agency1 + Agency2 + Agency3
+Intrinsic =~ Intrin1 + Intrin2 + Intrin3
+Extrinsic =~ Extrin1 + Extrin2 + Extrin3
+Positive =~ PosAFF1 + PosAFF2 + PosAFF3
+Negative =~ NegAFF1 + NegAFF2 + NegAFF3
+'
+
+
+###################################################
+### code chunk number 13: sem-2-2-lavaan-uniquebackupstring.Rnw:521-538 (eval = FALSE)
+###################################################
+## cfa.mod <- '
+## Agency =~ Agency1
+## Agency =~ Agency2
+## Agency =~ Agency3
+## Intrinsic =~ Intrin1
+## Intrinsic =~ Intrin2
+## Intrinsic =~ Intrin3
+## Extrinsic =~ Extrin1
+## Extrinsic =~ Extrin2
+## Extrinsic =~ Extrin3
+## Positive =~ PosAFF1
+## Positive =~ PosAFF2
+## Positive =~ PosAFF3
+## Negative =~ NegAFF1
+## Negative =~ NegAFF2
+## Negative =~ NegAFF3
+## '
+
+
+###################################################
+### code chunk number 14: sem-2-2-lavaan-uniquebackupstring.Rnw:553-554 (eval = FALSE)
+###################################################
+## latent1 ~~ latent2
+
+
+###################################################
+### code chunk number 15: lavformula100
+###################################################
+latentA ~ beta1*latentB
+
+
+###################################################
+### code chunk number 16: lav10b (eval = FALSE)
+###################################################
+## cfa.mod <- '
+## Agency =~ Agency1 + Agency2 + Agency3
+## Intrinsic =~ Intrin1 + Intrin2 + Intrin3
+## Extrinsic =~ Extrin1 + Extrin2 + Extrin3
+## Positive =~ PosAFF1 + PosAFF2 + PosAFF3
+## Negative =~ NegAFF1 + NegAFF2 + NegAFF3
+## '
+
+
+###################################################
+### code chunk number 17: lav20a
+###################################################
+cfa1 <- cfa(cfa.mod, data = dat)
+
+
+###################################################
+### code chunk number 18: lav20b
+###################################################
+summary(cfa1)
+
+
+###################################################
+### code chunk number 19: lav50a
+###################################################
+cfa.mod2 <- '
+Agency =~ Agency1 + Agency2 + Agency3
+Intrinsic =~ Intrin1 + Intrin2 + Intrin3
+Extrinsic =~ Extrin1 + Extrin2 + Extrin3
+Positive =~ PosAFF1 + PosAFF2 + PosAFF3
+Negative =~ NegAFF1 + NegAFF2 + NegAFF3
+Agency ~~ Intrinsic
+Agency ~~ Extrinsic
+Agency ~~ Positive
+Agency ~~ Negative
+Intrinsic ~~ Extrinsic
+Intrinsic ~~ Positive
+Intrinsic ~~ Negative
+Extrinsic ~~ Positive
+Extrinsic ~~ Negative
+Positive ~~ Negative
+'
+
+
+###################################################
+### code chunk number 20: lav30a
+###################################################
+cfa3 <- cfa(cfa.mod, data = dat, std.lv = TRUE)
+
+
+###################################################
+### code chunk number 21: lav30b
+###################################################
+summary(cfa3)
+
+
+###################################################
+### code chunk number 22: sem-2-2-lavaan-uniquebackupstring.Rnw:886-887 (eval = FALSE)
+###################################################
+## summary(cfa1)
+
+
+###################################################
+### code chunk number 23: sem-2-2-lavaan-uniquebackupstring.Rnw:909-910
+###################################################
+summary(cfa3, rsquare = TRUE, fit.measures = TRUE, ci = FALSE)
+
+
+###################################################
+### code chunk number 24: lav40a (eval = FALSE)
+###################################################
+## parameterEstimates(cfa3, pvalue = FALSE, ci = FALSE)
+
+
+###################################################
+### code chunk number 25: lav40b
+###################################################
+head(parameterEstimates(cfa3, pvalue = FALSE, ci = FALSE), 15)
+
+
+###################################################
+### code chunk number 26: lav45
+###################################################
+cfa3.df <- parTable(cfa3)
+head(cfa3.df, 10)
+
+
+###################################################
+### code chunk number 27: lav50a
+###################################################
+fitMeasures(cfa1)
+
+
+###################################################
+### code chunk number 28: lav50b
+###################################################
+fitMeasures(cfa1, fit.measures = c("cfi", "rmsea"))
+
+
+###################################################
+### code chunk number 29: lav55 (eval = FALSE)
+###################################################
+## coef(sem1)
+## fitted(sem1)
+## resid(sem1)
+## anova(sem1)
+
+
+###################################################
+### code chunk number 30: lav70
+###################################################
+library(kutils)
+lav70 <- semTable(cfa3, fits = c("cfi", "rmsea"), longtable = TRUE,
+         file = file.path(tmpout, "lav70"), print.results=FALSE)
+cat(lav70)
+
+
+###################################################
+### code chunk number 31: lav72a
+###################################################
+lav72 <- semTable(cfa3, paramSets = c("loadings", "intercepts", "residualvariances",  "latentcovariances", "fits"),  columns = c("estsestars"), fits = c("cfi", "rmsea"), longtable = TRUE, file = file.path(tmpout, "lav72"), print.results=FALSE)
+
+
+###################################################
+### code chunk number 32: lav72b
+###################################################
+cat(lav72)
+
+
+###################################################
+### code chunk number 33: semplot10
+###################################################
+library(semPlot)
+semPaths(cfa1, layout = "tree2")
+
+
+###################################################
+### code chunk number 34: moderation99
+###################################################
+moderate.mod1 <- 'PosAFF1 ~ c(a1, a2)*Agency1' 
+out.mod1 <- sem(moderate.mod1, data = dat, group = "Sex") 
+summary(out.mod1)
+
+
+###################################################
+### code chunk number 35: moderation991
+###################################################
+moderate.mod2 <- 'PosAFF1 ~ c(a1, a1)*Agency1' 
+out.mod2 <- sem(moderate.mod2, data = dat, group = "Sex") 
+summary(out.mod2)
+
+
+###################################################
+### code chunk number 36: moderation992
+###################################################
+anova(out.mod1, out.mod2)
+
+
+###################################################
+### code chunk number 37: sess10
+###################################################
+sessionInfo()
+
+
+###################################################
+### code chunk number 38: opts20
+###################################################
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+options(par.orig)
+
+

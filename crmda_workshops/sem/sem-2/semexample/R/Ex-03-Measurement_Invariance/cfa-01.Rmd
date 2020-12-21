@@ -1,0 +1,84 @@
+
+
+Multiple Group Confirmatory Factor Analysis (CFA) Example in R
+
+
+Load the lavaan package at the beginning of the session
+
+```{r }
+library(lavaan)
+```
+
+
+The data file is read in, columns are named, and missing values are specified.
+```{r }
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl", "wratcalc",
+                   "waiscalc", "waisspl", "edlevel", "newschl",
+                   "suspend", "expelled", "haveld", "female", "age")
+dat[dat == 99999] <- NA
+```
+
+Now the CFA model that is to be tested needs to be specified as an R
+object.  In lavaan the "=~" operator is the exact same as the BY
+operator in Mplus.  In the statements below the variables on the right
+of the "=~" are indicators of the variable to the left of the "=~".
+Also notice that there are "+" signs that separate the variables on
+the right side of the equation.  The entire model statement needs to
+be wrapped in quotation marks.
+```{r }
+ConfigModel <- "MATH =~ wratcalc + wjcalc + waiscalc
+             SPELL =~ wratspl + wjspl + waisspl"
+```
+
+```{r }
+ConfigOutput <- cfa(model = ConfigModel, data = dat, group = "female",
+                    std.lv = TRUE, missing = "fiml")
+summary(ConfigOutput)
+```
+
+
+```{r }
+metricModel <- "MATH =~ wratcalc + wjcalc + waiscalc
+             SPELL =~ wratspl + wjspl + waisspl
+             MATH ~~ c(1, NA)*MATH
+             SPELL ~~ c(1, NA)*SPELL"
+
+```
+```{r }
+metricOutput <- cfa(model = metricModel, data = dat, std.lv = TRUE,
+                    group = "female", group.equal = "loadings",
+                    missing = "fiml")
+summary(metricOutput)
+```
+
+```{r }
+scalarModel <- "MATH =~ wratcalc + wjcalc + waiscalc
+             SPELL =~ wratspl + wjspl + waisspl
+             MATH ~~ c(1, NA)*MATH
+             SPELL ~~ c(1, NA)*SPELL
+             MATH ~ c(0, NA)*1
+             SPELL ~ c(0, NA)*1 "
+
+```
+```{r }
+scalarOutput <- cfa(model = scalarModel, data = dat, std.lv = TRUE,
+                    group = "female",
+                    group.equal = c("loadings", "intercepts"),
+                    missing = "fiml")
+summary(scalarOutput)
+```
+
+Now the models can be compared via chi-square difference testing.
+```{r}
+anova(ConfigOutput, metricOutput)
+```
+Here the metric model does not fit significantly worse than the
+configural model, so metric invariance is supported.
+
+Now we can test for scalar invariance.
+```{r}
+anova(metricOutput, scalarOutput)
+```
+Here the scalar model fits significantly worse, so scalar invariance
+is not supported.

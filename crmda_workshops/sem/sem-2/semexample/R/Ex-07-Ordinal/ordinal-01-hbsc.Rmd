@@ -1,0 +1,1120 @@
+---
+title: "SEM Example 07 - Comparing ML and WLSMV Estimators for Ordinal, Likert-Type Items"
+subtitle: "Demonstrations with the Health Behaviour in School-Aged Children Dataset"
+author:
+  - name: Chong Xing
+    affiliation: Center for Research Methods and Data Analysis, University of Kansas
+    email: cxing@ku.edu
+  - name: Paul Johnson
+    affiliation: Center for Research Methods and Data Analysis, University of Kansas
+    email: pauljohn@ku.edu
+  - name: Meghan Sullivan
+    affiliation: Center for Research Methods and Data Analysis, University of Kansas
+    email: meg.sullivan@ku.edu
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: Structural Equation Modeling, Ordinal Data, Weighted Least Squares Estimators, Maximum Likelihood, HBSC"
+abstract: >
+  Likert scale data can be treated as numbers, say 1 through 5, or
+    they can be treated as ordinal labels, say "Strongly Disagree" to
+    "Strongly Agree".  Methods to estimate the ordinal version have
+    been available for some time, and yet it is still common to treat
+    the ordinal data as if it were numeric. Here we explore the
+    question by presenting examples of structural equation models estimated in
+    both ways. The Maximum Likelihood (ML) method is used when the
+    data are treated as numbers, while Weighted Least Squares (WLSMV)
+    estimator is employed when the data is treated as
+    categorical. Example data was obtained from the Health Behavior 
+    in School-Aged Children study 
+    [(HBSC; Iannotti, 2005-2006)](https://www.icpsr.umich.edu/icpsrweb/ICPSR/studies/28241?q=HBSC).
+    Our data set includes students in grades 6 and 7 (N = 4,284). 
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r excludemesetup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+opts.orig <- options()
+par.orig <- par(no.readonly=TRUE)
+options(width = 80)
+```
+
+```{r datain10, include=F}
+ddir <- "../../data/hbsc-subset2"
+odir <- "output"
+
+library(kutils)
+library(lavaan)
+```
+
+# Data Importation
+
+A subset of the HBSC data, `hbsc-subset2.dat`, was created and prepared
+for usage in Mplus. The Mplus exercises that investigate this data
+can be found in [Mplus](../../Mplus/Ex-07-Ordinal "Mplus version of
+ordinal data models").
+
+Here we import the same data file in R, assign column names, and then
+use the `kutils` variable key to create additional categorical
+variables.
+
+```{r datain20}
+hbsc.colnames <- scan(file.path(ddir, "hbsc-subset2-colnames.txt"), what = "character")
+hbsc.orig <- read.table(file.path(ddir, "hbsc-subset2.dat"),
+                        header = FALSE, col.names = hbsc.colnames,
+                        na.strings = c("-999", ".", "NA"))
+key <- keyImport("hbsc-subset2-key2.csv")
+hbsc <- keyApply(hbsc.orig, key, drop = FALSE, ignoreCase = FALSE, debug = FALSE,
+                 diagnostic = FALSE)
+```
+
+The file named `hbsc-subset2.dat` is that "raw" text data file that
+was used in our companion Mplus exercises. 
+
+We restrict our attention to the students in the 6th and 7th grades.
+```{r datain30}
+hbsc <- hbsc[!is.na(hbsc$Grade) & hbsc$Grade %in% c("6", "7"), ]
+```
+
+The variables in our R analysis have the same names that are used in
+the Mplus files. However, to demonstrate the different methods
+available in R for dealing with ordered categorical variables, we
+insert ordinal versions of the same variables with the letters "_o"
+appended.
+
+```{r namecheck, include=F, echo=F}
+ords <- grep("_o$", colnames(hbsc), value = TRUE)
+ints <- gsub("_o$", "", ords)
+vnames <- data.frame("Ordinal Versions" = ords, "Integer Versions" = ints)
+```
+
+```{r namecheck2, results='asis', echo=F}
+library(xtable)
+t1 <- xtable(vnames)
+print(t1, type = "html", include.rownames = FALSE)
+```
+
+The following demonstrates that the R summary function is somewhat
+ befuddled by the categorical variables.  When we provide the same
+ information in 2 variables, one as an integer and one as a factor, 
+ the numeric version is displayed quite differently (Mean and Median),
+ while the categorical varsion is treated as tabular information. 
+
+```{r import1}
+vars <- c("Grade", "depress1", "depress2", "depress3", "depress1_o", "depress2_o", "depress3_o")
+summary(hbsc[ , vars])
+```
+
+The values represented `depress1` and `depress1_o` are the same. The
+difference is that most R functions will treat `depress1` as an integer (or
+numeric) score, while the ordinal variant is an R factor. For example:
+
+```{r import2, echo=F}
+table("depress1 as factor" = hbsc$depress1_o, "depress1 as integer"= hbsc$depress1)
+```
+## Complication: Missing Values (methodological moving target)
+
+Historically, cases in which there  were missing values were subjected
+to the listwise deletion. That was the standard through the 1970s and
+1980s.
+
+In the 1970s, would-be SEM practitioners had no choice. They were
+forced to treat categorical "Likert-type" variables as if the scores
+were numbers.  Although there were several different estimators
+considered during that time, lets refer to them as "ML of covariance
+structures," or ML for short.
+
+Early in the 1980s, a chain of technical developments results in new
+methods that explicitly treated the ordinal variables as categorical
+methods. Again, there were several similar implementations with
+slightly different terminology, but lets call these "Weighted Least
+Squares" methods, or WLS for short.  Those methods were developed with
+the assumption of listwise deletion of missing data.
+
+There were efforts to find methods that avoided deletion of cases on
+which there were missing values. The most important analytical
+breakthrough was full information maximum likelihood, a method
+suitable for numeric indicator variables.  Colloquilly referred to as
+"FIML," this technique was originally developed for factor analysis.
+Its technique was readily "grafted onto" estimators for confirmatory
+factor analysis and structural equation models. FIML is regarded as an
+analytic breakthrough and there are many studies which suggest it
+should be preferred to listwise deletion.  It is possibly as good, or
+even more desirable than, multiple imputation for missing values.
+
+FIML requires individual-level data. In the days before FIML, we could
+exchange covariance matrices and conduct replication analysis because
+the covariance structure contained all of the information necessary to
+conduct SEM calculations. That is not true of FIML, which uses the
+individual scores to work its magic.  In a real sense, the adoption of
+FIML was a methodological watershed. It was not meaningful, anymore,
+to refer to the field as "the analysis of covariance structures" (as
+it was known in the 1990s).
+
+In the time when SEM was thought of as the analysis of covariance
+structures, methods of dealing with missing values in the
+construction of the observed covariance matrix were considered. The
+"pairwise complete" method does what its name implies, it takes
+variables in pairs and uses the available observations.  There were mixed
+results about this method, some suggested it was less desirable even
+than listwise deletion of missing values.
+
+Now the bad news: FIML was not applicable to SEM estimators for
+ordinal data. FIML succeeded in large part because the indicators were
+assumed to be draws from a multivariate normal distribution. Since
+that assumption does not apply when the observed variables are
+discrete (ordinal) or non-normal, the researcher was forced
+into an unpleasant choice. The options seemed to be
+
+  1. Assert that the data is actually numeric (normal), in order to use FIML,
+     or
+  2. Apply the ordinal estimator, which uses listwise deletion of
+  cases with missing values.
+  
+
+Those were the options, at least until very recently. This is the
+point at which we hit a confusing problem. In order to compare results
+between Mplus and R, it is necessary to keep track of at least three
+key terms
+
+  1. The estimator: ML, or WLS, or others
+  2. The treatment of missing values: listwise deletion,
+     pairwise-complete correlation matrix
+  3. Corrections for standard errors and test diagnostics, often
+     referred to as "robust" methods. 
+	 
+In order to align the results from R's lavaan package and Mplus, it is
+necessary for us to make sure all 3 elements are in line. Estimates
+can also be returned in different scalings, depending on the
+parameters.
+
+Once this is understood, we hit a problem.  Mplus implements some
+estimators that are not available in R.
+
+We are able to align the R and Mplus results for data that is treated
+as if it were numeric. The estimator full information maximum
+likelihood with robust standard errors (MLR) offers the same results
+in either. Both use FIML. 
+
+However, the Mplus estimators for categorical variables have changed
+over the years. Mplus WLSMV is no longer using listwise deletion of
+missing values. It now uses a "pairwise complete" correlation
+matrix. We were "bitten" by the fact that WLSMV estimates from R's
+lavaan and Mplus are no longer equivalent. In order to align the
+lavaan estimates for categorical data using WLSMV with Mplus, we need
+to run the Mplus estimator with the argument `LISTWISE = ON;`. At the
+current time, lavaan uses listwise deletion by default, but it is not
+harmful to explicitly state `missing = "listwise"`
+
+However, it now becomes tricky for us to compare the MLR estimates for
+the numeric version with the categorical estimates because they are
+based on samples of different sizes. We made it possible to align the
+categorical data parameter estimates between Mplus and lavaan, but
+within lavaan, it is more difficult to compare the numeric ML with
+categorical WLSMV because the sample sizes differ. We ought to compare
+WLSMV-listwise with ML-listwise, that is to say.
+
+Putting that issue aside, in Mplus 7, a new maximum likelihood
+estimator for the categorical data model was introduced. This is an ML
+estimator for categorical indicators.  It uses the estimator familiar
+to researchers in education, the marginal maximum likelihood estimator
+that had risen to prominence in item response theory (IRT). The
+IRT-based ML estimator in Mplus 7 is very time consuming and, at the
+current time, the lavaan implementation of that estimator is under
+development.
+
+
+# SECTION-I: One-Factor CFA Models
+
+This section presents three single-factor CFA analyses of depression,
+alcohol use, and bullying victimization.  We provide two sets of
+estimates, one that treats the 1-2-3-4-5 scores as if they were
+numeric (MLR, Maximum Likelihood with Robust standard errors) and
+ordinal (WLSMV, Weighted Least Squares with Mean and Variance
+adjustment). The WLSMV estimates employ listwise deletion of missing values.
+
+## One-Factor CFA for Depression
+
+Depression was measured by six items with five-point Likert
+scales. Items were framed with the following stem:
+
+    "Think about how you have been feeling over the last 30 days.  Mark
+    the number that goes with how often you have felt or done each of
+    these." 
+
+Example items include "Were you very sad?" and "Did you feel hopeless
+about the future?"
+
+Response options were 1) Never, 2) Seldom, 3) Sometimes, 4) Often, and
+5) Always.
+
+### Method 1 - ML estimates treat data as numeric
+
+The first model is estimated with lavaan MLR.
+
+A few highlights in our model code:
+
+* Fixed-factor identification sets the factor variance equal
+  to 1. This was done to set the scale of the latent variable.
+* `NA*` specifies that the item's factor loading should be freely estimated.
+* `depress ~~ 1*depress` sets/fixes the variance of the latent variable, `depress`, to 1.
+* Alternatively, `std.lv = TRUE` can be included in the cfa() function to achieve the same purpose.
+
+
+```{r cfa.depress}
+cfa.depress <- '
+depress =~ NA*depress1 + depress2 + depress3
+            + depress4 + depress5 + depress6
+depress ~~ 1*depress
+'
+```
+
+```{r cfa.depress.MLR.listwise}
+cfa.depress.mlr.listwise <-
+  cfa(model = cfa.depress, data = hbsc,
+      mimic = "Mplus", estimator = "MLR", meanstructure = TRUE, 
+      missing = "listwise")
+```
+
+ * meanstructure: The `meanstructure` parameter is included because there is a quirk
+ in the lavaan output.  With `missing = "listwise"`, the Intercepts are
+ not included in the output, but with FIML, they are.
+ * std.ov: The output from WLSMV will provide coefficients that are
+   scaled. The most similar scaling for the MLR model is for
+   standardized observed variables. (Note in the output the columns
+   for the usual and standardized coefficients will be the same
+   because of this setting.)
+
+Lavaan's `summary` function does not create an output object. It
+prints direct to the screen. The style of the output is similar to
+another well-known SEM software program.
+
+```{r cfa.depress.MLR.listwise.summary}
+summary(cfa.depress.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r cfa.depress.mlr.listwise.save, include=F, message=F, warning=F}
+myexp <- "
+fn <- \"cfa.depress.mlr.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.depress.mlr.listwise@call)
+summary(cfa.depress.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+print(warnings(last.warning))
+sink()
+"
+eval(parse(text = myexp))
+```
+
+After this point, we will not include the voluminous output within our
+presentation here. Instead, we will divert the output into files that
+can be reviewed in separate files. For this summary, the lavaan output
+is saved in the file:
+[output/cfa.depress.mlr.listwise.Rout](output/cfa.depress.mlr.listwise.Rout)
+
+The Mplus output for the same example is saved in the file:
+[cfa-depress-mlr-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-depress/cfa-depress-mlr-listwise.out)
+
+If the listwise option is not specified, ML uses the so-called FIML
+estimator, which does not result in the omission of as many cases in
+this CFA. Note the Warning, however.  Some cases are missing on all
+of the variables, so they are removed from the analysis.  In order to
+be kept in the calculation, an observation must have at least one
+observed value on an indicator (and there must be no missings on 
+exogenous predictor variables, but that is not a concern here).
+
+```{r cfa.depress.mlr.fiml}
+cfa.depress.mlr.fiml <- cfa(model = cfa.depress, data = hbsc,
+                            mimic = "Mplus", estimator = "MLR",
+                            meanstructure = TRUE)
+```
+
+```{r cfa.depress.mlr.fiml.summary, eval=F}
+summary(cfa.depress.mlr.fiml, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r cfa.depress.mlr.fiml.save, include=F, message=F, warning=F}
+myexp <- "
+fn <- \"cfa.depress.mlr.fiml.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.depress.mlr.fiml@call)
+summary(cfa.depress.mlr.fiml, fit.measures = TRUE, standardized = TRUE)
+print(warnings(last.warning))
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan output is saved in the file:
+[output/cfa.depress.mlr.fiml.Rout](output/cfa.depress.mlr.fiml.Rout "CFA output")
+
+The Mplus output for the same example is saved in the file:
+[cfa-depress-mlr-fiml.out](../../Mplus/Ex-07-Ordinal/cfa-depress/cfa-depress-mlr-fiml.out)
+
+### Method 2 - The ordinal "threshold" model with WLS
+
+A casual inspection of the variables indicates that the 5 point
+scales are quite skewed. These might be the "right tail" of a normal
+variable that has been split into categorized sections. 
+
+```{r, echo = F, include = T, warning = F, message = F, results = 'hide'}
+hist(hbsc$depress1, main = "Histogram of Depression Item 1", xlab = "Response Option", 
+           ylim = c(0, 3000), breaks = c(1,2,3,4,5))
+``` 
+
+Because our variables that are named with "_o" are declared as ordered
+factors, the fitting function in lavaan will notice that they are not
+numeric and estimate them accordingly. We rewrite the lavaan formula
+as follows
+
+```{r cfa.depress.ord}
+cfa.depress.ord <- '
+depress =~ NA*depress1_o + depress2_o + depress3_o
+            + depress4_o + depress5_o + depress6_o
+depress ~~ 1*depress
+'
+```
+
+```{r cfa.depress.ord.wlsmv}
+cfa.depress.ord.wlsmv <-
+    cfa(model = cfa.depress.ord, data = hbsc, mimic = "Mplus",
+        estimator = "WLSMV", missing = "listwise")
+```
+
+```{r cfa.depress.ord.fit.wlsmv.summary, eval=F}
+summary(cfa.depress.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+```
+
+<!-- ```{r cfa.depress.ord.summary} -->
+<!-- summary(cfa.depress.ord.wlsmv, fit.measures = TRUE, standardized = TRUE) -->
+<!-- ``` -->
+
+```{r cfa.depress.ord.save, include=F}
+myexp <- "
+fn <- \"cfa.depress.ord.wlsmv.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.depress.ord.wlsmv@call)
+summary(cfa.depress.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan output is saved in the file:
+[output/cfa.depress.ord.wlsmv.listwise.Rout](output/cfa.depress.ord.wlsmv.listwise.Rout
+"CFA output")
+
+The Mplus output for the same example is saved in the file:
+[cfa-depress-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-depress/cfa-depress-wlsmv-listwise.out)
+
+* We specify `WLSMV` as the estimator. This is WLS with corrections
+  for the standard errors and diagnostic statistics. 
+* The option `mimic = "Mplus"` is used in our effort to synchronize these results with
+  the estimates from Mplus in the companion exercise.
+* The estimates are unchanged if we insert `missing = "listwise"` in
+  the function call. That's because listwise deletion is the current
+  default.
+* The summary method includes `standardized = TRUE`, which does not
+  alter the main parameter estimates, but prints supplementary
+  information in the form of standardized coefficient estimates on the
+  right side of the table.
+  
+It is not truly necessary to use ordinal factor variables to estimate
+this model. We could obtain the same result by declaring the variables
+explicitly as ordered. Recall that in our formula `cfa.depress` we
+used the names of the numeric variables. The `lavaan` `cfa` function
+has an argument `ordered` that allows us to specify that some
+variables should be treated as categorical:
+
+```{r cfa.depress.ord.wlsmv2}
+cfa.depress.wlsmv2 <-
+  cfa(model = cfa.depress, data = hbsc,
+    mimic = "Mplus", estimator = "WLSMV",
+    ordered = c("depress1", "depress2", "depress3",
+                "depress4", "depress5", "depress6"))
+```
+
+* Please note that the "Used Number of observations" in the WLSMV
+model is 4,103 compared to 4,221 in the ML FIML model where we did not 
+enforce listwise deletion. 
+
+* Based on the listwise-deleted data (N = 4,103), the WLSMV estimation
+produced better model fit on CFI, TLI, RMSEA, and SRMR.
+
+A summary table comparing the 2 ML models, along with the WLSMV
+estimates for the ordinal model, is provided next.
+
+```{r, echo=F, results='asis'}
+library(kutils)
+semtab10 <- semTable(list("ML (FIML)" = cfa.depress.mlr.fiml ,
+                          "ML (listwise)" = cfa.depress.mlr.listwise,
+                          "WLSMV" = cfa.depress.wlsmv2), columns = "estsestars",
+                     type = "html")
+```
+
+The ordinal model is, of course, "longer", in the sense that it 
+estimates ordinal thresholds between categories. The coefficients
+are thus not directly comparable. However, it is interesting to
+compare the them and wonder if treating the variables as numeric
+or ordinal really makes "such a big difference." 
+
+The difference between ML with and without listwise deletion is 
+a very interesting topic that we have worked on in other reports.
+In these examples, we are intereted in comparing the WLSMV estimates
+against the ML estimates based on the exact same (listwise deleted)
+data. ***After this point, whenever we refer to ML estimates, we refer
+to ML with listwise deletion.***
+
+Mplus offers a FIML option for categorical data (not available in
+lavaan yet). Please see
+[cfa-depress-mlr-cat.html](../../Mplus/Ex-07-Ordinal/cfa-depress/cfa-depress-mlr-cat.html)
+
+## One-Factor CFA for Bully Victimization
+
+The next construct we present is bullying victimization, which was
+measured by nine Likert-type items. Items were framed with the
+following item stem:
+
+"Here are some questions about bullying. We say a student is
+BEING BULLIED when another student, or a group of students,
+say or do nasty or unpleasant things to him or her. It is
+also bullying when a student is teased repeatedly in a way
+he or she does not like or when they are deliberately left
+out of things. But it is NOT BULLYING when two students of
+about the same strength or power argue or fight. It is also
+not bullying when a student is teased in a friendly and
+playful way.
+
+How often have you been bullied at school in the past
+couple of months in the ways listed below?" 
+
+Example items include "I was called mean names, was made fun of, or
+teased in a hurtful way" and "I was hit, kicked, pushed, shoved
+around, or locked indoors."
+
+Item response options include: 1) I haven't been bullied in this way,
+2) Only once or twice, 3) 2 or 3 times a month, 4) About once a week,
+and 5) Several times a week.
+
+The first model is estimated with ML treating items as integers in R. 
+This is a common yet inappropriate practice with ordinal, Likert response types.
+
+* "bullied1_o" coded as ordered-factor variable
+* "bullied1" coded as integer variable
+
+### Method 1 - Treat ordinal data as continuous with ML
+
+Items Coded as Integers
+
+```{r cfa.bullied}
+cfa.bullied <- '
+bullied =~ NA*bullied1 + bullied2 + bullied3
+            + bullied4 + bullied5 + bullied6 
+            + bullied7 + bullied8 + bullied9
+bullied ~~ 1*bullied
+'
+```
+
+```{r cfa.bullied.mlr.listwise}
+cfa.bullied.mlr.listwise <-
+    cfa(model = cfa.bullied, data = hbsc, mimic = "Mplus",
+        estimator = "MLR", missing = "listwise", meanstructure = TRUE)
+```
+
+```{r cfa.bullied.mlr.listwise.summary, eval=F}
+summary(cfa.bullied.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r cfa.bullied.mlr.listwise.save, include=F}
+myexp <- "
+fn <- \"cfa.bullied.mlr.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.bullied.mlr.listwise@call)
+summary(cfa.bullied.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan output is saved in the file:
+[output/cfa.bullied.mlr.listwise.Rout](output/cfa.bullied.mlr.listwise.Rout "CFA output")
+
+The Mplus output for the same example is saved in the file:
+[cfa-bullied-mlr-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-bullied/cfa-bullied-mlr-listwise.out)
+
+### Method 2 - The ordinal "threshold" model with WLS
+Items Coded as Ordered-Factors
+
+```{r cfa.bullied.ord}
+cfa.bullied.ord <- '
+bullied =~ NA*bullied1_o + bullied2_o + bullied3_o
+            + bullied4_o + bullied5_o + bullied6_o 
+            + bullied7_o + bullied8_o + bullied9_o
+bullied ~~ 1*bullied
+'
+```
+
+```{r cfa.bullied.ord.wlsmv}
+cfa.bullied.ord.wlsmv <-
+    cfa(model = cfa.bullied.ord, data = hbsc,  mimic = "Mplus",
+        estimator = "WLSMV", meanstructure = TRUE)
+```
+
+The model summary table can be printed by running:
+
+```{r cfa.bullied.ord.wlsmv.summary, eval=F}
+summary(cfa.bullied.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r cfa.bullied.ord.save, include=F}
+myexp <- "
+fn <- \"cfa.bullied.ord.wlsmv.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.bullied.ord.wlsmv@call)
+summary(cfa.bullied.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+
+The lavaan output is saved in [output/cfa.bullied.ord.wlsmv.listwise.Rout](output/cfa.bullied.ord.wlsmv.listwise.Rout "CFA output").
+
+The Mplus output for the same example is saved in the file:
+[cfa-bullied-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-depress/cfa-bullied-wlsmv-listwise.out)
+
+Rather than discuss the raw output, we prefer to align the output as a
+more pleasant table, which can be done with the semTable function in kutils.
+
+```{r cfa.bullied.ord.wlsvm2, include=F}
+cfa.bullied.wlsmv2 <-
+    cfa(model = cfa.bullied, data = hbsc,  mimic = "Mplus",
+        estimator = "WLSMV",
+		ordered = paste0("bullied", 1:9))
+```
+
+```{r bullytable, echo=F, results='asis'}
+semtab20 <- semTable(list("ML (listwise)" = cfa.bullied.mlr.listwise,
+                          "WLSMV" = cfa.bullied.wlsmv2), columns = "estsestars",
+                     type = "html")
+```
+
+<!-- * The response distribution of bully victimization items deviated even further from the normal -->
+<!-- distribution compared to the depression item response distributions. This may explain why the ML -->
+<!-- estimation of the CFA model did not fit as well as WLSMV in terms of the CFI, TLI, RMSEA, and SRMR. -->
+
+Mplus offers a FIML option for categorical data (not available in
+lavaan yet). Please see
+[cfa-bullied-mlr-cat.html](../../Mplus/Ex-07-Ordinal/cfa-bullied/cfa-bullied-mlr-cat.html)
+
+## One-Factor CFA for Alcohol Use
+The final construct we present of our single-factor CFA models is Alcohol Use. This construct
+was measured by five Likert-type items.  Example items are as follows: 
+
+    At present, how often do you drink anything alcoholic, such as beer,
+    wine, or hard liquor like Vodka or rum?
+
+    A. Beer
+
+    Try to include even those times when you only drink a small amount
+    (e.g., one or two sips)."
+
+Items differed in the type of alcohol, including Beer, Wine,
+Liquor/Spirits, Pre-mixed drinks (for example, Smirnoff Ice, Bacardi
+Breezer, Mike's Hard Lemonade), and Any other drink that contains
+alcohol.
+
+Response options indicated the frequency of alcohol use, such as 1)
+Everyday, 2) Every week, 3) Every month, 4) Rarely, 5) Never.
+
+### Method 1 - Treat ordinal data as continuous with ML
+Items Coded as Integers
+
+```{r cfa.alc}
+cfa.alc <- '
+alcohol =~ NA*alc1 + alc2 + alc3
+            + alc4 + alc5
+alcohol ~~ 1*alcohol
+'
+```
+
+```{r cfa.alc.mlr}
+cfa.alc.mlr.listwise <-
+    cfa(model = cfa.alc, data = hbsc, mimic = "Mplus",
+        estimator = "MLR", missing = "listwise", meanstructure = TRUE)
+```
+
+```{r cfa.alc.mlr.summary, eval=F}
+summary(cfa.alc.mlr.listwise, fit.measures = TRUE)
+```
+
+```{r cfa.alc.mlr.listwise.save, include=F}
+myexp <- "
+fn <- \"cfa.alc.mlr.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.alc.mlr.listwise@call)
+summary(cfa.alc.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+
+The lavaan output is saved in the file:
+[output/cfa.alc.mlr.listwise.Rout](output/cfa.alc.mlr.listwise.Rout "CFA output")
+
+The Mplus output for the same example is saved in the file:
+[cfa-alcohol-mlr-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-alcohol/cfa-alcohol-mlr-listwise.out)
+
+### Method 2 - The ordinal "threshold" model with WLS
+Items Coded as Ordered-Factors
+
+```{r cfa.alc.ord.wlsmv}
+cfa.alc.ord <- '
+alcohol =~ NA*alc1_o + alc2_o + alc3_o
+            + alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+'
+
+cfa.alc.ord.wlsmv <-
+    cfa(model = cfa.alc.ord, data = hbsc, mimic = "Mplus",
+        estimator = "WLSMV", missing = "listwise")
+```
+
+```{r cfa.alc.ord.wlsmv.summary, eval=F}
+summary(cfa.alc.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r cfa.alc.ord.save, include=F}
+myexp <- "
+fn <- \"cfa.alc.ord.wlsmv.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(cfa.alc.ord.wlsmv@call)
+summary(cfa.alc.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan summary output is saved in
+[output/cfa.alc.ord.wlsmv.listwise.Rout](output/cfa.alc.ord.wlsmv.listwise.Rout"CFA output"). 
+
+The Mplus output for the same example is saved in the file:
+[cfa-alcohol-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-alcohol/cfa-alcohol-wlsmv-listwise.out)
+
+Comparing the MLR and WLSMV estimates side by side, we
+offer the following table:
+
+```{r cfa.alc.ord.wlsmv2, include=F}
+cfa.alc.wlsmv2 <-
+    cfa(model = cfa.alc, data = hbsc,  mimic = "Mplus",
+        estimator = "WLSMV",
+		ordered = paste0("alc", 1:5))
+```
+
+```{r alctable, echo=F, results='asis'}
+semtab30 <- semTable(list("ML (listwise)" = cfa.alc.mlr.listwise,
+                          "WLSMV" = cfa.alc.wlsmv2), columns = "estsestars",
+                     type = "html")
+```
+
+Mplus offers a FIML option for categorical data (not available in
+lavaan yet). Please see
+[cfa-alcohol-mlr-cat.html](../../Mplus/Ex-07-Ordinal/cfa-alcohol/cfa-alcohol-mlr-cat.html)
+
+# SECTION-II: A Three-Factor CFA
+Factors: Bullying Victimization, Depression, and Alcohol Use
+
+## Method 1 - Treat ordinal data as continuous with ML
+```{r cfa.3factor}
+cfa.3factor <- '
+bullied =~ NA*bullied1 + bullied2 + bullied3
+            + bullied4 + bullied5 + bullied6
+            + bullied7 + bullied8 + bullied9
+bullied ~~ 1*bullied
+depress =~ NA*depress1 + depress2 + depress3
+            + depress4 + depress5 + depress6
+depress ~~ 1*depress
+alcohol =~ NA*alc1 + alc2 + alc3
+            + alc4 + alc5
+alcohol ~~ 1*alcohol
+'
+```
+
+```{r cfa.3factor.mlr}
+cfa.3factor.mlr.listwise <-
+    cfa(model = cfa.3factor, data = hbsc,  mimic = "Mplus",
+        estimator = "MLR", missing = "listwise", meanstructure = TRUE)
+```
+
+```{r cfa.3factor.mlr.listwise.summary}
+summary(cfa.3factor.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+
+The Mplus output for the same example is saved in the file:
+[cfa-3factor-mlr-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-3factor/cfa-3factor-mlr-listwise.out)
+
+## Method 2 - The ordinal "threshold" model with WLS
+Items Coded as Ordered-Factors
+
+```{r cfa.3factor.ord}
+cfa.3factor.ord <- '
+bullied =~ NA*bullied1_o + bullied2_o + bullied3_o
+            + bullied4_o + bullied5_o + bullied6_o
+            + bullied7_o + bullied8_o + bullied9_o
+bullied ~~ 1*bullied
+depress =~ NA*depress1_o + depress2_o + depress3_o
+            + depress4_o + depress5_o + depress6_o
+depress ~~ 1*depress
+alcohol =~ NA*alc1_o + alc2_o + alc3_o
+            + alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+'
+```
+
+```{r cfa.3factor.wlsmv.listwise}
+cfa.3factor.wlsmv.listwise <-
+  cfa(model = cfa.3factor.ord, data = hbsc,
+      mimic = "Mplus", estimator = "WLSMV")
+```
+
+```{r cfa.3factor.wlsmv.listwise.summary, eval=F}
+summary(cfa.3factor.wlsmv.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+The Mplus output for the same example is saved in the file:
+[cfa-3factor-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/cfa-3factor/cfa-3factor-wlsmv-listwise.out)
+
+Mplus offers a FIML option for categorical data (not available in
+lavaan yet). Please see
+[cfa-3factor-mlr-cat.html](../../Mplus/Ex-07-Ordinal/cfa-3factor/cfa-3factor-mlr-cat.html)
+
+```{r cfa.3factor.ord.wlsmv2, include=F}
+cfa.3factor.wlsmv2 <-
+    cfa(model = cfa.3factor, data = hbsc,  mimic = "Mplus",
+        estimator = "WLSMV",
+		ordered = c(paste("depress", 1:6), paste0("alc", 1:5), paste0("bullied", 1:9)))
+```
+
+```{r factor3table, echo=F, results='asis'}
+semtab40 <- semTable(list("ML (listwise)" = cfa.3factor.mlr.listwise,
+                          "WLSMV" = cfa.3factor.wlsmv2), columns = "estsestars",
+                     type = "html")
+```
+
+One of the questions in CFA methodology that arises from time-to-time
+is whether one ought to fit CFA models for each factor separately, or
+if one should fit all of the separate factors in the first step. Some
+veterans of SEM suggest one ought to dispense with the individual
+factor estimates and proceed right to this step, where we have 3 sets
+of observed indicators and 3 factors. 
+
+The following table provides 4 sets of estimates side by side. The
+estimates for the 3 factor model are in the 4th column, and we
+are interested to know if the estimates of the factor loadings in the
+individual models are called into question by the larger model.
+
+```{r factor3table2, echo=F, results='asis'}
+semtab50 <- semTable(list("Alcohol" = cfa.alc.wlsmv2, "Bullied" = cfa.bullied.wlsmv2,
+                          "Depression" = cfa.depress.wlsmv2,
+                          "3 factor" = cfa.3factor.wlsmv2), columns = "estsestars",
+                     type = "html")
+```
+
+# SECTION-III: A Two-Factor Structural Model: Bullying Victimization Predicts Alcohol Use
+
+## Method 1 - Treat ordinal data as continuous with ML
+```{r sem.01.mlr}
+sem.01 <- '
+## the measurement model
+bullied =~ NA*bullied1 + bullied2 + bullied3
+             + bullied4 + bullied5 + bullied6
+             + bullied7 + bullied8 + bullied9
+bullied ~~ 1*bullied
+alcohol =~ NA*alc1 + alc2 + alc3
+            + alc4 + alc5
+alcohol ~~ 1*alcohol
+# regress 
+alcohol ~ bullied
+'
+
+sem.01.mlr.listwise <-
+    sem(model = sem.01, data = hbsc,  mimic = "Mplus",
+        estimator = "MLR", missing = "listwise")
+```
+
+```{r sem.01.mlr.summary, eval=F}
+summary(sem.01.mlr.listwise, fit.measures = TRUE,
+        standardized = TRUE)
+```
+
+```{r sem.01.mlr.listwise.save, include=F}
+myexp <- "
+fn <- \"sem.01.mlr.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The sem function formulates the lavaan function call:\")
+show(sem.01.mlr.listwise@call)
+summary(sem.01.mlr.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan summary output is saved in
+[output/sem.01.mlr.listwise.Rout](output/sem.01.mlr.listwise.Rout "SEM output"). 
+
+The Mplus output for the same example is saved in the file:
+[sem-01-mlr-listwise.out](../../Mplus/Ex-07-Ordinal/sem-2factor/sem-01-mlr-listwise.out)
+
+## Method 2 - The ordinal "threshold" model with WLS
+Items Coded as Ordered-Factors
+```{r sem.01}
+sem.01.ord <- '
+## the measurement model
+bullied =~ NA*bullied1_o + bullied2_o + bullied3_o
+             + bullied4_o + bullied5_o + bullied6_o
+             + bullied7_o + bullied8_o + bullied9_o
+bullied ~~ 1*bullied
+alcohol =~ NA*alc1_o + alc2_o + alc3_o
+            + alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+## the structural model
+alcohol ~ bullied
+'
+```
+
+```{r sem.01.ord.wlsmv.listwise}
+sem.01.ord.wlsmv.listwise <-
+    sem(model = sem.01.ord, data = hbsc, mimic = "Mplus",
+        estimator = "WLSMV", missing = "listwise")
+```
+
+```{r sem.01.ord.wlsmv.listwise.summary, eval=F}
+summary(sem.01.ord.wlsmv, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r sem.01.ord.wlsmv.listwise.save, include=F}
+myexp <- "
+fn <- \"sem.01.ord.wlsmv.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(sem.01.ord.wlsmv.listwise@call)
+summary(sem.01.ord.wlsmv.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+
+The lavaan summary output is saved in
+[output/sem.01.ord.wlsmv.listwise.Rout](output/sem.01.ord.wlsmv.listwise.Rout "SEM output"). 
+
+The Mplus output for the same example is saved in the file:
+[sem-01-ord-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/sem-2factor/sem-01-ord-wlsmv-listwise.out)
+
+```{r sem.01.ord.wlsmv2.listwise, include=F}
+sem.01.ord.wlsmv2.listwise <-
+    sem(model = sem.01, data = hbsc, mimic = "Mplus",
+        estimator = "WLSMV", missing = "listwise",
+        ordered = c(paste("depress", 1:6), paste0("alc", 1:5), paste0("bullied", 1:9)))
+```
+
+```{r sem01table, echo=F, results='asis'}
+semtab50 <- semTable(list("ML (listwise)" = sem.01.mlr.listwise,
+                          "WLSMV" = sem.01.ord.wlsmv2.listwise), columns = "estsestars",
+                     type = "html", caption = "Structural Equation Model")
+```
+
+# SECTION-IV: Introducing Mediation: Bullying leads to Depression, which also affects Alcohol Use
+
+The ***direct effect*** of bullying on alcohol is compared with the
+***indirect effect*** of bullying on depression, which also
+contributes to alcohol use.
+
+## Method 1 - Treat ordinal data as continuous with ML
+Items Coded as Integers
+```{r}
+sem.02 <- '
+## the measurement model
+bullied =~ NA*bullied1 + bullied2 + bullied3
+             + bullied4 + bullied5 + bullied6 
+             + bullied7 + bullied8 + bullied9
+bullied ~~ 1*bullied
+depress =~ NA*depress1 + depress2 + depress3
+            + depress4 + depress5 + depress6
+depress ~~ 1*depress
+alcohol =~ NA*alc1 + alc2 + alc3
+            + alc4 + alc5
+alcohol ~~ 1*alcohol
+## the structural model
+## direct effect (the c path)
+alcohol ~ c*bullied
+## mediator paths (the a and b path)
+depress ~ a*bullied # the a path - IV predicting ME
+alcohol ~ b*depress  # the b path - ME predicting DV
+## indirect effect (a*b)
+## := operator defines new parameters
+ab := a*b
+## total effect
+total := c + (a*b)
+'
+```
+
+* "verbose = FALSE" will not display the bootstrap iterations on
+  screen.
+* We change the estimator to `ML`. We are asking for bootstrapped
+  standard errors, which are not available with `MLR`.
+* "bootstrap = 10" is for demonstration purposes; this number (for
+  bootstrap draws) should be increased (i.e., the default is 1000).
+
+```{r sem.02.mlboot.listwise}
+NBOOT <- 10
+sem.02.mlboot.listwise <- sem(model = sem.02, data = hbsc,
+                           mimic = "Mplus", estimator = "ML",
+                           missing = "listwise", se = "bootstrap",
+                           verbose = TRUE, bootstrap = NBOOT)
+```
+
+```{r sem.02.mlboot.summary, eval=F}
+summary(sem.02.mlboot.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r sem.02.mlboot.listwise.save, include=F}
+myexp <- "
+fn <- \"sem.02.mlboot.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(sem.02.mlboot.listwise@call)
+summary(sem.02.mlboot.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+The lavaan summary output is saved in
+[output/sem.02.mlboot.listwise.Rout](output/sem.02.mlboot.listwise.Rout "SEM output").
+
+The Mplus output for the same example is saved in the file:
+[sem-02-mlboot-listwise.out](../../Mplus/Ex-07-Ordinal/sem-3factor-mediation/sem-02-mlboot-listwise.out)
+
+## Method 2 - The ordinal "threshold" model with WLS
+Items Coded as Ordered-Factors
+
+* The ordinal items for this model are coded as factors DWLS (diagonal
+weighted least squares) is used to obtain bootstrap samples
+
+```{r sem.02.ord}
+sem.02.ord <- '
+## the measurement model
+bullied =~ NA*bullied1_o + bullied2_o + bullied3_o
+             + bullied4_o + bullied5_o + bullied6_o 
+             + bullied7_o + bullied8_o + bullied9_o
+bullied ~~ 1*bullied
+depress =~ NA*depress1_o + depress2_o + depress3_o
+            + depress4_o + depress5_o + depress6_o
+depress ~~ 1*depress
+alcohol =~ NA*alc1_o + alc2_o + alc3_o
+            + alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+## the structural model
+## direct effect (the c path)
+alcohol ~ c*bullied
+## mediator paths (the a and b path)
+depress ~ a*bullied # the a path - IV predicting ME
+alcohol ~ b*depress  # the b path - ME predicting DV
+## indirect effect (a*b)
+## := operator defines new parameters
+ab := a*b
+## total effect
+total := c + (a*b)
+'
+```
+
+```{r sem.02.ord.wlsmv.listwise}
+sem.02.ord.wlsmv.listwise <-
+  sem(model = sem.02.ord, data = hbsc, mimic = "Mplus",
+      estimator = "DWLS", missing = "listwise",
+      se = "bootstrap", verbose = TRUE,
+      bootstrap = NBOOT)
+```
+
+```{r sem.02.ord.wlsmv.listwise.summary, eval = F}
+summary(sem.02.ord.wlsmv.listwise, fit.measures = TRUE, standardized = TRUE)
+```
+
+```{r sem.02.ord.wlsmv.listwise.save, include=F}
+myexp <- "
+fn <- \"sem.02.ord.wlsmv.listwise.Rout\"
+sink(file = file.path(odir, fn), type = \"output\")
+print(\"The cfa function formulates the lavaan function call:\")
+show(sem.02.ord.wlsmv.listwise@call)
+summary(sem.02.ord.wlsmv.listwise, fit.measures = TRUE, standardized = TRUE)
+sink()
+"
+eval(parse(text = myexp))
+```
+
+The lavaan summary output is saved in
+[output/sem.02.ord.wlsmv.listwise.Rout](output/sem.02.ord.wlsmv.listwise.Rout
+"SEM output"). 
+
+The Mplus output for the same example is saved in the file:
+[sem-02-ord-wlsmv-listwise.out](../../Mplus/Ex-07-Ordinal/sem-3factor-mediation/sem-02-ord-wlsmv-listwise.out)
+
+Following is the summary table comparing the two models.
+
+```{r sem.02.ord.wlsmv2, include=F}
+sem.02.ord.wlsmv2 <-
+  sem(model = sem.02, data = hbsc,
+      mimic = "Mplus", estimator = "DWLS", se = "bootstrap", bootstrap = NBOOT, 
+      ordered = c(paste("depress", 1:6), paste0("alc", 1:5), paste0("bullied", 1:9)))
+```
+
+```{r sem02table, echo=F, results='asis'}
+semtab70 <- semTable(list("ML (listwise)" = sem.02.mlboot.listwise,
+                          "DWLS" = sem.02.ord.wlsmv2), columns = "estsestars",
+                     type = "html", caption = "Structural Equation Model (Bootstrap)")
+```
+
+# Summary
+When the coefficients of the 2 kinds of models are rescaled onto a
+more-or-less common scale, the loadings and estimates of underlying
+structures are very similar. In this example, we don't find
+coefficients that change from "significant" to "insignificant" when 
+comparing the ML-as-if-numeric and WLSMV estimates. 
+
+If we allow the ML estimator to use FIML to avoid dropping cases, the
+estimates are interestingly different.
+
+# R Session Info
+```{r warns1, echo = FALSE}
+sessionInfo()
+```
+
+```{r warns2, echo = FALSE}
+if(!is.null(warnings())){
+    print("Warnings:")
+    warnings()
+}
+```
+
+```{r RoptionsRestore, echo=FALSE, include=FALSE}
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+par(par.orig)
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)

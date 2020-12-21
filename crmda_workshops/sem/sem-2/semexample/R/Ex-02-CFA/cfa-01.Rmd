@@ -1,0 +1,198 @@
+---
+title: "Confirmatory Factor Analysis (CFA) Example in R"
+author:
+ - name: Ben Kite
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: bakite@ku.edu
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides) 
+keywords: SEM, CFA, R, lavaan
+abstract: >
+    This guide outlines how to conduct a confirmatory factor analysis
+    in R using the lavaan package. A basic example with 6 manifest
+    variables measuring two latent factors is presented. The model
+    estimation results can be compared to the same model fitted with
+    Mplus.
+
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+#### Package Installation {.bs-callout .bs-callout-grey}
+If you have not already installed the lavaan package, you will need to
+do that first. Here the command to install the package is commented
+out (preceded by "##") because the package is already installed. The
+lavaan package needs to be loaded by using the "library(lavaan)"
+command.
+
+```{r }
+##install.packages("lavaan")
+library(lavaan)
+##install.packages("kutils")
+library(kutils)
+##install.packages("semPlot")
+library(semPlot)
+```
+
+#### Data Importation and Naming {.bs-callout .bs-callout-grey}
+The data file "job_placement" needs to be read in to the R session.
+```{r }
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+```
+
+Because the datafile does not have column (or variable) names, the variable names need to be specified.
+```{r }
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl", "wratcalc", "waiscalc", "waisspl",
+                   "edlevel", "newschl", "suspend", "expelled", "haveld", "female", "age")
+```
+
+In the original data file the missing values are coded as "99999".
+These values need to be recoded to NA so that R recognizes them as
+missing.
+```{r }
+dat[dat == 99999] <- NA
+```
+
+#### Model Building and Fitting {.bs-callout .bs-callout-red}
+Now the CFA model that is to be tested needs to be specified as an R
+object.  In lavaan the `=~` operator is the exact same as the `BY`
+operator in Mplus. In the statements below the variables on the right
+of the `=~` are indicators of the variable to the left of the `=~`.
+Also notice that there are `+` signs that separate the variables on
+the right side of the equation. The entire model statement needs to
+be wrapped in quotation marks.
+```{r }
+CFAmodel <- 'MATH =~ wratcalc + wjcalc + waiscalc
+             SPELL =~ wratspl + wjspl + waisspl'
+```
+
+Once the model is built, it can be fit to the data using the `cfa`
+function. The model object is the CFAmodel object that was specified
+above.  The data object is the dat object that was imported and
+altered above. The last command is used to set the scale for the
+latent variable. The default value for `std.lv` is `FALSE`, by setting
+it to `TRUE` the first factor loading for each latent variable is
+freely estimated, the mean for each latent variable is set to 0, and
+the variance for each latent variable is set to 1.
+```{r }
+CFAmodel.fitted <- cfa(model = CFAmodel, data = dat, std.lv = TRUE,
+                       missing = "fiml", mimic = "Mplus")
+summary(CFAmodel.fitted)
+```
+
+#### Examining Output {.bs-callout .bs-callout-blue}
+We can request standardized output columns by adding `standardized =
+TRUE`. The `Std.lv` column is the parameter estimates when just latent
+variables are standardized (they already were standardized, so this
+column tells us nothing new), whereas the `Std.all` column is the
+parameter estimates when all variables are standardized.
+```{r}
+summary(CFAmodel.fitted, standardized = TRUE)
+```
+
+We can request the fit measures along with the parameter
+estimates. This makes the output resemble what is returned by Mplus.
+```{r}
+summary(CFAmodel.fitted, standardized = TRUE, fit = TRUE)
+```
+
+What if we only want certain fit measures? Those can be assigned and
+viewed using the commands below.
+```{r }
+fitStats <- fitMeasures(CFAmodel.fitted, c("cfi", "rmsea"))
+fitStats
+```
+
+We can pull out the parameter estimates instead of just looking at the
+summary. This can be useful when putting the parameter estimates in a
+table.
+```{r}
+paramEsts <- parameterEstimates(CFAmodel.fitted)
+paramEsts
+```
+
+We can also pull out the factor scores by using the `lavPredict` function
+on the testOutput object.
+```{r}
+fscores <- lavPredict(CFAmodel.fitted)
+head(fscores)
+```
+
+The `semPaths` function from the semPlot package provides an easy way
+to produce a path diagram.
+```{r, warning = FALSE}
+library(semPlot)
+semPaths(CFAmodel.fitted)
+```
+
+We can change some of the settings to make the path diagram into something we like a bit more.
+```{r, warning = FALSE}
+semPaths(CFAmodel.fitted, what = "paths", intercepts = FALSE, sizeMan = 12, sizeMan2 = 8,
+         layout = "tree2", sizeLat = 20, sizeLat2 = 10, width = 5, height = 1,
+         label.cex = 1, nCharNodes = 0, curve = 2.5, label.scale = FALSE)
+```
+
+We can ask for the parameter estimates to be placed on the paths
+directly with the `whatLabels = "est"` argument. We also use the
+"edge.label.cex = 1.2" argument to make the values larger than the
+default.
+```{r, warning = FALSE}
+semPaths(CFAmodel.fitted, what = "paths", whatLabels = "est", intercepts = FALSE,
+         sizeMan = 12, sizeMan2 = 8,layout = "tree2", sizeLat = 20, sizeLat2 = 10,
+         width = 5, height = 3, label.cex = 1, nCharNodes = 0, curve = 2.5,
+         label.scale = FALSE, edge.label.cex = 1.2)
+```
+
+Lastly, the kutils function `semTable` can be used to produce a table
+summarizing the model parameter estimates in latex or html code. In
+this example we produce an html table that is automatically built by
+Rmarkdown.
+```{r, eval = FALSE}
+semTable(CFAmodel.fitted, type = "html")
+```
+
+In R your output will look like this:
+```{r, echo = FALSE}
+semTable(CFAmodel.fitted, type = "html")
+```
+
+If the `file` argument is used to specify a file to be saved, opening
+the resulting html file in a web browser will show a formatted table.
+```{r, eval = FALSE}
+semTable(CFAmodel.fitted, type = "html", file = "CFAmodel.fitted.html")
+```
+
+```{r, echo = FALSE, results='asis'}
+semTable(CFAmodel.fitted, type = "html")
+```
+
+#### The CFA Example in Mplus {.bs-callout .bs-callout-red}
+Please click [cfa-01.html](../../Mplus/Ex-02-CFA/cfa-01.html) if the
+reader would like to see the same CFA model fitted with Mplus.
+
+#### Session Info {.bs-callout .bs-callout-grey}
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)

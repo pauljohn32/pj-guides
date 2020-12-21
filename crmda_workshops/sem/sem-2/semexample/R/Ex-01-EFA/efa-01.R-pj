@@ -1,0 +1,31 @@
+## ----setup, include=FALSE------------------------------------------------
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 70)
+
+## ------------------------------------------------------------------------
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+
+## ------------------------------------------------------------------------
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl", "wratcalc", "waiscalc", "waisspl", "edlevel", "newschl", "suspend", "expelled", "haveld", "female", "age")
+
+## ------------------------------------------------------------------------
+dat[dat == 99999] <- NA
+
+## ------------------------------------------------------------------------
+dat1 <- dat[,2:7]
+
+## ------------------------------------------------------------------------
+dat1 <- na.omit(dat1)
+
+## ------------------------------------------------------------------------
+output1 <- factanal(dat1, 1, rotation = "varimax")
+output1
+output2 <- factanal(dat1, 2, rotation = "varimax")
+output2
+
+## ----sessionInfo, echo = FALSE-------------------------------------------
+sessionInfo()
+

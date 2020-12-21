@@ -1,0 +1,206 @@
+---
+title: "Measurement Invariance Example in R"
+author:
+ - name: Ben Kite
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: bakite@ku.edu
+ - name: Chong Xing
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: cxing@ku.edu
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: SEM, CFA, Measurement Invariance, R, lavaan 
+abstract: >
+    This guide outlines how to conduct measurement invariance testing
+    in the R package lavaan. The manifest variables used in this example are
+    continuous in scale and tested for invariance across gender. This
+    guide is intended for researchers familiar with structural
+    equation modeling. Model syntax is compared to the popular SEM
+    software package Mplus.
+
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+#### Package and Data {.bs-callout .bs-callout-grey}
+
+Load the lavaan package at the beginning of the session
+```{r }
+library(lavaan)
+```
+
+The data file is read in, columns are named, and missing values are specified.
+```{r }
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl", "wratcalc",
+                   "waiscalc", "waisspl", "edlevel", "newschl",
+                   "suspend", "expelled", "haveld", "gender", "age")
+
+dat[dat == 99999] <- NA ## convert the original missing data value "99999" to NA
+
+dat$gender <- as.factor(dat$gender) ## change "gender" to a factor variable
+levels(dat$gender) ## check the levels of the factor variable               
+table(dat$gender) ## request a frequency summary
+levels(dat$gender) <- c("Male", "Female") ## assign level labels
+table(dat$gender) ## request a frequency summary to verify assigned labels 
+```
+
+#### Configural Invariance (also known as Equal Form) {.bs-callout .bs-callout-red}
+Now the CFA model that is to be tested needs to be specified as an R
+object.  In lavaan the "=~" operator is the exact same as the BY
+operator in Mplus.  In the statements below the variables on the right
+of the "=~" are indicators of the variable to the left of the "=~".
+Also notice that there are "+" signs that separate the variables on
+the right side of the equation.  The entire model statement needs to
+be wrapped in quotation marks.
+```{r }
+ConfigModel <- 'MATH =~ wratcalc + wjcalc + waiscalc
+                SPELL =~ wratspl + wjspl + waisspl'
+```
+The cfa function is used to actually fit the model. The grouping
+variable must be provided to the group argument. The std.lv = TRUE
+argument tells lavaan to used fixed factor model identification where
+the latent variables are standardized with a mean of 0 and a variance
+of 1.
+
+```{r }
+ConfigOutput <- cfa(model = ConfigModel, data = dat, std.lv = TRUE,
+                    missing = "fiml", mimic = "Mplus", group = "gender")
+summary(ConfigOutput, standardized = TRUE, fit.measures = TRUE)
+```
+
+#### Metric Invariance (also Known as Weak Factorial Invariance or Equal Factor Loadings) {.bs-callout .bs-callout-blue}
+
+Now we fit a model where the factor loadings are constrained to
+equality across males and females.
+
+In the model we define we are specifying the measurement structure and
+the latent variable variances. Because we are constraining the factor
+loadings, we can estimate the latent variable variances for the second
+group (males in this case). We can constrain the factor loadings using
+the group.equal = "loadings" argument in the "cfa" function.
+```{r }
+metricModel <-
+    ' MATH =~ c(NA, NA)*wratcalc + wjcalc + waiscalc
+      ## freely estimate the first factor loading in both groups
+
+      MATH ~~ c(NA, 1)*MATH
+      ## fix the factor variance of MATH to 1 in male group, and freely estimate in female group
+
+      MATH ~ c(0, 0)*1
+
+      SPELL =~ c(NA, NA)*wratspl + wjspl + waisspl
+      ## freely estimate the first factor loading in both groups
+
+      SPELL ~~ c(NA, 1)*SPELL
+      ## fix the factor variance of SPELL to 1 in male group, and freely estimate in female group
+
+      SPELL ~ c(0, 0)*1
+    '
+
+```
+```{r }
+metricOutput <- cfa(model = metricModel, data = dat,
+                    missing = "fiml", mimic = "Mplus",
+                    group = "gender", group.equal = "loadings")
+summary(metricOutput, standardized = TRUE, fit.measures = TRUE)
+```
+
+#### Scalar Invariance (also Known as Strong Factorial Invariance or Equal Intercepts) {.bs-callout .bs-callout-red}
+
+In the scalar invariance model we want to constrain the factor
+loadings and intercepts. The latent variable means and variances are
+freely estimated for males.  The loadings and intercepts are
+constrained with the group.equal argument.
+```{r }
+scalarModel <- 'MATH =~ c(NA, NA)*wratcalc + wjcalc + waiscalc
+                MATH ~~ c(NA, 1)*MATH
+                MATH ~ c(NA, 0)*1
+
+                SPELL =~ c(NA, NA)*wratspl + wjspl + waisspl
+                SPELL ~~ c(NA, 1)*SPELL
+                SPELL ~ c(NA, 0)*1'
+
+```
+```{r }
+scalarOutput <- cfa(model = scalarModel, data = dat,
+                    missing = "fiml", mimic = "Mplus",
+                    group = "gender",
+                    group.equal = c("loadings", "intercepts"))
+summary(scalarOutput, standardized = TRUE, fit.measures = TRUE)
+```
+
+#### Nested Model Comparisons  {.bs-callout .bs-callout-blue}
+Now the models can be compared via chi-square difference testing.
+```{r}
+anova(ConfigOutput, metricOutput)
+```
+Here the metric model does not fit significantly worse than the
+configural model, so metric invariance is supported.
+
+Now we can test for scalar invariance.
+```{r}
+anova(metricOutput, scalarOutput)
+```
+Here the scalar model fits significantly worse, so scalar invariance
+is not supported.
+
+#### Strict Factorial Invariance (also Known as Equal Residuals) {.bs-callout .bs-callout-red}
+
+In addition to the constraints specified for the scalar invariance
+model (i.e., euqal factor loadings, equal indicator intercepts),
+indicator residual variances can also be equated between
+groups. However, strict factorial invariance is an optional test -
+this level of invariance is not necessary for conducting latent
+parameter comparisons.
+
+```{r }
+strictModel <- 'MATH =~ c(NA, NA)*wratcalc + wjcalc + waiscalc
+                MATH ~~ c(NA, 1)*MATH
+                MATH ~ c(NA, 0)*1
+
+                SPELL =~ c(NA, NA)*wratspl + wjspl + waisspl
+                SPELL ~~ c(NA, 1)*SPELL
+                SPELL ~ c(NA, 0)*1'
+
+```
+
+```{r }
+strictOutput <- cfa(model = strictModel, data = dat,
+                    missing = "fiml", mimic = "Mplus",
+                    group = "gender",
+                    group.equal = c("loadings", "intercepts", "residuals"))
+summary(strictOutput, standardized = TRUE, fit.measures = TRUE)
+
+anova(scalarOutput, strictOutput)
+```
+
+#### Session Info {.bs-callout .bs-callout-grey}
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+
