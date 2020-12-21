@@ -1,0 +1,82 @@
+---
+title: "Linear Latent Growth Curve Model with 4 Timepoints"
+author:
+ - name: Ben Kite
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: bakite@ku.edu
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: Structural Equation Modeling, Latent Growth Curve Model, R, lavaan
+abstract:
+    This guide outlines how to specify and fit a basic latent
+    growth curve model in R using the lavaan package. The estimation
+    results can be compared to the same model fitted with Mplus.	
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+#### The Mplus Example {.bs-callout .bs-callout-grey}
+[The Mplus Example Link](../../Mplus/Ex-06-LGC/lgc-01.html)
+
+#### Package and Data {.bs-callout .bs-callout-grey}
+Load the lavaan package.
+```{r }
+library(lavaan)
+```
+
+Load the data, give the columns names.
+```{r }
+dat <- read.table("../../data/anxiety.dat", header = F)
+names(dat) <- c("a1", "a2", "a3", "a4")
+```
+
+#### LGC in lavaan {.bs-callout .bs-callout-red}
+Build the LGC model with lavaan syntax.  Here we are specifying a linear slope.  Notice how the manifest variable intercepts are fixed to 0, and the last two lines request the means for the intercept and slope latent variables.
+```{r }
+model <-
+' intercept =~ 1*a1 + 1*a2 + 1*a3 + 1*a4
+  slope =~ 0*a1 + 1*a2 + 2*a3 + 3*a4
+
+  a1 ~ 0*1
+  a2 ~ 0*1
+  a3 ~ 0*1
+  a4 ~ 0*1
+
+  intercept ~ 1
+  slope ~ 1
+'
+```
+
+Run the model using the sem function, request a summary of the output.
+```{r }
+output <- sem(model, data = dat)
+summary(output, standardized = TRUE, fit.measures = TRUE)
+```
+
+#### Session Info {.bs-callout .bs-callout-grey}
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)

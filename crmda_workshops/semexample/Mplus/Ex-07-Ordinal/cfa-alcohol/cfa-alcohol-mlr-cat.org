@@ -1,0 +1,136 @@
+#+SETUPFILE: ../../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda_org.css"/>
+#+TITLE: Confirmatory Factor Analysis of Alcohol Usage
+#+SUBTITLE: ML Estimates with Categorical Data
+#+AUTHOR: Chong Xing, Meghan Fager, Paul Johnson, and Meghan Fager
+#+EMAIL: cxing@ku.edu; pauljohn@ku.edu; megfager@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+ABSTRACT: 
+#+KEYWORDS: 
+#+INCLUDE: ../../horg/setup/heading
+
+* The lavaan Example
+[[file:../../../R/Ex-07-Ordinal/ordinal-01-hbsc.html][The lavaan Example Link]]
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 7
+Health Behavior in School Children
+Confirmatory Factor Analysis with Ordinal-Categorical Data using MLR
+1-Factor Graded Response IRT Model for Alcohol;
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Alc1-Alc5;
+
+  CATEGORICAL ARE
+  Alc1-Alc5;
+
+  USEOBSERVATIONS ARE (Grade == 6 OR Grade == 7);
+
+  MISSING ARE all(-999);
+#+END_SRC
+
+* ANALYSIS
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  ESTIMATOR = MLR;
+#+END_SRC
+
+* MODEL Command
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  Alcohol BY Alc1* Alc2-Alc5;
+  Alcohol@1;
+#+END_SRC
+
+* OUTPUT Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT;
+  TECH1;
+  STANDARDIZED;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-alcohol-mlr-cat.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-alcohol-mlr-cat.inp'...
+
+     Dimensions of integration:                  1
+     Total number of integration points:         15
+
+
+  ITER  LOGLIKELIHOOD    ABS CHANGE   REL CHANGE  ALGO  TIME  TOTAL TIME
+     1 -0.93171065D+04    0.0000000    0.0000000  EM    0.00     0.0
+     2 -0.86517462D+04  665.3602874    0.0714128  EM    0.00     0.0
+     3 -0.83373546D+04  314.3916206    0.0363385  EM    0.01     0.0
+     4 -0.82024630D+04  134.8915799    0.0161792  EM    0.00     0.0
+     5 -0.81445875D+04   57.8755324    0.0070559  EM    0.00     0.0
+     6 -0.81181892D+04   26.3983114    0.0032412  EM    0.00     0.0
+     7 -0.81052686D+04   12.9206219    0.0015916  EM    0.00     0.0
+     8 -0.80985374D+04    6.7312088    0.0008305  EM    0.01     0.0
+     9 -0.80948172D+04    3.7201892    0.0004594  EM    0.00     0.0
+    10 -0.80901057D+04    4.7114749    0.0005820  FS    0.00     0.0
+    11 -0.80897936D+04    0.3120872    0.0000386  FS    0.00     0.0
+    12 -0.80884471D+04    1.3465303    0.0001664  EM    0.01     0.1
+    13 -0.80882437D+04    0.2033898    0.0000251  EM    0.00     0.1
+    14 -0.80881215D+04    0.1222107    0.0000151  EM    0.00     0.1
+    15 -0.80880374D+04    0.0840382    0.0000104  EM    0.00     0.1
+    16 -0.80879777D+04    0.0597699    0.0000074  EM    0.00     0.1
+    17 -0.80879342D+04    0.0435011    0.0000054  EM    0.00     0.1
+    18 -0.80879021D+04    0.0321111    0.0000040  EM    0.00     0.1
+    19 -0.80878782D+04    0.0238669    0.0000030  EM    0.00     0.1
+    20 -0.80878604D+04    0.0177526    0.0000022  EM    0.00     0.1
+    21 -0.80878473D+04    0.0131409    0.0000016  EM    0.00     0.1
+    22 -0.80878377D+04    0.0096245    0.0000012  EM    0.00     0.1
+    23 -0.80878307D+04    0.0069269    0.0000009  EM    0.00     0.1
+    24 -0.80878259D+04    0.0048524    0.0000006  EM    0.00     0.1
+    25 -0.80878226D+04    0.0032580    0.0000004  EM    0.00     0.1
+    26 -0.80878206D+04    0.0020367    0.0000003  EM    0.00     0.1
+    27 -0.80878195D+04    0.0011067    0.0000001  EM    0.00     0.1
+    28 -0.80878191D+04    0.0004048    0.0000001  EM    0.00     0.1
+     Parameters           5         3         4         1         2
+     Derivatives   0.18D-03  0.18D-03  0.15D-03  0.13D-03  0.11D-03
+     Beginning Time:  16:39:59
+        Ending Time:  16:39:59
+       Elapsed Time:  00:00:00
+
+     Refer to 'cfa-alcohol-mlr-cat.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-alcohol-mlr-cat.out][cfa-alcohol-mlr-cat.out]] to see the output.

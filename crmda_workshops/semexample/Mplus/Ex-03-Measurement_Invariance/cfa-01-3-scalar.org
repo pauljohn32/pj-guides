@@ -1,0 +1,103 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Multiple Group Confirmatory Factor Analysis (Scalar Invariance) Example
+#+AUTHOR: Ben Kite and Chong Xing
+#+EMAIL: bakite@ku.edu; cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE: 
+#+ABSTRACT: This guide outlines how to perform the third step/test in measurement invariance testing - scalar invariance (or equal intercepts). The model estimation results can be compared to the Measurement Invariance Example in R. NOTE: The model estimation terminated normally with Mplus 8.0, but encountered estimation issues with Mplus 8.2 - the output files from both are provided here.
+#+KEYWORDS: SEM, Measurement Invariance, Scalar Invariance, Equal , Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* The lavaan Example
+[[file:../../R/Ex-03-Measurement_Invariance/meas_iv-01.html][The lavaan Example Link]]
+
+* TITLE Command
+This is the third and final input file for this example.
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis (Scalar Invariance)
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+
+  MISSING ARE all(99999);
+
+  GROUPING IS female(0=male 1=female);
+#+END_SRC
+
+* MODEL Command
+Again, the only changes come in the MODEL command.  Here the item
+intercepts need to be constrained across groups, this is accomplished
+by removing the "[wratcalc wjcalc waiscalc wratspl wjspl waisspl];" line
+from the "MODEL female:" section. Further, the constraints that set
+the latent variable means for females "[MATH@0 SPELL@0];" should be
+removed (resulting in "[MATH SPELL];"). Now the latent variable
+means and variances are freely estimated for females.  
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratcalc wjcalc waiscalc wratspl wjspl waisspl];
+  MATH@1 SPELL@1;
+  [MATH@0 SPELL@0];
+
+  MODEL female:
+  MATH SPELL;
+  [MATH SPELL];
+#+END_SRC
+
+* OUTPUT Command
+Additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT;
+  TECH1;
+  STANDARDIZED;
+#+END_SRC
+
+* Run the Model with Mplus 8.0
+#+BEGIN_SRC sh :results output org :exports both
+	mplus8 cfa-01-3-scalar.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-01-3-scalar.inp'...
+
+     Beginning Time:  10:12:37
+        Ending Time:  10:12:37
+       Elapsed Time:  00:00:00
+
+     Output saved in 'cfa-01-3-scalar.out'.
+#+END_SRC
+
+* Review the Results from Mplus 8.0
+Click [[file:cfa-01-3-scalar.out][cfa-01-3-scalar.out]] to see the output.
+
+* Review the Results from Mplus 8.2
+Click [[file:cfa-01-3-scalar-mplus-8_2.out][cfa-01-3-scalar-mplus-8_2.out]] to see the output.

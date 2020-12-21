@@ -1,0 +1,201 @@
+---
+title: "SEM Example 04 - Multiple Linear Regression (MLR) Using Stan"
+author:
+  - name: Chong Xing
+    affiliation: Center for Research Methods and Data Analysis, University of Kansas
+    email: cxing@ku.edu
+  - name: Paul Johnson
+    affiliation: Center for Research Methods and Data Analysis, University of Kansas
+    email: pauljohn@ku.edu  
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: Bayesian Statistics, Structural Equation Modeling, Regression
+abstract: >
+ This document shows an example for conducting multiple linear
+    regression analysis using the `rstan` package. The example 
+	stan syntax was adapted based on the code in [the Stan Reference
+    Manual (Version 2.17.0, p. 126](http://mc-stan.org/users/documentation/index.html).
+    The example model consists of seve predictors and one outcome
+	variable. Users can change the model specification (i.e., the 
+	number of predictors and the number of subjects) by modifying 
+	the R code - no need to change the stan file. The current example
+	does not allow missing data.
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+output:
+  crmda::crmda_html_document:
+    toc: true
+    toc_depth: 3
+    highlight: haddock
+    css: theme/kutils.css
+    template: theme/guide-boilerplate.html
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+opts.orig <- options()
+par.orig <- par(no.readonly=TRUE)
+options(width = 80)
+```
+
+```{r themecopy, include = FALSE}
+library(stationery)
+## If theme directory does not have required images or TeX files
+## we need to retrieve them and put them in "theme" directory. 
+logos <- c(logoleft = "logoleft.png", 
+           logoright = "logo-vert.png")
+files <- c("kutils.css", "guide-boilerplate.html")
+getFiles(logos, pkg = "crmda")
+getFiles(files, pkg = "stationery")
+```
+
+## Specifying the data directory 
+```{r, include=T}
+ddir <- "../../data"
+```
+
+## Loading the `rstan` package
+```{r, include=T}
+library(rstan)
+```
+
+## Creating a data object containing observed responses (y)
+```{r, echo = T, include = T, warning = F, message = F}
+## Reading in the job placement data
+dat <- read.csv(file.path(ddir, "job_placement.csv"), header = FALSE)
+
+## Assigning variable names
+colnames(dat) <- c("id", "wjcalc", "wjspl",
+                   "wratspl", "wratcalc", "waiscalc",
+                   "waisspl", "edlevel", "newschl",
+                   "suspend", "expelled", "haveld", "female", "age")
+summary(dat)
+
+## Extracting variables for the current example
+dat.2 <- dat[ , c("wjspl", "edlevel", "newschl",
+                  "suspend", "expelled", "haveld",
+                  "female", "age")]
+
+## Recoding 99999 to NA
+dat.2[dat.2 == 99999] <- NA
+
+## Creating a data set without NAs
+dat.3 <- na.omit(dat.2)
+
+## The data set containing observed responses (y) for the current example
+summary(dat.3)
+```
+
+
+## Creating a data input object for `rstan`
+```{r}
+data_for_stan = list(N = nrow(dat.3),      ## sample size
+                     K = ncol(dat.3) - 1,  ## number of predictors
+                     x = as.matrix(dat.3[ , 2:8]), ## the predictor matrix
+                     y = as.vector(dat.3[ , 1]))   ## the outcome variable
+```
+
+## Bayesian MCMC estimation using `rstan` in three steps
+This three-step approach is recommended for debug purposes
+
+### Step 1 - Using the `stanc()` function to translate Stan code to C++
+```{r}
+## The tr_01 object contains C++ translation for reg-01.stan
+## The "reg-01.stan" is included in the current directory
+tr_02 <- stanc("reg-01.stan")
+```
+
+
+### Step 2 - Using the `stan_model()` function to create an S4 class model object
+```{r, include = T, echo = T, message = F}
+## The so_01 is an S4 class model object created for tr_01
+## Warnings will show up - move to the next step if the warnings are nonfatal
+so_02  <- stan_model(stanc_ret = tr_02, verbose = TRUE)
+```
+
+### Step 3 - Using the `sampling()` function for MCMC sampling/estimation
+```{r, include = T, echo = T, warning = FALSE}
+post_01 <- sampling(object = so_02,       ## the S4 model object created in Step 2
+                    data = data_for_stan, ## the data input (an list object)
+                    chains = 2,           ## number of MCMC chains
+                    iter = 1000,          ## total number of MCMC draws per chain
+                    warmup = 500)         ## number of warmup draws per chain
+```
+
+### Alternatively, MCMC can be done in one step using the `stan()` function
+```{r, eval = F, include = T, echo = T}
+post_02 <- stan(file = "cfa-01.stan", ## the Stan syntax file
+                data = data_for_stan, ## data input for rstan
+                chains = 2,           ## number of MCMC chains
+                iter = 4000,          ## total number of MCMC draws per chain
+                warmup = 1500)        ## number of warmup draws per chain
+```
+
+## Examining the posterior distributions (MCMC draws)
+### The standardized factor loadings
+```{r}
+## Trace plot for visualizing MCMC convergence
+plot(post_01, plotfun = "trace", pars = c("loading_std"), inc_warmup = TRUE)
+## Density plot for factor loadings
+plot(post_01, pars = "loading_std", show_density = TRUE, ci_level = 0.5)
+## Descriptive table for summarizing the posterior distribution
+print(post_01, pars = "loading_std", probs = c(.025, .975),
+      digits = 2, mode = TRUE, use_cache = FALSE)
+```
+
+### The factor correlation
+```{r}
+## Trace plot for visualizing MCMC convergence
+## factor_cor[1,1] and factor_cor[2,2] were fixed to 1 for model identification
+plot(post_01, plotfun = "trace", pars = c("factor_cor"), inc_warmup = TRUE)
+## Descriptive table for summarizing the posterior distribution
+print(post_01, pars = "factor_cor", probs = c(.025, .975),
+      digits = 2, mode = TRUE, use_cache = FALSE)
+```
+
+### Unstandardized indicator intercept
+```{r}
+## Trace plot for visualizing MCMC convergence
+plot(post_01, plotfun = "trace", pars = c("intercept_unstd"), inc_warmup = TRUE)
+## Descriptive table for summarizing the posterior distribution
+print(post_01, pars = 'intercept_unstd', probs = c(.025,.975),
+      digits = 2, use_cache = FALSE)
+```
+
+### Unstandardized indicator residuals
+```{r}
+## Trace plot for visualizing MCMC convergence
+plot(post_01, plotfun = "trace", pars = c("residual_unstd"), inc_warmup = TRUE)
+## Trace plot for visualizing MCMC convergence
+print(post_01, pars = 'residual_unstd', probs = c(.025,.975),
+      digits = 2, use_cache = FALSE)
+```
+
+# R Session Info
+``{r warnings, echo = FALSE}
+sessionInfo()
+```
+
+```{r warnings, echo = FALSE}
+if(!is.null(warnings())){
+    print("Warnings:")
+    warnings()
+}
+```
+
+```{r RoptionsRestore, echo=FALSE, include=FALSE}
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+par(par.orig)
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)

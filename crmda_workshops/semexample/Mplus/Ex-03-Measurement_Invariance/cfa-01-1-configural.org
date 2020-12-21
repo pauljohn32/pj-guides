@@ -1,0 +1,110 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Multiple Group Confirmatory Factor Analysis (Configural Invariance) Example
+#+AUTHOR: Ben Kite and Chong Xing
+#+EMAIL: bakite@ku.edu; cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to conduct the first step of measurement invariance testing in Mplus - configural invariance (or equal form) test. The manifest variables used in this example are continuous in scale and tested for invariance across gender. This guide is intended for researchers familiar with structural equation modeling. The model estimation results can be compared to the Measurement Invariance Example in R.
+#+KEYWORDS: SEM, CFA, Measurement Invariance, Configural Invariance, Equal Form, Mplus 
+#+INCLUDE: ../horg/setup/heading
+
+* TITLE Command
+This is the first of three input files for this example
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis (Configural Invariance)
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+  MISSING ARE all(99999);
+#+END_SRC
+There is one important addition in the VARIABLE command, the "GROUPING
+IS female (0=male 1=female);" line. This tells Mplus that the grouping
+variable is the female variable, all cases with a 0 on that variable
+are males, and all cases with a 1 on that variable are females. This
+must be included in order to conduct a multiple group analysis of any
+kind.
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+  GROUPING IS female(0=male 1=female);
+#+END_SRC
+
+* MODEL Command
+Here the user needs to specify two models, one for males and another
+for females. Entries under the "MODEL:" heading are for the male
+model, and entries under the "MODEL female:" portion are for the
+female model. In order to test for configural invariance with
+fixed-factor identification the latent variables are forced to have a
+mean of 0 and a variance of 1 for each group. The "[MATH@0 SPELL@0];"
+line is used to set the latent variable means to 0. This allows all
+measurement parameters (factor loadings, intercepts) to be freely
+estimated in each group with an identified model. The Mplus default is
+to constrain item intercepts across groups, this is overcome with the
+"[wratspl wjspl waisspl wratcalc wjcalc waiscalc];" line included for
+each model.  These commands tell Mplus to estimate the intercepts for
+each group individually.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratcalc wjcalc waiscalc wratspl wjspl waisspl];
+  MATH@1 SPELL@1;
+  [MATH@0 SPELL@0];
+
+  MODEL female:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratcalc wjcalc waiscalc wratspl wjspl waisspl];
+#+END_SRC
+
+* OUTPUT Command
+Additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+  STDYX; 
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-01-1-configural.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-01-1-configural.inp'...
+
+     Beginning Time:  11:54:49
+        Ending Time:  11:54:49
+       Elapsed Time:  00:00:00
+
+     Output saved in 'cfa-01-1-configural.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-01-1-configural.out][cfa-01-1-configural.out]] to see the output.

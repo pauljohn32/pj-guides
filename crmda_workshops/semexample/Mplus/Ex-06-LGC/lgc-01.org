@@ -1,0 +1,111 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Linear Latent Growth Curve Model with 4 Time Points
+#+AUTHOR: Ben Kite
+#+EMAIL: bakite@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to specify and fit a basic latent growth curve model in Mplus. The model results can be compared to the same model fitted with lavaan.
+#+KEYWORDS: Structural Equation Modeling, Latent Growth Curve Model, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* The lavaan Example
+[[file:../../R/Ex-06-LGC/lgc-01.html][The lavaan Example Link]]
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 6 - Linear Latent Growth Curve Model with 4 Time Points
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/anxiety.dat";
+#+END_SRC
+
+* VARIABLE Command
+There are four variables in the data file that need to be named.
+There is no "USEVARIABLES ARE" statement here because all variables
+are used in the LGC model. The Mplus default is to use all variables.
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  anxiety1 anxiety2 anxiety3 anxiety4;
+#+END_SRC
+
+* MODEL Command
+First the fixed portion of the model that sets up the intercept and
+linear slope needs to be specified. The intercept is set by setting
+the factor loading for each time point to be equal to 1. he linear
+slope latent variable is set by setting the factor loading for the
+first time point to 0, the second to 1, the third to 2, and the forth
+to 3.  It is important that the first time point has a loading of 0;
+this allows the mean of the intercept to be interpreted as the mean
+value at the first time point. Non-linear slopes can also be specified
+here (e.g., 0, 1, 4, & 9 would create a quadratic growth curve).
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  INTCEPT BY anxiety1@1 anxiety2@1 anxiety3@1 anxiety4@1;
+  SLOPE BY anxiety1@0 anxiety2@1 anxiety3@2 anxiety4@3;
+#+END_SRC
+
+Next the residual variances for the manifest variables need to be
+freely estimated. Here this is done with a handy Mplus shortcut,
+rather than have to state "anxiety1 anxiety2 anxiety3 anxiety4;" the
+user can give the range of the anxiety variables to be included.
+Next the intercepts for each manifest variable need to be set to be
+equal to 0. This is done to allow an estimate of the mean of the
+intercept latent variable.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+  anxiety1-anxiety4;
+  [anxiety1-anxiety4@0];
+#+END_SRC
+
+In the last part of this command the latent variable variances are
+requested, then the latent variable means, and then the covariance
+between the intercept and slope.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+  INTCEPT SLOPE;
+  [INTCEPT SLOPE];
+  INTCEPT WITH SLOPE;
+#+END_SRC
+
+* OUTPUT Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT;
+  TECH1;
+  STANDARDIZED;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus lgc-01.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'lgc-01.inp'...
+
+     Beginning Time:  16:34:42
+        Ending Time:  16:34:42
+       Elapsed Time:  00:00:00
+
+     Output saved in 'lgc-01.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:lgc-01.out][lgc-01.out]] to see the output.

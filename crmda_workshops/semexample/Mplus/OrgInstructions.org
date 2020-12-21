@@ -1,0 +1,203 @@
+#+TITLE: Preparing Mplus Documentation
+#+AUTHOR: Ben Kite, Paul Johnson, Longcan Huang
+#+ABSTRACT: 
+This describes the methods to write instructions for
+mplus with org mode and then convert the results to other formats.
+
+
+All of our work to create or update materials should be done through
+the .org files.  These files have Mplus syntax imbedded in code chunks
+similar to what we use in Rmarkdown. From the one org file, we will
+generate the Mplus program, (optionally run the Mplus program),
+and then gather the results for display in an HTML output file.
+
+In Summer, 2018, we have made some revisions, but the essence
+of the approach is still the same. Write commentary and Mplus
+code, and then export & run the Mplus file. 
+
+The original org mode files were created by Ben Kite and Paul
+Johnson, but they did not use many of the benefits of org mode.
+In the 2018 edition, Longcan Huang has worked out several 
+details that result in an easier workflow and more pleasant
+results.
+
+The org mode file uses code chunks like the following.
+
+#+BEGIN_EXAMPLE
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+Example 1 - Exploratory Factor Analysis
+#+END_SRC
+#+END_EXAMPLE
+
+The lines beginning with “#” are used to start and end the code chunk,
+the lines in the middle are exactly what we want to appear in an Mplus
+file.
+
+The chances in Summer, 2018, integrate the process. A multi-purpose
+script, org2html.sh, is the focal point. It can
+
+1 convert the previous simple org mode files to the new
+ recommended markup style. This has already been done to the
+ previous org mode files. 
+
+2 Easily process the org mode file into HTML.  That involves
+three steps. 
+  * "tangle" the code to create an Mplus inp file
+  * "run" the mplus file 
+  * integrate the results within the output of the HTML file.
+
+The shell script that can do this work is called "org2html.sh". This
+file is in the folder "Mplus/horg".  That folder can be added to your
+path, possibly in a temporary way by a BASH shell command, such as
+
+#+BEGIN_EXAMPLE
+$ export PATH=/your/path/to/semexample/Mplus/horg:$PATH
+#+END_EXAMPLE
+
+After that, this will work to tangle, run, integrate, and export to
+HTML:
+
+#+BEGIN_EXAMPLE
+$ org2html.sh your_file.org
+#+END_EXAMPLE
+
+If you open an org mode file in Emacs, it is possible to
+handle the build process manually. The following is the
+original description of this proces that we created in 2016, and it
+is still valid.
+
+    To publish or compile the .org file open it in Emacs.  Once you are in
+    Emacs you can click on the “Org” tab and then select “Export/Publish”.
+    The keyboard shortcut of Control-e Control-c should also work.  Then
+    Emacs will ask you what sort of output you want, type “h” to request
+    html.  
+
+    To generate the .inp file, use the keyboard shortcut Control-c
+    Control-v t. This will generate the Mplus .inp file with all of the
+    syntax contained in the code chunks.
+
+In that workflow, the assumption was that the author would close
+Emacs, open a shell, and run something like
+
+#+BEGIN_EXAMPLE
+$ mplus file_name_here.inp
+#+END_EXAMPLE
+
+One big difference in our new approach is that we have a way to export
+the Mplus file and run it without leaving Emacs. If you open one of
+the new-style org mode files, scroll down to a chunk that looks like
+this:
+
+#+BEGIN_EXAMPLE
+* Output
+#+BEGIN_SRC sh :results output org :exports both
+	mplus sem-01.inp
+#+END_SRC
+#+END_EXAMPLE
+
+All of the new-format org files should have the Output section that
+has the shell command that runs mplus. 
+
+Put the cursor in that chunk and run the keystrokes C-c C-c. That will
+run the command inside the blocks.
+
+Another big difference in our new approach is the Results section.
+If the Mplus run creates output in the terminal, we will see it "pop
+out" into the org mode file. It will appear like the following.
+
+#+BEGIN_EXAMPLE
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'sem-01.inp'...
+
+     Beginning Time:  14:31:10
+        Ending Time:  14:31:10
+       Elapsed Time:  00:00:00
+
+     Refer to 'sem-01.out' for warning(s).
+#+END_SRC
+#+END_EXAMPLE
+
+This run ended without any warnings or errors, but if there are
+errors, then they will be displayed.
+
+Workflow
+
+If we want to start a new org mode file, we'd probably
+just copy an old one and start editing. However, we can
+start with an empty file and use some Emacs functions 
+we prepared in order to initialize the file.
+
+
+** workflow
+1. insert the crmda template; (make sure this is the first step)
+   When running this command, you will see a pop up that asks you to direct to the
+   directory where the css files are located. Just point it to the right
+   direction, everything else will be taken care of.
+
+
+   #+BEGIN_EXAMPLE
+     M-x insert-crmda-template
+   #+END_EXAMPLE
+
+2. tangle the source blocks in the org file
+   This step will generate the Mplus input file that will be inserted in the
+   output section.
+   #+BEGIN_EXAMPLE
+     M-x org-babel-tangle ;; or C-c C-v t if you prefer
+   #+END_EXAMPLE
+
+3. insert the output section
+   #+BEGIN_EXAMPLE
+     M-x auto-insert-output-section
+   #+END_EXAMPLE
+
+4. execute the shell source code block that runs Mplus
+   This step will generate the output file that will be referenced in the
+   results section.
+   #+BEGIN_EXAMPLE
+     M-x auto-execute-shell-mplus-block
+   #+END_EXAMPLE
+
+5. insert the results section
+   This step will insert a results section to the org file that includes a link
+   to the output file we have generated in step 4
+   #+BEGIN_EXAMPLE
+     M-x auto-insert-results-section
+   #+END_EXAMPLE
+
+6. Export to an html file. This can be done as described above, the
+   pull down Org menu has Export/Publish and choose "h" and "h" for
+   HTML output (for which the shortcut is C-c C-e h h).
+
+   However, it can also be done with a function call, 
+   #+BEGIN_EXAMPLE
+     M-x org-html-export-to-html 
+   #+END_EXAMPLE
+
+# I don't understand this:
+# 7. If you are lazy like me, I have made all the steps accessible within one
+#    step.
+#    #+BEGIN_EXAMPLE
+#      M-x auto-crmda
+#    #+END_EXAMPLE
+
+
+
+Conclusion
+
+The Emacs org mode reminds many users of Markdown.  Org mode existed
+first, however, so perhaps it is better to say that Markdown reminds
+users of org mode.
+
+Like in Rmarkdown, the .org file gives us the opportunity to write
+commentary on the Mplus code we are writing. Look in the existing .org
+files and you will see the detailed explanations of the code that are
+provided.  If this doesn't make sense, look at the existing .inp,
+.org, and .html files and things will become clear.

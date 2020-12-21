@@ -1,0 +1,115 @@
+---
+title: "Multiple Linear Regression (MLR) Example in lavaan - 02"
+author:
+ - name: Chong Xing
+   affiliation: Center for Research Methods and Data Analysis, University of Kansas
+   email: cxing@ku.edu
+advertise: >
+    Please  visit [http://crmda.ku.edu/guides](http://crmda.ku.edu/guides)
+keywords: Linear Regression, Path Analysis, Mediation, R, lavaan 
+
+abstract: This guide outlines how fit two path models in R using the
+    lavaan package. The first example shows how to specify and
+    estimate an indirect effect (or mediation) model using lavaan with
+    bootstrapped standard errors. The second example demonstrates how
+    to fit the same model for two groups.
+    
+checked_by: "First Last"
+Note to Authors: please_dont_change_the_next 4 lines!
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output:
+  stationery::crmda_html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+    css: theme/kutils.css
+    template: theme/guide-template.html
+    mathjax-url: "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+logoleft: theme/logoleft.png
+logoright: theme/logo-vert.png
+---
+
+```{r setup, include=FALSE}
+##This Invisible Chunk is required in all CRMDA documents
+outdir <- paste0("tmpout")
+if (!file.exists(outdir)) dir.create(outdir, recursive = TRUE)
+knitr::opts_chunk$set(echo=TRUE, comment=NA, fig.path=paste0(outdir, "/p-"))
+options(width = 75)
+```
+
+#### Package and Data {.bs-callout .bs-callout-grey}
+
+Load the lavaan package at the beginning of the session
+```{r }
+
+library(lavaan)
+```
+The data file is read in, columns are named, and missing values are specified.
+```{r }
+dat <- read.csv("../../data/job_placement.csv", header = FALSE)
+colnames(dat) <- c("id", "wjcalc", "wjspl", "wratspl", "wratcalc",
+                   "waiscalc", "waisspl", "edlevel", "newschl",
+                   "suspend", "expelled", "haveld", "gender", "age")
+dat[dat == 99999] <- NA
+dat$gender <- as.factor(dat$gender)
+levels(dat$gender) <- c("Male", "Female")
+```
+#### A Path Model in lavaan {.bs-callout .bs-callout-red}
+This model contains one outcome variable "wjspl", one predictor
+variable "age", and one mediator variable "edlevel". The hypothesis
+being tested is that the influence of age on wjspl can be explained
+(or partially explained) by edlevel. 
+
+```{r }
+model.path <-
+    ' wjspl ~ c*age     ## the c path - the direct path from IV to DV
+      wjspl ~ b*edlevel ## the b path - the direct path from mediator to DV
+      edlevel ~ a*age   ## the a path - the direct path from IV to mediator
+      ab := a*b         ## using := operator to create ab (the indirect effect)
+      total := c + a*b  ## using := operator to create total effect
+    '
+```
+
+This fits the model using the sem function and returns an output
+summary. Bootstrapped standard errors (1000 bootstrapped draws) are
+requested.
+```{r }
+output.path <- sem(model = model.path, data = dat, se = "bootstrap",
+                   bootstrap = 1000)
+summary(output.path)
+```
+
+#### A Multiple-Group Path Model in lavaan {.bs-callout .bs-callout-blue}
+The same path model can be estimated for multiple groups (e.g., gender).
+```{r }
+model.path.2 <-
+    ' wjspl ~ c(b1, b2)*edlevel + c(c1, c2)*age ## separate b and c paths for two groups
+      edlevel ~ c(a1, a2)*age                   ## separate a paths for two groups
+
+      a1b1 := a1*b1 ## the indirect effect for group 1
+      a2b2 := a2*b2 ## the indirect effect for group 2
+
+      total1 := c1 + a1*b1 ## the total effect for group 1
+      total2 := c2 + a2*b2 ## the total effect for group 2
+    '
+```
+
+This fits the model using the sem function and returns an output
+summary. Bootstrapped standard errors (1000 bootstrapped draws) are
+requested. The indirect and the total effects are estimated
+simultaneously for two groups. 
+```{r }
+output.path.2 <- sem(model = model.path.2, data = dat, se = "bootstrap",
+                     bootstrap = 1000, group = "gender")
+summary(output.path.2)
+```
+
+#### Session Info {.bs-callout .bs-callout-grey}
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+Available under
+[Created Commons license 3.0 <img src="http://crmda.dept.ku.edu/images/cc-3.0.png" alt="CC BY"
+style="width: 75px;height: 20px;"/>](http://creativecommons.org/licenses/by/3.0/)
+

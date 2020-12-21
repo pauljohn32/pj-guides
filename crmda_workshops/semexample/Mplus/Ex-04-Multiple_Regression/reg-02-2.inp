@@ -1,0 +1,31 @@
+
+TITLE:
+  Example 4 - Multiple Linear Regression - 02-2 Multiple-Group Path Analysis
+
+DATA:
+  FILE IS "../../data/job_placement.csv";
+
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wjspl edlevel age;
+  
+  MISSING ARE all(99999);
+  
+  GROUPING IS female(0 = male, 1 = female);
+
+ANALYSIS:
+  BOOTSTRAP = 1000;
+
+MODEL:
+  wjspl ON edlevel age;
+  edlevel ON age;
+  
+MODEL INDIRECT:
+  wjspl IND edlevel age;
+
+OUTPUT:
+  TECH1 STANDARDIZED CINTERVAL(BOOTSTRAP);

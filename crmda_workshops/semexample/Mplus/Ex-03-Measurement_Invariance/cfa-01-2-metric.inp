@@ -1,0 +1,33 @@
+
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis (Metric Invariance)
+
+DATA:
+  FILE IS "../../data/job_placement.csv";
+
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+
+  MISSING ARE all(99999);
+
+  GROUPING IS female(0=male 1=female);
+
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratspl wjspl waisspl wratcalc wjcalc waiscalc];
+  MATH@1 SPELL@1;
+  [MATH@0 SPELL@0];
+
+  MODEL female:
+  [wratspl wjspl waisspl wratcalc wjcalc waiscalc];
+  MATH SPELL;
+
+OUTPUT:
+  TECH1;
+  STDYX;

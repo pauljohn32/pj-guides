@@ -1,0 +1,33 @@
+
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis (Configural Invariance)
+
+DATA:
+  FILE IS "../../data/job_placement.csv";
+
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+  MISSING ARE all(99999);
+
+GROUPING IS female(0=male 1=female);
+
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratcalc wjcalc waiscalc wratspl wjspl waisspl];
+  MATH@1 SPELL@1;
+  [MATH@0 SPELL@0];
+
+  MODEL female:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratcalc wjcalc waiscalc wratspl wjspl waisspl];
+
+OUTPUT:
+  TECH1;
+  STDYX;

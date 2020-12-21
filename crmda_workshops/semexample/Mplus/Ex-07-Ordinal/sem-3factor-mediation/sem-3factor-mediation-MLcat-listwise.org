@@ -1,0 +1,147 @@
+#+SETUPFILE: ../../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda_org.css"/>
+#+TITLE: Structural Equation Model of Bullying, Alcohol, and Depression
+#+SUBTITLE: ML Estimates with Categorical Data and Listwise Deletion of Missing Data
+#+AUTHOR: Chong Xing, Meghan Fager, Paul Johnson
+#+EMAIL: cxing@ku.edu, megfager@ku.edu, pauljohn@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE: 
+#+ABSTRACT: 
+#+KEYWORDS: 
+#+INCLUDE: ../../horg/setup/heading
+
+
+* Title Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 7
+Health Behavior in School Children
+Mediation Analysis of Latent Variables with Ordered-Categorical Data using WLSMV
+Bulliedied, Alcohol, and Depression;
+#+END_SRC
+
+* Data Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+  LISTWISE = ON;
+#+END_SRC
+
+* Variable Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Bullied1-Bullied9 Alc1-Alc5 Depress1-Depress6;
+
+  CATEGORICAL ARE
+  Bullied1-Bullied9 Alc1-Alc5 Depress1-Depress6;
+
+  USEOBSERVATIONS ARE (Grade == 6 OR Grade == 7);
+
+  MISSING ARE all(-999);
+#+END_SRC
+
+* Analysis
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  ESTIMATOR = ML;
+#+END_SRC
+
+* Model Command
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  Bullied BY Bullied1* Bullied2-Bullied9;
+  Alcohol BY Alc1* Alc2-Alc5;
+  Depress BY Depress1* Depress2-Depress6;
+
+  Depress ON Bullied;
+  Alcohol ON Bullied Depress;
+  Bullied@1 Alcohol@1 Depress@1;
+
+  MODEL INDIRECT:
+  Alcohol IND Depress Bullied; 
+#+END_SRC
+
+
+* Output Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+  STDYX;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus sem-3factor-mediation-MLcat-listwise.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'sem-3factor-mediation-MLcat-listwise.inp'...
+
+     Dimensions of integration:                  3
+     Total number of integration points:         3375
+
+
+  ITER  LOGLIKELIHOOD    ABS CHANGE   REL CHANGE  ALGO  TIME  TOTAL TIME
+     1 -0.44208113D+05    0.0000000    0.0000000  EM    6.34     6.3
+     2 -0.42408504D+05 1799.6093357    0.0407077  EM   12.51    18.9
+     3 -0.41835234D+05  573.2704748    0.0135178  EM   17.59    36.4
+     4 -0.41655367D+05  179.8670345    0.0042994  EM   18.91    55.4
+     5 -0.41585690D+05   69.6768901    0.0016727  EM   21.00    76.3
+     6 -0.41554552D+05   31.1374876    0.0007488  EM   21.54    97.9
+     7 -0.41539408D+05   15.1441404    0.0003644  EM   20.73   118.6
+     8 -0.41531592D+05    7.8157677    0.0001882  EM   20.50   139.1
+     9 -0.41527367D+05    4.2250744    0.0001017  EM   20.21   159.3
+    10 -0.41522493D+05    4.8738486    0.0001174  FS   23.18   182.5
+    11 -0.41522412D+05    0.0814295    0.0000020  FS   23.00   205.5
+    12 -0.41521538D+05    0.8743512    0.0000211  EM   50.08   255.6
+    13 -0.41521443D+05    0.0950912    0.0000023  EM   19.73   275.3
+    14 -0.41521391D+05    0.0513167    0.0000012  EM   20.29   295.6
+    15 -0.41521359D+05    0.0324030    0.0000008  EM   20.50   316.1
+    16 -0.41521337D+05    0.0220796    0.0000005  EM   20.65   336.8
+    17 -0.41521321D+05    0.0158941    0.0000004  EM   20.89   357.7
+    18 -0.41521309D+05    0.0119264    0.0000003  EM   20.89   378.6
+    19 -0.41521300D+05    0.0092325    0.0000002  EM   20.75   399.3
+    20 -0.41521292D+05    0.0073124    0.0000002  EM   20.58   419.9
+    21 -0.41521287D+05    0.0058874    0.0000001  EM   20.52   440.4
+    22 -0.41521282D+05    0.0047945    0.0000001  EM   20.81   461.2
+    23 -0.41521278D+05    0.0039348    0.0000001  EM   20.73   481.9
+    24 -0.41521275D+05    0.0032455    0.0000001  EM   20.76   502.7
+    25 -0.41521272D+05    0.0026851    0.0000001  EM   20.69   523.4
+    26 -0.41521270D+05    0.0022247    0.0000001  EM   20.70   544.1
+    27 -0.41521268D+05    0.0018440    0.0000000  EM   20.72   564.8
+    28 -0.41521266D+05    0.0015275    0.0000000  EM   20.69   585.5
+    29 -0.41521265D+05    0.0012637    0.0000000  EM   20.70   606.2
+    30 -0.41521264D+05    0.0010432    0.0000000  EM   20.74   626.9
+    31 -0.41521263D+05    0.0008589    0.0000000  EM   20.66   647.6
+     Parameters          15         2        17        16        13
+     Derivatives   0.11D-03 -0.11D-03  0.10D-03  0.90D-04  0.78D-04
+     Beginning Time:  12:50:27
+        Ending Time:  13:02:02
+       Elapsed Time:  00:11:35
+
+     Output saved in 'sem-3factor-mediation-MLcat-listwise.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:sem-3factor-mediation-MLcat-listwise.out][sem-3factor-mediation-MLcat-listwise.out]] to see the output.
