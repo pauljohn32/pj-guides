@@ -1,0 +1,328 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[Writing Functions I] % (short title, use only with long paper titles)
+{Style}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[2016] % (optional, should be abbreviation of conference name)
+{2016}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+%_____________________________________________
+
+\section{R Style}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Unofficial Official R Style Guide}
+  \begin{itemize}
+  \item This is discussed in rockchalk vignette Rstyle
+  \item There is not much ``official style guidance'' from the R Core Team
+  \item Don't mistake that as permission to write however you want.
+  \item There ARE very widely accepted standards for the way that code
+    should look
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Inductive Style Guide}
+  \begin{itemize}
+    \item To see that R really does have an implicitly stated Style,
+      inspect the R source code.
+    \item The code follows a uniform pattern of indentation, the use
+      of white space, and so forth.
+    \item Recall that \texttt{print.function()} will be called if you
+      type the name of a function without parentheses. That is a
+      tidied up view of R's internal structural represenation of a function.
+    \item. This time, lets look at ``lm'' inside R:
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+<<lmcode, echo=T>>=
+lm
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Why Neatness Counts}
+
+  \begin{itemize}
+  \item You can write messy code, but you can't make anybody read it.
+  \item Finding bugs in a giant undifferentiated mass of commands is difficult
+  \item Chance of error rises as clarity decreases
+  \item If you want people to help you, or use your code, you should
+    write neatly!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Style Fundamentals}
+
+  \begin{itemize}
+  \item WHITE SPACE:
+    \begin{itemize}
+    \item indentation. R Core Team recommends 4 spaces
+    \item one space around operators like <- = *
+    \end{itemize}
+  \item ``$<-$'' should be used for assignments. ``='' was used by
+    mistake so often by novices that the R interpreter was
+    re-written to allow =. However, it may still fail in some
+    cases.
+  \item Use helpful variable names
+  \item Separate calculations into functions. Sage advice from one of
+    my programming mentors:
+    \begin{quotation}
+      Don't allow a calculation to grow longer than the space on one
+      screen. Break it down into smaller, well defined pieces.
+    \end{quotation}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Be Careful about line endings}
+  \begin{itemize}
+  \item Unlike C (or other languages), R does not require an ``end
+    of line character'' like ``;''.
+  \item That's convenient, but sometimes code can
+    ``fool'' R into believing that a command is finished.
+  \item From the help page for ``if''
+    \begin{quote}
+      Note that it is a common mistake to forget to put braces (‘\{
+      .. \}’) around your statements, e.g., after ‘if(..)’ or
+      ‘for(....)’.  In particular, you should not have a newline
+      between ‘\}’ and ‘else’ to avoid a syntax error in entering a ‘if
+    ... else’ construct at the keyboard or via ‘source’.  For that
+    reason, one (somewhat extreme) attitude of defensive programming
+    is to always use braces, e.g., for ‘if’ clauses.
+  \end{quote}
+
+\item The \texttt{\} else \{} Policy. I strongly recommend this format:
+\begin{Sinput}
+if (a-logical-condition) {
+  ## if TRUE, do this
+  } else {
+    ## if FALSE, the other thing
+  }
+\end{Sinput}
+to close the previous if and begin else on same line.
+
+  \item ``if-else'' is very troublesome. If R thinks the ``if'' is
+    finished, it may not notice the else.
+
+\begin{Sinput}
+   if (x > 7) y <- 3
+   else y <- 2
+\end{Sinput}
+
+Causes ``Error: unexpected 'else' in ``else''
+
+  \item  When running code line-by-line, the ``naked else'' always
+    causes an error.
+
+  \end{itemize}
+\end{frame}
+
+%____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Google Doc on R Coding is Just ``somebody's'' Opinion}
+  \begin{itemize}
+    \item The Easily Googled Google R Standards
+     \includegraphics[scale=0.35]{importfigs/GoogleRsnap}
+ \end{itemize}
+\end{frame}
+
+
+%___________________________
+\begin{frame}[containsverbatim]
+  \frametitle{How To Name Functions}
+  \begin{itemize}
+    \item Don't use names for functions that are already in widespread
+      use, like lm, seq, rep, etc.
+  \item I like Objective C style variable and function names that
+    smash words together, as in \texttt{myRegression} \texttt{myCode}
+  \item R uses periods in function names to represent ``object
+    orientation'' or ``subclassing'', thus I avoid periods for simple punctuation.
+
+    Ex: doSomething() is better than do.something
+
+  \item Underscores are now allowed in function names.
+
+    Ex: do\_something() would be OK
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{How To Name Variables}
+
+  \begin{itemize}
+  \item Use clear names always
+  \item Use short names where possible
+  \item Never use names of common functions for variables
+  \item Never name a variable T or F (doing so tramples R symbols)
+  \item ``Name by suffix'' strategy I'm using now:
+ \end{itemize}
+\begin{Sinput}
+  m1 <- lm( y ~ x, data=dat)
+  m1sum <- summary(m1)
+  m1vif <- vif(m1)
+  m1inf <- influence.measures(m1)
+
+\end{Sinput}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Expect Some Variations in My Code}
+  \begin{itemize}
+  \item I don't mind adding squiggly braces, even if not required
+
+    \texttt{if (whatever == TRUE) \{x <- y\}}
+
+  \item Sometimes I will use 3 lines where one would do
+
+\begin{Verbatim}
+  if (whatever == TRUE){
+             x <- y
+  }
+\end{Verbatim}
+
+  \item When in doubt, I like to explicitly name arguments, but not always.
+
+
+    \item I sometimes forget to write TRUE and FALSE when T and F
+      will suffice
+   \item Here's why that's a big deal. Suppose a some user mistakenly redefines T or F:
+ \begin{Sinput}
+    T <- 7
+    F <- myTerrificFunction
+ \end{Sinput}
+     then my functions that use ``T'' and ``F'' will die.
+  \end{itemize}
+\end{frame}
+
+%____________________________________________
+
+
+%===================================================
+\end{document}

@@ -1,0 +1,375 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/First-R/First-R-01//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/p,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt="> ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\title[Descriptive]{First R Experience }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Install R}
+
+If you are using your own computer, GET R AND INSTALL IT. 
+
+Try this BEFORE THE FIRST class meets. If the install fails, get help
+and fix it!
+\begin{itemize}
+\item R freely downloadable for Linux, MS Windows, and Macintosh from \url{http://rweb.quant.ku.edu/cran}
+(or any other R mirror). 
+\item I have some tips about installing R for Windows on the CRMDA website
+\url{http://crmda.ku.edu/windows-admin-tips}
+\item The priority is to install R and make sure it works.
+\item Later, worry about getting a GOOD PROGRAM EDITOR. Mac's R.app is OK,
+but the ``with R'' editor in Windows is not adequate. I use Emacs,
+but many also enjoy Notepad++ with NPPTOR or RStudio.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{R Terminal Looks like this}
+
+On my Linux system, the ``R console'':
+
+\includegraphics[width=10cm]{2_home_pauljohn_SVN_SVN-guides_Rcourse_First-R_First-R-01_importfigs_R-Linux.png}
+
+
+\lyxframeend{}\lyxframe{R Terminal Looks like this}
+
+On Fan Jia's Windows computer:
+
+\includegraphics[width=10cm]{1_home_pauljohn_SVN_SVN-guides_Rcourse_First-R_First-R-01_importfigs_R-Windows-2013.png}
+
+
+\lyxframeend{}\lyxframe{Type At the > Prompt!}
+\begin{itemize}
+\item In the future, we won't type at the > prompt. Nothing you type there
+is ``remembered'' for future revision.
+\item We will write commands in separate ``script'' files.
+\item But, right now, just enjoy the immediate gratification of typing commands
+into R and watching stuff fly out of your computer.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Start the R Terminal. Try this!}
+
+<<>>=
+x <- c(3, 5, 7, 9, 11)
+x
+mean(x)
+var(x)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Start the R Terminal}
+\begin{itemize}
+\item Note that 
+\end{itemize}
+<<>>=
+x 
+@
+\begin{itemize}
+\item Is the exact same as
+\end{itemize}
+<<>>=
+print(x)
+@
+\begin{itemize}
+\item Because typing a thing's name tells R to use the print function to
+display it.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Your first statistics in the R Terminal}
+
+<<>>=
+y <- c(4, -2, 3, 5, 1)
+mean(x)
+var(x)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Your first plot, launched from the R Terminal}
+\begin{itemize}
+\item This should launch a graphic image in a separate display window
+\end{itemize}
+<<p1, fig=T,include=F>>=
+plot(y ~ x, main = "My First Plot")
+@
+
+\input{plots/p-p1.tex}
+
+\includegraphics[width=8cm]{plots/p-p1.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Your first random samples, from the R Terminal}
+\begin{itemize}
+\item Lets draw 40 observations, one set from a ``normal'' (or Gaussian)
+distribution, one from a Poisson distribution:
+
+
+<<>>=
+x <- rnorm(40, m = 7, sd = 10)
+y <- rpois(40, lambda = 11)
+@
+
+\item Use the \code{head()} function to check the first few values of each
+one
+
+
+<<>>=
+head(x)
+head(y)
+@
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Tidbit about Random Numbers and Reproducability}
+\begin{itemize}
+\item If you run ``\code{rnorm(40, m = 7, sd = 10)}'' over again, you
+will get a different (unpredictable) set of numbers every time
+\item It is possible to re-draw the same random numbers, over and over,
+if you re-set the random number generator. 
+\end{itemize}
+<<>>=
+set.seed(66565) #put in any integer you like
+x <- rnorm(40, m = 7, sd = 10)
+y <- rpois(40, lambda = 11)
+@
+\begin{itemize}
+\item Homework: Use the \code{head()} function to view \code{x} and \code{y},
+then run those 3 lines over a few times.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create a histogram of x}
+
+<<p2, fig=T, include=F>>=
+hist(x, prob = TRUE, main = "My First Histogram")
+@
+
+\input{plots/p-p2.tex}
+
+\includegraphics[width=8cm]{plots/p-p2.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Embellish a plot by drawing on it}
+
+\def\Sweavesize{\scriptsize}
+
+<<p3, fig=T, include=F>>=
+hist(y, prob = TRUE, main = "I'm too Cool for Titles", xlab = "This is x. Deal with it.", ylab = "Probability")
+yden <- density(y)
+lines(yden) ## lines is a "method." Will explain later :)
+@
+
+\input{plots/p-p3.tex}
+
+\includegraphics[width=8cm]{plots/p-p3.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot the Poisson y against the normal x variable}
+
+<<p4, fig=T, include=F>>=
+plot(y ~ x)
+@
+
+\input{plots/p-p4.tex}
+
+\includegraphics[width=10cm]{plots/p-p4.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Start the R Terminal}
+
+<<p5, fig=T, include=F>>=
+plot(y ~ x, main = "Here comes a line!")
+mod1 <- lm(y ~ x)
+abline(mod1)
+@
+
+\def\Sweavesize{\scriptsize}
+
+\input{plots/p-p5.tex}
+
+\includegraphics[width=10cm]{plots/p-p5.pdf}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Just one more thing before finishing}
+\begin{itemize}
+\item R allows many output file formats for graphics (pdf, png, jpg, etc)
+\item To save graphics, I prefer pdf format and I run this:
+\end{itemize}
+<<p6, include=F, echo=T, results=hide>>=
+pdf("RegPlot1.pdf", height = 5, width = 7, paper = "special")
+plot(y ~ x, main = "Here comes a line!")
+mod1 <- lm(y ~ x)
+abline(mod1)
+dev.off() # finishes the actual output file
+@
+
+\input{plots/p-p6.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Did R create a PDF file for you?}
+\begin{itemize}
+\item Hopefully, when you ran those commands, R created ``RegPlot1.pdf''.
+\item Maybe that failed! (Perhaps you don't have ``write permission''
+in the directory where R wants to put the file.)
+\item That's embarrassing, I did not think to warn you! You shouldn't have
+trusted me. 
+\item Here are some hints to find your file. Run this:
+
+
+<<eval=F>>=
+list.files()
+@
+
+
+and this
+
+
+<<eval=F>>=
+getwd()
+@
+
+\item In First-R-03, I will explain what's going on. 
+\end{itemize}
+\end{frame}
+\end{document}

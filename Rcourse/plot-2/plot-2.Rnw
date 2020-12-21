@@ -1,0 +1,1641 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{multicol}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\usetheme{Antibes}
+
+%Switch comment character to turn on/off \pause commands given as \pausealt
+%\newcommand{\pausealt}{\par }
+\newcommand{\pausealt}{\pause}
+
+
+\usepackage{color}
+\definecolor{gray1}{gray}{0.75}
+
+\newlength{\figurewidth}
+\figurewidth \textwidth  % This is for rectangular graphs
+\newlength{\figurewidthB}
+\figurewidthB .7\textwidth  % This is for square graphs
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+\title[Plotting II] % (short title, use only with long paper titles)
+{Plotting II}
+
+\subtitle{Important Ingredients in the Best Plot Recipes}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2}Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{Plotting (2)}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+
+
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3.5,width=5.25}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=180, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.5, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3.5, width=5.25)
+options(papersize="special")
+@
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%=============================================================================
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+
+
+
+%=============================================================================
+
+
+\section{Saving Plots}
+
+\begin{frame}
+  \frametitle{The Screen as an Output Device}
+
+  \begin{itemize}
+  \item You make a nice plot and view it on the screen.
+
+  \item The ``window'' is a device, as far as R is concerned.
+  \item You can create more than one plotting device. Try:
+<<sav10, eval=F>>=
+dev.new()
+@
+or
+<<sav15, eval=F>>=
+dev.new(height = 3, width = 7)
+@
+   That should create a new ``screen'' device and the next plot
+   command you run will draw on it.
+
+  \item Possible to have several devices, and alternate among them.
+
+  \item What's my current device? Run:
+<<sav20, eval=F>>=
+dev.cur()
+@
+  \item Related functions: ``dev.next()'' and ``dev.set()'' and ``dev.off()''
+  \end{itemize}
+\end{frame}
+
+
+%_________________________
+\begin{frame}
+  \frametitle{A Printer is also a Device}
+
+  \begin{itemize}
+
+  \item Send the current device's output to the default printer
+
+<<sav30, eval=F, echo=T>>=
+dev.print(paper="letter", height=4, width=4)
+@
+
+\item Here's our major problem.  If the screen device is a different
+  size \& shape, then copying or printing it to another device \&
+  shape will usually create a ugly result.
+
+\item Users frequently note that a plot looks great if they draw it on
+  a 8 inch by 6 inch plot, but when they try to print that in a
+  smaller section of paper, the result is horrible.
+
+  \item Furthermore, on-screen devices do not always gracefully resize
+    when we stretch and resize them.
+
+\end{itemize}
+\end{frame}
+
+% _____________________________
+\begin{frame}
+  \frametitle{Save pdf, postscript, png, etc}
+  \begin{itemize}
+
+  \item Things we call ``file types'' or ``formats'' are \textbf{devices} in R.
+
+  \item Recall the ``window'' where you see the graph is a ``device''
+    in the eyes of R.
+
+  \item Problems arise translating ``that'' device into a
+    file-formatted device.
+
+    \begin{itemize}
+      \item Screen devices are generally ``square'', say 7'' by 7''
+      \item  A screen device output sized for 7'' x 7'' will look
+      bad if it is written into a 6 inch x 4 inch output device.
+      \item This is a major problem with Rstudio, because it
+        constrains the graphic device to be a particular rectangle on
+        the screen.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}
+  \frametitle {Many Devices Are Available}
+
+  \begin{itemize}
+
+    \item Today, I almost always save in  \texttt{pdf} or \texttt{png}
+      devices. \texttt{pdf} is scalable, \texttt{png} is for web pages.
+    \item Many other excellent devices exist, I'm considering studying
+      up on \texttt{svg} or \texttt{tikz}
+    \item \texttt{xfig} device creates output that can be revised in
+      xfig (Godfather of free line art software). That's useful sometimes.
+    \item \texttt{pdf} is now R's default recommendation (was
+      postscript when I started)
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {Ask your system what it has.}
+
+  \begin{itemize}
+    \item Run
+<<sav50, eval=F>>=
+?Devices
+@
+    should list the base devices and some other possibilities your
+    system \emph{might} have.
+
+    \item Check your particular system for extra devices.
+<<sav55, eval=F>>=
+capabilities()
+@
+Today I see
+     \end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+\begin{Soutput}
+jpeg      png     tiff    tcltk      X11     aqua http/ftp  sockets
+TRUE     TRUE     TRUE     TRUE     TRUE    FALSE     TRUE     TRUE
+libxml     fifo   cledit    iconv      NLS  profmem    cairo
+TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+%_____________________________________
+
+\begin{frame}
+  \frametitle {``But I Can Just Point and Click,'' you say...}
+
+  Almost all of my students don't pay attention to me on this. They
+  use a ``graphical environment'' with a pull down menu
+  ``File Save As''.  I say STOP that.
+
+  Why?
+  \begin{itemize}
+  \item \textbf{Quality} The result will be bad if the output device
+    shape and size is not similar to the screen device. Better to
+    create a ``certain'' sized device and let R write on it.
+  \item \textbf{Reproducibility}: Pointing and Clicking does not equal
+    reproducible output. You can't ``give'' that to students \& co-authors
+  \item \textbf{Speed}: Suppose you need to scan through 200 datasets
+    and make 3 plots each. Do you really want to point-and-click
+    through there? Really?
+  \end{itemize}
+\end{frame}
+
+%________________________________________
+
+\begin{frame}
+  \frametitle {The Step-by-Step Procedure}
+
+  Your Code will
+  \begin{enumerate}
+  \item Create an output device (pdf, png, etc)
+  \item Run the commands that create the figure (will not show on the screen)
+
+  \item Turn off the device in order to finish off the file.
+  \end{enumerate}
+
+  While you are ``experimenting'' with code, don't execute
+  code in steps 1 and 3, so you can see output on screen. If you see
+  my example code with \texttt{if (SAVEME) pdf(file =
+    "somefile.pdf", ...)}, you will know what what I mean.
+
+  Check WorkingExample scripts like ``glm-logit-unbalanced-1.R'' or ``glm-logit-compareLinks-1.R''
+
+\end{frame}
+
+%________________________________________
+
+
+
+\begin{frame}
+  \frametitle {Save Files from the R Script}
+
+  \begin{itemize}
+
+    \item I try to remember to have this ``boiler plate'' at the top
+      of every R program that I write when I might need to save graphs
+<<eval=F>>=
+pdf.options(onefile = FALSE, family = "Times", paper = "special", height = 4, width = 6)
+ps.options(horizontal = FALSE, onefile = FALSE, family = "Times", paper = "special", height = 4, width = 6 )
+options(papersize="special")
+@
+
+    \item These set my taste for the ``postscript'' and ``pdf'' output devices.
+
+    \item \emph{IF} I remember those, then saving a file is not so tedious.
+  \end{itemize}
+\end{frame}
+
+%________________________________________________________
+\begin{frame}
+  \frametitle {Explain those arguments}
+  \begin{description}
+    \item [horizontal = FALSE]: I prefer ``portrait'' output
+    \item [onefile = FALSE]: Don't try to put all plots into a single file (I
+      want separate images in separate files)
+    \item [onefile = FALSE]: vital for postscript devices. Otherwise, no
+      bounding box is included and the result is not true EPS  (Encapsulated Postscript)
+    \item [paper = "special"]: Helps with pdf output. Otherwise, it
+      assumes all pdf images are full page size
+    \item [family="Times"]: I prefer to see figures with fonts that
+      match the text.
+  \end{description}
+\end{frame}
+
+
+%________________________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Typical Experience}
+  \begin{itemize}
+  \item First, begin with the process of creating a graph. Run it on
+    screen until you get it right, and then ``wrap'' your commands
+    in this way:
+
+<<posts10, echo=T, eval=F, include=F>>=
+pdf(file = "myimage.pdf")
+##or postscript(file = "myimage.eps")
+##"put your plot commands here")
+dev.off()   #vital to save your file!
+@
+\input{plots/t-posts10}
+
+  \item BIG WARNING 1. If you ``turn on'' the file device, you
+    will not get to see the output on the screen in the R graphic device.
+  \item BIG WARNING 2. If you ``turn on'' an output device, and forget
+    to run dev.off(), you will cause lots of trouble for yourself. Try
+    it and see.
+
+  \end{itemize}
+\end{frame}
+
+
+%___________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {If You Forget the Boilerplate}
+  \begin{itemize}
+  \item You omit pdf.options, then you need to write in details each time, e.g.
+
+<<pdf30, echo=T, eval=F, include=F>>=
+pdf(file = "myfavorite1.pdf", onefile = FALSE, family = "Times", paper = "special", height = 4, width = 6)
+#hist(x) or whatever
+dev.off()
+@
+  \input{plots/t-pdf30}
+
+    \item Instead of
+
+<<pdf31, echo = T, eval = F, include  =F>>=
+pdf(file="myfavorite1.pdf")
+#hist(x) or whatever
+dev.off()
+@
+  \input{plots/t-pdf31}
+
+  \item Even if you did set pdf.options, you can customize
+
+<<pdf32, echo=T, eval=F, include=F>>=
+pdf(file="myfavorite1.pdf", height=8, width=7)
+#hist(x) or whatever
+dev.off()
+@
+
+  \input{plots/t-pdf32}
+
+  \end{itemize}
+\end{frame}
+
+
+%___________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {Conditionalize Code To Make This Less Tedious}
+  \begin{itemize}
+  \item Do your on-screen work like this
+<<eval=F>>=
+SAVEME <- FALSE
+if (SAVEME == TRUE) pdf(file="myfile1.pdf")
+## your graph code here
+if (SAVEME == TRUE) dev.off()
+@
+
+    \item To save figures in files, change
+    \begin{verbatim}
+SAVEME <- TRUE
+     \end{verbatim}
+
+      and then run the whole script over again.
+  \end{itemize}
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle {Another Way To Make This Less Tedious}
+  \begin{itemize}
+  \item Let R number the figures for you.
+
+  \item Put this in the program BEFORE creating plots
+
+<<eval=F>>=
+pdf(file = "myfile1%003d.pdf", onefile =FALSE)
+## Add other arguments if pdf.options not set previously.
+@
+
+  \item When finished, tell R to stop creating output files.
+<<eval=F>>=
+dev.off()
+@
+
+   \item When you run this program, no graphs will ``show on the screen.''
+   \item Each graph you draw will go in a separate file,
+     \texttt{myfile001.pdf}, \texttt{myfile002.pdf},
+     \texttt{myfile003.pdf}.
+
+  \item The downside here is that all figures have to have same
+    height, width
+  \end{itemize}
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}
+  \frametitle{Example Code that Writes a Bunch of Figures}
+
+<<pdf70,eval=F,include=F,echo=T>>=
+for (i in 1:10){
+   fn <- paste("fig", i, ".pdf", sep="")
+   mm <- 3*i; msd <- i^2;
+   mtitle <- paste("Histogram", i, "m =", mm, "sd =", msd)
+   pdf(file = fn)
+   hist(rnorm(1000, mean = 3*i, sd = i^2),  main = mtitle)
+   dev.off()
+  }
+@
+
+\input{plots/t-pdf70}
+
+\end{frame}
+
+
+%___________________________________________
+\section{Layout}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Brief Note on par}
+  \begin{itemize}
+  \item Many settings that affect graphs are sitting ``out there''
+    in memory
+  \item To see them, run
+<<eval=F>>=
+par()
+@
+  \item To see a particular one, run
+<<eval=F>>=
+par("oma")
+@
+  \item To set one, run
+<<eval=F>>=
+par(oma = c(1, 1, 1, 1))
+@
+  \end{itemize}
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Brief Note on par}
+  \begin{itemize}
+  \item Danger: those settings will remain in effect for the
+    duration of the device.
+  \item When you close that device, all of the changes are
+    ``forgotten'' and par() for that device reverts.
+    \begin{itemize}
+    \item Need to re-run if you change devices
+    \item Many people recommend getting in the routine of saving par
+      settings and replacing them when done.
+<<eval=F>>=
+old.par <- par(no.readonly = TRUE)
+## make your changes to par
+par(xpd = TRUE, mar = c(3, 4, 1, 2))
+## make desired figure. When done, restore device.
+par(old.par)
+@
+    \item Seems somewhat unnecessary to me because you can close
+      the device and ``start fresh''
+
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{par: mfcol and mfrow}
+  \begin{itemize}
+  \item Either of these will cause R to subdivide a plotting device into 3 rows
+<<eval=F>>=
+par(mfcol = c(3,1))
+
+par(mfrow = c(3,1))
+@
+  \item Either of these will subdivide a plotting device into 3 rows, 2 columns
+<<eval=F>>=
+par(mfcol = c(3, 2))  # Fill columns first
+
+par(mfrow = c(3, 2))  # Fill rows first
+@
+  \end{itemize}
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{mfrow fills rows, mfcol fills columns}
+  \begin{itemize}
+
+  \item The order of ``drawing'' is the difference between mfcol and mfrow
+
+  \item  Suppose 6 plots are A, B, C, D, E, F
+  \end{itemize}
+
+\begin{topcolumns}
+  \column{6cm}
+  \begin{description}
+    \item [mfcol]  fills the columns first
+      \begin{tabular}{|c|c|}
+        \hline
+        A & D \tabularnewline
+        \hline
+        \hline
+        B & E\tabularnewline
+        \hline
+         \hline
+        C & F\tabularnewline
+        \hline
+         \hline
+      \end{tabular}
+    \end{description}
+
+   \column{6cm}
+   \begin{description}
+
+   \item [mfrow]  fills the rows first
+
+     \begin{tabular}{|c|c|}
+       \hline
+       A & B \tabularnewline
+       \hline
+       \hline
+       C & D\tabularnewline
+       \hline
+       \hline
+       E & F\tabularnewline
+       \hline
+       \hline
+     \end{tabular}
+   \end{description}
+ \end{topcolumns}
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Example: to fit horizontal screen}
+
+<<mfcol10, fig=T, include=F, echo=T, height=3, width=5>>=
+x <- rpois(1000, lambda = 108);
+y <- rnorm(1000, m = x, sd = 10);
+par(mfcol = c(1,3))
+hist(x, main = "Default hist(x)")
+hist(y, main = "Default hist(y)")
+plot(x, y, main = "Scatterplot x, y")
+@
+\input{plots/t-mfcol10}
+
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+
+\includegraphics[totalheight=65mm]{plots/t-mfcol10}
+
+
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{When you are finished...}
+
+  Either:
+  \begin{itemize}
+  \item Reset the option manually
+
+    par(mfcol=c(1,1))
+
+  \item Or close the device
+
+    dev.off()
+
+  \end{itemize}
+\end{frame}
+
+%________________________________
+
+\begin{frame}
+  \frametitle{Some R Functions Use \texttt{mfcol} Behind the Scenes}
+  \begin{itemize}
+  \item Suppose you have a factor variable like ``race'' or ``sex''
+  \item coplot generates separate plot for each value of the factor
+<<eval=F>>=
+example(coplot)
+@
+
+\end{itemize}
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{R's Layout() Function Offers More Control}
+
+  \begin{itemize}
+  \item Check the current layout:
+
+    \texttt{"layout.show(1)"}
+
+    It should put a numeral ``1'' on a screen device.
+  \item layout wants you to specify an R matrix to
+    \begin{itemize}
+    \item divide the space by rows and columns, and
+    \item let R know which figure will be drawn in which area
+    \end{itemize}
+
+  \item Stupid example
+
+    \begin{equation}
+      mymat=\left[\begin{array}{cc}
+          1 & 1\\
+          1 & 1 \\
+        \end{array}\right]\end{equation}
+
+
+    Meaning: divide my plotting area into 4 parts, but let
+    figure ``1'' use all 4 parts.
+
+
+  \end{itemize}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}[containsverbatim]
+
+<<layout10, fig=T,echo=T, include=F>>=
+mymat <- matrix( c(1, 1, 1, 1), ncol = 2)
+layout(mat = mymat)
+layout.show(1)
+@
+\input{plots/t-layout10}
+\includegraphics[totalheight=65mm]{plots/t-layout10}
+\end{frame}
+
+%______________________________________
+
+\begin{frame}[containsverbatim]
+<<layout11, fig=T,echo=T, include=F>>=
+mymat <- matrix(c(1,1,1,1), ncol = 2)
+layout(mat = mymat)
+hist(x,main = "Default hist(x)")
+@
+
+\includegraphics[totalheight=65mm]{plots/t-layout11}
+
+\end{frame}
+
+%___________________________________
+
+\begin{frame}[containsverbatim]
+<<layout20, fig=T,echo=T, include=F>>=
+mymat <- matrix(c(0,2,1,2), ncol = 2)
+layout(mat = mymat)
+layout.show(2)
+@
+\input{plots/t-layout20}
+\includegraphics[totalheight=65mm]{plots/t-layout20}
+
+\end{frame}
+
+%____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{R Squishes the Figures to Fit!}
+<<layout21, fig=T,echo=T, include=F>>=
+layout(mat=mymat)
+hist(x, main = "Default hist(x)")
+plot(x, y, main = "Scatterplot x, y")
+@
+
+\includegraphics[totalheight=65mm]{plots/t-layout21}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Layout 5 images in a ``rainbow'' shape}
+
+  \begin{equation}
+    mymat=\left[\begin{array}{ccc}
+        1 & 1 & 1\\
+        2 & 0 & 3\\
+        4 & 0 & 5\end{array}\right]\end{equation}
+
+
+<<layout30, fig=T,echo=T, include=F>>=
+mymat <- matrix(c(1,2,4,1,0,0,1,3,5), nrow = 3)
+layout(mat = mymat)
+layout.show(5)
+@
+\input{plots/t-layout30}
+
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{You Need 5 Plots for 5 Indicated Spaces}
+<<layout31, fig=T,echo=T, include=F>>=
+layout(mat = mymat)
+hist(x, main = "Default hist(x)")
+hist(y, main = "Default hist(y)")
+plot(x, y, main = "Scatterplot x, y")
+plot(x, y, main = "Top Right Corner of Scatter", xlim = c(mean(x), max(x)), ylim = c(mean(y),max(y)))
+plot(x, y, main = "Bottom Left Corner of Scatter", xlim = c(min(x), mean(x)), ylim = c(min(y), mean(y)))
+@
+
+\input{plots/t-layout31}
+
+
+\end{frame}
+
+%_____________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Voila}
+  \includegraphics[totalheight=65mm]{plots/t-layout31}
+
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}
+  \frametitle{Cautionary Comment about Layout}
+  \begin{itemize}
+    \item Layout affords the ability to fill a page with an
+      arbitrarily complicated array of figures.
+    \item I worry that some of this effort is wasted because some/many
+      journals do not want a full page layout of graphs. If they will
+      give you the space at all, they probably want the individual
+      figures in separate graphs that can be arranged according to
+      their style.
+    \item Exception would be layout used to link together inseparable
+      drawings, e.g. ``rug'' plots below scatterplots.
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+\section{Lattice Layouts}
+
+\begin{frame}
+  \frametitle{Trellis Graphics with the lattice Package}
+
+  \begin{itemize}
+  \item Trellis graphics in S/S+ are highly prized (natural scientists
+    especially)
+  \item Main idea: make it easy/simple to create many plots that
+    subdivide a sample and illustrate for subgroups (coplot, but a
+    fully worked out framework)
+  \item Deepayan Sarkar contributed the lattice package for R
+  \item Some see lattice graphs as a complete replacement for
+    existing 2D plotting framework (e.g., Doug Bates).
+  \item I am more cautious, possibly because
+    \begin{itemize}
+    \item lattice graphics came along after I had mastered the others
+    \item seems tougher to get individual pieces ``just right''
+    \item see previous concern about difficulty of layout in publication.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}
+  \frametitle{xyplot is the workhorse generic function}
+  \begin{itemize}
+    \item xyplot will accept a formula and figure out what to do with it.
+    \item After a vertical bar, | , factors indicate desired subgroups.
+
+
+  \end{itemize}
+
+\end{frame}
+
+% _______________________________________________
+
+\begin{frame}[containsverbatim]
+
+<<fig=F, echo=F, include=F>>=
+library(lattice)
+load("examples/gss-subset.RData")
+@
+
+<<xyplot10, echo=T, include=F>>=
+xyplot( hrs1 ~ age | sex , data=dat)
+@
+
+<<xyplot11, fig=T, echo=T, include=F>>=
+xy1 <-
+<<xyplot10>>
+print(xy1)
+@
+
+\input{plots/t-xyplot10}
+
+\includegraphics[totalheight=65mm]{plots/t-xyplot11}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist30,echo=T,fig=F, include=F>>=
+histogram(~income06  | sex, data=dat)
+@
+
+<<lathist31,echo=T,fig=T,include=F>>=
+xy1 <-
+<<lathist30>>
+print(xy1)
+@
+
+\input{plots/t-lathist30}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist31}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist40, echo=T, fig=T, include=F>>=
+histogram(~I(numwomen + nummen)  | sex, data = dat)
+@
+
+<<lathist41, echo=T, fig=T,include=F>>=
+xy1<-
+<<lathist40>>
+print(xy1)
+@
+
+\input{plots/t-lathist40}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist41}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist50, fig=F, echo=T, include=F>>=
+histogram(~I(numwomen+nummen)  | sex, data=dat, xlim=c(0,100))
+@
+
+<<lathist51, fig=T, echo=T, include=F>>=
+xy1 <-
+<<lathist50>>
+print(xy1)
+@
+
+\input{plots/t-lathist50}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist51}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist60,fig=F,include=F,echo=T>>=
+histogram(~I(numwomen+nummen)  | sex, data=dat, xlim=c(0,100), breaks=100)
+@
+
+
+<<lathist61, fig=T, include=F, echo=T>>=
+xy1 <-
+<<lathist60>>
+print(xy1)
+@
+
+\input{plots/t-lathist60}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist61}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+  Appears we just need to cut some extreme values.
+
+<<echo=T>>=
+dat$numwomen[dat$numwomen > 100] <- NA
+dat$nummen[dat$nummen > 100] <- NA
+@
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist70, fig=F, echo=T, include=F>>=
+histogram(~I(numwomen+nummen)  | sex, data=dat, xlim=c(0,100))
+@
+
+<<lathist71, fig=T,echo=T,include=F>>=
+xy1 <-
+<<lathist70>>
+print(xy1)
+@
+
+\input{plots/t-lathist70}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist71}
+
+
+
+\end{frame}
+
+%______________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist80,echo=T,include=F>>=
+histogram(~I(numwomen+nummen)  | sex * sexsex5, data=dat)
+@
+
+
+<<lathist81,fig=T,include=F, echo=T>>=
+xy1 <-
+<<lathist80>>
+print(xy1)
+@
+
+
+\input{plots/t-lathist80}
+\includegraphics[totalheight=65mm]{plots/t-lathist81}
+
+
+\end{frame}
+
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+<<lathist90, fig=F, echo=T, include=F>>=
+histogram(~I(numwomen+nummen)  | sexsex5 * sex , data=dat)
+@
+
+<<lathist91, fig=T,echo=T, include=F>>=
+xy1 <-
+<<lathist90>>
+print(xy1)
+@
+
+\input{plots/t-lathist90}
+\includegraphics[totalheight=65mm]{plots/t-lathist91}
+
+\end{frame}
+
+%_________________________________________
+\section{Plotmath}
+
+\begin{frame}
+  \frametitle{The plotmath Framework}
+
+  \begin{itemize}
+  \item R has a ``\LaTeX like'' math markup called ``plotmath''
+  \item Create an R ``expression'', then when plotted, math will appear!
+  \item read \texttt{?plotmath}
+    \item run \texttt{example(plotmath)}
+
+  \end{itemize}
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Simple example}
+
+<<pm10, fig=F, echo=T, include=F>>=
+plot(1:10, 1:10, type="n")
+text(4, 5, expression(paste( alpha  ," is alpha")))
+text(7, 3, expression(paste( beta * alpha, " is beta * alpha")))
+text(3, 6, expression(paste(frac(beta, alpha), " is frac(beta,alpha)")))
+text(2,9, expression(paste(y[i] == beta[0]+beta[1]*x[1]+hat(e))))
+@
+
+\input{plots/t-pm10}
+
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Simple example}
+
+<<pm11, fig=T, echo=T, include=F>>=
+<<pm10>>
+@
+
+\includegraphics[totalheight=65mm]{plots/t-pm11}
+\end{frame}
+
+%____________________________
+
+\begin{frame}
+  \frametitle{A Few plotmath Tips}
+  \begin{itemize}
+    \item Two Equal Signs (== outputs =)
+  %%  \item $\[\]$ marks subscripts, ^ for superscripts
+    \item Want * to show? Type \%*\%
+    \item Want $\cdot$ ? Type  cdot
+
+  \end{itemize}
+\end{frame}
+
+%____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Only Really Big Gotcha Is...}
+
+  \begin{itemize}
+  \item Blending calculations and math.
+  \item This does not work:
+\begin{Sinput}
+x <- 10
+text(4, 5, expression(paste("x is ", x)))
+\end{Sinput}
+
+  \item Instead, a more elaborate procedure is required.
+  \item One method is bquote
+
+
+  \end{itemize}
+\end{frame}
+
+%________________________
+
+\begin{frame}
+  \frametitle{bquote example usage}
+
+<<pm20, fig=F, include=F, echo=T>>=
+x <- 10
+plot( 1:10, 1:10, type="n")
+anexpression <-   bquote(x == .(x))
+text( 4, 5, anexpression)
+mnorm <- round(mean(rnorm(1000, m=10, sd=20)), 2 )
+text( 7,5, bquote(mu == .(mnorm)))
+text(4, 2, bquote(lambda == .(round(mean(rpois(100,lambda=7))))))
+@
+
+\input{plots/t-pm20}
+
+\end{frame}
+
+
+%_________________________________
+\begin{frame}[containsverbatim]
+
+<<pm21,fig=T, echo=T, include=F>>=
+<<pm20>>
+@
+
+\includegraphics[totalheight=65mm]{plots/t-pm21}
+
+\end{frame}
+
+%_______________________________
+\begin{frame}
+  \frametitle{I've Been Proposing This as a plotmath Example}
+
+<<pm90A,fig=F, echo=T,include=F>>=
+###Set mu and sigma at your pleasure:
+mu <- 10.03
+sigma <- 12.5786786
+
+myx <- seq( mu - 3.5*sigma,  mu+ 3.5*sigma, length.out=500)
+
+myDensity <- dnorm(myx,mean=mu,sd=sigma)
+
+
+# It is challenging to combine plotmath with values of mu and sigma in one expression.
+# Either bquote or substitute can be used.  First use bquote:
+
+myTitle1 <- bquote (paste("x ~ Normal(", mu== .(round(mu,2)), ',', sigma== .(round(sigma,2)),")") )
+
+### Using substitute:
+### myTitle1 <-  substitute( "x ~ Normal" ~~ group( "(", list(mu==mu1, sigma^2==sigma2)#, ")") ,  list(mu1=round(mu,2), sigma2=round(sigma^2,2)))
+
+### Or combine the two:
+### t1 <- substitute ( mu == a ,  list (a = mu))
+### t2 <- substitute ( sigma == a, list(a = round(sigma,2)))
+### myTitle1 <- bquote(paste("x ~ Normal(", .(t1),",", .(t2),")" ) )
+@
+<<pm90B,fig=F, echo=T,include=F>>=
+### xpd needed to allow writing outside strict box of graph
+par(xpd=TRUE, ps=10)
+
+plot(myx, myDensity, type="l", xlab="x", ylab="Probability Density ", main=myTitle1, axes=FALSE)
+axis(2, pos= mu - 3.6*sigma)
+axis(1, pos=0)
+@
+
+<<pm90C,fig=F, echo=T,include=F>>=
+lines(c(myx[1],myx[length(myx)]),c(0,0)) ### closes off axes
+
+# bquote creates an expression that text plotters can use
+t1 <-  bquote( mu== .(mu))
+
+# Find a value of myx that is "very close to" mu
+centerX <- max(which (myx <= mu))
+# plot light vertical line under peak of density
+lines( c(mu, mu), c(0, myDensity[centerX]), lty= 14, lwd=.2)
+
+# label the mean in the bottom margin
+mtext(bquote( mu == .(mu)), 1, at=mu, line=-1)
+@
+
+<<pm90D,fig=F, echo=T,include=F>>=
+
+### find position 20% "up" vertically, to use for arrow coordinate
+ss = 0.2 * max(myDensity)
+# Insert interval to represent width of one sigma
+arrows( x0=mu, y0= ss, x1=mu+sigma, y1=ss, code=3, angle=90, length=0.1)
+
+### Write the value of sigma above that interval
+t2 <-  bquote( sigma== .(round(sigma,2)))
+text( mu+0.5*sigma, 1.15*ss, t2)
+@
+
+<<pm90E,fig=F, echo=T,include=F>>=
+### Create a formula for the Normal
+normalFormula <- expression (f(x) == frac (1, sigma* sqrt(2*pi)) * e^{~~ - ~~ frac(1,2)~~ bgroup("(", frac(x-mu,sigma),")")^2})
+# Draw the Normal formula
+text ( mu + 0.5*sigma, max(myDensity)- 0.10 * max(myDensity),  normalFormula, pos=4)
+@
+
+<<pm90F,fig=F, echo=T,include=F>>=
+
+### Theory says we should have 2.5% of the area to the left of: -1.96 * sigma.
+### Find the X coordinate of that "critical value"
+criticalValue <- mu -1.96 * sigma
+criticalValue <- round(criticalValue, 2)
+### Then grab all myx values that are "to the left" of that critical value.
+specialX <-  myx[myx <= criticalValue]
+
+### mark the critical value in the graph
+text ( criticalValue, 0 ,
+      label=criticalValue, pos=1)
+@
+
+<<pm90G,fig=F, echo=T,include=F>>=
+
+### Take sequence parallel to values of myx inside critical region
+specialY <- myDensity[myx < criticalValue]
+#  Polygon makes a nice shaded illustration
+polygon(c(specialX[1], specialX, specialX[length(specialX )]), c(0, specialY, 0), density=c(-110),col="lightgray" )
+@
+
+<<pm90H,fig=F, echo=T,include=F>>=
+### I want to insert annotation about area on left side.
+shadedArea <- round(pnorm(mu - 1.96 * sigma, mean=mu, sd=sigma),4)
+al1 <- bquote(Prob(x <= .(criticalValue)))
+al2 <- bquote(phantom(0) == F( .(criticalValue) ))
+al3 <- bquote(phantom(0) == .(round(shadedArea,3)))
+
+### Hard to position this text "just right"
+### Have tried many ideas, this may be least bad.
+### Get center position in shaded area
+medX <- median(specialX)
+### density at that center point:
+denAtMedX <- myDensity[indexMed <- max(which(specialX < medX))]
+<<pm90H2, fig=F, echo=T, include=F>>=
+text(medX, denAtMedX+0.0055, labels = al1)
+text(medX, denAtMedX+0.004, labels = al2)
+text(medX, denAtMedX+0.0025, labels = al3)
+
+### point from text toward shaded area
+arrows( x0 = medX, y0 = myDensity[indexMed]+0.002,
+       x1 = mu-2.5 *sigma, y1 = 0.40*myDensity[length(specialX)], length = 0.1)
+@
+
+<<pm90I,fig=F, echo=T,include=F>>=
+
+ss <- 0.1 * max(myDensity)
+### Mark interval from mu to mu-1.96*sigma
+arrows( x0 = mu, y0 = ss, x1 = mu-1.96*sigma, y1 = ss, code = 3, angle = 90, length = 0.1)
+### Put text above interval
+text( mu - 2.0*sigma,1.15*ss, bquote(paste(.(criticalValue), phantom(1)==mu-1.96 * sigma,sep="")), pos=4)
+@
+
+
+<<pm90J,fig=F, echo=T,include=F>>=
+criticalValue <- mu +1.96 * sigma
+criticalValue <- round(criticalValue, 2)
+### Then grab all myx values that are "to the left" of that critical value.
+specialX <-  myx[myx >= criticalValue]
+
+### mark the critical value in the graph
+text ( criticalValue, 0 , label= paste(criticalValue), pos=1)
+### Take sequence parallel to values of myx inside critical region
+specialY <- myDensity[myx > criticalValue]
+#  Polygon makes a nice shaded illustration
+polygon(c(specialX[1], specialX, specialX[length(specialX )]), c(0, specialY, 0), density=c(-110), col = "lightgray" )
+@
+
+<<pm90K,fig=F, echo=T,include=F>>=
+shadedArea <- round(pnorm(mu + 1.96 * sigma, mean = mu, sd = sigma, lower.tail = F),4)
+
+
+### Insert simpler comment on right side.
+
+al2 <- bquote(phantom(0) == 1 - F( .(criticalValue) ))
+al3 <- bquote(phantom(0) == .(round(shadedArea,3)))
+@
+
+<<pm90L,fig=F, echo=T,include=F>>=
+### Hard to position this text "just right"
+### Have tried many ideas, this may be least bad.
+### Get center position in shaded area
+medX <- median(specialX)
+### density at that center point:
+denAtMedX <- myDensity[indexMed <- max(which(specialX < medX))]
+
+
+text(medX, denAtMedX+0.004, labels = al2)
+text(medX, denAtMedX+0.0025, labels = al3)
+
+### point from text toward shaded area
+arrows(x0 = medX, y0 = myDensity[indexMed]+0.002, x1 = mu+2.5 *sigma, y1 = 0.40*myDensity[length(specialX)] ,   length = 0.1)
+@
+
+<<pm90M,fig=F, echo=T,include=F>>=
+ss <- 0.05 * max(myDensity)
+### Mark interval from mu to mu+1.96*sigma
+arrows(x0 = mu, y0 = ss, x1 = mu+1.96*sigma, y1 = ss, code = 3, angle = 90, length = 0.1)
+### Put text above interval
+text(mu + 1.96*sigma,1.15*ss, bquote(paste(.(criticalValue), phantom(1)==mu+1.96 * sigma,sep="")), pos=2)
+@
+
+
+
+<<pm91, fig=T, echo=F, include=F, height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90I>>
+<<pm90J>>
+<<pm90K>>
+<<pm90L>>
+<<pm90M>>
+@
+
+\includegraphics[totalheight=70mm]{plots/t-pm91}
+
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Set Parameters, Create $x$, $y$, Make Title}
+\input{plots/t-pm90A}
+
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Create Plot and axes}
+\input{plots/t-pm90B}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92AB,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92AB}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Label Lower Axis, Draw Line Across Range}
+\input{plots/t-pm90C}
+
+\end{frame}
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92C,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92C}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Mark Interval from mean to $\sigma$}
+\input{plots/t-pm90D}
+
+\end{frame}
+
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92D,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92D}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Create formula for Normal Distribution}
+\input{plots/t-pm90E}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92E,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92E}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Write Left Side Critical Value Below Axis}
+\input{plots/t-pm90F}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92F,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92F}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Use polygon to Shade the Area Under Curve on Left}
+\input{plots/t-pm90G}
+
+\end{frame}
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92G,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92G}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Make Calculations about Area on Left Side}
+\input{plots/t-pm90H}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}
+  \frametitle{Write Annotation Above Shaded Area on Left}
+  \input{plots/t-pm90H2}
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92H,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90H2>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92H}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Insert arrow and text from mean to $-1.96 \sigma$}
+\input{plots/t-pm90I}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92I,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90H2>>
+<<pm90I>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92I}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Shade right side critical region}
+
+\input{plots/t-pm90J}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92J,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90H2>>
+<<pm90I>>
+<<pm90J>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92J}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Gather data on right side shaded area}
+\input{plots/t-pm90K}
+
+\end{frame}
+%________________________________________
+
+% \begin{frame}[plain]
+
+% <<pm92K,fig=T,echo=T,include=F,height=6, width=6>>=
+% <<pm90A>>
+% <<pm90B>>
+% <<pm90C>>
+% <<pm90D>>
+% <<pm90E>>
+% <<pm90F>>
+% <<pm90G>>
+% <<pm90H>>
+% <<pm90I>>
+% <<pm90J>>
+% <<pm90K>>
+% @
+% \includegraphics[totalheight=65mm]{plots/t-pm92K}
+% \end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Annotate right shaded area}
+\input{plots/t-pm90L}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92L,fig=T,echo=T,include=F,height=6, width=6>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90H2>>
+<<pm90I>>
+<<pm90J>>
+<<pm90K>>
+<<pm90L>>
+@
+\includegraphics[totalheight=70mm]{plots/t-pm92L}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Insert arrow from mean to $1.96 \sigma$}
+\input{plots/t-pm90M}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+<<pm92M,fig=T,echo=T,include=F,height=5.5, width=5.5>>=
+<<pm90A>>
+<<pm90B>>
+<<pm90C>>
+<<pm90D>>
+<<pm90E>>
+<<pm90F>>
+<<pm90G>>
+<<pm90H>>
+<<pm90H2>>
+<<pm90I>>
+<<pm90J>>
+<<pm90K>>
+<<pm90L>>
+<<pm90M>>
+@
+
+\includegraphics[totalheight=70mm]{plots/t-pm92M}
+
+\end{frame}
+%__________________________
+
+% ==========================================================
+
+\end{document}

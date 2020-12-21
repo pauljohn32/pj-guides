@@ -1,0 +1,4249 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+
+\mode<presentation>
+{
+  \usetheme{Antibes}
+}
+
+\usepackage{fancyvrb}
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+
+
+\providecommand{\Rcolor}{\color[rgb]{0, 0.5, 0.5}}
+\providecommand{\Routcolor}{\color[rgb]{0.461, 0.039, 0.102}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.043, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.95}}
+\providecommand{\Routbackground}{\color[gray]{0.80}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+
+\lstdefinestyle{Rstyle}{fancyvrb=false,escapechar=`,language=R,%
+                        basicstyle={\Rcolor\footnotesize},%
+                        backgroundcolor=\Rbackground,%
+           tabsize=2,%
+                        showstringspaces=false,%
+                        keywordstyle=\Rcolor,%
+                        commentstyle={\Rcommentcolor\ttfamily\itshape},%
+                        literate={<-}{{$\leftarrow$}}2{<<-}{{$\twoheadleftarrow$}}2{~}{{$\sim$}}1{<=}{{$\leq$}}2{>=}{{$\geq$}}2{^}{{$^{\scriptstyle\wedge}$}}1,%
+                        alsoother={$},%
+                        alsoletter={.<-},%
+                        otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+                        escapeinside={(*}{*)}}%
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routstyle}{fancyvrb=false,literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+ frame=single,framerule=0.2pt,framesep=1pt,basicstyle=\Routcolor\Sweavesize,%
+ backgroundcolor=\Routbackground}
+
+
+\lstnewenvironment{Sinput}{\lstset{style=Rstyle}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rstyle}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routstyle}}{}
+
+\lstset{style=Rstyle,tabsize=2, basicstyle={\tiny}, breaklines=true}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+%%not for article, but for presentation
+\mode<presentation>
+%\newcommand\makebeamertitle{\frame{\maketitle}}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+R's Foreign Function Interface (FFI)
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+ffi
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2013
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2013
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Outline}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+General 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why bother with code written in C, C++, Fortran, or Java, or
+ ...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+One of the most thorough discussions of the foreign function interfaces
+ is found in 
+\emph on
+R Programming for Bioinformatics
+\emph default
+ (2009), by one of the R origininators, Robert Gentleman.
+\end_layout
+
+\begin_layout Itemize
+Gentleman discusses 2 reasons for using compiled code through R.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Programs in C (C++, Fortran) may be faster
+\end_layout
+
+\begin_layout Itemize
+Programs (really, libraries, algorithms, etc) exist in C (C++, Fortran)
+ and can be put to use from R.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{About Speed}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Most authors emphasize the speed of calculations in C or Fortran
+\end_layout
+
+\begin_layout Itemize
+Counter-arguments
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Gentleman's opinion (2009): The sheer speed (reduction in run time) not
+ usually a compelling reason to use foreign functions.
+ 
+\end_layout
+
+\begin_layout Itemize
+Claims:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Well written R code can be fast
+\end_layout
+
+\begin_layout Itemize
+Much faster to write an R program that works than a really fast C program
+ that's complicated
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{About Speed}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suggestions: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Write it in R, at least for a prototype (Knuth 
+\begin_inset Quotes eld
+\end_inset
+
+premature optimization is the root of all evil
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Profile the code, find out where the slowdown might be, look for algorithmic
+ accelerations within R
+\end_layout
+
+\begin_layout Itemize
+If necessary, can re-write to push some calculations to C, C++, etc.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Several well known programmers have expressed this same view to me directly
+ (John Nash (author R optim and 
+\emph on
+Compact Numerical Methods for Computers: Linear Algebra and Function Minimisatio
+n
+\emph default
+, 2ed, 1990).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Don't Get Carried Away, though...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+I'd still rather have a program written entirely in C (or C++, Objective-C,
+ or Fortran), if it works dependably, than a program written in R.
+ I feel certain it will be faster
+\end_layout
+
+\begin_layout Itemize
+But
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+That's a really BIG IF, and
+\end_layout
+
+\begin_layout Itemize
+The time required to write a program in R will be 1/2 or 1/3 of time to
+ write a program in C (for me, at least)
+\end_layout
+
+\begin_layout Itemize
+My co-authors don't know much C, but do know R.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+For example, Martyn Plummer's JAGS program is written in C++, not R.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{If Not For Speed, then Why the FFI?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Use existing programming libraries, which are written in C, C++, Fortran,
+ ...
+\end_layout
+
+\begin_layout Itemize
+100s of optimizations and 1000s of tests have been applied against Famous
+ C libraries like 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Atlas
+\end_layout
+
+\begin_layout Itemize
+GotoBLAS2
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What this Lecture is NOT About}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Some R packages masquerade as usages of the foreign function interface.
+ 
+\end_layout
+
+\begin_layout Itemize
+They follow this approach:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Write a text file of program syntax
+\end_layout
+
+\begin_layout Itemize
+Use system commands to call a compiler on that syntax
+\end_layout
+
+\begin_layout Itemize
+Run the program in a shell, write results on disk
+\end_layout
+
+\begin_layout Itemize
+Use R to harvest the results from the disk file
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Examples: OpenBUGS (BUGS code), SabreR (Fortran), MPlusAutomation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What this Lecture is About}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The Foreign Function Interface
+\end_layout
+
+\begin_layout Itemize
+Shared library approaches that allow R to use functions written in other
+ languages
+\end_layout
+
+\begin_layout Itemize
+Exemplified in the R functions .C, .Call, .Fortran
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Review of Return Concept
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Return by Value versus Return by Reference}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Return by Value: do calculations on copies of input variables, don't allow
+ changes in those input variables, return results to user as 
+\begin_inset Quotes eld
+\end_inset
+
+new
+\begin_inset Quotes erd
+\end_inset
+
+ thing
+\end_layout
+
+\begin_layout Itemize
+Return by Reference: input variables are pointers, allow the function to
+ dereference values and change them at the memory location.
+ 
+\end_layout
+
+\begin_layout Itemize
+Recall R: heavy preference for 
+\begin_inset Quotes eld
+\end_inset
+
+return by value
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Arguments into an R function are 
+\begin_inset Quotes eld
+\end_inset
+
+local copies
+\begin_inset Quotes erd
+\end_inset
+
+.
+ They cannot be altered.
+\end_layout
+
+\begin_layout Itemize
+R design strongly prefers we return results as new objects that are created
+ in the last line of each function.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{C Allows both}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Elementary C is taught with 
+\begin_inset Quotes eld
+\end_inset
+
+return by value
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int myFunction();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+means the value coming out will be one integer
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+double myFunction();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or one double with real number
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Return by value recommended for any C function that returns one thing
+\end_layout
+
+\begin_layout Itemize
+Understanding of 
+\begin_inset Quotes eld
+\end_inset
+
+return by reference
+\begin_inset Quotes erd
+\end_inset
+
+ requires 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+conceptual understanding of pointers
+\end_layout
+
+\begin_layout Itemize
+caution!
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Return by Value in C}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int myFunc (double x, double y){
+\end_layout
+
+\begin_layout Plain Layout
+
+   // local copies of x and y are created
+\end_layout
+
+\begin_layout Plain Layout
+
+   // calculations using x and y, may change them
+\end_layout
+
+\begin_layout Plain Layout
+
+   return z;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+int myRes1; double g1, k1;
+\end_layout
+
+\begin_layout Plain Layout
+
+myRes1 = myFunc(g1, k1);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The only change observed is the value of myRes1.
+\end_layout
+
+\begin_layout Standard
+g1 and k1 
+\begin_inset Quotes eld
+\end_inset
+
+go into
+\begin_inset Quotes erd
+\end_inset
+
+ myFunc, but they are not affected by it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Return by Reference in C}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void myFunc (double x, double y, double *z){
+\end_layout
+
+\begin_layout Plain Layout
+
+   // x and y are still local.
+ But *z is a memory pointer
+\end_layout
+
+\begin_layout Plain Layout
+
+   // *z "dereferences" the value pointed at by z, and changes it
+\end_layout
+
+\begin_layout Plain Layout
+
+   *z = x + y;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+double g1, k1; double * m1;
+\end_layout
+
+\begin_layout Plain Layout
+
+myFunc(g1, k1, m1);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+There's no formal return
+\end_layout
+
+\begin_layout Itemize
+g1 and k1 
+\begin_inset Quotes eld
+\end_inset
+
+go into
+\begin_inset Quotes erd
+\end_inset
+
+ myFunc, but they are not affected by it.
+\end_layout
+
+\begin_layout Itemize
+The value pointed to by m1 IS changed by myFunc
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Almost All Famous C Programs use Return by Reference}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+BLAS 
+\begin_inset Quotes eld
+\end_inset
+
+Basic Linear Algebra Subprograms
+\begin_inset Quotes erd
+\end_inset
+
+ .
+ Interfaces & implementations in Fortran, C, etc.
+ The interface (http://www.netlib.org/blas/blast-forum)
+\end_layout
+
+\begin_layout Itemize
+Use return by value where possible.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+calculate an inner 
+\begin_inset Quotes eld
+\end_inset
+
+dot
+\begin_inset Quotes erd
+\end_inset
+
+ product of vectors pointed to by X and Y.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+double cblas_ddot(const int N, const double *X, const int incX, const double
+ *Y, const int incY);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explain: N: number of elements in both *X and *Y.
+ incX and incY are set to 1, almost always.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+BLAS: multiply matrices:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+I worked my heart out, lets examine my SVN-guides repository in folder:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/cblas-examples
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note in examples that the interface to those BLAS functions is quite complicated.
+\end_layout
+
+\begin_layout Itemize
+GSL abstracts that somewhat.
+ Offers a Matrix 
+\begin_inset Quotes eld
+\end_inset
+
+struct
+\begin_inset Quotes erd
+\end_inset
+
+ to avoid some details.
+\end_layout
+
+\begin_layout Itemize
+GSL: return matrix results, pass by reference:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+GSL: subtract 2 matrices: a - b
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int gsl_matrix_sub (gsl_matrix * a, const gsl_matrix * b)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Matrix subtraction 
+\begin_inset Formula $a-b$
+\end_inset
+
+, the result is put into a, b remains unchanged.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+int
+\begin_inset Quotes erd
+\end_inset
+
+ return indicates success or failure of the calculation.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+.C and .Call
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.C and .Call}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Why 2 interfaces?
+\end_layout
+
+\begin_layout Standard
+Why do some people claim .C is discouraged?
+\end_layout
+
+\begin_layout Standard
+Why do the experts recommend we use .Call?
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+.C
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.C can work with a pre-existing C function "as is"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Programs that R can access through .C do not have a 
+\begin_inset Quotes eld
+\end_inset
+
+rich interaction
+\begin_inset Quotes erd
+\end_inset
+
+ between R and C.
+ 
+\end_layout
+
+\begin_layout Itemize
+The C function must have 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+(void) return type
+\end_layout
+
+\begin_layout Itemize
+Arguments must be pointer variables
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+R passes C some pointers, C writes results there.
+\end_layout
+
+\begin_layout Itemize
+The .C call it returns an R list with 
+\begin_inset Quotes eld
+\end_inset
+
+copies
+\begin_inset Quotes erd
+\end_inset
+
+ of the variables.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.C Examples}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+In my SVN-guides, look in the folders:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/FromR-dotC-1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/FromR-dotC-2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note how we have to use as.integer() and as.double() to prepare R variables
+ to be passed as pointers to C.
+\end_layout
+
+\begin_layout Itemize
+The results come back as a list of 
+\begin_inset Quotes eld
+\end_inset
+
+revised arguments
+\begin_inset Quotes erd
+\end_inset
+
+ variables.
+ We better step through the examples to see...
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Translating Variables}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout ColumnsTopAligned
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Standard
+Gentleman(2009) p.
+ 187 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+C
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+logical
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+int *
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+int *
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+double
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+double *
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+single
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+single *
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+complex
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rcomplex *
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+character
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+char **
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+raw
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+char*
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+list
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SEXP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+other
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SEXP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+6cm
+\end_layout
+
+\begin_layout Itemize
+C provides built in types int, double, char
+\end_layout
+
+\begin_layout Itemize
+Typedefs for Rcomplex and SEXP found in Rinternals.h
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.C Sales Pitch}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If we pass integers, doubles, and characters, we don't need to revise the
+ C code much, if at all.
+\end_layout
+
+\begin_layout Itemize
+As long as the function can create a shared library, its all easy.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Use GSL Routines in C, via R}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In my SVN-guides, look in the folder: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/FromR-CallGSL-dotC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.C Usage Examples}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+R packages in CRAN: MNP (case study below)
+\end_layout
+
+\begin_layout Standard
+James Lindsey R packages (supporting books such as Models for Repeated Measureme
+nts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.commanster.eu/rcode.html
+\end_layout
+
+\end_inset
+
+.
+ Consider the R package 
+\begin_inset Quotes eld
+\end_inset
+
+repeated
+\begin_inset Quotes erd
+\end_inset
+
+, for example: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.commanster.eu/rcode/repeated.tgz
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why Some Folks discourage .C}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+No easy 
+\begin_inset Quotes eld
+\end_inset
+
+error checking
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+C code doesn't use R idioms or structures
+\end_layout
+
+\begin_layout Itemize
+Dangers discussed in .C help page on duplication
+\end_layout
+
+\begin_layout Itemize
+Missing and other non-numeric variables.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+MNP Case Study
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Why MNP}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+It is code you might actually understand: very clear coding, no nonsense
+ naming etc
+\end_layout
+
+\begin_layout Itemize
+The fitted model is relevant 
+\end_layout
+
+\begin_layout Itemize
+We see the strengths and weaknesses of C as a way of life.
+ This one creates a vector storage structure and random number generation
+ from scratch
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{When I install that, What Do I See?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> install.packages("MNP", repos="http://rweb.quant.ku.edu/cran")
+\end_layout
+
+\begin_layout Plain Layout
+
+Installing package into '/home/pauljohn/R/x86_64-pc-linux-gnu-library/3.0'
+\end_layout
+
+\begin_layout Plain Layout
+
+(as 'lib' is unspecified)
+\end_layout
+
+\begin_layout Plain Layout
+
+trying URL 'http://rweb.quant.ku.edu/cran/src/contrib/MNP_2.6-4.tar.gz'
+\end_layout
+
+\begin_layout Plain Layout
+
+Content type 'application/x-gzip' length 974626 bytes (951 Kb)
+\end_layout
+
+\begin_layout Plain Layout
+
+opened URL
+\end_layout
+
+\begin_layout Plain Layout
+
+==================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+downloaded 951 Kb
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+* installing *source* package 'MNP' ...
+\end_layout
+
+\begin_layout Plain Layout
+
+** package 'MNP' successfully unpacked and MD5 sums checked
+\end_layout
+
+\begin_layout Plain Layout
+
+** libs
+\end_layout
+
+\begin_layout Plain Layout
+
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -O3 -pipe  -g
+  -c MNP.c -o MNP.o
+\end_layout
+
+\begin_layout Plain Layout
+
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -O3 -pipe  -g
+  -c rand.c -o rand.o
+\end_layout
+
+\begin_layout Plain Layout
+
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -O3 -pipe  -g
+  -c subroutines.c -o subroutines.o
+\end_layout
+
+\begin_layout Plain Layout
+
+gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -O3 -pipe  -g
+  -c vector.c -o vector.o
+\end_layout
+
+\begin_layout Plain Layout
+
+gcc -std=gnu99 -shared -o MNP.so MNP.o rand.o subroutines.o vector.o -llapack
+ -lblas -lgfortran -lm -lquadmath -L/usr/lib/R/lib -lR
+\end_layout
+
+\begin_layout Plain Layout
+
+installing to /home/pauljohn/R/x86_64-pc-linux-gnu-library/3.0/MNP/libs
+\end_layout
+
+\begin_layout Plain Layout
+
+** R
+\end_layout
+
+\begin_layout Plain Layout
+
+** data
+\end_layout
+
+\begin_layout Plain Layout
+
+*** moving datasets to lazyload DB
+\end_layout
+
+\begin_layout Plain Layout
+
+** preparing package for lazy loading
+\end_layout
+
+\begin_layout Plain Layout
+
+** help
+\end_layout
+
+\begin_layout Plain Layout
+
+*** installing help indices
+\end_layout
+
+\begin_layout Plain Layout
+
+** building package indices
+\end_layout
+
+\begin_layout Plain Layout
+
+** testing if installed package can be loaded
+\end_layout
+
+\begin_layout Plain Layout
+
+* DONE (MNP)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Check that in the package insall directory}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the install directory for the package, I have...
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ pwd
+\end_layout
+
+\begin_layout Plain Layout
+
+/home/pauljohn/R/x86_64-pc-linux-gnu-library/3.0
+\end_layout
+
+\begin_layout Plain Layout
+
+$ ls MNP/libs/
+\end_layout
+
+\begin_layout Plain Layout
+
+MNP.so
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+That's a dynamically loadable C library,
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MNP Source code}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Get the source code (download.packages(
+\begin_inset Quotes eld
+\end_inset
+
+MNP
+\begin_inset Quotes erd
+\end_inset
+
+, type = 
+\begin_inset Quotes eld
+\end_inset
+
+SOURCE
+\begin_inset Quotes erd
+\end_inset
+
+, dest = 
+\begin_inset Quotes eld
+\end_inset
+
+/tmp
+\begin_inset Quotes erd
+\end_inset
+
+).
+ I grabbed MNP_2.6-4.tar.gz on 2013-12-02.
+\end_layout
+
+\begin_layout Itemize
+Note the folders:
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+R: The R code
+\end_layout
+
+\begin_layout Description
+src: the C source code
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Check the file onAttach.R}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+".onAttach" <- function(lib, pkg) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  mylib <- dirname(system.file(package = pkg))
+\end_layout
+
+\begin_layout Plain Layout
+
+  title <- packageDescription(pkg, lib.loc = mylib)$Title
+\end_layout
+
+\begin_layout Plain Layout
+
+  ver <- packageDescription(pkg, lib.loc = mylib)$Version
+\end_layout
+
+\begin_layout Plain Layout
+
+  author <- packageDescription(pkg, lib.loc = mylib)$Author
+\end_layout
+
+\begin_layout Plain Layout
+
+  packageStartupMessage(pkg, ": ", title, "
+\backslash
+nVersion: ", ver, "
+\backslash
+nAuthors: ", author, "
+\backslash
+n")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+When the user runs library(MNP) (or require(MNP)), the first thing it does
+ is create 5 variables, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+mylib
+\begin_inset Quotes erd
+\end_inset
+
+ is the value of the location where the package is installed.
+\end_layout
+
+\begin_layout Itemize
+It uses that to get the title & author information displayed in packageStartupMe
+ssage
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note 
+\begin_inset Quotes eld
+\end_inset
+
+dirname(system.file(package = 
+\begin_inset Quotes eld
+\end_inset
+
+MNP
+\begin_inset Quotes erd
+\end_inset
+
+))
+\begin_inset Quotes erd
+\end_inset
+
+ is a way to ask your running R session where it is finding the MNP installed
+ folder.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Check the package NAMESPACE file}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The first line is 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+useDynLib(MNP)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Check the R source for the function mnp()}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The function 
+\begin_inset Quotes eld
+\end_inset
+
+mnp
+\begin_inset Quotes erd
+\end_inset
+
+ is doing all of the heavy lifting.
+\end_layout
+
+\begin_layout Itemize
+In the file mnp.R , find line 152:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\tiny}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ param <- .C("cMNPgibbs", as.integer(n.dim),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.integer(n.cov), as.integer(n.obs), as.integer(n.draws),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.double(p.mean), as.double(p.prec), as.integer(p.df),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.double(p.scale*p.alpha0), as.double(X), as.integer(Y),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.double(coef.start), as.double(cov.start),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.integer(p.imp), as.integer(invcdf),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.integer(burnin), as.integer(keep), as.integer(trace),
+\end_layout
+
+\begin_layout Plain Layout
+
+   as.integer(verbose), as.integer(MoP), as.integer(latent),
+\end_layout
+
+\begin_layout Plain Layout
+
+   pdStore = double(n.par*floor((n.draws-burnin)/keep)),
+\end_layout
+
+\begin_layout Plain Layout
+
+   PACKAGE="MNP")$pdStore
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ param <- matrix(param, ncol = n.par,
+\end_layout
+
+\begin_layout Plain Layout
+
+   nrow = floor((n.draws-burnin)/keep), byrow=TRUE)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Boom! There it is.
+ A thing param is returned, and
+\end_layout
+
+\begin_layout Itemize
+matrix() is used to grab the right rows and columns out if it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{C File Inventory}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Makevars : A Makefile that controls how the C files are compiled.
+ In this case, there is only a miniscule entry
+\end_layout
+
+\begin_layout Itemize
+The C files:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ ls
+\end_layout
+
+\begin_layout Plain Layout
+
+Makevars  rand.c  subroutines.c  vector.c
+\end_layout
+
+\begin_layout Plain Layout
+
+MNP.c     rand.h  subroutines.h  vector.h
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{C File Inventory}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Makevars : A Makefile that controls how the C files are compiled.
+ In this case, there is only a miniscule entry
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ cat Makevars
+\end_layout
+
+\begin_layout Plain Layout
+
+ PKG_LIBS =  $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+MNP.c : This is the orchestrating file, where the key functions are accessed
+ from R.
+ The functions are
+\begin_inset listings
+lstparams "basicstyle={\tiny},breaklines=true,tabsize=1"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void cMNPgibbs(int *piNDim, int *piNCov, int *piNSamp, int *piNGen, 
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *b0,    /* prior mean for beta */ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *pdA0, int *piNu0, double *pdS, double *pdX, 
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *y,        /* response variable: -1 for missing */ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *pdbeta, double *pdSigma, int *piImp, 
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *invcdf,   /* use inverse cdf for TruncNorm? */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *piBurnin, /* the number of burnin */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *piKeep,
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *itrace,
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *verbose,  /* 1 if extra print is needed */ 
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *piMoP,    /* 1 if Multinomial ordered Probit */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *latent,   /* 1 if W is stored */
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *pdStore)
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+void predict(double *dX,     /* X matrix */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *nobs,      /* number of observations */
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *dcoef,  /* coefficients */
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *dSigma, /* covariances */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *ndims,     /* number of dimensions */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *ncovs,     /* number of covariates */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *ndraws,    /* number of MCMC draws */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *moredraws, /* number of extra draws */
+\end_layout
+
+\begin_layout Plain Layout
+
+  int *verbose,
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *prob,   /* probability output */
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *choice, /* choice output */
+\end_layout
+
+\begin_layout Plain Layout
+
+  double *order  /* order output */) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+note, both of these are 
+\begin_inset Quotes eld
+\end_inset
+
+return by reference
+\begin_inset Quotes erd
+\end_inset
+
+ approaches.
+\end_layout
+
+\begin_layout Description
+rand.[hc] : h is the header, c is the code.
+ The header file declares 4 functions, there's nothing except for the function
+ prototypes
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+double sTruncNorm(double bd, double mu, double var, int lower);
+\end_layout
+
+\begin_layout Plain Layout
+
+double TruncNorm(double lb, double ub, double mu, double var, int invcdf);
+\end_layout
+
+\begin_layout Plain Layout
+
+void rMVN(double *Sample, double *mean, double **inv_Var, int size);
+\end_layout
+
+\begin_layout Plain Layout
+
+void rWish(double **Sample, double **S, int df, int size);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Note significance of **X, which is, basically, a pointer to one corner of
+ a two-dimensional storage area
+\end_layout
+
+\begin_layout Itemize
+Whereas *X is a pointer to the beginning of a one-dimensional storage area
+\end_layout
+
+\end_deeper
+\begin_layout Description
+vector.[hc] : Allocates storage for vectors and matrices! 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include <stdlib.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <assert.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+int *intArray(int num);
+\end_layout
+
+\begin_layout Plain Layout
+
+void PintArray(int *ivector, int length);
+\end_layout
+
+\begin_layout Plain Layout
+
+int **intMatrix(int row, int col);
+\end_layout
+
+\begin_layout Plain Layout
+
+void PintMatrix(int **imatrix, int row, int col);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+double *doubleArray(int num);
+\end_layout
+
+\begin_layout Plain Layout
+
+void PdoubleArray(double *dvector, int length);
+\end_layout
+
+\begin_layout Plain Layout
+
+double **doubleMatrix(int row, int col);
+\end_layout
+
+\begin_layout Plain Layout
+
+void PdoubleMatrix(double **dmatrix, int row, int col);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+double ***doubleMatrix3D(int x, int y, int z);
+\end_layout
+
+\begin_layout Plain Layout
+
+void PdoubleMatrix3D(double ***dmatrix3D, int x, int y, int z);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+long *longArray(int num);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void FreeMatrix(double **Matrix, int row);
+\end_layout
+
+\begin_layout Plain Layout
+
+void FreeintMatrix(int **Matrix, int row);
+\end_layout
+
+\begin_layout Plain Layout
+
+void Free3DMatrix(double ***Matrix, int index, int row);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Here we have VERY CLEARLY named functions, a style worth admiring.
+\end_layout
+
+\begin_layout Itemize
+Functions to create and initialize {integer, double} arrays or matrices
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The function doubleArray allocates a memory and returns a POINTER to the
+ beginning of it.
+\end_layout
+
+\begin_layout Itemize
+If you want to 
+\begin_inset Quotes eld
+\end_inset
+
+Print
+\begin_inset Quotes erd
+\end_inset
+
+ that to the screen, use the PdoubleArray function.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Read the vector.c file and you notice that the print-to-screen work is being
+ done by Rprintf, a function from the R C library.
+ (hence the file includes the header R.h.
+ THe top of vector.c has
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include <stdlib.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <assert.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <stdio.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <R_ext/Utils.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <R.h>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Strictly speaking, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+I think vector.h SHOULD be included here, I suppose the compiler might assume
+ it.
+ But all working C code I know of would include vector.h at the top of vector.c.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+stdlib.h
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+assert.h
+\begin_inset Quotes erd
+\end_inset
+
+ need not be included in vector.c since it was included in vector.h (assuming
+ vector.h was included here).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note the Free functions to erase a vector or matrix when no longer needed.
+ Vital to stop memory leaks.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.Call}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Makevars : A Makefile that controls how the C files are compiled.
+ In this case, there is only a miniscule entry
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ cat Makevars
+\end_layout
+
+\begin_layout Plain Layout
+
+ PKG_LIBS =  $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+.Call
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.Call}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+.Call is used widely in the R source code
+\end_layout
+
+\begin_layout Itemize
+Uses return by value, NOT return by reference
+\end_layout
+
+\begin_layout Itemize
+Asks user to re-write C code, interacting more meaningfully with R objects
+ using R-provided variable types and functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Benefits of using .Call, as opposed to .C}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+C code is interacting with data structures in same way that R internal C
+ code does
+\end_layout
+
+\begin_layout Itemize
+Better checking of argument types
+\end_layout
+
+\begin_layout Itemize
+For this purpose, R offers an elaborate collection of 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+C variable types
+\end_layout
+
+\begin_layout Itemize
+C functions
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Garbage Collection: Why this is Dicey}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+When you use .Call, your C code is running 
+\begin_inset Quotes eld
+\end_inset
+
+inside
+\begin_inset Quotes erd
+\end_inset
+
+ the R memory zone framework
+\end_layout
+
+\begin_layout Itemize
+That means that the garbage collector might kill your constructed variables
+\end_layout
+
+\begin_layout Itemize
+Note the PROTECT and UNPROTECT macros in this example from 
+\emph on
+Writing R Extensions
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include <R.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+#include <Rinternals.h>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+SEXP convolve2(SEXP a, SEXP b)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    int na, nb, nab;
+\end_layout
+
+\begin_layout Plain Layout
+
+    double *xa, *xb, *xab;
+\end_layout
+
+\begin_layout Plain Layout
+
+    SEXP ab;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    a = PROTECT(coerceVector(a, REALSXP));
+\end_layout
+
+\begin_layout Plain Layout
+
+    b = PROTECT(coerceVector(b, REALSXP));
+\end_layout
+
+\begin_layout Plain Layout
+
+    na = length(a); nb = length(b); nab = na + nb - 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+    ab = PROTECT(allocVector(REALSXP, nab));
+\end_layout
+
+\begin_layout Plain Layout
+
+    xa = REAL(a); xb = REAL(b); xab = REAL(ab);
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(int i = 0; i < nab; i++) xab[i] = 0.0;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(int i = 0; i < na; i++)
+\end_layout
+
+\begin_layout Plain Layout
+
+        for(int j = 0; j < nb; j++) xab[i + j] += xa[i] * xb[j];
+\end_layout
+
+\begin_layout Plain Layout
+
+    UNPROTECT(3);
+\end_layout
+
+\begin_layout Plain Layout
+
+    return ab;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+You'd compile that into a shared object, then inside R you could call like
+ so
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+conv <- function(a, b) .Call("convolve2", a, b)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Rcpp as an Magic Bullett}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The difficulty of writing that special C motivated Dirk Eddelbuettel and
+ Romain Francois to work very hard a developing a style of C++ coding that
+ can be more-or-less automagically gobbled into R via the R package Rcpp.
+\end_layout
+
+\begin_layout Itemize
+I'll write notes on that in the lecture folder ffi-3.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Background information 1: Use R library functions from a C Program}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In my Guides repo (or http://pj.freefaculty.org/guides)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/FromC-CallRmathlib
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Does not meaningfully interact with R, only uses some C functions that the
+ R team has made available.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Background information 2: Using R embedded in a C Program}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In my Guides repo (or http://pj.freefaculty.org/guides) FromC-RunRembedded
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+c-programming/Examples/c-programming/Examples/FromC-RunRembedded
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Starts an R session AND actually interacts with it.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Can Generalize previous to use R functions in R.h}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the installed R, there should be a header folder that has R C function
+ interfaces
+\end_layout
+
+\begin_layout Standard
+Search for 
+\begin_inset Quotes eld
+\end_inset
+
+R.h
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The same folder has subfolder 
+\begin_inset Quotes eld
+\end_inset
+
+R_ext
+\begin_inset Quotes erd
+\end_inset
+
+, which has more header files that are listed in R.h
+\end_layout
+
+\begin_layout Standard
+R.h (headers in R_ext) provides R 
+\begin_inset Quotes eld
+\end_inset
+
+replacements
+\begin_inset Quotes erd
+\end_inset
+
+ for basic C functions
+\end_layout
+
+\begin_layout Standard
+Example: printf can be replaced by Rprintf (See R_ext/Print.h)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.Call}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{.Call}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

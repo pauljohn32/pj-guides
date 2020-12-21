@@ -1,0 +1,2530 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/p,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt="> ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+If you wish to uncover everything in a step-wise fashion, uncomment the
+ following command:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+beamerdefaultoverlayspecification{<+->}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{ 
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}   
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,currentsubsection] 
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+First R-02 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2013
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+2011
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{R provides books, help pages, and vignettes}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Get the big overview to documents with 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> help.start()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Graphics
+	filename importfigs/help.start.png
+	lyxscale 40
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Help and Examples for functions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You can point-and-click though that Web browser
+\end_layout
+
+\begin_layout Itemize
+Or you can ask for same information at R command line.
+ 2 equivalent methods to ask about a particular function 
+\begin_inset Quotes eld
+\end_inset
+
+someFunction
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> ?someFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+> help(someFunction)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Note: no quotation marks are necessary around the function's name.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Example of help}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For example, here's what I see for help on the linear model (lm) function.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<lmhelp, echo=T, include=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+?lm
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "breaklines=true,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm                 package:stats           R Documentation
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Fitting Linear Models
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	'lm' is used to fit linear models.
+ It can be used to carry out regression, single stratum analysis of variance
+ and analysis of covariance (although 'aov' may provide a more convenient
+ interface for these).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Usage:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	lm(formula, data, subset, weights, na.action, method = "qr", model = TRUE,
+ x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE, contrasts = NULL, offset,
+ ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Arguments:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	formula: an object of class '"formula"' (or one that can be coerced to
+ that class): a symbolic description of the model to be fitted.
+ The details of model specification are given under 'Details'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	data: an optional data frame, list or environment (or object coercible
+ by 'as.data.frame' to a data frame) containing the variables in the model.
+ If not found in 'data', the variables are taken from 'environment(formula)',
+ typically the environment from which 'lm' is called.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	subset: an optional vector specifying a subset of observations to be used
+ in the fitting process.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	weights: an optional vector of weights to be used in the fitting process.
+ Should be 'NULL' or a numeric vector.
+ If non-NULL, weighted least squares is used with weights 'weights' (that
+ is, minimizing 'sum(w*e^2)'); otherwise ordinary least squares is used.
+ See also 'Details'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	na.action: a function which indicates what should happen when the data contain
+ 'NA's.
+ The default is set by the 'na.action' setting of 'options', and is 'na.fail'
+ if that is unset.
+ The 'factory-fresh' default is 'na.omit'.
+ Another possible value is 'NULL', no action.
+ Value 'na.exclude' can be useful.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	method: the method to be used; for fitting, currently only 'method = "qr"'
+ is supported; 'method = "model.frame"' returns the model frame (the same
+ as with 'model = TRUE', see below).
+ model, x, y, qr: logicals.
+ If 'TRUE' the corresponding components of the fit (the model frame, the
+ model matrix, the response, the QR decomposition) are returned.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	singular.ok: logical.
+ If 'FALSE' (the default in S but not in R) a singular fit is an error.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	contrasts: an optional list.
+ See the 'contrasts.arg' of 'model.matrix.default'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	offset: this can be used to specify an _a priori_ known component to be
+ included in the linear predictor during fitting.
+ This should be 'NULL' or a numeric vector of length equal to the number
+ of cases.
+ One or more 'offset' terms can be included in the formula instead or as
+ well, and if more than one are specified their sum is used.
+ See 'model.offset'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	...: additional arguments to be passed to the low level regression fitting
+ functions (see below).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Details:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	Models for 'lm' are specified symbolically.
+ A typical model has the form 'response $
+\backslash
+sim$ terms' where 'response' is the (numeric) response vector and 'terms'
+ is a series of terms which specifies a linear predictor for 'response'.
+ A terms specification of the form 'first + second' indicates all the terms
+ in 'first' together with all the terms in 'second' with duplicates removed.
+ A specification of the form 'first:second' indicates the set of terms obtained
+ by taking the interactions of all terms in 'first' with all terms in 'second'.
+ The specification 'first*second' indicates the _cross_ of 'first' and 'second'.
+ This is the same as 'first + second + first:second'.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	If the formula includes an 'offset', this is evaluated and subtracted from
+ the response.
+ If 'response' is a matrix a linear model is fitted separately by least-squares
+ to each column of the matrix.
+ See 'model.matrix' for some further details.
+ The terms in the formula will be re-ordered so that main effects come first,
+ followed by the interactions, all second-order, all third-order and so
+ on: to avoid this pass a 'terms' object as the formula (see 'aov' and 'demo(glm.
+vr)' for an example).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	A formula has an implied intercept term.
+ To remove this use either 'y ~ x - 1' or 'y ~ 0 + x'.
+ See 'formula' for more details of allowed formulae.
+ Non-'NULL' 'weights' can be used to indicate that different observations
+ have different variances (with the values in 'weights' being inversely
+ proportional to the variances); or equivalently, when the elements of 'weights'
+ are positive integers w_i, that each response y_i is the mean of w_i unit-weigh
+t observations (including the case that there are w_i observations equal
+ to y_i and the data have been summarized).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	'lm' calls the lower level functions 'lm.fit', etc, see below, for the actual
+ numerical computations.
+ For programming only, you may consider doing likewise.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	All of 'weights', 'subset' and 'offset' are evaluated in the same way as
+ variables in 'formula', that is first in 'data' and then in the environment
+ of 'formula'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Value:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	'lm' returns an object of 'class' '"lm"' or for multiple responses of class
+ 'c("mlm", "lm")'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	The functions 'summary' and 'anova' are used to obtain and print a summary
+ and analysis of variance table of the results.
+ The generic accessor functions 'coefficients', 'effects', 'fitted.values'
+ and 'residuals' extract various useful features of the value returned by
+ 'lm'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	An object of class '"lm"' is a list containing at least the following component
+s: 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	coefficients: a named vector of coefficients
+\end_layout
+
+\begin_layout Plain Layout
+
+	residuals: the residuals, that is response minus fitted values.
+\end_layout
+
+\begin_layout Plain Layout
+
+	fitted.values: the fitted mean values.
+\end_layout
+
+\begin_layout Plain Layout
+
+	rank: the numeric rank of the fitted linear model.
+\end_layout
+
+\begin_layout Plain Layout
+
+	weights: (only for weighted fits) the specified weights.
+\end_layout
+
+\begin_layout Plain Layout
+
+	df.residual: the residual degrees of freedom.
+\end_layout
+
+\begin_layout Plain Layout
+
+	call: the matched call.
+\end_layout
+
+\begin_layout Plain Layout
+
+	terms: the 'terms' object used.
+\end_layout
+
+\begin_layout Plain Layout
+
+	contrasts: (only where relevant) the contrasts used.
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlevels: (only where relevant) a record of the levels of the factors used
+ in fitting.
+\end_layout
+
+\begin_layout Plain Layout
+
+	offset: the offset used (missing if none were used).
+\end_layout
+
+\begin_layout Plain Layout
+
+	y: if requested, the response used.
+\end_layout
+
+\begin_layout Plain Layout
+
+	x: if requested, the model matrix used.
+\end_layout
+
+\begin_layout Plain Layout
+
+	model: if requested (the default), the model frame used.
+\end_layout
+
+\begin_layout Plain Layout
+
+	na.action: (where relevant) information returned by 'model.frame' on the
+ special handling of 'NA's.
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	In addition, non-null fits will have components 'assign', 'effects' and
+ (unless not requested) 'qr' relating to the linear fit, for use by extractor
+ functions such as 'summary' and 'effects'.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Using time series:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	Considerable care is needed when using 'lm' with time series.
+ Unless 'na.action = NULL', the time series attributes are stripped from
+ the variables before the regression is done.
+ (This is necessary as omitting 'NA's would invalidate the time series attribute
+s, and if 'NA's are omitted in the middle of the series the result would
+ no longer be a regular time series.) Even if the time series attributes
+ are retained, they are not used to line up series, so that the time shift
+ of a lagged or differenced regressor would be ignored.
+ It is good practice to prepare a 'data' argument by 'ts.intersect(..., dframe
+ = TRUE)', then apply a suitable 'na.action' to that data frame and call
+ 'lm' with 'na.action = NULL' so that residuals and fitted values are time
+ series.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Note:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	Offsets specified by 'offset' will not be included in predictions by 'predict.lm
+', whereas those specified by an offset term in the formula will be.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Author(s):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	The design was inspired by the S function of the same name described in
+ Chambers (1992).
+ The implementation of model formula by Ross Ihaka was based on Wilkinson
+ & Rogers (1973).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+References:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	Chambers, J.
+ M.
+ (1992) _Linear models._ Chapter 4 of _Statistical Models in S_ eds J.
+ M.
+ Chambers and T.
+ J.
+ Hastie, Wadsworth  & Brooks/Cole.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	Wilkinson, G.
+ N.
+ and Rogers, C.
+ E.
+ (1973) Symbolic descriptions of factorial models for analysis of variance.
+ _Applied Statistics_, *22*, 392-9.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+See Also:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	'summary.lm' for summaries and 'anova.lm' for the ANOVA table; 'aov' for
+ a different interface.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	The generic functions 'coef', 'effects', 'residuals', 'fitted', 'vcov'.
+ 'predict.lm' (via 'predict') for prediction, including confidence and prediction
+ intervals; 'confint' for confidence intervals of _parameters_.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	'lm.influence' for regression diagnostics, and 'glm' for *generalized* linear
+ models.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	The underlying low level functions, 'lm.fit' for plain, and 'lm.wfit' for
+ weighted regression fitting.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	More 'lm()' examples are available e.g., in 'anscombe', 'attitude', 'freeny',
+ 'LifeCycleSavings', 'longley', 'stackloss', 'swiss'.
+ 'biglm' in package 'biglm' for an alternative way to fit linear models
+ to large datasets (especially those with many cases).
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Examples:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	require(graphics)
+\end_layout
+
+\begin_layout Plain Layout
+
+	 # # Annette Dobson (1990) "An Introduction to Generalized Linear Models".
+\end_layout
+
+\begin_layout Plain Layout
+
+	 # # Page 9: Plant Weight Data.
+\end_layout
+
+\begin_layout Plain Layout
+
+	ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
+\end_layout
+
+\begin_layout Plain Layout
+
+	trt <- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
+\end_layout
+
+\begin_layout Plain Layout
+
+	group <- gl(2,10,20, labels=c("Ctl","Trt"))
+\end_layout
+
+\begin_layout Plain Layout
+
+	weight <- c(ctl, trt)
+\end_layout
+
+\begin_layout Plain Layout
+
+	lm.D9 <- lm(weight $
+\backslash
+sim$ group)
+\end_layout
+
+\begin_layout Plain Layout
+
+	lm.D90 <- lm(weight $
+\backslash
+sim$ group - 1) # omitting intercept
+\end_layout
+
+\begin_layout Plain Layout
+
+	anova(lm.D9)
+\end_layout
+
+\begin_layout Plain Layout
+
+	summary(lm.D90)
+\end_layout
+
+\begin_layout Plain Layout
+
+	opar <- par(mfrow = c(2,2), oma = c(0, 0, 1.1, 0))
+\end_layout
+
+\begin_layout Plain Layout
+
+	plot(lm.D9, las = 1) # Residuals, Fitted, ...
+\end_layout
+
+\begin_layout Plain Layout
+
+	par(opar)
+\end_layout
+
+\begin_layout Plain Layout
+
+	## less simple examples in "See Also" above
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Run the Examples described on the help page}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Scroll to the bottom of the help page.
+ See the example usage? Gaze in wonder at it.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Get out of the help page (hit 
+\begin_inset Quotes eld
+\end_inset
+
+q
+\begin_inset Quotes erd
+\end_inset
+
+) and then
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Run the example
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> example(someFunction)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How to read a help page}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Get a general idea of what the function does
+\end_layout
+
+\begin_layout Enumerate
+Go to the bottom for the example usage.
+ 
+\end_layout
+
+\begin_layout Enumerate
+If still interested, go back to top
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Scan the arguments (the variables you specify to use the function)
+\end_layout
+
+\begin_layout Enumerate
+Look for the 
+\begin_inset Quotes eld
+\end_inset
+
+Value
+\begin_inset Quotes erd
+\end_inset
+
+ heading.
+ That's a description of what you get back from the function
+\end_layout
+
+\begin_layout Enumerate
+Look for the 
+\begin_inset Quotes eld
+\end_inset
+
+Details
+\begin_inset Quotes erd
+\end_inset
+
+ heading.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Packages: Installable Globs of Goodness}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Explaining the next part requires a little detour from my theme.
+\end_layout
+
+\begin_layout Itemize
+The CRAN repository offers 1000s of package, some good some bad
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Our mirror of CRAN is 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://rweb.quant.ku.edu/cran
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Other servers (Bioconductor, Omega) offer 100s of other packages
+\end_layout
+
+\begin_layout Itemize
+R is provided with a set of 
+\begin_inset Quotes eld
+\end_inset
+
+recommended packages
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Package Survey}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+See a giant list of packages that exist on CRAN
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> giantList <- available.packages()
+\end_layout
+
+\begin_layout Plain Layout
+
+> row.names(giantList)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Generally, I Web browse a CRAN server.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Mirror list on 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://r-project.org
+\end_layout
+
+\end_inset
+
+ (look left for CRAN link)
+\end_layout
+
+\begin_layout Itemize
+KU mirror: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://rweb.quant.ku.edu/cran
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+All good KU students install the package 
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+ and look at its beautiful vignettes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{However, your system does not have "help" for packages that are
+ not installed}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+?someFunction (help(
+\begin_inset Quotes eld
+\end_inset
+
+someFunction
+\begin_inset Quotes erd
+\end_inset
+
+) looks in your system for functions in packages that are both installed
+ and loaded
+\end_layout
+
+\begin_layout Itemize
+??someFunction (help.search(
+\begin_inset Quotes eld
+\end_inset
+
+someFunction
+\begin_inset Quotes erd
+\end_inset
+
+)) looks in packages that are installed, even if not loaded
+\end_layout
+
+\begin_layout Itemize
+RSiteSearch(
+\begin_inset Quotes eld
+\end_inset
+
+someFunction
+\begin_inset Quotes erd
+\end_inset
+
+) looks on the main R website (some wrinkles).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Install and Update packages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Install a package (example: 
+\begin_inset Quotes eld
+\end_inset
+
+lme4
+\begin_inset Quotes erd
+\end_inset
+
+) and all dependencies from a CRAN server
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> install.packages(c("lme4"), dep = TRUE)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Faster to specify a particular repository 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> install.packages(c("lme4"), dep = TRUE, repos="http://rweb.quant.ku.edu/cran")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Check for updates
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> update.packages(checkBuilt = TRUE)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Description
+Caution: the operating system has a list of places where it will install
+ packages (Run 
+\begin_inset Quotes eld
+\end_inset
+
+.libPaths()
+\begin_inset Quotes erd
+\end_inset
+
+ to see it).
+ If you are logged in as an 
+\begin_inset Quotes eld
+\end_inset
+
+administrator
+\begin_inset Quotes erd
+\end_inset
+
+, packages will be installed into the system libraries.
+ Otherwise, they will be installed in a folder for only the current user.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Interact with packages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Packages installed are linked to the help.start() page
+\end_layout
+
+\begin_layout Itemize
+Same: list all packages that are installed now in R:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> library()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Read about a package, get a list of all functions & features
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> help(package = "stats")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Synonym: The 
+\begin_inset Quotes eld
+\end_inset
+
+old way
+\begin_inset Quotes erd
+\end_inset
+
+ I used to teach still works, but maybe not for long
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> library(help = "stats")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Load a package}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+When R starts, it 
+\begin_inset Quotes eld
+\end_inset
+
+attaches
+\begin_inset Quotes erd
+\end_inset
+
+ some packages, so their functions are easily accessed.
+ But not all.
+ 
+\end_layout
+
+\begin_layout Itemize
+Make a package's functions immediately accessible.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> library(lme4)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Synonym 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+require(lme4)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+After that, we can use functions easily, for example, to read their help
+ pages
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> ?lmer
+\end_layout
+
+\begin_layout Plain Layout
+
+> ?glmer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Package Namespaces: Using non-attached packages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Without running library(), functions are still accessible with a 
+\begin_inset Flex Alert
+status collapsed
+
+\begin_layout Plain Layout
+namespace
+\end_layout
+
+\end_inset
+
+ prefix
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> lme4::glmer()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's generally irrelevant to elementary R usage, but is becoming more
+ noticeable in examples and help pages.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset Quotes eld
+\end_inset
+
+namespace
+\begin_inset Quotes erd
+\end_inset
+
+ idea is increasingly popular in computer programming, part of an widespread
+ emphasis on 
+\begin_inset Quotes eld
+\end_inset
+
+disambiguation
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{These things called "vignettes"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A vignette is supposed to be a 
+\begin_inset Quotes eld
+\end_inset
+
+human readable
+\begin_inset Quotes erd
+\end_inset
+
+ discussion of a package's features
+\end_layout
+
+\begin_layout Itemize
+Some are quite excellent!
+\end_layout
+
+\begin_layout Itemize
+Vignettes are listed at the end of 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+help(package = "whatever")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Clickable links in 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+help.start()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+loadable by name with the function 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+vignette(rockchalk)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{When you ask for help}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+1.
+ Provide the output of sessionInfo().
+ For example, I see
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sessionInfo()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{When you ask for help}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+2.
+ Provide the smallest set of code that reproduces the problem you are concerned
+ about.
+ 
+\end_layout
+
+\begin_layout Itemize
+It is tempting to just copy 100s of lines of disorganized code and hope
+ somebody else will wade through it, but don't.
+\end_layout
+
+\begin_layout Itemize
+Produce a small, clear example of the problem you are trying to solve.
+ 
+\end_layout
+
+\begin_layout Itemize
+Never write to somebody and ask for help unless you close R, re-start, and
+ re-produce the same problem with your clear example script.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Help and Examples For functions}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

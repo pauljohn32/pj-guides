@@ -1,0 +1,733 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[Writing Functions I] % (short title, use only with long paper titles)
+{Writing Functions In R}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[\today] % (optional, should be abbreviation of conference name)
+{\today}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+\section{Introduction}
+
+
+\begin{frame}
+  \frametitle{Did You Ever Write a Program?}
+  \begin{itemize}
+    \item If Yes: R's different than that.
+    \item If No: Its not like other things you've done.
+    \item In either case, don't worry about it :)
+    \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{R is a little bit like an elephant}
+
+ \includegraphics[scale=0.5]{importfigs/blind-men-elephant-web}
+
+ Its a tree trunk! Its a snake! Its a brush!
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The R Language is like S, of course}
+  \begin{columns}
+    \column{7cm}
+
+    \begin{itemize}
+    \item The S Language-- John Chambers, et al. at Bell Labs, mid 1970s.
+
+      See Richard Becker's {}``Brief History of S'' about the AT\&T years
+
+    \item There have been 4 generations of the S language.
+    \item Many packages now were written in S3, but S4 has been
+      recommended for new packages for at least 5 years.
+    \item A new framework known as ``reference classes'' is now being
+      developed (was jokingly referred to as ``R5'' at one time)
+    \end{itemize}
+
+    \column{5cm}
+    \includegraphics[scale=0.35]{importfigs/BeckerNewSLanguage}
+
+    S3: \emph{The New S Language} 1988
+
+  \end{columns}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}
+   \frametitle{Is R a Branch from S?}
+   \begin{columns}
+     \column{7cm}
+     \begin{itemize}
+     \item R can be seen as a competing implementation of S.
+
+       Ross Ihaka and Robert Gentleman. 1996. {}``R: A language for data
+       analysis and graphics.''\emph{ Journal of Computational and Graphical
+         Statistics}, 5(3):299-314.
+
+     \item Open Source, Open Community, open repository CRAN
+     \end{itemize}
+
+
+     \column{6cm}
+     S pioneers now work to advance R.
+     \includegraphics[scale=0.35]{importfigs/ChambersSoftwareForDataAnalysis}
+
+     S4: John Chambers,\emph{Software for Data Analysis: Programming with R}, Springer, 2008
+
+   \end{columns}
+\end{frame}
+
+
+%_______________________________________________
+
+
+% \begin{frame}
+%   \frametitle{Important to Remember Difference between Language and Program}
+
+%   R competes with S+ (and possibly other programs that accept similar code)
+
+%   \begin{itemize}
+%   \item \emph{S-plus} is a commercial product that answers to S syntax commands
+%     and has a nice GUI
+%   \item There's no ``guarantee'' that the same code will work in both,
+%     but they often do
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Example: From \_ To $<-$}
+%    \begin{itemize}
+%    \item Original S syntax used the ``underscore'' for assignment, as in
+
+%      \texttt{myoutput \_ myinput}
+
+%    \item Then they changed to recommend ``$<-$'' for assignment,  but
+%      allowed \_
+
+%    \item So many people made the mistake of using ``$=$'' that the
+%      programmers rewrote S \& R to work even if people use ``$=$''
+%      when they should have used ``$<-$''.
+
+%    \item Use of \_ for assignment is now forbidden, not just discouraged.
+
+%    \item ``$=$'' is allowed, but discouraged.
+
+%    \end{itemize}
+
+%  \end{frame}
+
+%____________________________________________
+
+\section{Write Functions!}
+
+\begin{frame}
+  \frametitle{Overview: 3 reasons to write functions}
+
+
+  \begin{itemize}
+  \item Preserve your sanity: isolate specific work.
+    \begin{itemize}
+      \item Side benefit: preserve sanity of others who have to read
+        your code
+      \end{itemize}
+    \item Facilitate re-use of your ideas
+    \item Co-operate with R functions like \texttt{lapply()} and
+    \texttt{boot()} which REQUIRE functions from us.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Functions: Separate Calculations Meaningfully}
+  \begin{itemize}
+  \item New programmers tempted to craft a giant sequence of 1000 commands
+  \item Just Don't!
+    \begin{description}
+    \item [{Problem}] No other human can comprehend that mess
+    \item [{Solution}] Write functions to calculate separate parts
+    \end{description}
+  \item I don't feel comfortable with any function until I have a
+    small ``working example'' to explore it (many available
+    \url{http://pj.freefaculty.org/R})
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Re-use your work}
+  \begin{itemize}
+
+  \item If you write a function, you can put it to use in many
+    different contexts
+  \item If you write a gigantic stream of 1000 commands, you can't.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Avoid for loops with lots of meat inside}
+
+  Instead of this:
+
+\begin{Sinput}
+  for(i in 1:1000}{
+       1000s of lines here full of x[i], z[i], and so forth
+       }
+\end{Sinput}
+
+ We want:
+
+\begin{Sinput}
+    fn1 <- function( arguments ) { ... }
+    fn2 <- function( arguments ) { ... }
+    for(i in 1: 1000){
+       y <- fn1(x, ... )
+       z <- fn2(y, ...)
+       }
+\end{Sinput}
+
+   This is easier to read, understand, and more re-usable!
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Personal confession}
+
+  \begin{itemize}
+  \item My first attack at any problem is often a long string of
+    commands that are not separable, not readable
+  \item The revision process usually causes me to segregate code
+    into separate pieces
+  \item One hint that you need a function: constant cutting and
+    pasting of code scraps from one place to another
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{When finished, I Wish Your R program would look like this}
+
+\begin{Sinput}
+
+myfn1 <- function (argument1, argument2, ...){
+   ## lines here using argument1, argument2
+ }
+myfn2 <- function (argument3, argument4){
+   ## lines here
+ }
+## Try to perfect the above. Then use them
+##
+ a <- 7
+ b <- c(4, 4, 4, 4, 2)
+ great1 <- myfn1(a, b, parm3 = TRUE)
+ great2 <- myfn2(b, great1)
+
+\end{Sinput}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{How to Create a Function}
+  \begin{itemize}
+  \item R allows us to create functions ``on the fly''.  This is the
+    essential difference between a compiled language like C and an
+    interpreted language like R.  While an R session is running, we
+    can add new capabilities to it.
+
+  \item The artist Escher would like this one:
+    \begin{quote}
+      The word \texttt{function} is a function that creates functions!
+    \end{quote}
+
+  \item A new function \texttt{somethingGood()} is defined by a stanza
+    that begins like so:
+
+    \begin{Sinput}
+somethingGood <- function(arguments){
+    \end{Sinput}
+
+  \item \texttt{somethingGood} is a name we choose
+
+  \item The terms \texttt{arguments} and \texttt{parameters} are
+    interchangeable. I often say \texttt{inputs}. In R, do not say
+    ``options'', that confuses people because R has a function called
+    \texttt{options()} that governs the working session.
+
+
+  \item \texttt{arguments} \emph{may} be specified with default values, as in
+  \begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+    \end{Sinput}
+
+  \item After the squiggly brace, any valid R code can be used. We can
+    even define functions inside the function!
+
+  \item What happens in the function stays in the function.  Things
+    you create inside there do not escape the closure unless you
+    really want them to.
+
+  \item Return results: When when the function's work is finished, a
+    single object's name is included on the last line.
+    \begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+   ## suppose really interesting calculations create res, a result
+   res
+   }
+    \end{Sinput}
+
+   \item There are some little wrinkles about returns that will be
+     discussed later. But, for now, I plant some seeds in your mind.
+     \begin{itemize}
+       \item The return includes one object
+       \item The result will ordinarily print in the R terminal when
+         the function runs, but we can prevent that by using the last
+         line as
+
+\begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+## suppose really interesting calculations create \texttt{res}, a result
+   invisible(res)
+   }
+ \end{Sinput}
+
+      \item It is possible to exit sooner, to short-circuit the calculations
+        before they have all run their course.  That is what the
+        \texttt{return()} function is for.
+
+
+\begin{Sinput}
+  somethingGood <- function(x1 = 0, x2 = NULL){
+  ##  suppose you created res
+   if (someLogicalCondition) return(invisible(res))
+  ## otherwise, go on and revise res further.
+   invisible(res)
+   }
+ \end{Sinput}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R Functions pass information ``by value''}
+  \begin{itemize}
+  \item The basic premise is that users should organize their
+    information ``here'', in the current environment, and it is
+    important that the function should not accidentally damage it.
+  \item Thus, we send info ``over there'' to a function
+  \item We get back a new something.
+  \item The function \textbf{DOES NOT} change variables we give to the function
+  \item The super assignment $<<-$ allows an exception to this, but
+    R Core recommends we avoid it. Only experts should use it.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{A simple example of a new function: doubleMe}
+
+<<doubleMe,echo=T>>=
+doubleMe <- function(input = 0){
+  newval <- 2 * input
+}
+@
+
+The function's name is ``doubleMe''
+
+I choose a name for the incoming variable ``input''.
+
+Other names would do (must start with a letter, etc.):
+
+<<doubleMe04, echo=T, eval=F>>=
+doubleMe <- function(x){
+    out <- 2 * x
+}
+@
+
+The last named thing is the one that comes back from the function.
+
+Note, explicit use of a return function is NOT REQUIRED. The last
+named thing comes back to us.
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Key Elements of doubleMe}
+
+  \input{plots/t-doubleMe}
+
+  \begin{columns}
+    \column{6cm}
+
+\begin{description}
+\item [doubleMe] a name with which to access this function.
+
+  Because of my background in ``Objective C'', I like this style of
+  name. Don't put periods in function names unless you know about
+  ``classes'' and are using them.
+
+\end{description}
+\column{6cm}
+\begin{description}
+\item [input] a name used INTERNALLY while making calculations
+
+\item [= 0] An \emph{optional} default value.
+\item [newval] Last calculation is returned.
+\end{description}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{How to Call doubleMe}
+  \begin{itemize}
+
+  \item What is 2 * 7?
+
+<<callDoubleMe10, echo=T>>=
+(doubleMe(7))
+@
+
+  \item The caller may name the arguments explicitly:
+
+<<callDoubleMe10b, echo=T>>=
+(doubleMe(input = 8))
+@
+
+\item Wonder why I use parentheses around everything?  Its just a
+  presentational trick. The default action is ``print'', and that's
+  what happens when you put something in parentheses without a
+  function name.
+
+  \item The alternatives are:
+
+<<callDoubleMe10c, echo=T>>=
+print(doubleMe(input = 3))
+@
+
+   \item or
+<<callDoubleMe10d, echo=T>>=
+x <- doubleMe(input = 2)
+x
+@
+
+ \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Generally, I Prefer Clarity in the Call}
+  \begin{itemize}
+
+    \item The ``call'' is the code statement that puts a function to
+      use. The call includes the function's name and all arguments.
+
+    \item This works
+<<callDoubleMe40, echo=T, eval=F>>=
+    doubleMe(10)
+@
+
+   \item But wouldn't you rather be clear?
+<<callDoubleMe50, echo=T, eval=F>>=
+doubleMe(input = 10)
+@
+
+   \item When there are many arguments, naming them often helps
+     prevent accidental matching of input to arguments (R's positional
+     matching can be fooled).
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Function Calls}
+  \begin{itemize}
+  \item  But if you name the argument wrong, it breaks
+    \begin{Schunk}
+      \begin{Soutput}
+> doubleMe(myInput = 7)
+Error in doubleMe(myInput = 7) :
+unused argument(s) (myInput = 7)
+
+      \end{Soutput}
+    \end{Schunk}
+
+  \item What if you feed it something unsuitable?
+\begin{Schunk}
+\begin{Soutput}
+> doubleMe(lm(rnorm(100) ~ rnorm(100)))
+Error in 2 * input : non-numeric argument to binary operator
+In addition: Warning messages:
+1: In model.matrix.default(mt, mf, contrasts) :
+  the response appeared on the right-hand side and was dropped
+2: In model.matrix.default(mt, mf, contrasts) :
+  problem with term 1 in model.matrix: no columns are assigned
+
+\end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Vectorization}
+
+This is not always true, but OFTEN:
+  \begin{itemize}
+
+\item We get ``free'' ``vectorization''
+
+<<callDoubleMe60,echo=T>>=
+(doubleMe(c(1,2,3,4,5)))
+@
+
+\item But it won't allow you to specify too many inputs:
+\begin{Schunk}
+\begin{Soutput}
+> doubleMe(1,2,3,4,5)
+  Error in doubleMe(1, 2, 3, 4, 5) :
+       unused argument(s) (2, 3, 4, 5)
+\end{Soutput}
+\end{Schunk}
+
+Vectorization: vector in $\Longrightarrow{}$ vector out
+\item Oops. I forgot the input
+<<callDoubleMe25,echo=T,eval=F,include=T>>=
+doubleMe()
+@
+Gives the default value.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{print.function magic}
+  \begin{itemize}
+\item Oops. I forgot the parentheses
+<<callDoubleMe70,echo=T>>=
+doubleMe
+@
+  \item Similarly, type ``lm'' and hit return. Or
+    ``predict.glm''. Don't add parentheses.
+
+  \item When you type a function's name, R thinks you want to print
+    that thing, and it invokes a ``print method'' for you, called
+    \texttt{print.function()}. (That's \texttt{print} as applied to an
+    object of class function.)
+
+  \item Generally, \texttt{print.function()} will display the R internal
+    functions in a ``tidied up'' format.  Your functions--the ones you
+    have created in your session--are generally not tidied up.  That
+    is discussed in the Rstyle vignette distributed with rockchalk.
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{predict.glm, for example}
+<<>>=
+predict.glm
+@
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Function Calls: Local versus Global}
+  \begin{itemize}
+
+    \item The variables we create in ``our'' session are generally in
+      the Global Environment.
+
+    \item Local variables in functions.
+      \begin{itemize}
+      \item Function arguments are local variables
+
+      \item Variables created inside are local variables
+      \end{itemize}
+    \item Local variables cease to exist once R returns
+      from the function
+
+    \item After playing with \texttt{doubleMe()}, we note
+      that the variable \texttt{input} does not exist in the
+      current environment.
+\begin{Schunk}
+  \begin{Soutput}
+> ls()
+[1] "doubleMe"
+> input
+Error: object 'input' not found
+\end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check Point: write your own function}
+
+  \begin{itemize}
+  \item Write a function ``myGreatFunction'' that takes a vector and
+    returns the arithmetic average.
+  \item Generate your own input data, x1, like so
+
+<<echo=T, include=T, eval=F>>=
+set.seed(234234)
+x1 <- rnorm(10000, m = 7, sd = 19)
+@
+  \item In \texttt{myGreatFunction()}, you can use any R functions you
+    want, it is not necessary to re-create the \texttt{mean()} function (unless
+    you really want to :))
+
+  \item After you've written \texttt{myGreatFunction()}, use it:
+<<echo=T, include=T, eval=F>>=
+x1mean <- myGreatFunction(x1)
+x1mean
+@
+  \item Now stress test your function by changing x1
+
+<<echo=T, include=T, eval=F>>=
+x1[c(13, 44, 99, 343, 555)]  <- NA
+myGreatFunction(x1)
+@
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+%===================================================
+\end{document}

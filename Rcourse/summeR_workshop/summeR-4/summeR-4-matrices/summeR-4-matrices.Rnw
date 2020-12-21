@@ -1,0 +1,2355 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{cancel}
+\ifx\hypersetup\undefined
+  \AtBeginDocument{%
+    \hypersetup{unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true,pdftitle={Matrix Algebra with R},
+ pdfauthor={Paul E. Johnson},
+ pdfsubject={R, Math}}
+  }
+\else
+  \hypersetup{unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true,pdftitle={Matrix Algebra with R},
+ pdfauthor={Paul E. Johnson},
+ pdfsubject={R, Math}}
+\fi
+\usepackage{breakurl}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ % (ERT) argument for the TOC
+ \AtBeginDocument{%
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{Sweavel}
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{realboxes}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\definecolor{light-gray}{gray}{0.95}
+\renewcommand{\code}[1]{
+\Colorbox{light-gray}{#1}
+}
+\definecolor{darkblue}{HTML}{1e2277}
+\hypersetup{colorlinks, linkcolor=, urlcolor=darkblue}
+
+\mode<presentation>
+\usetheme{Antibes}
+
+%%\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listing}
+
+\begin{document}
+\global\long\def\vb#1{\bm{\mathrm{#1}}}
+
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=F,ae=F,height=5,width=7.5}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+\title[Matrices]{Matrix Algebra in R }
+
+\author{Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+\date[2017]{2017}
+
+\makebeamertitle
+
+\AtBeginSubsection[]{%
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+\section{Objectives}
+\begin{frame}{Super Vital: Regression! $X\beta$}
+
+\begin{itemize}
+\item Regression
+\end{itemize}
+\[
+Y=X\beta+\varepsilon
+\]
+
+\begin{itemize}
+\item $X\beta$ is the ``linear predictor'', the inputs converted to a
+``regression line''
+\end{itemize}
+\begin{center}
+\begin{tabular}{cccc}
+\hline 
+dep. var & Slopes & indep var & error\tabularnewline
+$y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]$ & $\beta=\left[\begin{array}{c}
+\beta_{0}\\
+\beta_{1}\\
+\vdots\\
+\beta_{p}
+\end{array}\right]$ & $X=\left[\begin{array}{ccc}
+1 & x1_{1}\ldots & xp_{1}\\
+1 & x1_{2} & xp_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N}\ldots & xp_{N}
+\end{array}\right]$ & $\left[\begin{array}{c}
+\varepsilon_{1}\\
+\varepsilon_{2}\\
+\vdots\\
+\varepsilon_{N}
+\end{array}\right]$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+\begin{center}
+\begin{tabular}{cc}
+$X\beta$ linear predictor & predicted values\tabularnewline
+$\left[\begin{array}{ccc}
+1 & x1_{1}\ldots & xp_{1}\\
+1 & x1_{2} & xp_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N}\ldots & xp_{N}
+\end{array}\right]\left[\begin{array}{c}
+\beta_{0}\\
+\beta_{1}\\
+\vdots\\
+\beta_{p}
+\end{array}\right]$ & $\hat{y}=\left[\begin{array}{c}
+\hat{y}_{1}\\
+\hat{y}_{2}\\
+\vdots\\
+\hat{y}_{N}
+\end{array}\right]=X\hat{\beta}$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}{Key Terms}
+
+\begin{description}
+\item [{Vector:}] a column of numbers
+\item [{Matrix:}] columns of equal length side-by-side
+\item [{Inner~product:}] ``dot product'', a product of a row and a column
+vector
+\item [{Matrix~multiplication:}] Extension of inner product to matrices
+\end{description}
+\begin{itemize}
+\item Along the way, we try to become tolerant of jargon like ``conform'',
+``transpose'', ``symmetry'', ``identity matrix'', ``inverse'',
+and orthogonal.
+\end{itemize}
+\end{frame}
+
+
+\section{Vector}
+\begin{frame}[allowframebreaks]{Terminology: vector and transpose }
+
+\begin{itemize}
+\item By custom, a \textbf{vector} is a \textbf{column} vector.
+\end{itemize}
+\textrm{
+\[
+y=\left[\begin{array}{c}
+y_{1}\\
+y_{2}\\
+\vdots\\
+y_{N}
+\end{array}\right]
+\]
+}
+\begin{itemize}
+\item If anybody says ``vector'', it is assumed they mean a column.
+\item This has $N$ elements. I use capital N because that is a commonly
+used symbol in social science for the sample size.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Creating Vectors in R: easy as falling off a log}
+\begin{itemize}
+\item Many functions create vectors. 
+\end{itemize}
+<<v10>>=
+x1a <- vector(mode = "double", length = 10)
+x1b <- double(length = 10) 
+x1c <- numeric(length = 10)
+## numeric is older terminology
+x1a
+identical(x1a, x1b, x1c)
+@
+\begin{itemize}
+\item Other vector creators, \code{character()}, \code{logical()}.
+\item On screen, these things look like rows. But they are to be thought
+of as rows.
+\item Use \code{length()} to ask a vector how many pieces of information
+it holds
+\end{itemize}
+<<>>=
+length(x1a)
+@
+\begin{itemize}
+\item Can set initial values with \code{c()}, or use a built-in vector
+creating function like \code{seq()}.
+\end{itemize}
+<<v20>>=
+x2a <- c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+x2b <- seq(10, 1, by = -1)
+x2c <- 10:1
+x2a
+class(x2a)
+identical(x2a, x2b, x2c)
+@
+\begin{itemize}
+\item Those were real-valued ``floating point'' numbers, but could get
+integer instead
+\end{itemize}
+<<v30>>=
+x3a <- c(10L, 9L, 8L, 7L, 6L, 5L, 4L, 3L, 2L, 1L)
+x3b <- seq(10L, 1L, by = -1L)
+x3c <- 10L:1L
+x3a
+class(x3a)
+identical(x3a, x3b, x3c)
+@
+\begin{itemize}
+\item Unlike in mathematics, R allows vectors of characters. Easer than
+typing ``a'', ``b'', etc.
+
+<<>>=
+letters[1:10]
+LETTERS[1:10]
+@
+\begin{itemize}
+\item Can also have ``logical'' vector of TRUE/FALSE values. 
+\item I use these in some examples, but the main focus here is numeric calculations.
+\end{itemize}
+\item R refers to vectors of numbers or letters as ``atomic'' vectors.
+These hold values which are not further reducible into other structures.
+\item Note that an integer vector does not have ``attributes''. It is
+just numbers.
+\end{itemize}
+<<>>=
+attributes(x3a)
+is.atomic(x3a)
+@
+\begin{itemize}
+\item R allows ``named'' vectors. Items can be retrieved either by the
+index, or by name
+\end{itemize}
+<<>>=
+x4a <- c("a" = 1, "b" = 3, "c" = 9.1)
+is.atomic(x4a)
+attributes(x4a)
+x4a[2] 
+## Same as:
+x4a["b"]
+@
+\begin{itemize}
+\item Also allowed to assign names after creating a vector, using a character
+vector of names
+\end{itemize}
+<<>>=
+x4b <- c(1, 3, 9.1)
+names(x4b) <- c("a", "b", "c")
+identical(x4a, x4b)
+@
+\begin{itemize}
+\item The names() function can also be used to extract the names. This creates
+a new character vector, so a named vector can be a handy way to keep
+2 pieces of information together.
+\end{itemize}
+<<>>=
+names(x4a)
+@
+
+\end{frame}
+\begin{frame}[allowframebreaks]{Add and Subtract Vectors }
+
+\begin{itemize}
+\item Addition and Subtraction allowed if vectors that are EXACTLY the same
+size{\footnotesize{}
+\[
+\left[\begin{array}{c}
+4\\
+2\\
+1\\
+0\\
+3
+\end{array}\right]+\left[\begin{array}{c}
+1\\
+2\\
+5\\
+0\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+5\\
+4\\
+6\\
+0\\
+4
+\end{array}\right]\,\,or\,\,\left[\begin{array}{c}
+4\\
+2\\
+1\\
+0\\
+3
+\end{array}\right]-\left[\begin{array}{c}
+1\\
+2\\
+5\\
+0\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+3\\
+0\\
+-4\\
+0\\
+2
+\end{array}\right]
+\]
+}{\footnotesize \par}
+\item Conformability of vectors: same size!
+\item Addition is term-by-term in most obvious way.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Vector addition in R}
+\begin{itemize}
+\item First, lets create 2 vectors
+
+<<v40>>=
+x <- c(4, 2, 1, 0, 3)
+y <- c(1, 2, 5, 0, 1)
+@
+\item add and subtract? Easy, R is ``vectorized'' so this is automatic
+
+<<v50>>=
+z <- x + y
+z
+z <- x - y
+z
+@
+\item R does something I consider dangerous: it does not require conforming
+vectors while adding or subtracting. 
+
+<<v60>>=
+x <- c(1,2,3,4,5,6)
+y <- c(1,2)
+x + y
+@
+\item In matrix algebra, this would be an error, but R fills in by re-cycling
+\code{y}
+
+<<v70>>=
+x <- c(1,2,3,4,5,6)
+y <- c(1,2,1,2,1,2)
+x + y
+@
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{R allows coercion of vector types}
+\begin{itemize}
+\item An integer can be promoted to floating point values
+\end{itemize}
+<<v80>>=
+x <- c(1L, 2L, 3L)
+class(x)
+## same as as.numeric()
+y <- as.double(x)
+y
+class(y)
+@
+\begin{itemize}
+\item \code{as.integer()} has effect of ``rounding down''
+\end{itemize}
+<<v90>>=
+x <- c(1.1, 2.2, 3.9)
+is.integer(x)
+y <- as.integer(x)
+y
+@
+
+\newpage{}
+\begin{itemize}
+\item same as \code{floor()}
+\end{itemize}
+<<>>=
+floor(x)
+@
+\begin{itemize}
+\item different from \code{round()}
+\end{itemize}
+<<>>=
+round(x)
+@
+
+\end{frame}
+
+\begin{frame}[allowframebreaks, containsverbatim]
+\frametitle{Transpose= turn sideways}
+\begin{itemize}
+\item \textbf{The superscript T means transpose}, the column becomes a row:
+\end{itemize}
+\begin{equation}
+\left[\begin{array}{c}
+a\\
+b\\
+c\\
+d\\
+e
+\end{array}\right]^{T}=\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]
+\end{equation}
+
+\begin{itemize}
+\item In R, transpose is a function \code{t()}.
+\end{itemize}
+\newpage{}
+\begin{itemize}
+\item On the screen, however, they both look like rows.
+
+<<>>=
+x
+
+@
+
+But you will see a little difference in the indexes that appear in
+the transpose output
+
+<<>>=
+t(x)
+@
+\end{itemize}
+\end{frame}
+\begin{frame}[allowframebreaks]{Multiply 2 Vectors: ``inner product''}
+
+\begin{itemize}
+\item Remember this shape
+\[
+\left[one\,row\,of\,numbers\,here\right]\left[\begin{array}{c}
+one\\
+column\\
+of\\
+numbers\\
+here
+\end{array}\right]
+\]
+\item The inner product is defined as the sum of the products 
+\end{itemize}
+\begin{equation}
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=af+bg+ch+di+ej\label{eq:innerproduct}
+\end{equation}
+
+\begin{itemize}
+\item Usually, in a math book, we'd have 2 column vectors
+\[
+x=\left[\begin{array}{c}
+a\\
+b\\
+c\\
+d\\
+e
+\end{array}\right],\,y=\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]
+\]
+
+and we transpose $x$ to calculate the inner product. 
+\[
+x^{T}\cdot y
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Inner product of 2 vectors}
+
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=af+bg+ch+di+ej
+\]
+
+\begin{itemize}
+\item In math, this is defined ONLY IF the row and column vectors have EXACTLY
+the same number of elements.
+
+\begin{itemize}
+\item Conformability
+\end{itemize}
+\item The result is a single number (a ``\textbf{scalar}'')
+\end{itemize}
+\newpage{}
+\begin{itemize}
+\item Sometimes called a ``dot product'', but it is not necessary to write
+the dot 
+\item Example
+\[
+[\begin{array}{cccc}
+3 & 1 & 6 & 2\end{array}]\cdot\left[\begin{array}{c}
+1/3\\
+1\\
+1/6\\
+1/2
+\end{array}\right]=1+1+1+1=4
+\]
+\item Now you tell me. What is:
+\[
+[\begin{array}{ccc}
+1 & 12 & 21\end{array}]\left[\begin{array}{c}
+0.1\\
+0.5\\
+1/3
+\end{array}\right]\mathrm{?}
+\]
+\end{itemize}
+\end{frame}
+%
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Back to the R side}
+\begin{itemize}
+\item \code{\%{*}\%} is the replacement for \code{{*}} that calculates
+inner-product
+\item The inner product
+\end{itemize}
+<<>>=
+x <- c(1, 12, 21)
+y <- c(0.1, 0.5, 1/3)
+t(x) %*% y
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{R does check conformability for multiplication!}
+
+<<eval=F>>=
+x <- c(1, 12, 21, 19, 18)
+y <- c(0.1, 0.5, 1/3)
+t(x) %*% y
+@
+
+\begin{Soutput}
+Error in x %*% y : non-conformable arguments
+\end{Soutput}
+
+\end{frame}
+\begin{frame}[allowframebreaks]{Sum of Squares as Inner Product}
+
+\begin{itemize}
+\item Calculate the sum of ``squares'' as $x^{T}x$ 
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\end{array}\right]\cdot\left[\begin{array}{c}
+a\\
+b\\
+c\\
+d\\
+e
+\end{array}\right]=a^{2}+b^{2}+c^{2}+d^{2}+e^{2}
+\]
+\item Sum of squared residuals in regression:
+\end{itemize}
+\begin{eqnarray*}
+\sum_{i}^{N}(y_{i}-\hat{y}_{i})^{2}\\
+=(y_{1}-\hat{y}_{1})^{2}+(y_{2}-\hat{y}_{2})^{2}+(y_{3}-\hat{y}_{3})^{2}\ldots
+\end{eqnarray*}
+
+\[
+=(y-\hat{y})^{T}(y-\hat{y})
+\]
+
+\textrm{
+\[
+=(y_{1}-\hat{y}_{1},y_{2}-\hat{y}_{2},y_{3}-\hat{y}_{3}\ldots,y_{N}-\hat{y}_{N})\left[\begin{array}{c}
+y_{1}-\hat{y}_{1}\\
+y_{2}-\hat{y}_{2}\\
+\vdots\\
+y_{N}-\hat{y}_{N}
+\end{array}\right]
+\]
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Back on the R side of the story}
+\begin{itemize}
+\item While in the math book, an inner product is not defined unless the
+first vector is transposed, R does not care. 
+\item Observe. You can transpose if you want to. But it is not necessary.
+\end{itemize}
+<<>>=
+x <- c(1,2,3)
+y <- c(4,5,6) 
+x %*% y
+t(x) %*% y
+
+@
+\begin{itemize}
+\item In math, it certainly would not be true that $x\cdot y=y\cdot x$,
+but it is true in R
+\end{itemize}
+<<>>=
+y %*% x
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{What if you forget the percent signs in the \%*\% Symbol?}
+\begin{itemize}
+\item In a math book, it would be very rare to see vector multiplication
+that is not an inner product. 
+\item However, R allows the ordinary multiplication symbol to represent
+element-by-element multiplication
+\end{itemize}
+<<>>=
+x <- c(1,2,3)
+y <- c(4,5,6) 
+x * y
+@
+\begin{itemize}
+\item Creates new vector of same length as $x$ and $y$.
+\item R does check for conforming lengths, but then recycles x and issues
+a warning:
+\end{itemize}
+<<>>=
+x <- 1:3
+y <- 1:10
+x*y  
+@
+
+\begin{Soutput}
+Warning message: 
+In x * y : longer object length is not a multiple
+of shorter object length
+\end{Soutput}
+
+\newpage{}
+\begin{itemize}
+\item See what it did? It manufactured a 10 element \code{x} for us:
+\end{itemize}
+<<>>=
+(x <- c(1:3, 1:3, 1:3, 1))
+(y <- 1:10)
+x*y  
+@
+
+\end{frame}
+
+\section{Matrix}
+
+\subsection{Create a matrix in R}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Many ways to create matrices}
+\begin{itemize}
+\item As in vectors, there are many (many) ways that R can create a matrix.
+\end{itemize}
+\begin{enumerate}
+\item Use the matrix function to manufacture a $4\times6$ matrix
+
+\def\Sweavesise{\footnotesize}
+<<>>=
+X <- matrix(1:24, nrow = 4, ncol = 6, byrow = FALSE, dimnames = list(NULL, letters[1:6]))
+X
+@
+
+\code{byrow = FALSE} is the default, not needed to explicitly state
+that. 
+
+Not necessary to supply values, could have put \code{NA} or \code{0}
+instead.
+
+I insert \code{dimnames} just to prove I can. That seems difficult
+for beginners. NULL row names, and a vector of column names
+\item Combine columns to form a matrix (\code{cbind} = column bind)
+
+<<>>=
+x1 <- 1:4; x2 <- 5:8; x3 <- 9:12;
+x4 <- 13:16; x5 <- 17:20; x6 <- 21:24
+cbind(x1, x2, x3, x4, x5, x6)
+@
+\end{enumerate}
+\newpage{}
+\begin{enumerate}
+\item Similarly, could \code{rbind} vectors. If we use \code{rbind}, the
+vectors are treated as row vectors.
+
+<<>>=
+y1 <- seq(1, 21, by = 4)
+y2 <- seq(2, 22, by = 4)
+y3 <- seq(3, 23, by = 4)
+y4 <- seq(4, 24, by = 4)
+rbind(y1, y2, y3, y4)
+@
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Difference between vectors and matrices}
+\begin{itemize}
+\item In mathematics, one might say a vector is a one column matrix
+\item R would differentiate those ideas. 
+\item One hint of the difference in R is that a vector does not answer to
+the \code{dim()} function, but a matrix does:
+\end{itemize}
+<<>>=
+dim(x1a)
+dim(X)
+@
+
+Similarly, a matrix answer to functions like \code{nrow()} and \code{ncol()},
+but a vector does not.
+\begin{itemize}
+\item Observe that if we create a one column selection from an R matrix,
+R ``demotes'' that thing to a vector.
+\end{itemize}
+<<>>=
+## Take 4th column from X
+X4 <- X[ , 4]
+is.matrix(X)
+is.matrix(X4)
+is.vector(X4)
+@
+\begin{itemize}
+\item We can ask R to \emph{not demote }X4 to become a vector by inserting
+a third argument
+\end{itemize}
+<<>>=
+X4mat <- X[ , 4, drop = FALSE]
+is.matrix(X4mat)
+is.vector(X4mat)
+@
+\begin{itemize}
+\item If you have a vector, however, some special functions exist that will
+treat it like a matrix. For example:
+
+<<>>=
+NROW(x1a)
+NCOL(x1a)
+@
+
+These capital-letter versions of \code{nrow} and \code{ncol} are
+needed because we are not interacting with a matrix object.
+\item This comes up in R usage because sometimes we have a thing, say \code{Z},
+which might be a matrix or a vector. Sometimes we need to know ``how
+many rows'' it would have
+\end{itemize}
+\newpage{}
+\begin{itemize}
+\item Note the \code{dim()} function does not understand vectors.
+\end{itemize}
+<<>>=
+dim(x1a)
+@
+
+because \code{dim()} reports on matrices and arrays.
+
+<<>>=
+dim(X)
+@
+
+\end{frame}
+
+\subsection{Matrix times Vector}
+\begin{frame}[allowframebreaks]{Multiply a matrix times a vector }
+
+\begin{itemize}
+\item I'll create a matrix that is $(2\times5)$ (2 rows, 5 columns). 
+\item multiply ``on the right'' by a vector $(5\times1)$ 
+\end{itemize}
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{c}
+f\\
+g\\
+h\\
+i\\
+j
+\end{array}\right]=\left[\begin{array}{c}
+af+bg+ch+di+ej\\
+rf+sg+th+ui+vj
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Idea: treat matrix as two rows, calculate inner product for each one.
+\item $[2\times5]\cdot[5\times1]$ yields a $[2\times1]$ result
+\item Matrices must \textbf{conform}. Number of columns of first matrix
+must equal number of rows in 2nd one.
+\end{itemize}
+\newpage{}
+\begin{itemize}
+\item Example: $X\hat{\beta}$ is predicted values in regression
+\end{itemize}
+\[
+\begin{array}{ccccc}
+ & \left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+1 & \ldots & \ldots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right] & \left[\begin{array}{c}
+\hat{\beta}_{0}\\
+\hat{\beta}_{1}\\
+\hat{\beta}_{2}
+\end{array}\right] & = & \left[\begin{array}{c}
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{1}+\hat{\beta}_{2}x2_{1}\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{2}+\hat{\beta}_{2}x2_{2}\\
+\ldots\\
+\hat{\beta}_{0}+\hat{\beta}_{1}x1_{N}+\hat{\beta}_{2}x2_{N}
+\end{array}\right]\end{array}
+\]
+
+\end{frame}
+%
+
+\subsection{Matrix Multiplication}
+\begin{frame}[allowframebreaks]{Multiply a matrix times a matrix }
+
+\[
+\left[\begin{array}{ccccc}
+a & b & c & d & e\\
+r & s & t & u & v
+\end{array}\right]\cdot\left[\begin{array}{cc}
+f & k\\
+g & l\\
+h & m\\
+i & n\\
+j & o
+\end{array}\right]
+\]
+
+\[
+=\left[\begin{array}{cc}
+af+bg+ch+di+ej & ak+bl+cm+dn+eo\\
+rf+sg+th+ui+vj & rk+sl+tm+un+vo
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Break into sequences of vector multiplications, row 1 $\cdot$ column
+1, row2 $\cdot$ column 1, row 1 $\cdot$ column 2, row 2 $\cdot$
+column 2.
+\item $[2\times5]\cdot[5\times2]$ yields a $[2\times2]$ result
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{R has matrix multiplication also: $\%*\%$}
+
+<<>>=
+X1 <- matrix(1:12, nrow = 2)
+X1
+X2 <- matrix(13:24, ncol = 2)
+X2
+X1 %*% X2
+@
+
+\end{frame}
+
+\subsection{Example Usage: Sum of Squares}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Transpose a Matrix}
+\begin{itemize}
+\item $X^{T}$ means ``$X$ turned on its side''
+\[
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]
+\]
+\item Example, predictors in a regression:
+\[
+X=\left[\begin{array}{ccc}
+1 & 3 & 33\\
+1 & 2 & 62\\
+1 & 5 & 65\\
+1 & 1 & 45\\
+1 & 5 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X}\,is\,}5x3
+\]
+\end{itemize}
+\[
+X^{T}=\left[\begin{array}{ccccc}
+1 & 1 & 1 & 1 & 1\\
+3 & 2 & 5 & 1 & 5\\
+33 & 62 & 65 & 45 & 66
+\end{array}\right]\,\,\mathrm{\mathit{X^{T}}\,\,is\,3x5}
+\]
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{$X^TX$ is an important matrix in statistics}
+\begin{itemize}
+\item And the product $X^{T}X$ is
+\[
+\left[\begin{array}{ccccc}
+1 & 1 & 1 & 1 & 1\\
+3 & 2 & 5 & 1 & 5\\
+33 & 62 & 65 & 45 & 66
+\end{array}\right]\left[\begin{array}{ccc}
+1 & 3 & 33\\
+1 & 2 & 62\\
+1 & 5 & 65\\
+1 & 1 & 45\\
+1 & 5 & 66
+\end{array}\right]=\left[\begin{array}{ccc}
+5 & 16 & 271\\
+16 & 64 & 923\\
+271 & 923 & 15539
+\end{array}\right]
+\]
+\item Sum of squares (diagonal) and cross products (off-diagonals)
+\item Used to calculate correlations, regression coefficients
+\item $X$ is $N\times p$, $X^{T}$ is $(p\times N)$, so $X^{T}X$ is
+($p\times p$), much smaller than either $X$ or $X^{T}$
+\begin{itemize}
+\item In the pencil days of stats, the matrix $X^{T}X$ was especially heavily
+emphasized
+\item In computer era, it has less emphasis because of ``rounding error''. 
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{R has 2 ways to get this done}
+\begin{enumerate}
+\item The obvious, manual, inefficient way
+
+\def\Sweavesize{\footnotesize}
+<<eval=F,include=T>>=
+X <- matrix(c(1, 1, 1, 1, 1, 3, 2, 5, 1, 5, 33, 62, 65, 45, 66), nrow = 5)
+t(X) %*% X
+@
+\item Or the optimized function
+
+\def\Sweavesize{\footnotesize}
+<<>>=
+crossprod(X)
+@
+\end{enumerate}
+\newpage{}
+
+Why is \code{crossprod} better? (more efficient? faster?)
+\begin{enumerate}
+\item The result is ``symmetric'', same above and below. Hence, computer
+should only need to calculate an upper triangle and copy the answer
+to the other triangle.
+\item Creating a new transposed matrix \code{t(X)} unnecessarily requires
+new memory allocation and a copy of the columns of \code{X} into
+the rows of \code{t(X)}. Computer can find values in \code{X} (whereas
+humans need to see \code{t(X)} explicitly).
+\end{enumerate}
+See also \code{tcrossprod()} and functions in the \code{Matrix}
+package.
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Accelerated matrix algebra libraries}
+\begin{itemize}
+\item Many C, C++, and Fortran libraries exist, competing to be the fastest,
+most accurate calculation routines
+\item They adhere to a common, internationally accepted interface (generally
+referred to as BLAS)
+\item Over time, R has relied on LINPACK, and now LAPACK for fast calculations
+\item On the horizon, however, other matrix libraries are gaining ground
+and R can be instructed to use those accelerated libraries instead.
+\begin{itemize}
+\item Some are general purpose Math libraries, such as Intel MKL (math kernel
+library), OpenBLAS, Atlas, etc. 
+\item Some are narrower stats \& modeling matrix libraries, like Armadillo
+and Eigen, to which we gain access through packages like RcppArmadillo
+and RcppEigen
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Special Square Matrices}
+
+\subsection{I Need a Covariance Matrix}
+\begin{frame}[containsverbatim,allowframebreaks]{Got Simulations?}
+
+\begin{itemize}
+\item The MASS package for R (Venables and Ripley, 2002) introduced a simulator
+for Multivariate Normal draws. Allows us to generate ``correlated
+columns'' 
+\item The theoretical model is represented as
+
+\[
+MVN(\mu,\Sigma)
+\]
+
+where $\mu$ is a vector of means and $\Sigma$ is the covariance
+matrix .
+
+\[
+MVN\left(\left[\begin{array}{c}
+\mu_{1}\\
+\mu_{2}\\
+\vdots\\
+\mu_{p}
+\end{array}\right],\left[\begin{array}{cccc}
+\sigma_{1}^{2} & \sigma_{12} &  & \sigma_{1p}\\
+\sigma_{12} & \sigma_{2}^{2} &  & \sigma_{2p}\\
+ &  & \ddots\\
+\sigma_{1p} & \sigma_{2p} &  & \sigma_{p}^{2}
+\end{array}\right]\right)
+\]
+
+\item If the variables all have 0 means and are uncorrelated, of course,
+MVN is the same as drawing 3 separate uncorrelated ``standard normal''
+columns
+
+<<>>=
+library(MASS)
+mu <- c(0, 0, 0)
+Sigma <- diag(c(1, 1, 1))
+Sigma
+mvrnorm(5, mu, Sigma)
+@
+\item But we might have correlated values, for example 
+
+<<>>=
+mu <- rep(0, 3)
+Sigma <- matrix(c(1, .3, -.1, .3, 1, .2, -.1, .2, 1), nrow = 3)
+Sigma
+mvrnorm(5, mu = mu, Sigma = Sigma)
+@
+\item The Challenge: On a theoretical level, how do we conceptualize the
+desired covariance matrix? What do we write in?
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{I understand mean and variance}
+\begin{itemize}
+\item The expected value is the center point of a distribution (AKA mean).
+\item Variance is ``dispersion'' or ``diversity''.
+\item Suppose $x$ is Normally distributed ($x\sim N(\mu,\sigma_{x}^{2})$)
+\begin{itemize}
+\item Expected Value: $E[x]=\mu$
+\item Variance: $V[x]=\sigma_{x}^{2}$, the standard deviation is $\sigma_{x}$.
+\end{itemize}
+\item Next, we expand this to apply to several variables
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Variance-Covariance Matrix}
+\begin{itemize}
+\item Think of $X$ as 5 predictor columns, $x1,$ ..., $x5$ for $N$ rows
+of observations
+\begin{equation}
+X=\left[\begin{array}{ccccc}
+x1_{1} & x2_{1} & x3_{1} & x4_{1} & x5_{1}\\
+x1_{2} & x2_{2} & x3_{2} & x4_{2} & x5_{2}\\
+x1_{3} & x2_{3} & x3_{3} & x4_{3} & x5_{3}\\
+ &  & \vdots\\
+x1_{N} & x2_{N} & x3_{N} & x4_{N} & x5_{N}
+\end{array}\right]\label{eq:Xcolumns}
+\end{equation}
+\end{itemize}
+\begin{equation}
+Var(X)=\Sigma=\left[\begin{array}{ccccc}
+\sigma_{x1}^{2} & \sigma_{x2,x1} & \sigma_{x3,x1} & \sigma_{x4,x1} & \sigma_{x5,x1}\\
+\sigma_{x2,x1} & \sigma_{x1}^{2} & \sigma_{x3,x2}^{2} & \sigma_{x4,x2} & \sigma_{x5,x2}\\
+\sigma_{x3,x1} & \sigma_{x3,x2} & \sigma_{x3}^{2} & \sigma_{x4,x3} & \sigma_{x5,x3}\\
+\sigma_{x4,x1} & \sigma_{x4,x2} & \sigma_{x4,x3} & \sigma_{x4}^{2} & \sigma_{x5,x4}\\
+\sigma_{x5,x1} & \sigma_{x5,x2} & \sigma_{x5,x3} &  & \sigma_{x5}^{2}
+\end{array}\right]\label{eq:Var}
+\end{equation}
+
+\begin{itemize}
+\item The diagonals are variances, which range from $[0,\infty)$, but the
+off-diagonals are scale-free numbers called ``\emph{covariances}'',
+that range from $(-\infty,\infty).$ 
+\item If covariance is positive, two variables ``go together''. But how
+big should it be? I can't conceptualize that.
+\item It is easier for me to conceptualize
+\begin{enumerate}
+\item The standard deviations of the columns: $[\sigma_{x1},\sigma_{x2},\ldots,\sigma_{x5}]$
+\item The Pearson correlation matrix among the columns
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks, plain]{You know correlations, right?}
+\begin{itemize}
+\item Pearson product moment correlation is the ratio of covariance to the
+product of the standard deviations (example with variables $x1$ and
+$x3$):
+\end{itemize}
+\[
+\rho_{x1,x3}=\frac{\sigma_{x1,x3}}{\sigma_{x1}\cdot\sigma_{x3}}
+\]
+
+\begin{itemize}
+\item Correlation ranges from $(-1,1)$
+\begin{itemize}
+\item $0$ indicates 2 variables are not related.
+\end{itemize}
+\item Rearrange: Covariance between $x1$ and $x3$ is the product of correlation
+and the two standard deviations:
+\end{itemize}
+\begin{equation}
+\sigma_{x1,x3}=\sigma_{x1}\cdot\sigma_{x3}\cdot\rho_{x1,x3}
+\end{equation}
+
+\begin{itemize}
+\item I comprehend covariance that way. correlation times standard deviations.
+\item Same trick will help us create a covariance matrix
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Cov and Corr matrices}
+\begin{itemize}
+\item A Correlation matrix
+\end{itemize}
+\[
+\rho=\left[\begin{array}{ccccc}
+1 & \rho_{12} & \rho_{13} & \ldots & \rho_{1p}\\
+\rho_{21} & 1 & \rho_{23} &  & \rho_{2p}\\
+\rho_{31} & \ddots & 1 &  & \rho_{3p}\\
+\vdots &  & \rho_{11} & \ddots\\
+\rho_{p1} & \rho_{11} & \rho_{11} &  & 1
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Its Symmetric! Elements bounded between -1 and +1
+\item Example
+
+\[
+\rho=\left[\begin{array}{ccccc}
+1 & .8 & 0 & \ldots & 0\\
+.8 & 1 & 0 &  & 0\\
+0 & \ddots & 1 &  & 0\\
+\vdots &  & 0 & \ddots\\
+0 & 0 & 0 &  & 1
+\end{array}\right]
+\]
+
+\item There is one additional conceptual restriction: the intercorrelations
+among several variables must make sense. Suppose 
+\begin{itemize}
+\item $x1$ is very tightly correlated with $x2$, and
+\item $x2$ is tightly correlated with $x3$, then
+\item its not conceptually meaningful to suppose $x1$ is negatively related
+to $x3$
+\end{itemize}
+\item To avoid the ``conceptually unmeaningful'' $\rho$ matrix, a restriction
+is that $\rho$ is ``positive definite'', meaning $y^{T}\rho\,y>0$
+for any vector $y$. Roughly speaking, a vector cannot be negatively
+correlated with itself.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Variance-Covariance Matrix as Re-scaled Correlation}
+
+\[
+Variance=Std.Deviation\times Correlation\times Std.Deviation
+\]
+
+{\footnotesize{}
+\begin{eqnarray}
+\Sigma & = & \left[\begin{array}{ccccc}
+\sigma_{x1} & 0 & 0 & 0 & 0\\
+0 & \sigma_{x2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{x3} & 0 & 0\\
+0 & 0 & 0 & \sigma_{x4} & 0\\
+0 & 0 & 0 & 0 & \sigma_{x5}
+\end{array}\right]\times\left[\begin{array}{ccccc}
+1 & \rho_{12} & \rho_{13} & \ldots & \rho_{1p}\\
+\rho_{21} & 1 & \rho_{23} &  & \rho_{2p}\\
+\rho_{31} & \ddots & 1 &  & \rho_{3p}\\
+\vdots & _{11} & \rho_{11} & \ddots\\
+\rho_{p1} & \rho_{11} & \rho_{11} &  & 1
+\end{array}\right]\nonumber \\
+ &  & \times\left[\begin{array}{ccccc}
+\sigma_{x1} & 0 & 0 & 0 & 0\\
+0 & \sigma_{x2} & 0 & 0 & 0\\
+0 & 0 & \sigma_{x3} & 0 & 0\\
+0 & 0 & 0 & \sigma_{x4} & 0\\
+0 & 0 & 0 & 0 & \sigma_{x5}
+\end{array}\right]\label{eq:Cov1}
+\end{eqnarray}
+}{\footnotesize \par}
+\begin{itemize}
+\item Inspect an individual piece
+\begin{itemize}
+\item $\Sigma_{11}$ should be the variance of $x1$
+\[
+\sigma_{x1,x1}=\sigma_{x1}\cdot\sigma_{x1}=\sigma_{x1}^{2}
+\]
+\item $\Sigma_{13}$ is a ``cross'' term, that weights the two standard
+deviations by their correlations
+\begin{equation}
+\sigma_{x1,x3}=\rho_{13}\sigma_{x1}\sigma_{x2}
+\end{equation}
+\end{itemize}
+\end{itemize}
+\end{frame}
+%
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Check if $\Sigma$ is a legal correlation matrix?}
+\begin{columns}[t]
+
+\column{7cm}
+\begin{itemize}
+\item Obviously, it is necessary that the 
+\begin{itemize}
+\item diagonal is 1's
+\item off-diagonals are between -1 and 1
+\item symmetric
+\end{itemize}
+\item The values must be coherent, ``positive definite''
+\end{itemize}
+
+\column{5cm}
+
+\[
+\left[\begin{array}{ccccc}
+1 & \rho_{12} & \rho_{13} & \ldots & \rho_{1p}\\
+\rho_{21} & 1 & \rho_{23} &  & \rho_{2p}\\
+\rho_{31} & \ddots & 1 &  & \rho_{3p}\\
+\vdots & _{11} & \rho_{11} & \ddots\\
+\rho_{p1} & \rho_{11} & \rho_{11} &  & 1
+\end{array}\right]
+\]
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{R has tools to get that done}
+\begin{itemize}
+\item An example correlation matrix: everything is equally strongly correlated
+with everything else:
+\end{itemize}
+<<include=F>>=
+library(rockchalk)
+Rho <- lazyCor(.5, d = 5)
+@
+
+<<>>=
+Rho
+@
+\begin{itemize}
+\item Is the diagonal full of 1's?
+\end{itemize}
+<<>>=
+Rho.d <- diag(Rho)
+Rho.d
+all.equal(Rho.d, rep(1, times = 5))
+@
+\begin{itemize}
+\item Is it symmetric?
+\end{itemize}
+<<>>=
+isSymmetric(Rho)
+@
+\begin{itemize}
+\item Are all values in $[-1,1]$?
+\end{itemize}
+<<>>=
+## Seems like should be more direct way, but...
+z <- as.vector(Rho)
+z
+## single | for vector compare
+any(z > 1 | z < -1)
+@
+\begin{itemize}
+\item How to check if it is positive definite? In the \code{MASS::mvrnorm}
+function, Venables and Ripley show one way. 
+\begin{itemize}
+\item In ``exact math'' a matrix is positive definite if all of its eigenvalues
+are positive
+\item Computers don't do exact math, however
+\item V\&R's solution is to require that the estimated eigenvalues must
+be positive, or nearly so. The variable ``tol'' is tolerance, $10^{-6}$,
+a practical standard
+\end{itemize}
+\end{itemize}
+<<eval=F>>=
+eS <- eigen(Sigma, symmetric = TRUE)
+ev <- eS$values
+if (!all(ev >= -tol * abs(ev[1L])))
+        stop("'Sigma' is not positive definite")
+@
+\begin{itemize}
+\item This allows the possibility that the smallest eigenvalue,\code{ev{[}1L{]}},
+might be negative, but it must not be too far below 0.
+\item I found that so useful I put same calculation into a function in \code{rockchalk}
+called ``\code{checkPosDef}''. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{What's all that good for?}
+\begin{itemize}
+\item In 30 years of teaching, I wrote 2 good lectures, one of which is:
+
+\url{http://pj.freefaculty.org/guides/stat/Regression/Multicollinearity/Multicollinearity-1-lecture.pdf}
+\item Lets get the highlights:
+\end{itemize}
+<<eval=F,include=T>>=
+library(rockchalk)
+example(mcGraph3)
+@
+\begin{itemize}
+\item If you wonder how that's done, you can see how. Either download the
+code for the \code{rockchalk} package or read the code in an R session.
+Type ``mcGraph1'', ``mcGraph2'', ``mcGraph3''. 
+\end{itemize}
+\end{frame}
+
+\subsection{OMG, why didn't I get the memo?}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The Regression Book says $\ldots$}
+\begin{itemize}
+\item Did you ever read a regression book? The model is
+\end{itemize}
+\[
+y=X\beta+\varepsilon
+\]
+
+\begin{itemize}
+\item Given estimates $\hat{\beta}$, the predicted value will be $\hat{y}=X\hat{\beta}$.
+\item The estimator $\hat{\beta}$ is found as the minimizer of the squared
+errors, 
+\[
+(\hat{y}-y)^{T}(\hat{y}-y)
+\]
+\item The ``first order condition'' for optimizing values of $\beta$
+is the ``normal equation:
+\end{itemize}
+\begin{equation}
+(X^{T}X)\beta=X^{T}y\label{eq:normal}
+\end{equation}
+
+\begin{itemize}
+\item Which the book will say is solved by finding an inverse matrix $(X^{T}X)^{-1}$
+that we multiply on the left to get $\hat{\beta}$ by itself
+\end{itemize}
+\[
+\bcancel{(X^{T}X)^{-1}}\bcancel{(X^{T}X)}\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y\label{eq:betahat}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Identity Matrix}
+
+The matrix equivalent of the number 1 is $I$, the Identity Matrix
+\[
+I=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & \ddots & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item $I$ times $anything$ gives back $anything$
+\item $anything$ times $I$ gives back $anything$
+
+\[
+I\times y=y
+\]
+
+\[
+X\times I=X
+\]
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Inverse Matrix}
+\begin{itemize}
+\item The sum of squares and cross products is a square matrix $(X^{T}X)$. 
+\item If we could find an inverse matrix $(X^{T}X)^{-1}$, then
+\[
+(X^{T}X)^{-1}(X^{T}X)=I
+\]
+\item The matrix $(X^{T}X)$ is ``invertible'' under some ``regularity''
+conditions (lets worry about that another time).
+\item Hence, in exact math, the normal equation $(X^{T}X)\beta=X^{T}y$
+can be converted to the solution 
+\[
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{R can calculate the inverse of a matrix}
+\begin{itemize}
+\item Virtually every stats teacher I know has used R matrix calculations
+to show we can reproduce the estimates from a regression function.
+Here's a sketch
+\end{itemize}
+<<eval=F>>=
+mod1 <- lm(y ~ x1 + x2 + x3, data = any_data_you_have)
+summary(mod1)
+X <- model.matrix(mod1)
+XTX <- t(X) %*% X
+XTXinv <- solve(XTX)
+BetaHat <- XTXinv %*% t(X) %*% any_data_you_have$y
+@
+\begin{itemize}
+\item In virtually every example I've done like that, the matrix calculations
+appear to be the same. 
+\item However, they generally differ after 10 decimal places or so.
+\begin{itemize}
+\item I ran example(lm), which created an outcome variable weight and a
+regression object lm.D9.
+\item Then:
+\end{itemize}
+\def\Sweavesize{\scriptsize}
+<<eval=F>>=
+X <- model.matrix(lm.D9)
+XTX <- t(X) %*% X
+XTXinv <- solve(XTX)
+Beta <- XTXinv %*% t(X) %*% weight
+@
+\begin{itemize}
+\item Which appears to be the same as the fitted model:
+\end{itemize}
+\begin{Soutput}
+> Beta
+              [,1]
+(Intercept)  5.032
+groupTrt    -0.371
+> coef(lm.D9)
+(Intercept)    groupTrt
+      5.032      -0.371
+\end{Soutput}
+\item But, if we dial up the number of displayed digits, the numbers are
+not the same:
+\end{itemize}
+\begin{Soutput}
+options.orig <- options()
+options(digits = 22)
+> coef(lm.D9)
+              (Intercept)                  groupTrt
+ 5.0320000000000000284217 -0.3709999999999997188915
+> Beta
+                                [,1]
+(Intercept)  5.032000000000000916600
+groupTrt    -0.371000000000000995648
+options(options.orig)
+\end{Soutput}
+\begin{itemize}
+\item Why these differ in the decimal places, or how they come to differ,
+is the big news in the next few slides.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Now the tragic news}
+\begin{itemize}
+\item No respectable software today would explicitly form $X^{T}X$ for
+the purpose of calculating regression estimates. Digital rounding
+error, inherent in floating point calculations, is damaging and unnecessary
+\item No respectable software calculates $(X^{T}X)^{-1}$. Doing so compounds
+on the rounding error inherent in $X^{T}X$
+\item There are many ways to calculate inverses, some are more numerically
+stable than others, but we don't need to do that to calculate a regression
+model.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{How do they actually do it?}
+\begin{itemize}
+\item ``Use the Source, Luke'' (Kenobe, 1977)
+\item First, type ``lm'' with no parentheses
+\end{itemize}
+\def\Sweavesize{\scriptsize}
+<<eval=F,echo=T>>=
+lm
+@
+\begin{itemize}
+\item Scan through there, you see they re-organize the data as a predictor
+matrix \code{x} and the outcome vector \code{y} . Look for ``\code{lm.fit(x, y, ...)}''
+.
+\item So we go check the code for ``lm.fit'', eagerly hoping to see them
+form t(x) \%{*}\% x and then ``solve'' that, 
+\begin{itemize}
+\item but it never happens!
+\end{itemize}
+\item Instead, the magic bullet is found in the mysterious line
+\end{itemize}
+<<eval=F>>=
+z <- .Call(C_Cdqrls, x, y, tol, FALSE)
+@
+\begin{itemize}
+\item That's a call to a C function, which calculates the ``QR'' decomposition
+of x and then forms a least squares estimate.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The QR decomposition of the predictor matrix}
+\begin{itemize}
+\item The QR decomposition: A matrix X can be reproduced as the product
+of 2 parts, 
+
+\begin{enumerate}
+\item An orthogonal matrix Q
+\item An upper right triangular R (with rows of 0's padding the bottom so
+that it is length N).
+\end{enumerate}
+\item Suppose $X$ is $N\,\times\,p$ (regression predictors). Reproduce
+X as 
+\[
+X=Q\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]
+\]
+\item The matrix $Q$ is $N\times N$, which means it is huge, but it has
+a very interesting property: the correlation between each column and
+any of the other columns is 0. I mean to say, the columns are orthogonal
+to each other. For two columns $Q_{.j}$ and $Q_{.k}$, 
+\[
+Q_{.j}^{T}Q_{.k}=0
+\]
+\item The $Q$ matrix is also scaled so the inner product of any column
+with itself is 1.
+\end{itemize}
+\[
+Q_{.j}^{T}Q_{.j}=1
+\]
+
+\begin{itemize}
+\item This implies: $Q^{T}Q=I$, $QQ^{T}=I$. 
+\begin{itemize}
+\item Literally, $Q^{-1}=Q^{T}$.
+\item The inverse of an orthogonal matrix is very easy to calculate, in
+other words.
+\end{itemize}
+\item The requirement that $Q$ is huge, $N\times N$, would ordinarily
+discourage us because memory storage would be very expensive. However,
+it turns out we only need the first $p$ columns from $Q$.
+\item The bottom part of the stack, $\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]$, is $N-p$ rows of $0$'s:
+\begin{equation}
+\left[\begin{array}{c}
+R\\
+0
+\end{array}\right]=\left[\begin{array}{c}
+\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & r_{14} & r_{1p}\\
+0 & r_{22} & r_{23} & r_{24} & r_{2p}\\
+0 & 0 & r_{33} & r_{34} & r_{3p}\\
+0 & 0 & 0 & \ddots & r_{(N-1)p}\\
+0 & 0 & 0 & 0 & r_{NN}\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{array}\end{array}\right]\mbox{ }
+\end{equation}
+\item The bottom rows of $R$ are all zeros, meaning that the columns on
+the right side of $Q$ don't matter. 
+
+{\footnotesize{}
+\begin{equation}
+X=\left[\begin{array}{ccc}
+q_{11} &  & q_{1N}\\
+q_{21} & \ddots\\
+ & [N\times N]\\
+ & \ddots\\
+q_{N1} &  & q_{NN}
+\end{array}\right]\left[\begin{array}{c}
+\begin{array}{cccc}
+r_{11} & r_{12} & r_{13} & r_{1p}\\
+0 & r_{22} & r_{23} & r_{2p}\\
+0 & 0 & r_{33} & r_{3p}\\
+0 & 0 & \ddots & r_{(p-1)p}\\
+0 & 0 & 0 & r_{pp}\\
+0 & 0 & [N-p] & 0\\
+0 & 0 & [rows] & 0\\
+0 & 0 & [of\,0's] & 0
+\end{array}\end{array}\right]\mbox{ }
+\end{equation}
+}The last $m-n$ columns of $Q$ get zeroed out by the $0$'s on the
+bottom of $R$.
+\item The original matrix $X$ can be reproduced if we just use the $p$
+columns on the left side of $Q$ and the triangular matrix $R$
+\end{itemize}
+\begin{equation}
+X=\left[\begin{array}{cccc}
+q_{11} & q_{12} &  & q_{1p}\\
+q_{21} & \ddots\\
+\\
+ & [N\times p]\\
+\\
+\\
+q_{N1} &  &  & q_{Np}
+\end{array}\right]\left[\begin{array}{c}
+\begin{array}{ccccc}
+r_{11} & r_{12} & r_{13} & r_{14} & r_{1p}\\
+0 & r_{22} & r_{23} & r_{24} & r_{2p}\\
+0 & 0 & r_{33} & r_{34} & r_{3p}\\
+0 & 0 & 0 & \ddots & r_{(p-1)p}\\
+0 & 0 & 0 & 0 & r_{pp}
+\end{array}\end{array}\right]\mbox{ }
+\end{equation}
+
+\begin{itemize}
+\item This more ``petite'' version ($Q_{f})$ is the one that R saves
+in memory
+\begin{equation}
+X=Q_{f}R
+\end{equation}
+\item In regression analysis, we symbolically derive
+
+\begin{equation}
+\hat{\beta}=(X^{T}X)^{-1}X^{T}y
+\end{equation}
+
+A very accurate, reasonably fast way to calculate that is with QR.
+Replace $X$ by the petite $Q_{f}R$.
+\begin{equation}
+\hat{\beta}=((Q_{f}R)^{T}(Q_{f}R))^{-1}(Q_{f}R)^{T}y
+\end{equation}
+If we use the rules for inverses and transposes mentioned above, we
+can algebraically reduce that:z > 1 || z < -1
+\end{itemize}
+\begin{eqnarray}
+\hat{\beta} & = & (R^{T}Q_{f}^{T}Q_{f}R))^{-1}(Q_{f}R)^{T}y\\
+ &  & (R^{T}R)^{-1}R^{T}Q_{f}^{T}y\\
+ &  & R^{-1}R^{T^{-1}}R^{T}Q_{f}^{T}y\\
+ &  & R^{-1}Q_{f}^{T}y
+\end{eqnarray}
+
+\begin{itemize}
+\item What's the big idea there? 
+\begin{itemize}
+\item We need the QR decomposition of $X$ to calculate regression estimates
+\item We do not need $(X^{T}X)^{-1}$.z > 1 || z < -1
+\end{itemize}
+\item The only regression book in which I have found this written out clearly
+is Simon Wood's \emph{Generalized Additive Models} (2006).
+\item I started more notes on this \url{http://pj.freefaculty.org/guides/stat/Math/Matrix-Decompositions}
+\end{itemize}
+\end{frame}
+
+\section{Conclusions}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The High Points}
+\begin{itemize}
+\item If we are doing statistics, we are doing math
+\begin{itemize}
+\item with vectors and matrices
+\end{itemize}
+\item There are some basic chores that all methodologists should be able
+to handle which will require some comfort with matrices
+\begin{itemize}
+\item Creating covariance and correlation matrices
+\item Drawing random samples
+\end{itemize}
+\item This lecture introduced only a small slice of matrix algebra in order
+to illustrate 2 main points
+\begin{itemize}
+\item R has code to do calculations that math books describe, but
+\item in a digital computer, matrix algebra does not work exactly as planned
+in a math book that presumes exact calculations of floating point
+numbers
+\end{itemize}
+\item If we study the way the R team has implemented numerical calculations,
+we can push forward our study of matrix algebra by focusing on the
+tools that are immediately relevant (the QR decomposition, for example)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{That intriguing comment in prcomp}
+\begin{itemize}
+\item In the base R distribution, there are 2 functions for principal components
+analysis, princomp and prcomp.
+\begin{itemize}
+\item princomp is the older one
+\item prcomp is the newer one
+\end{itemize}
+\item Care to guess why there are two?
+\begin{itemize}
+\item In princomp, ``Details'' explains
+\end{itemize}
+\begin{lstlisting}
+The calculation is done using 'eigen' on the correlation or covariance matrix, as determined by 'cor'.  This is done for compatibility with the S-PLUS result. A preferred method of      calculation is to use 'svd' on 'x', as is done in 'prcomp'
+\end{lstlisting}
+
+\item The SVD (Singular Value Decomposition) of a matrix is 
+\begin{itemize}
+\item more accurate, but also more expensive to calculate 
+\item The traditional approach is to calculate the eigenvalue-decomposition
+on a square crossproducts matrix, $X^{T}X$, rather than $X$ itself.
+\item Because SVD can apply to $X$, without forming $X^{T}X$, it is more
+accurate.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Online Free Resources}
+\begin{itemize}
+\item H\o{}jsgaard, Soren, ``Linear algebra in R''. This is my favorite.
+A beautifully done essay that covers many details. I can't find this
+in Hojsgaard's page today, but I find plenty of other people have
+it available if you search in Google.
+\item Farnsworth, Grant V, ``\href{https://cran.r-project.org/doc/contrib/Farnsworth-EconometricsInR.pdf}{Econometrics in R}''.
+\item Bates, Douglas, (June 2004) \textquotedblleft \href{http://cran.r-project.org/doc/Rnews/Rnews_2004-1.pdf}{Least Squares Calculations in R: Timing Different Approaches}\textquotedblright ,
+Rnews, 4(1): 17 
+\item Quick R, ``\href{http://www.statmethods.net/advstats/matrix.html}{Matrix Algebra}''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{sessionInfo}\def\Sweavesize{\scriptsize}
+<<>>=
+sessionInfo()
+@
+
+\end{frame}
+
+\section{Appendices}
+
+This section has some chunks that I wrote out but, in the end, don't
+use in this presentation. However, I may need them someday.
+
+\subsection*{Inverse Matrices}
+\begin{frame}[allowframebreaks]{Inverse does not always exist}
+
+\begin{itemize}
+\item A poem I made up:
+
+\begin{quote}
+Not all square matrices are invertible
+
+But only square matrices can be inverted
+\end{quote}
+\item A matrix that has redundant columns is not invertible. 
+\begin{itemize}
+\item the 4th column is a sum or product of previous
+
+\end{itemize}
+\[
+\left[\begin{array}{cccc}
+a_{1} & b_{1} & c_{1} & 3a_{1}\\
+a_{2} & b_{2} & c_{2} & 3a_{2}\\
+a_{3} & b_{3} & c_{3} & 3a_{3}\\
+a_{4} & b_{4} & c_{4} & 3a_{4}
+\end{array}\right]
+\]
+
+\item Note that the 4th column is \textbf{linearly dependent}, $3\cdot a$
+\item Calculation of an inverse requires that there is no formula to manufacture
+one column as a weighted sum of all of the others. This is impossible
+in a ``linearly independent'' matrix
+\[
+d=k_{1}a+k_{2}b+k_{3}c
+\]
+\item The \textbf{rank} of a matrix is the number of linearly independent
+columns. 
+
+\begin{itemize}
+\item A matrix that is ``rank deficient'' has a redundant column, it cannot
+be inverted.
+\end{itemize}
+\item In regression, how do we usually end up with ``rank deficient''
+predictor matrices?
+\end{itemize}
+\end{frame}
+%
+
+\subsection*{Orthogonal Matrix}
+\begin{frame}[allowframebreaks]{Orthogonal Matrix, Orthonormal Matrix}
+
+\begin{itemize}
+\item Consider a set of columns that makes up a matrix
+\[
+X=\{X1,X2,X3,X4\}
+\]
+\item Orthogonal means that 
+
+\begin{itemize}
+\item the dot product of any column with any other column is 0
+
+\[
+X1^{T}\cdot X2=0
+\]
+
+\item Those two columns are ``unrelated'', there's no tendency of positive
+values to coincide, or negative values to coincide. They ``uncorrelated''
+in a statistical sense. If we plotted their values in a 2-D scatterplot,
+there would be no visible ``relationship''. 
+\end{itemize}
+Property 1: The product is a \textrm{``diagonal\textquotedbl{} matrix}
+\[
+X^{T}X=\left[\begin{array}{ccccc}
+a & 0 & 0 & 0 & 0\\
+0 & b & 0 & 0 & 0\\
+0 & 0 & c & 0 & 0\\
+0 & 0 & 0 & d & 0\\
+0 & 0 & 0 & 0 & e
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item The product is thus diagonal, but the elements on the main diagonal
+are not all equal to the same number.
+\end{itemize}
+Property 2: A stronger property would have product as an identity
+matrix:
+\[
+X^{T}X=\left[\begin{array}{ccccc}
+1 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\item Property 2 holds when the columns of $X$ are ``unit vectors'',
+meaning they have length $1$.
+\item Sometimes I become confused because when people say ``orthogonal'',
+they simply mean property 1 holds, while others discussing orthogonal
+matrices are referring to property 2. 
+
+\begin{itemize}
+\item Orthogonal $\Longrightarrow$All zeros above and below the diagonal
+of $X^{T}X$
+\item Orthonormal $\Longrightarrow$Columns are scaled so that their norms
+are all 1, i.e. $X1^{T}X1=1$, $X2^{T}X2=1$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Orthogonal Matrices are Easy! (if you can find them)}
+
+\begin{itemize}
+\item Notice how convenient a diagonal matrix is when we need its inverse.
+\end{itemize}
+\[
+\left[\begin{array}{ccccc}
+a & 0 & 0 & 0 & 0\\
+0 & b & 0 & 0 & 0\\
+0 & 0 & c & 0 & 0\\
+0 & 0 & 0 & d & 0\\
+0 & 0 & 0 & 0 & e
+\end{array}\right]\left[\begin{array}{ccccc}
+1/a & 0 & 0 & 0 & 0\\
+0 & 1/b & 0 & 0 & 0\\
+0 & 0 & 1/c & 0 & 0\\
+0 & 0 & 0 & 1/d & 0\\
+0 & 0 & 0 & 0 & 1/e
+\end{array}\right]=I
+\]
+
+\begin{itemize}
+\item Orthonormal Matrices Simplify Everything
+
+\begin{itemize}
+\item If $X$ is an orthogonal matrix of unit vectors (orthonormal), then
+\[
+XX^{T}=X^{T}X=I
+\]
+\end{itemize}
+\item Hence, the inverse of $X^{T}X$ or $XX^{T}$ is EXTREMELY SUPER VERY
+EASY to calculate: Just Transpose. (With this, regression analysis
+is terrific, fun, numerically stable and life-extending!) 
+\item Another quirk: An orthogonal matrix changes the ``direction'' of
+a vector, but it does not change its magnitude. 
+
+\begin{itemize}
+\item Let $Q$ be an orthogonal matrix and let $x$ be a vector. 
+\item Claim: The norm of $Qx$ is equal to the norm of $x$
+
+\[
+\left\Vert Qx\right\Vert =\left\Vert x\right\Vert 
+\]
+
+\item Proof
+\begin{eqnarray*}
+\left\Vert Qx\right\Vert ^{2} & = & (Qx)^{T}(Qx)\\
+ & = & x^{T}Q^{T}Qx\\
+ & = & x^{T}x
+\end{eqnarray*}
+\item The significance of this is that the orthonormal matrix can be thought
+of as a ``direction changer'' or ``reflector'' of any vector $x$.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\subsection*{Cross Product, Variance}
+\begin{frame}[allowframebreaks]{Variance-Covariance Matrix}
+
+\begin{itemize}
+\item The variance of a column variable $x1$
+\begin{equation}
+Var(x1)=\frac{\sum_{i=1}^{N}(x1{}_{i}-\overline{x1})^{2}}{N}\label{eq:var1}
+\end{equation}
+\item can be re-arranged as
+\begin{eqnarray}
+Var(x1) & = & \frac{\sum_{i=1}^{N}x1_{i}^{2}}{N}-\left(\overline{x1}\right){}^{2}\label{eq:var2}\\
+ &  & =mean\,of\,\{x1\,squared\}\,-\{mean\,of\,x1\}\,squared\\
+ &  & (\overline{x1^{2})}-(\overline{x1})^{2}\nonumber 
+\end{eqnarray}
+\item In the pencil-and-paper days, it was noted that to calculate variance
+with formula \ref{eq:var1} required 2 passes through the data
+
+\begin{enumerate}
+\item Calculate $\overline{x1}=\frac{1}{N}\sum x1_{i}$
+\item Calculate the squares $\sum(x1_{i}-\overline{x1})$
+\end{enumerate}
+\item The shorter formula (\ref{eq:var2}), on the other hand, requires
+one pass through the rows, during which we calculate both.
+
+\begin{enumerate}
+\item $\sum x1_{i}$
+\item $\sum x1_{i}^{2}$
+\end{enumerate}
+\item The Covariance of 2 variables is similar
+\[
+Cov(x1,x2)=\frac{\sum_{1}^{N}(x1_{i}-\overline{x1})(x2_{i}-\overline{x2_{i}})}{N}
+\]
+
+can be written with the same simplifying trick as
+\end{itemize}
+\begin{eqnarray*}
+Cov(x1,x2) & = & \frac{\sum(x1_{i}\cdot x2_{i})}{N}-\overline{x1}\cdot\overline{x2}\\
+ &  & =mean\,of\,\{x1\cdot x2\}-\{mean\,of\,x1\}\{mean\,of\,x2\}
+\end{eqnarray*}
+
+\begin{itemize}
+\item At least in the pencil-and-paper math era, it was possible to see
+that variety is summarized if we 
+\[
+\sum x1_{i}^{2}\,,\,\sum x2_{i}^{2}\,and\,\sum x1_{i}x2_{i}
+\]
+
+for all the pairs of variables
+\item The variance/covariance matrix, often just called the variance matrix
+
+{\tiny{}
+\[
+Var(X)=\left[\begin{array}{ccccc}
+Var(x1) & Cov(x1,x2) & Cov(x1,x3) & Cov(x1,x4) & Cov(x1,x5)\\
+Cov(x2,x1) & Var(x2)\\
+Cov(x3,x1) & Cov(x3,x2) & Var(x3)\\
+Cov(x4,x1) & Cov(x4,x2) &  & \ddots & Cov(x4,x5)\\
+Cov(x5,x1) & Cov(x5,x2 &  & Cov(x5,x4) & Var(x5)
+\end{array}\right]
+\]
+}{\tiny \par}
+
+Making it obvious that
+\begin{itemize}
+\item $Var(x1)=Cov(x1,x1)$
+\item $Cov(x2,x1)=Cov(x1,x2)$, so this is symmetric (same in lower triangle
+as upper right triangle)
+\item The Standard Deviations of the variables are the square root of the
+diagonal of $Var(x)$
+\[
+\sqrt{diag(Var(X))}
+\]
+\end{itemize}
+\item It is very common to use the letter $\sigma$ with subscripts to fill
+in this kind of matrix. The matrix is often named capital sigma, $\Sigma$. 
+\item In the ``usual'' matrix style
+\end{itemize}
+\[
+\Sigma=\left[\begin{array}{ccccc}
+\sigma_{1}^{2} & \sigma_{12} & \sigma_{13} & \sigma_{14} & \sigma_{15}\\
+\sigma_{21} & \sigma_{22} & \sigma_{23}\\
+ &  & \ddots\\
+ &  &  & \ddots\\
+\sigma_{51} &  &  &  & \sigma_{55}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item my kind of notation
+\end{itemize}
+\[
+\Sigma=\left[\begin{array}{ccccc}
+\sigma_{x_{1}}^{2} & \sigma_{x_{1}x_{2}} & \sigma_{x_{1}x_{3}} & \sigma_{x_{1}x_{4}}\\
+\sigma_{x_{2}x_{1}} & \sigma_{x_{2}x_{2}}^{2} & \sigma_{x_{2}x_{3}}\\
+ &  & \ddots\\
+ &  &  & \ddots\\
+\sigma_{x_{5}x_{1}} &  &  &  & \sigma_{x_{5}x_{5}}^{2}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item Here we see the standard deviations are just the square root of the
+diagonal. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Sum of Squares and Crossproducts}
+
+\begin{itemize}
+\item The data analysis situation: we have columns representing variables
+(the first is the intercept) and the rows are the observations.
+\end{itemize}
+\[
+\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+1 & \ldots & \ldots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item $X^{T}X$ is a sum of squares and cross-products matrix.
+\end{itemize}
+\begin{eqnarray}
+X^{T}X & = & \left[\begin{array}{ccccc}
+1 & 1 & 1 & \ldots & 1\\
+x1_{1} & x1_{2} & x1_{3} &  & x1_{N}\\
+x2_{1} & x2_{2} & x2_{3} &  & x2_{N}
+\end{array}\right]\left[\begin{array}{ccc}
+1 & x1_{1} & x2_{1}\\
+1 & x1_{2} & x2_{2}\\
+\vdots & \vdots & \vdots\\
+1 & x1_{N} & x2_{N}
+\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{ccc}
+N & \sum x1_{i} & \sum x2_{i}\\
+\sum x1_{i} & \sum x1_{i}^{2} & \sum x1_{i}x2_{i}\\
+\sum x2_{i} & \sum x1_{i}x2_{i} & \sum x2_{i}^{2}
+\end{array}\right]
+\end{eqnarray}
+
+\begin{itemize}
+\item Each element of the matrix is a ``sum of \{squares, crossproducts\}''
+\item Check the diagonals: 
+\end{itemize}
+\begin{align*}
+[1,1,1]\left[\begin{array}{c}
+1\\
+1\\
+1
+\end{array}\right]=1+1+1+\text{\ensuremath{\ldots}}=N
+\end{align*}
+
+\begin{align*}
+x1^{T}x1 & =\left[\begin{array}{ccc}
+x1_{1} & x1_{2} & \ldots\end{array}\right]\left[\begin{array}{c}
+x1_{1}\\
+x1_{2}\\
+\text{\ensuremath{\vdots}}
+\end{array}\right]=\sum x1_{i}^{2}
+\end{align*}
+
+\begin{itemize}
+\item This matrix is \emph{symmetric.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Sum of Squares and Crossproducts versus Variance}
+
+\begin{itemize}
+\item The term ``sweep operator'' refers to the act of 
+
+\begin{itemize}
+\item Calculating the mean of each column of $X$,
+\item Subtracting that result from each row in the matrix.
+\end{itemize}
+\item The result is said to be ``mean-centered''
+\item If we start with this
+
+\[
+\left[\begin{array}{cccccc}
+1 & x1_{1} & x2_{1} & x3_{1} & x4_{1} & x5_{1}\\
+1 & x1_{2} & x2_{2} & x3_{2} & x4_{2} & x5_{2}\\
+1 & \ldots & \ldots & \ddots\\
+1 & x1_{N} & x2_{N} & x3_{N} &  & x5_{N}
+\end{array}\right]
+\]
+
+\begin{itemize}
+\item the means will be $\{1,\overline{x1},\overline{x2}\}$ (intercept
+was in column 1)
+\end{itemize}
+\item The mean centered version has a column of 0's on the first column
+
+\[
+XC=\left[\begin{array}{cccccc}
+0 & xc1_{1} & xc2_{1} & xc3_{1} & xc4_{1} & xc5_{1}\\
+0 & xc1_{2} & xc2_{2} & xc3_{2} & xc4_{2} & xc5_{2}\\
+0 & \ldots & \ldots & \ldots & \ldots & \ldots\\
+0 & xc1_{N} & xc2_{N} & xc3_{N} & xc4_{N} & xc5_{N}
+\end{array}\right]
+\]
+
+\item Simplifying benefits of working with mean centered data
+
+\begin{itemize}
+\item We lose a column, we generally throw away the first one, since it
+is all zeros
+\end{itemize}
+\[
+XC=\left[\begin{array}{ccccc}
+xc1_{1} & xc2_{1} & xc3_{1} & xc4_{1} & xc5_{1}\\
+xc1_{2} & xc2_{2} & xc3_{2} & xc4_{2} & xc5_{2}\\
+\ldots & \ldots & \ldots & \ldots & \ldots\\
+xc1_{N} & xc2_{N} & xc3_{N} & xc4_{N} & xc5_{N}
+\end{array}\right]
+\]
+
+\item The Variance and Covariance formulas simplify and we can read off
+their values from $XC^{T}XC$. Variance matrix is{\tiny{}
+\[
+Var(XC)=\left[\begin{array}{ccccc}
+\frac{1}{N}\sum xc1_{i}^{2} & \frac{1}{N}\sum xc1_{i}xc2_{i} & \frac{1}{N}\sum xc1_{i}xc3_{i} & \frac{1}{N}\sum xc1_{i}xc4{}_{i} & \frac{1}{N}\sum xc1_{i}xc5_{i}\\
+\frac{1}{N}\sum xc1_{i}xc2_{i} & \frac{1}{N}\sum xc2_{i}^{2} &  &  & \frac{1}{N}\sum xc2_{i}xc5{}_{i}\\
+\frac{1}{N}\sum xc1_{i}xc3_{i} &  & \frac{1}{N}\sum xc3_{i}^{2}\\
+\frac{1}{N}\sum xc1_{i}xc4_{i} &  &  & \frac{1}{N}\sum xc4_{k}^{2}\\
+\frac{1}{N}\sum xc1_{i}xc5_{i} &  &  &  & \frac{1}{N}\sum xc5_{i}^{2}
+\end{array}\right]
+\]
+}
+
+The variance of $x1$ would ordinarily be $\frac{1}{N}\sum x1_{i}^{2}-\left(\overline{x1}\right)^{2}$,
+but the last part is now 0 because we are mean centered.
+\item And if you factor out the $1/N$, then you see the variance matrix
+for a centered variable is simply proportional to $XC^{T}XC$.
+\item I hope you agree it is ``easy to see'' that $\frac{1}{N}XC^{T}XC$
+is a variance matrix, but the next claim is not easy for me to prove.
+
+\begin{itemize}
+\item $\frac{1}{N}X^{T}X$ is the covariance matrix even if $X$ is not
+mean-centered.
+\item There is a proof in Greene's \emph{Econometric Analysis}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\subsection*{Cholesky decomposition}
+\begin{frame}[allowframebreaks]{Cholesky decomposition : ``matrix square root''}
+
+\begin{itemize}
+\item Given a square matrix, such as 
+\[
+\Sigma=\left[\begin{array}{cccc}
+\sigma_{11} & \sigma_{12} & \ldots & \sigma_{1N}\\
+\sigma_{21} & \sigma_{22}\\
+\vdots &  & \ddots\\
+\sigma_{N1} &  &  & \sigma_{NN}
+\end{array}\right]
+\]
+\item Find an upper-triangular matrix of the same size 
+\end{itemize}
+\[
+\left[\begin{array}{cccc}
+c_{11} & c_{12} & \ldots & c_{1N}\\
+0 & c_{22} &  & c_{2N}\\
+\vdots & 0 & \ddots\\
+0 & 0 & 0 & c_{NN}
+\end{array}\right]
+\]
+
+so that if you multiply that by its transpose, then you recover $\Sigma.$
+\[
+\Sigma=\left[\begin{array}{cccc}
+c_{11} & 0 & \ldots & 0\\
+c_{12} & c_{22} &  & 0\\
+\vdots &  & \ddots\\
+c_{1N} & c_{2N} & \ldots & c_{NN}
+\end{array}\right]\left[\begin{array}{cccc}
+c_{11} & c_{12} & \ldots & c_{1N}\\
+0 & c_{22} &  & c_{2N}\\
+\vdots & 0 & \ddots\\
+0 & 0 & 0 & c_{NN}
+\end{array}\right]
+\]
+
+\[
+\Sigma=R^{T}R
+\]
+
+\begin{itemize}
+\item See why they call this a matrix square root, yes? 
+\item The Cholesky decomposition does not always exist, but it does for
+most of the matrices that we are interested in (positive definite).
+In particular, it exists for variance matrices (and anything created
+as a cross product, such as $X^{T}X$.
+\item There is a computational benefit here on a number of levels, but right
+now I'm interested in the symbolic benefit. 
+\item We often arrive at a point where we have a calculation like this
+\begin{equation}
+y^{T}\Sigma y\label{eq:quad}
+\end{equation}
+\item Replace $\Sigma$ by its Cholesky decomposition
+\[
+y^{T}R^{T}Ry
+\]
+\item Put some parentheses in to make clear what's coming next
+\[
+(y^{T}R^{T})(Ry)
+\]
+\item Because of the rule ``the transpose of a product is the product of
+transposes in reverse order'', 
+\[
+y^{T}R^{T}=(Ry)^{T}
+\]
+\item Hence we can simplify the calculation of (\ref{eq:quad}) if we create
+an updated, ``re-weighted'' version of y
+\[
+\tilde{y}=Ry
+\]
+\item Then (\ref{eq:quad}) is simply
+\[
+\tilde{y}^{T}\tilde{y}
+\]
+\item All the algorithms and statistical results for sums of squares, for
+example, now are applicable to this re-weighted version of $y$.
+\item This is how we gracefully manage Weighted Least Squares, Generalized
+Least Squares, Penalized Least Squares, etc.
+\end{itemize}
+\end{frame}
+
+
+\end{document}

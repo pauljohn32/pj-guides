@@ -1,0 +1,1615 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: rRandomVariables.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+% =============================================================================
+%
+
+
+
+\title[Randoms] % (short title, use only with long paper titles)
+{Drawing \& Summarizing Random Numbers}
+
+\subtitle{My Favorite Letters are r,p,q and d}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2016] % (optional, should be abbreviation of conference name)
+{2016}
+
+\subject{Random}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<p50,echo=F>>=
+##don't unlink, unless you want to run Tweedy again
+##unlink("plots", recursive= TRUE)
+dir.create("plots", showWarnings = FALSE)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=180, prompt="  ", continue="  ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F, family = "Times", pointsize = 10)
+@
+
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\section{SuRvey}
+
+\begin{frame}
+  \frametitle{What R Can Do}
+  \begin{itemize}
+  \item draw random samples from a distribution
+  \item draw a graph representing the probability density function
+  \item draw a graph representing the cumulative distribution function
+  \item easily explore sampling distributions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Potpourri of Probability Possibilities Protudes Prodigiously}
+  \begin{itemize}
+  \item Distributions in the base of R.
+
+    normal, beta, gamma, binomial, negative binomial, exponential,
+    chi-square, t, F, logistic,  poisson, cauchy, geometric, weibull
+
+  \item Many other distributions easily available in packages
+
+    tweedie, multivariate normal, multivariate t
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{For starters, a confession}
+  People often pop up with a model based on some random
+  process that I've never heard of before
+
+  \begin{itemize}
+  \item Sure, I could go read a book. But I'd rather get a quick picture
+  \item For example, I don't know what the ``Cauchy'' distribution is.
+  \item Without even reading a manual, I'll explore.
+
+<<cauchy10, include=T, echo=T>>=
+set.seed(234234)
+rcauchy(6)
+@
+
+  \item Hm. Well, they are real numbers, that's all I can see.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{I'll draw a larger sample and make a histogram}
+
+<<cauchy20, fig=T, include=F, height=4, width=6>>=
+x <- rcauchy(500)
+hist(x, prob= TRUE, main="500 Cauchies")
+@
+
+\input{plots/t-cauchy20}
+\includegraphics[width=8cm]{plots/t-cauchy20.pdf}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Maybe I need more observations?}
+
+<<cauchy30, fig=T, include=F, height=4, width=6>>=
+x <- rcauchy(5000)
+hist(x, prob= TRUE, main="5000 Cauchies")
+@
+
+\input{plots/t-cauchy30}
+\includegraphics[width=8cm]{plots/t-cauchy30.pdf}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{What if I force more break points into the histogram?}
+
+<<cauchy40, fig=T, include=F, height=4, width=6>>=
+hist(x, prob= TRUE, breaks = 50, main="5000 Cauchies")
+@
+
+\input{plots/t-cauchy40}
+\includegraphics[width=8cm]{plots/t-cauchy40.pdf}
+No good
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Hm. Focus on a smaller domain?}
+
+<<cauchy50, fig=T, include=F, width=6, height=4>>=
+hist(x[ x > -50 & x < 50], xlab="x, excluding observations outside (-50,50)", prob= TRUE, breaks = 50, main="5000 Cauchies")
+@
+
+\input{plots/t-cauchy50}
+ \includegraphics[width=8cm]{plots/t-cauchy50.pdf}
+
+ The excluded observations were:
+<<>>=
+excludedX <- x[ x < -50 | x > 50]
+sort(excludedX)
+@
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Get Descriptive stats}
+
+  Confirms fact that this distribution emits some extreme observations
+<<cauchy60, fig=F, include = F, width=6, height=4>>=
+library(rockchalk)
+mydf <- data.frame(x = x)
+summarizeNumerics(mydf)
+@
+
+\input{plots/t-cauchy60}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Duh! Why didn't I think of a boxplot before?}
+<<cauchy80, fig=T, include=F>>=
+boxplot(x, main="Cauchy")
+@
+\input{plots/t-cauchy80}
+\includegraphics[width=10cm]{plots/t-cauchy80.pdf}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle {What are we trying to find out with this?}
+Are the random values
+\begin{itemize}
+  \item real numbers or integers?
+  \item bounded below or above?
+  \item symmetric?
+  \item pleasant? Are there extreme outcomes?
+  \item[Caution]: Students often tempted call the extreme outcomes
+    ``outliers'', meaning they are somehow mistaken or drawn from a
+    different probability process. But these are not outliers--they
+    are from the SAME random process.
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{R distributions have functions ``r'',''d'',''p'',and ``q''}
+  \begin{itemize}
+  \item d stands for ``density'', as in probability density.
+
+  \item p stands for ``probability'', as in cumulative distribution
+
+  \item q stands for ``quantile'', returns values of x corresponding
+    to requested quantiles.
+
+  \item r stands for ``random sample''
+
+  \end{itemize}
+\end{frame}
+
+
+\section{d}
+
+\begin{frame}
+  \frametitle{Draw a PDF using the ``d'' functions}
+  \begin{enumerate}
+  \item Check the help page, ?dnorm, ?runif, ?dpois, ?dgamma, ?dbeta, ?dt, etc.
+
+  \item Decide on values of parameters for the desired distribution
+
+    \begin{description}
+    \item normal: mean, sd
+    \item uniform: min, max
+    \item poisson: lambda
+    \item gamma: shape, scale
+    \item beta: shape1, shape2
+    \item t: df, ncp
+    \end{description}
+
+  \item Choose the range of possible values in which we are interested
+    and draw the plot!
+  \end{enumerate}
+\end{frame}
+
+
+\subsection{normal}
+\begin{frame}[containsverbatim]
+  \frametitle{Calculate the Normal Density at a Particular Point}
+  \begin{itemize}
+  \item use dnorm
+
+    \begin{Sinput}
+      dnorm( 0.323, m = 43, sd = 7 )
+    \end{Sinput}
+
+  \item  the density (chance of drawing) the value 0.323 from a normal with
+    \begin{itemize}
+    \item the ``mu'' parameter: the expected value 43
+    \item the sigma parameter: the ``true'' standard deviation 7.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Plot the PDF with the curve() function}
+
+<<d01b, fig=T, echo=T, include=F>>=
+xmean <- 43; xsd <- 7
+xrange <- c(xmean-4*xsd, xmean+4*xsd)
+curve(dnorm(x, m = xmean, sd= xsd), from = xrange[1], to = xrange[2])
+title("The Normal density, mu = 43, sigma = 7")
+@
+\input{plots/t-d01b}
+\includegraphics[width=8cm]{plots/t-d01b.pdf}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Here's how I usually \emph{really} do this}
+The curve() function's output not so easy to customize (for me, at least).
+
+  \begin{itemize}
+
+  \item Step 1. Choose the range of x for which probabilities are required.
+
+\begin{Schunk}
+\begin{Sinput}
+  xrange <- c(xmean - 4*xsd, xmean + 4*xsd)
+\end{Sinput}
+\end{Schunk}
+
+\item Step 2. Create the Plotting Sequence across the range.
+
+<<d02,echo=T, include=T, eval= T>>=
+xseq <- seq(from = xrange[1], to = xrange[2], length.out = 100)
+@
+
+\item Step 3. Calculate the density for each point in xseq
+
+<<d06,echo=T,fig=F,include=T>>=
+dxseq <- dnorm(xseq, m=xmean, sd=xsd)
+@
+
+\item Step 4. Draw the plot
+
+<<d10, echo=T, fig=T, include=F>>=
+plot(dxseq ~ xseq, type = "l", ylim = c(0,1.2* max(dxseq)), xlab = "x", ylab = paste("dnorm(x, m=",xmean,", sd=", xsd,")"), main = paste("Normal PDF with Expected value = ",xmean," and sigma =", xsd))
+@
+
+\input{plots/t-d10}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Probability Density Function}
+  \includegraphics[width=10cm]{plots/t-d10}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Break the plot command into 3 smaller steps}
+
+<<d10b,echo=T,fig=T,include=F>>=
+plot(dxseq ~ xseq, type="n", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dnorm(x, m=", xmean,", sd=", xsd,")"))
+lines(xseq, dxseq)
+title(paste("Normal PDF with Expected value = ", xmean," and sigma =", xsd))
+@
+
+\input{plots/t-d10b}
+\begin{itemize}
+\item type=''n'' draws axes, but an empty plot inside
+\item lines function is very customizable
+\end{itemize}
+Advantage of this approach is easier customization of all features
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{See? Resulting Plot Same}
+  \includegraphics[width=10cm]{plots/t-d10b}
+
+  Why take small steps?  Sometimes, the ``one giant command'' approach
+  frustrates customization of labels and line types.
+
+\end{frame}
+
+\subsection{gamma}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Calculate the Gamma Density at a Particular Point}
+  \begin{itemize}
+  \item use dgamma.
+
+  \item dgamma usage example
+
+    \begin{Soutput}
+      dgamma(3.232, shape=2.1, scale = 1.7)
+    \end{Soutput}
+
+    asks a gamma for the density of 3.232 when the shape and scale
+    parameters are 2.1 and 1.7.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Calculate the Gamma Density for a Range of Points}
+  \begin{itemize}
+
+  \item Gamma requires 2 parameters, called ``shape'' and ``scale''
+
+<<d20,echo=T,fig=F,include=T>>=
+shape <- 1.1; scale <- 2.2
+xrange <- c(0.0001, 5*shape*scale)
+xseq <- seq( xrange[1], xrange[2], length.out = 200)
+@
+
+\item Create the sequence of density estimates
+
+<<d21,echo=T,fig=F,include=T>>=
+dxseq <- dgamma(xseq, shape=shape, scale=scale)
+@
+
+\item Draw the plot
+
+<<d22,echo=T,fig=T,include=F>>=
+plot(dxseq ~ xseq, type="l", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dgamma(x, shape=",shape,", scale=",scale,")"), main=paste("PDF of Gamma(",shape,",",scale,")"))
+@
+
+\input{plots/t-d22}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{The Gamma Density is defined for $x > 0$}
+
+  \includegraphics[width=12cm]{plots/t-d22}
+
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{The Gamma shape = 2.2, scale = 2.5 }
+<<d23a, fig=T, include=F, echo=T>>=
+shape <- 2.2; scale <- 2.5
+xrange <- c(0.0001, 5*shape*scale)
+xseq <- seq( xrange[1], xrange[2], length.out = 200)
+dxseq <- dgamma(xseq, shape=shape, scale=scale)
+plot(dxseq ~ xseq, type="l", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dgamma(x, shape=",shape,", scale=",scale,")"), main=paste("PDF of Gamma(",shape,",",scale,")"))
+@
+\includegraphics[width=12cm]{plots/t-d23a}
+
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{The Gamma shape = 12.5 scale = 0.5}
+<<d23b, fig=T, include=F, echo=T>>=
+shape <- 12.5; scale <- 0.5
+xrange <- c(0.0001, 5*shape*scale)
+xseq <- seq( xrange[1], xrange[2], length.out = 200)
+dxseq <- dgamma(xseq, shape=shape, scale=scale)
+plot(dxseq ~ xseq, type="l", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dgamma(x, shape=",shape,", scale=",scale,")"), main=paste("PDF of Gamma(",shape,",",scale,")"))
+@
+\includegraphics[width=12cm]{plots/t-d23b}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{The Gamma shape = 0.5 scale = 1.5}
+<<d23c, fig=T, include=F, echo=T>>=
+shape <- 0.5; scale <- 1.5
+xrange <- c(0.0001, 5*shape*scale)
+xseq <- seq( xrange[1], xrange[2], length.out = 200)
+dxseq <- dgamma(xseq, shape=shape, scale=scale)
+plot(dxseq ~ xseq, type="l", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dgamma(x, shape=",shape,", scale=",scale,")"), main=paste("PDF of Gamma(",shape,",",scale,")"))
+@
+\includegraphics[width=12cm]{plots/t-d23c}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+  \frametitle{Summary: What is ``d'' good for?}
+  \begin{itemize}
+  \item ``d'' functions are handy for making illustrations of
+    probability models.
+  \item When we wonder ``how likely is each outcome,'' the PDF is the
+    most natural answer
+  \end{itemize}
+\end{frame}
+
+\section{p}
+
+\begin{frame}
+  \frametitle{Calculate the CDF with the ``p'' functions}
+  \begin{itemize}
+  \item ``p'' functions are cumulative probability distribution
+    functions (CDF).
+  \item Remember, the CDF is the Area up to a Point Under the PDF
+  \item CDF F(x) is ``chance of outcome smaller than x''
+  \item Ever wonder, ``What is the chance that a score from $N(-7.1, 11^2)$
+   will be smaller  than -14.434 ?'' No problem!
+<<d30, echo=T>>=
+pnorm(-14.434, -7.1, 11)
+@
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+<<d40, echo=T,fig=T,include=F, height=4, width=6>>=
+m=-7.1; sd=11;
+xrange <- c(m-4*sd, m+4*sd)
+xseq <- seq( xrange[1], xrange[2], length.out=100)
+xnaught <- 3
+dxseq <- dnorm(xseq, m=m, sd=sd)
+plot(dxseq ~ xseq, type="l", ylim=c(0,1.2* max(dxseq)), xlab="x",ylab=paste("dnorm(x, m=",m,", sd=",sd,")"), main=paste("Shaded Area = Probability of x Smaller than",xnaught,")"))
+segments(xnaught,0,xnaught, dnorm(xnaught, m=m, sd=sd), lty=2)
+polygon(c(xseq[xseq < xnaught], xnaught, xnaught, min(xseq)), c(dxseq[xseq < xnaught], dnorm(xnaught, m=m, sd=sd), 0, 0), col=gray(0.95))
+area <- round(pnorm(xnaught, m=m, sd=sd),2)
+text(-15, 0.001, paste("Area= ",area,"= \n pnorm(",xnaught,", m=",m,", sd=",sd,")",sep=""),pos=3)
+@
+\includegraphics[width=12cm]{plots/t-d40}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{An Illustration of the CDF}
+
+<<d50,echo=T,fig=T,include=F>>=
+   m= -7.1; sd=11
+   xrange <- c(m-4*sd, m+4*sd)
+   xseq <- seq(xrange[1], xrange[2], length.out = 100)
+   pxseq <- pnorm(xseq, m = m, sd = sd)
+   plot(pxseq ~ xseq, type="l", ylim = c(-0.1,1.1), xlab = "x", ylab = paste("pnorm(x, m=",m,",","sd=",sd,")"), main = bquote("CDF of Normal"(.(m) * "," * .(sd)^2)))
+@
+\input{plots/t-d50}
+\end{frame}
+
+\begin{frame}
+  \frametitle{About that Illustration}
+\includegraphics[width=12cm]{plots/t-d50}
+
+\end{frame}
+
+
+\section{r}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw random samples with the ``r'' function}
+
+  \begin{itemize}
+  \item There's no such thing as a truly ``random number'' from a computer
+  \item Computers can create pseudo-random number streams (values are
+    unpredictable to an outside observer)
+  \item We use the set.seed() function in R to put the random stream
+    at the same starting point (replication)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check on set.seed()}
+<<seed10, include=F, echo=T>>=
+set.seed(2343234)
+runif(3, min = 0, max = 1)
+runif(3, min = 0, max = 1)
+set.seed(2343234)
+runif(3, min = 0, max = 1)
+@
+
+\input{plots/t-seed10}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Each distribution has its own ``r'' function}
+  \begin{itemize}
+  \item Normal: rnorm(N, m = m, sd = sd) draws N observations
+    from a normal with expected value m and standard deviation sd
+  \item Poisson: rpois(N, lambda = 4) draws N observations
+    from a Poisson distribution with the lambda 4
+  \item Gamma:  rgamma(N, shape = 2.1, scale = 1.7) draws N observations
+    from a gamma distribution with indicated shape and scale
+  \item Read the help page, you'll usually find a statement about how
+    the expected value and variance (or standard deviation) relate to
+    the parameters.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Histogram for one draw from $N(-7.1, 11^{2})$ }
+
+<<simple10, fig=true, include=F, echo=T>>=
+set.seed(324234)
+m <- -7.1; sd <- 11
+onexset <- rnorm(500, m = m, sd = sd)
+m1 <- mean(onexset)
+sd1 <- sd(onexset)
+hist(onexset, breaks = 20, prob= TRUE, xlim=c(-4*sd, m+4*sd), main = "", xlab = "Observations from one sample")
+@
+\includegraphics[width=11cm]{plots/t-simple10}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Compare the Observed and Theoretical Density}
+
+<<simple40, fig=true, include=F, echo=T,height=4,width=6>>=
+xrange <- c(m-4*sd, m+4*sd)
+xseq <- seq(xrange[1], xrange[2], length.out = 100)
+dxseq <- dnorm(xseq, m = m, sd = sd)
+onedensity <- density(onexset)
+ymax <- 1.2 * max(dxseq)
+hist(onexset, breaks = 20, prob = TRUE, xlim = c(m-3*sd, m+3*sd), ylim = c(0,ymax),   main="",xlab = "x")
+lines(xseq, dxseq, lty = 1)
+
+lines(onedensity, lty=2)
+legend("topleft", legend = c(paste("Exp. Value=", m), paste("Obs. Mean=", round(m1,2))))
+legend("topright", legend = c(paste("Pop. Var.=", round(sd*sd,2)), paste("Obs. Var.=",round(sd1*sd1,2))))
+legend("left", legend = c("Theoretical","Observed"), lty = c(1,2))
+@
+\includegraphics[width=11cm]{plots/t-simple40}
+\end{frame}
+
+
+\section{Using R to Learn about Probability Distributions}
+
+\begin{frame}
+  \frametitle{Using R to explore probabilty models}
+  \begin{itemize}
+  \item We often find unfamiliar distributions in research
+  \item I often use R to find out about them.
+  \item. Here's my plan.
+    \begin{enumerate}
+    \item Draw some random samples and make histograms
+    \item Draw some pdfs
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\subsection{Example 1: Binomial}
+\begin{frame}
+  \frametitle{Let's expore the binomial distribution}
+  \begin{itemize}
+  \item Binomial.  How many ``successes'' do we expect out of ``N''
+    experiments, when the chance of a success on each one is $\pi$
+  \item The chance of success is assumed to be the same across all experiments.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Run ``?rbinom''}
+
+Description:
+
+     Density, distribution function, quantile function and random
+     generation for the binomial distribution with parameters 'size'
+     and 'prob'.
+
+Usage:
+
+     dbinom(x, size, prob, log = FALSE)\\
+     pbinom(q, size, prob, lower.tail = TRUE, log.p = FALSE)\\
+     qbinom(p, size, prob, lower.tail = TRUE, log.p = FALSE)\\
+     rbinom(n, size, prob)
+
+     \begin{itemize}
+     \item n the number of observations I want to draw
+     \item size is the number of experiments, the thing I called N
+     \item prob is the parameter $\pi$
+     \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Draw 481 From Binomial(197, 0.2)}
+
+  \begin{itemize}
+    \item I wondered, ``what if I ran 197 experiments, counting Yes
+      and No in the results, and the chance of a Yes is 0.2?''
+    \item If I conduct just one ``run'' (batch of 197 experiments), in
+      R I want
+<<binom10>>=
+set.seed(2324)
+oneBinomial <- rbinom(1, size = 197, prob = 0.2)
+oneBinomial
+@
+   \item Again!
+<<binom11>>=
+oneBinomial <- rbinom(1, size = 197, prob = 0.2)
+oneBinomial
+@
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Repeat that}
+  \begin{itemize}
+  \item I need 481 batches like that (each has 197 draws)!
+<<binom20>>=
+lotsOfBinomial <- rbinom(481, size = 197, prob = 0.2)
+head(lotsOfBinomial)
+@
+
+\end{itemize}
+\end{frame}
+
+<<binom30, fig=T, include=F, echo=T>>=
+hist(lotsOfBinomial, prob = TRUE, breaks=40, xlab="Number of Successes Out of 197 Experiments", main="481 Draws from Binom(197, 0.2)")
+@
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw The Histogram}
+  \input{plots/t-binom30}
+
+\includegraphics[width=8cm]{plots/t-binom30}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Draw another Sample, Another Histogram}
+<<binom31, fig=T, include=F>>=
+lotsOfBinomial2 <- rbinom(481, size=197, prob=0.2)
+hist(lotsOfBinomial2, prob = TRUE, breaks = 40, xlab = "Number of Successes Out of 197 Experiments", main = "481 Draws from Binom(197, 0.2)")
+@
+\includegraphics[width=8cm]{plots/t-binom31}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Can calculate summary stats}
+<<binom35>>=
+mean(lotsOfBinomial)
+sd(lotsOfBinomial)
+mean(lotsOfBinomial2)
+sd(lotsOfBinomial2)
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check out the PMF}
+  \begin{itemize}
+    \item From histograms, I discern the range is betwen 10 and 70
+    \item I create a plotting sequence, then calculate the ``true'' chance of
+      each point.
+
+<<binom49, include=T>>=
+xseq <- 10:70
+xprob <- dbinom(xseq, size = 197, prob = 0.2)
+@
+    \item a plot of type ``h'' provides ``spikes'' above each value of xseq
+    \item use the points command to add little circles on the top.
+    \end{itemize}
+  \end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{The PMF of Binomial(197, 0.2)}
+<<binom50, fig=T, include=F>>=
+plot(xprob ~ xseq, type="h", xlab="Number of Successes", ylab="Probability Mass",  main="Binomial(197, 0.2)")
+points(xseq, xprob)
+@
+\input{plots/t-binom50}
+\includegraphics[width=8cm]{plots/t-binom50}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wonder what would happen if ``size'' were 1?}
+<<binom60, fig=T, include=F>>=
+x <- rbinom(481, size=1, prob=0.2)
+hist(x, prob = TRUE, xlab="Number of Successes Out of 1 Experiments", main="481 Draws from Binom(1, 0.2)")
+@
+\input{plots/t-binom60}
+\includegraphics[width=8cm]{plots/t-binom60}
+\begin{itemize}
+\item This is sometimes called a ``Bernoulli'' process
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wonder what would happen if ``size'' were 2000}
+<<binom61, fig= TRUE, include=F>>=
+x <- rbinom(481, size=2000, prob=0.2)
+hist(x, prob = TRUE, breaks = 50,  xlab = "Number of Successes Out of 2000 Experiments", main="481 Draws from Binom(2000, 0.2)")
+@
+\input{plots/t-binom61}
+\includegraphics[width=8cm]{plots/t-binom61}
+  \begin{itemize}
+  \item as ``size'' growing larger. What does this remind me of?
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wonder what would happen if ``size'' were 2000}
+<<binom62, fig=T, include=F>>=
+hist(x, prob = TRUE, breaks = 50,  xlab="Number of Successes Out of 2000 Experiments", main="481 Draws from Binom(2000, 0.2)")
+lines(density(x), lty = 2)
+xseq <- seq( min(x), max(x), by = 1)
+xprob <- dnorm(xseq, m = 2000*0.2, sd = sqrt(2000*(0.2)*(0.8)))
+lines(xseq, xprob, lwd = 6)
+xbinprob <- dbinom(xseq, size = 2000, prob = 0.2)
+lines(xseq, xbinprob, col = 2, lwd = 2, lty = 1)
+legend("topright", legend = c("observed KDE","Binom Exact", "Normal Approx"), lty = c(2,1,1), lwd = c(1,2,3), col = c(1,2,1))
+@
+\input{plots/t-binom62}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wonder what would happen if ``size'' were 2000}
+\includegraphics[width=8cm]{plots/t-binom62}
+  \begin{itemize}
+  \item as ``size'' growing larger. What does this remind me of?
+  \end{itemize}
+\end{frame}
+
+
+
+\subsection{Example 2: Tweedie}
+
+\begin{frame}
+  \frametitle{Let's expore the Tweedie distribution}
+  \begin{itemize}
+  \item I had heard of the Tweedie, but never studied it before.
+  \item Install the package ``tweedie''.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Run ``?tweedie''}
+
+Usage:
+
+        dtweedie(y, xi=power, mu, phi, power=NULL)\\
+        ptweedie(q, xi=power, mu, phi, power=NULL)\\
+        rtweedie(n, xi=power, mu, phi, power=NULL)
+   \begin{itemize}
+     \item 3 parameters, xi, mu, and phi.
+     \item mu, the Greek $\mu$, is the Expected Value
+     \item phi, the Greek $\phi$, is ``dispersion''. Note, that is NOT variance.
+     \item xi, the Greek $\xi$, is also called \textbf{power}.
+   \end{itemize}
+ \end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Better run some examples to see what's up.}
+<<include=F>>=
+library(tweedie)
+@
+\begin{itemize}
+ \item The help says $\xi$ is a magic coefficient
+   \begin{displaymath}
+     Var(x) = \phi * \mu^\xi
+   \end{displaymath}
+ \item See why they call xi ``power''? The power turns up the variance.
+ \item Calculations very slow for many values of xi.
+ \item ``tweedie'' package only allows if $\xi >= 1$.
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi = 1, mu = 10, phi = 1 )}
+
+<<tweedie10, include=F>>=
+x <- rtweedie(1000, xi= 1, mu = 10, phi = 1)
+@
+
+%%TWEEDIE Branch here
+<<tweedie10b, fig=T, include=F>>=
+hist(x, prob = TRUE, xlab = "1000 draws from Tweedie(1,10,1)", ylab = "Density", main="Tweedie(1,10,1)")
+legnd <- c( paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend = legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie10b}
+
+\begin{itemize}
+  \item. Makes sense. With xi = 1, the variance is supposed to be
+    $\phi \times \mu$
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi = 1, mu = 50, phi = 1 )}
+
+<<tweedie20, include=F>>=
+x <- rtweedie(1000, xi = 1, mu = 50, phi = 1)
+@
+<<tweedie20b, fig=T, include=F>>=
+hist(x, prob = TRUE, xlab = "1000 draws from Tweedie(1,50,1)", ylab = "Density", main="Tweedie(1,50,1)")
+legnd <- c( paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend = legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie20b}
+
+\begin{itemize}
+  \item. I guess the variance is what I expect. Variance = mean (phi=xi=1)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi=1, mu=1, phi=1 )}
+
+<<tweedie30, include=F>>=
+x <- rtweedie(1000, xi = 1, mu = 1, phi = 1)
+@
+<<tweedie30b, fig=T, include=F>>=
+hist(x, prob = TRUE, xlab = "1000 draws from Tweedie(1,1,1)", ylab = "Density", main = "Tweedie(1,1,1)")
+legnd <- c( paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend=legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie30b}
+
+\begin{itemize}
+\item Weird. It appears to be discrete!
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wow. It is discrete. When xi = 1, at least }
+
+<<>>=
+table(x)
+@
+
+<<>>=
+x <- rtweedie(1000, xi = 1, mu = 20, phi = 1)
+table(x)
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Remembering ?dtweedie}
+
+  \begin{itemize}
+  \item Now I recall from \texttt{?dtweedie} that when \texttt{xi = 1}, the Tweedie distribution is a Poisson distribution.
+  \item I also recall that if xi=2, then Tweedie is Gamma distribution.
+  \item But Gamma is a continuous distribution.
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi = 2, mu = 50, phi = 1)}
+
+<<tweedie60, include=F>>=
+x <- rtweedie(1000, xi= 2, mu = 50, phi = 1)
+@
+<<tweedie60b, fig=T, include=F>>=
+hist(x, prob = TRUE,  xlab = "1000 draws from Tweedie(2,50,1)", ylab = "Density", main = "Tweedie(2,50,1)")
+legnd <- c(paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend=legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie60b}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{With xi=2, Tweedie is like a Gamma}
+  \begin{itemize}
+  \item Recall theoretical $Var(x) = phi * mu^{xi} = phi * mu^2$
+  \item Reminds of $Gamma(\alpha, \beta)$ because the Gamma's
+    \begin{itemize}
+    \item $E[x] = \alpha \times \beta$
+    \item $Var[x] = \alpha \beta^2$
+    \end{itemize}
+  \item To make Tweedie variance match, let $\alpha=phi=1$
+  \item And this draw is continuous
+<<>>=
+head(x)
+@
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Still trying to figure out advantages.}
+\begin{itemize}
+  \item Calculations with Tweedie model very difficult, help page has
+    plenty of detail and caution about methods.
+  \item Why would I want that?
+    \begin{enumerate}
+    \item I make an abstract model that is Gamma sometimes, or
+      Poisson sometimes, or Normal sometimes?
+    \item If I could estimate xi from data, I could let the data ``tell
+    me'' which distribution to use.
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi=3, mu=50, phi=1 )}
+
+<<tweedie70, include=F>>=
+x <- rtweedie(1000, xi= 3, mu = 50, phi = 1)
+##x <- rtweedie(10, xi= 3, mu = 50, phi = 1)
+@
+<<tweedie70b, fig=T, include=F>>=
+hist(x, prob= TRUE, xlab="1000 draws from Tweedie(3,50,1)", ylab="Density", main="Tweedie(3,50,1)")
+legnd <- c( paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend=legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie70b}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1000 Draws From a Tweedie(xi=3, mu=1, phi=1 )}
+
+<<tweedie80, include=F>>=
+x <- rtweedie(1000, xi= 2, mu = 1, phi = 1)
+@
+<<tweedie80b, fig=T, include=F>>=
+hist(x, prob = TRUE, xlab = "1000 draws from Tweedie(3,1,1)", ylab = "Density", main = "Tweedie(3,1,1)")
+legnd <- c( paste("mean = ", round(mean(x),2)), paste("var =", round(var(x),2)), paste("sd = ", round(sd(x),2)))
+legend("topright", legend = legnd)
+@
+\includegraphics[width=10cm]{plots/t-tweedie80b}
+\end{frame}
+
+
+\section{Simulated Sampling Distributions}
+
+\begin{frame}
+  \frametitle{The Basic Idea behind Monte Carlo Analysis}
+  \begin{itemize}
+    \item Draw a lot of samples
+      \begin{itemize}
+      \item Collect M samples of size N
+      \item Calculate an estimate (e.g., mean) for each sample
+      \end{itemize}
+  \item What distribution will be observed among all of those estimates?
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Refresher on Sampling Distributions}
+
+   $\bar{x}$ is one sample mean
+  \begin{itemize}
+  \item If $E[x] = \mu$, then $E[\bar{x}]=\mu$
+  \item If $Var[x] = \sigma^{2}$, then $Var[\bar{x}]=\frac{Var[x]}{N}$
+  \item Which implies $SD[\bar{x}]=\frac{SD[x]}{\sqrt(N)}$
+  \item As sample size $\rightarrow \infty$, the distribution of means
+    tends toward a Normal distribution (The CLT)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Distribution of the Mean is ``Spike-ish''}
+
+Please observe the effect of sample size on the
+variance of $\bar{x}$ drawn from a Normal distribution.
+
+\end{frame}
+
+
+<<p10,echo=F>>=
+xseq <- seq(-10, 10, length.out = 500)
+pm0sd3 <- dnorm(xseq, mean = 0, sd = 3)
+pmean <- dnorm(xseq, mean = 0, sd = 3/sqrt(100))
+pmean2 <- dnorm(xseq, mean = 0, sd = 3/sqrt(2000))
+@
+
+\begin{frame}[containsverbatim]
+
+\frametitle{Distribution of $x \sim Normal(0, 3^{2})$}
+
+<<normal1, fig=true, echo=true,include=false>>=
+plot(pm0sd3 ~ xseq, type = "l", ylab = "density of x", xlab = "x")
+@
+\includegraphics[width=10cm]{plots/t-normal1}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+ \frametitle{Distribution of Means, Sample=100 ($Normal(0,3^{2}/100)$)}
+
+<<normal2, fig=true, echo=true, include=false>>=
+plot(pmean ~ xseq, type = "l", ylab = "density of mean of x", xlab = "mean of x")
+@
+\includegraphics[width=10cm]{plots/t-normal2}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{I Have Made a Lot of Examples Like This Over the Years}
+  \begin{itemize}
+  \item Display the distribution of the variable
+  \item Draw samples
+  \item Explore sampling distribution
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Example 1: The Poisson Distribution}
+
+ Set the lambda parameter ($\lambda$ = mean=variance) at 3.
+<<p30,fig=T, include=F, echo=T>>=
+xseq <- seq(0,10)
+xdpois <- dpois(xseq,lambda=3)
+plot(xdpois ~ xseq, type = "h", xlab = "a Poisson variate with lambda=3", ylab = "Probability", ylim = c(0, 1.2*max(xdpois)) )
+points(xseq, xdpois)
+@
+\def\Sweavesize{\scriptsize}
+\input{plots/t-p30}
+\includegraphics[width=10cm]{plots/t-p30}
+\end{frame}
+
+
+
+<<pois20, fig=T, include=F, echo=T>>=
+ hist(0.5+rpois(100, lambda = 3), xlim = c(0.5, 10.5), prob = TRUE, xlab = "x", main = "Poisson Sample N=100")
+ points(xseq+0.5, xdpois, lty=4)
+@
+\begin{frame}
+ \frametitle{One Example Sample, Poisson(3), SampleSize=100 }
+\def\Sweavesize{\scriptsize}
+ \input{plots/t-pois20}
+ \includegraphics[width=10cm]{plots/t-pois20}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Poissons, Sample Size=100}
+<<pois82, fig=true, echo=T, include=F>>=
+m100 <- replicate(1000, mean(rpois(100, lambda=3)))
+hist(m100, xlim = c(0.5,10.5), prob = TRUE, xlab = "x", main = "Means with N=100")
+@
+\def\Sweavesize{\scriptsize}
+ \input{plots/t-pois82}
+ \includegraphics[width=10cm]{plots/t-pois82}
+
+\end{frame}
+
+
+<<pois30, fig=true, include=F, echo=T>>=
+hist(0.5+rpois(2000, lambda=3), xlim = c(0.5,10.5), prob = TRUE, xlab = "x", main = "Poisson Sample N=2000")
+ points(xseq+0.5, xdpois, lty=4)
+@
+\begin{frame}
+ \frametitle{Poisson(3), SampleSize=2000 }
+\def\Sweavesize{\scriptsize}
+ \input{plots/t-pois30}
+ \includegraphics[width=10cm]{plots/t-pois30}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Poisson samples, Sample Size=2000}
+
+<<pois83, fig=true, echo=T, include=F >>=
+ m2000 <- replicate(1000, mean(rpois(2000, lambda = 3)))
+ hist(m2000, xlim = c(0.5, 10.5), prob = TRUE, xlab = "x", main = "Means with N=2000")
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-pois83}
+\includegraphics[width=10cm]{plots/t-pois83}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Zoom in on same Figure (N=2000)}
+
+<<pois85, fig=true, echo=T, include=F >>=
+hist(m2000, prob = TRUE, xlab = "x", main = "Means with N=2000")
+lines(density(m2000), lty = 2)
+mp <- mean(m2000)
+sdp <- sd(m2000)
+xp <- seq(range(m2000)[1], range(m2000)[2], length = 200)
+npd <- dnorm(xp, m = mp, s = sdp)
+lines(xp, npd, lty = 1)
+legend("topright",legend=c("Observed","Theoretical"), lty=c(2,1))
+@
+\includegraphics[width=10cm]{plots/t-pois85}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+ \frametitle{Example 2: The Uniform Distribution}
+
+<<U10,fig=T, include=F, echo=T>>=
+xseq <- seq(0,1, by=0.01)
+xdunif <- dunif(xseq)
+plot(xdunif ~ xseq, type="l", xlab="A Uniform Variate",ylab="Probability")
+lines(c(0,0),c(0,1),lty=4)
+lines(c(1,1),c(0,1),lty=4)
+@
+\includegraphics[width=10cm]{plots/t-U10}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=30}
+
+<<u21, fig=true, echo=T, include=F>>=
+un1 <- replicate(1000, mean(runif(30)))
+hist(un1, xlim=c(0,1), prob= TRUE, xlab="x", main="Means with N=30")
+@
+ \includegraphics[width=10cm]{plots/t-u21}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=500}
+
+<<u22, fig=true, echo=T, include=F>>=
+un1 <- replicate(1000, mean(runif(500)))
+hist(un1,xlim=c(0,1), prob= TRUE, xlab="x", main="Means with N=500")
+@
+ \includegraphics[width=10cm]{plots/t-u22}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Means from 1000 Uniform samples, Sample Size=2000}
+
+<<u23, fig=true, echo=T, include=F>>=
+un1 <- replicate(100, mean(runif(2000)))
+hist(un1,xlim=c(0.45,0.55), breaks=20, prob= TRUE, xlab="x", main="Means with N=2000")
+lines(density(un1),lty=2)
+mp <- mean(un1)
+sdp <- sd(un1)
+xseqp <- seq(range(un1)[1], range(un1)[2], length=200)
+npd <- dnorm(xseqp, m=mp, s=sdp)
+lines(xseqp, npd, lty=1)
+legend("topright",legend=c("Observed","Theoretical"), lty=c(2,1))
+@
+ \includegraphics[width=10cm]{plots/t-u23}
+\end{frame}
+
+
+
+\begin{frame}
+ \frametitle{Example 3: Beta(0.9,0.9)}
+
+<<b10,fig=T, include=F, echo=T>>=
+xseq <- seq(0.001,0.999, by=0.001)
+xd <- dbeta(xseq, 0.9, 0.9)
+plot(xd ~ xseq, type="l", xlab="A Beta Variate",ylab="Probability")
+lines(c(0,0),c(0,xd[1]),lty=4)
+lines(c(1,1),c(0,xd[1]),lty=4)
+@
+\includegraphics[width=10cm]{plots/t-b10}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Means from 1000 Beta Samples, Sample Size=2000}
+
+<<b23, fig=true, echo=F, include=F>>=
+un1 <- replicate(100, mean(rbeta(2000, 0.9, 0.9)))
+hist(un1,xlim=c(0.45,0.55), breaks=10, prob= TRUE, xlab="x", main="")
+lines(density(un1),lty=2)
+mp <- mean(un1)
+sdp <- sd(un1)
+xseqp <- seq(range(un1)[1], range(un1)[2], length=200)
+npd <- dnorm(xseqp, m=mp, s=sdp)
+lines(xseqp, npd, lty=1)
+legend("topright",legend=c("Observed","Theoretical"), lty=c(2,1))
+@
+\includegraphics[width=10cm]{plots/t-b23}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{More Ambitious Experiments are Possible}
+
+  \begin{itemize}
+  \item The focus on ``means'' is just for simplicity and familiarity
+  \item We can create ``true sampling distributions'' for any kind
+    of estimator
+
+  \item More detail in my lectures on functions and programming with R
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{replicate}
+  \begin{itemize}
+  \item R makes it particularly easy to conduct experiments with the
+    ``replicate'' function
+<<replic10,echo=T,include=F,fig=T>>=
+grabTofB <- function(){
+    x <- rpois(1000, lambda=17)
+    y <- 2 + .223 * x + 15 * rnorm(1000)
+    seB <- coef(summary(lm(y~x)))[2,3]
+}
+rep1000<- replicate(1000,grabTofB())
+m1000 <- round(mean(rep1000),2)
+sd1000 <- round(sd(rep1000),2)
+h1000 <- hist(rep1000, prob= TRUE, main="Distribution of T Statistics for Slope", xlab="T stat for slope estimate")
+legend("topright",legend=c(paste("mean=",m1000),paste("sd=",sd1000)))
+@
+\input{plots/t-replic10}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Sampling Distribution From Regression Estimates}
+
+\includegraphics[width=10cm]{plots/t-replic10}
+
+\end{frame}
+
+
+\section{Random Generator Warning}
+
+\begin{frame}
+  \frametitle{Detour: Random Generators}
+  \begin{itemize}
+    \item In my advanced class on R programming, I noticed a little
+      blip. I'd like to ask you what you think.
+
+    \item Here is my example that generates 3 sets of 3 numbers.
+<<rgw10, eval = T, include = T>>=
+set.seed(1234)
+x1 <- rnorm(3)
+x2 <- rpois(3, lambda = 7)
+x3 <- rnorm(3)
+X <- cbind(x1, x2, x3)
+X
+@
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Lets vote: Yes or No}
+  \begin{itemize}
+
+  \item Do you believe that the result for column x3 will be the same
+    if we draw 3 gamma variables in the middle stanza?
+<<rgw20, eval = F, include = T>>=
+set.seed(1234)
+x1 <- rnorm(3)
+x2 <- rgamma(3, 1, 1)
+x3 <- rnorm(3)
+Y <- cbind(x1, x2, x3)
+@
+
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Check the Result}
+  \begin{itemize}
+
+  \item Recall the original set was
+<<rgw25, echo=F, include=T>>=
+X
+@
+
+  \item And the new results are:
+<<rgw30, eval = T,  echo=T, include=T>>=
+<<rgw20>>
+@
+
+\item You can guess why this might be a very serious problem. Right?
+  Slight changes in the middle of a program have a destructive effect
+  for all following calculations.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{How To Understand: Generator versus Distribution}
+  \begin{itemize}
+
+  \item [Generator] Actually, \emph{Pseudo Random Number Generator}. It
+    creates a very long stream of (unpredictable) integers. (The R
+    default is MT19937, the Mersenne-Twister.  There are others, the
+    most famous at the current time is Pierre L'Ecuyer's MRG32k3a.)
+
+  \item R allows one ``Random Generator'' to exist at a time.
+
+  \item Any R function that needs random numbers will draw from that
+    one stream. Thus, rnorm, rpois, rgamma, etc, draw on the
+    one random generator.
+
+  \item The creation of a number that approximates a ``normal'' or
+    ``gamma'' may require several draws from the generator
+    (accept-reject sampling algorithm, for example).
+
+  \item The key point is that, unless we are very careful, apparently
+    ``innocent'' changes in a program can cause havoc.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{MVN Havoc (and how to avoid it)}
+  \begin{itemize}
+
+    \item Multivariate Normal distribution common in simulations.
+
+    \item Consider mvrnorm (from the MASS) package.
+<<rgw50>>=
+  set.seed(12345)
+  X0 <- MASS::mvrnorm(n=10, mu = c(0,0,0), Sigma = diag(3))
+  ## create a smaller data set, starting at same position
+  set.seed(12345)
+  X1 <- MASS::mvrnorm(n=5, mu = c(0,0,0), Sigma = diag(3))
+  ## Create a larger data set
+  set.seed(12345)
+  X2 <- MASS::mvrnorm(n=15, mu = c(0,0,0), Sigma = diag(3))
+@
+
+  \item My \emph{guess} was that the first 5 rows of sets X0, X1, and
+    X2 should all be the same.
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{Disappointing result. Check 5 rows}
+  \begin{itemize}
+
+    \item The top 5 rows
+<<>>=
+X0[1:5, ]
+X1[1:5, ]
+X2[1:5, ]
+@
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The Cautionary Tale}
+  \begin{itemize}
+  \item Simulations based on MASS mvrnorm must be very cautious.
+  \item Expanding the sample size from 100 to 200 causes 2 very bad
+    things to happen.
+    \begin{enumerate}
+    \item The first 100 rows are not replicated exactly
+    \item But they are repeated partially.
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Disappointing result. Check 5 rows}
+  \begin{itemize}
+
+    \item The top 5 rows
+<<>>=
+X0[1:5, ]
+X1[1:5, ]
+X2[1:5, ]
+@
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The Cautionary Tale}
+  \begin{itemize}
+  \item Simulations based on MASS mvrnorm must be very cautious.
+  \item Expanding the sample size from 100 to 200 causes 2 very bad
+    things to happen.
+    \begin{enumerate}
+    \item The first 100 rows are not replicated exactly
+    \item But they are repeated partially.
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Package mvtnorm has been fixed}
+  \begin{itemize}
+
+    \item Correcting the ``first N'' observations problem requires a
+      relative small fix, I could show you if you really want to know.
+
+    \item Because MASS is distributed with R, for the sake of
+      historical continuity, its authors decided not to change it..
+
+    \item However, the authors of mvtnorm responded favorably, as you
+      see now the evidence:
+
+
+<<rgw70>>=
+  library(mvtnorm)
+  set.seed(12345)
+  X0 <- mvtnorm::rmvnorm(n=10, mean = c(0,0,0), sigma = diag(3))
+  ## create a smaller data set, starting at same position
+  set.seed(12345)
+  X1 <- mvtnorm::rmvnorm(n=5,  mean = c(0,0,0), sigma = diag(3))
+  X0
+  X1
+@
+
+  \item In case you want the old, bad way from mvtnorm, they added an
+    argument ``pre0.9\_9994'' so you can restore the bad old days.
+
+  \end{itemize}
+\end{frame}
+
+
+
+%==========================================================
+
+\end{document}

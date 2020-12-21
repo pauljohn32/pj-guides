@@ -1,0 +1,1072 @@
+\makeatletter
+\def\input@path{{/home/pauljohn/TrueMounted/ps/SVN-guides/Rcourse/regression-glm-2//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+
+
+
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.97}}
+
+\input{plots/t-Roptions}
+
+
+\title[glm2]{After Fitting Regressions}
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2012]{2012}
+
+\makebeamertitle
+
+
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{
+
+    \frametitle{Outline}
+
+    \tableofcontents[currentsection,currentsubsection]
+
+  }
+
+}
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Filename: plotting1.Rnw
+% %   Author: Pascal Deboeck Paul Johnson
+% %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Revision History --
+% %  2010-05-13 initial release
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \documentclass[English]{beamer}
+
+% \usetheme{Antibes}
+
+% \usepackage[utf8]{inputenc} % or whatever
+% %\usepackage{times}
+% \usepackage[T1]{fontenc}
+% \usepackage{lmodern}
+% \usepackage{multimedia}
+% \usepackage{multicol}
+% %%\usepackage{apacite}
+% % Or whatever. Note that the encoding and the font should match. If T1
+% % does not look nice, try deleting the line with the fontenc.
+% \usepackage{mathptmx}
+% \usepackage{color}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{url}
+% \usepackage{listings}
+% \usepackage{booktabs}
+% \usepackage{dcolumn}
+
+% \usepackage[english]{babel} % or whatever
+
+% %\usepackage{geometry}
+% \usepackage{multicol}
+
+% %%%just testing \setbeamersize{text margin left=0.5cm}
+
+% %=============================================================================
+
+% %Switch comment character to turn on/off \pause commands given as \pausealt
+% %\newcommand{\pausealt}{\par }
+% \newcommand{\pausealt}{\pause}
+
+
+% \usepackage{color}
+% \definecolor{gray1}{gray}{0.75}
+
+% \newlength{\figurewidth}
+% \figurewidth \textwidth  % This is for rectangular graphs
+% \newlength{\figurewidthB}
+% \figurewidthB .7\textwidth  % This is for square graphs
+
+
+
+% \expandafter\def\expandafter\insertshorttitle\expandafter{%
+%   \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+
+% %=============================================================================
+% %
+
+%====================================
+
+
+%suggested by Ihaka's note on Improving Sweave
+%http://www.stat.auckland.ac.nz/~stat782/downloads/Sweave-customisation.pdf
+%%%tighten up text output from R
+%
+% \DefineVerbatimEnvironment{Sinput}{Verbatim}{xleftmargin=0em,fontsize=\footnotesize}
+% \DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,fontsize=\footnotesize}
+% \DefineVerbatimEnvironment{Scode}{Verbatim}{xleftmargin=0em,fontsize=\footnotesize]}
+% \fvset{listparameters={\setlength{\topsep}{0pt}}}
+% \renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
+% %shorten line length
+% <<echo=false>>=
+% system("rm -rf figs; mkdir figs")
+% @
+% \SweaveOpts{prefix.string=figs/t,split=T, ae=F,height=4,width=6}
+% <<Roptions, echo=F>>=
+% options(width=60, continue="  ")
+% ###Leave less white space margin  at top of R figures
+% op <- par() ## save par for later in case needed to restore
+% pjmar <- c(5.1, 4.1, 2, 2.1)
+% options(SweaveHooks=list(fig=function() par(mar=pjmar)))
+% ###Sweave appears to ignore following settings 2010-03-20
+% ps.options(horizontal=F, onefile=F, family="Times",    paper="special", height=4, width=6 )
+% pdf.options(onefile=F,family="Times",paper="special",height=4,width=6)
+% options(papersize="special")
+% @
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%==================================================
+
+\section{Methods}
+\begin{frame}[containsverbatim]
+  \frametitle{Methods: Things To Do ``To'' a Regression Object}
+
+
+
+
+
+\input{plots/t-glm10}
+
+\begin{description}
+  \item [pres04] Kerry,  Bush
+  \item [partyid]  Factor with 7 levels, SD $\rightarrow$ SR
+  \item [sex]    Male, Female
+  \item [owngun] Yes, No
+\end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Just for the Record, The Data Preparation Steps Were $\ldots$}
+
+\input{plots/t-gssdata10}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{First, Find Out What You Got}
+
+
+\input{plots/t-glm12}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Understanding attributes}
+  \begin{itemize}
+  \item If  you see \$, it means you have an S3 object
+  \item That means you can just ``take'' values out of the object with
+    the dollar sign operator using commands like
+
+\input{plots/t-glm15}
+
+\item That "crude" approach is discouraged. We should instead use
+    "extractor methods"
+
+    \texttt{coefficients(bush1)}
+
+  \item Challenge: finding/remembering the extractor functions.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Just Making Sure About the Object's Class}
+
+  \begin{itemize}
+  \item Ask the object what class it is from
+
+\input{plots/t-methods05}
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{ Ask What Methods Apply to a ``glm'' Object}
+
+\input{plots/t-methods10}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Check methods for ``lm'' class}
+
+\input{plots/t-012}
+
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Do You Wonder How ``They'' Do ``That''?}
+  \begin{itemize}
+
+    \item At some point, you realize that the help page is not
+      detailed enough.  You may need to see the Actual Code
+
+    \item Darth said ``Use the Source, Luke!''
+
+      If you want to know ``what a function does'', the
+      best option is to download the ACTUAL SOURCE CODE and read it!
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Can See Some Code Within an R Session}
+  \begin{itemize}
+  \item In the ``old days'', you could easily see a function's
+      ``code'' by typing its name (i.e., omit the parentheses).
+
+      Ex: q used to show all of the steps in shutting down.
+
+    \item Today, in R 2.11, when I type q I see:
+
+\begin{Schunk}\begin{Soutput}
+> q
+function (save = "default", status = 0, runLast = TRUE)
+.Internal(quit(save, status, runLast))
+<environment: namespace:base>
+  \end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Some Functions Still Show Their Code}
+  \begin{itemize}
+
+   \item Some very informative examples. Try:
+      \begin{itemize}
+        \item \texttt{ > lm \#(or stats::lm)}
+        \item \texttt{ > glm \#(or stats::glm)}
+        \item \texttt{ > termplot}
+      \end{itemize}
+
+    \item Generic method output not so useful. Try:
+      \begin{itemize}
+      \item \texttt{ > predict}
+      \item \texttt{ > plot}
+      \end{itemize}
+
+    \end{itemize}
+  \end{frame}
+
+
+\begin{frame}
+  \frametitle{Looking Into the Class Hierarchy}
+  \begin{itemize}
+
+  \item In many cases, you can only find what you need if you give
+      the ``function'' name and the name of the ``class'' separated by
+      a period.
+
+   \item Try:
+      \begin{itemize}
+      \item \texttt{ > predict.lm }
+
+      \item \texttt{ > predict.glm}
+      \end{itemize}
+
+    \item Many methods are inside ``namespaces'' and you can't see
+      their code without some extra effort.
+      \begin{itemize}
+      \item namespace::method will often be useful
+
+      \item Three colons needed for ``hidden methods''
+
+        stats:::weights.glm
+      \end{itemize}
+
+    \item Many times I have doublechecked this detailed posting by
+      Prof. Brian Ripley on this question:
+
+      \url{http://tolstoy.newcastle.edu.au/R/help/05/09/12506.html}
+
+    \end{itemize}
+
+\end{frame}
+
+% ______________________________
+
+\section{Interrogate Models}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The First Method Used is usually \texttt{summary()}}
+
+\input{plots/t-sum20}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Summary Object}
+
+  Create a Summary Object
+\input{plots/t-sum30}
+
+ My deviance is
+
+\input{plots/t-sum40}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The coef Enigma}
+
+  \begin{itemize}
+  \item \texttt{coef()} is the same as \texttt{coefficients()}
+
+  \item Note the Bizarre Truth:
+    \begin{enumerate}
+    \item that the ``coef'' function returns
+something different when it is applied to a model object
+\input{plots/t-sum45}
+
+Than is returned from a summary object.
+
+\input{plots/t-sum50}
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{anova()}}
+  \begin{itemize}
+    \item You can apply \texttt{anova()} to just one model
+    \item That gives a ``stepwise'' series of comparisons (not very useful)
+
+\input{plots/t-anova10}
+\end{itemize}
+\end{frame}
+
+% _____________________________
+
+\begin{frame}
+  \frametitle{But anova Very Useful to Compare 2 Models}
+
+  Here's the basic procedure:
+
+  \begin{enumerate}
+  \item Fit 1 big model, ``mod1''
+  \item Exclude some variables to create a smaller model, ``mod2''
+  \item Run \texttt{anova()} to compare:
+
+      anova(mod1, mod2, test=''Chisq'')
+
+   \item If resulting test statistic is far from 0, it means the big
+     model really is better and you should keep those variables in there.
+   \end{enumerate}
+
+   Quick Reminder:
+
+   \begin{itemize}
+   \item In an OLS model, this is would be an F test for the
+     hypothesis that the coefficients for omitted parameters are all
+     equal to 0.
+   \item In a model estimated by maximum likelihood, it is a
+     likelihood ratio test with df= number of omitted parameters.
+   \end{itemize}
+ \end{frame}
+
+
+% ______________________________
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{But there's an anova ``Gotcha''}
+
+
+%<<>>=
+%anova(bush0, bush1, test="Chisq")
+%@
+
+\begin{Schunk}
+  \begin{Soutput}
+> anova(bush0, bush1, test="Chisq")
+Error in anova.glmlist(c(list(object), dotargs),
+  dispersion = dispersion,  :
+  models were not all fitted to the same size of dataset
+\end{Soutput}
+\end{Schunk}
+
+  What the Heck?
+\end{frame}
+
+% _____________________________
+
+\begin{frame}
+  \frametitle{\texttt{anova()} Gotcha, cont.}
+  \begin{itemize}
+    \item Explanation: Listwise Deletion of Missing Values causes this.
+
+      Missings cause sample sizes to differ when variables change.
+
+    \item One Solution: Fit both models on same data.
+    \begin{enumerate}
+      \item Fit the ``big model'' (one with most variables)
+
+
+mod1 <- glm(y~ x1+ x2 + x3 + $\ldots$, data=dat, family=binomial)
+
+
+      \item Fit the ``smaller Model'' with the data extracted from
+        the fit of the previous model (mod1\$model) as the data frame
+
+mod2 <- glm(y~  x3 + $\ldots$, data=mod1\$model, family=binomial)
+
+     \item After that, anova() will work
+
+     \end{enumerate}
+
+     \item Hasten to add: more elaborate treatment of missingness is
+       often called for.
+
+   \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example anova()}
+  \begin{itemize}
+
+
+  \item Here's the big model
+\input{plots/t-glm30}
+
+ \item Here's the small model
+\input{plots/t-glm31}
+
+ \end{itemize}
+ \end{frame}
+
+
+%___________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{anova()}: The Big Reveal!}
+  \begin{itemize}
+
+  \item anova:
+\input{plots/t-glmanova10}
+
+  \item Conclusion: the big model is not statistically significantly
+    better than the small model
+  \item Same as: Can't reject the null hypothesis that $\beta_j$=0 for
+    all omitted parameters
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Interesting Use of anova}
+  \begin{itemize}
+    \item Consider the fit for ``polviews'' in bush3 (recall
+      ``extremely liberal'' is the reference category, the intercept)
+    \end{itemize}
+
+
+\begin{tabular}{l|ccccccc}
+\hline
+label:& lib. & slt. lib. & mod. & sl. con. & con. & extr. con. \tabularnewline
+\hline
+mle($\hat{\beta}$): & 0.41 & 1.3  & 1.8* & 2.5* & 2.6* & 3.1*\tabularnewline
+\hline
+se: & 0.88 & 0.83 & 0.79 & 0.83 & 0.84 & 1.2\tabularnewline
+\hline
+\end{tabular}
+
+* $p \leq 0.05$
+
+\begin{itemize}
+\item I wonder: are all ``conservatives'' the same? Do we really
+  need separate parameter estimates for those respondents?
+\end{itemize}
+
+\end{frame}
+
+%______________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Use \texttt{anova()} To Test the Recoding}
+
+  \begin{enumerate}
+    \item Make a New Variable for the New Coding
+\input{plots/t-glmanova20}
+\end{enumerate}
+
+\begin{itemize}
+  \item Effect is to set slight and extreme conservatives into the
+    conservative category
+  \end{itemize}
+
+\end{frame}
+
+%_________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Better Check newpolv}
+
+
+\input{plots/t-glmanova30}
+
+\end{frame}
+
+%_________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Neat anova thing, cont.}
+
+  \begin{enumerate}
+  \item Fit a new regression model, replacing polviews with newpolv
+
+
+\input{plots/t-glmanova40}
+ \item Use \texttt{anova()} to test:
+
+\input{plots/t-glmanova50}
+\end{enumerate}
+\begin{itemize}
+\item Apparently, all conservatives really are alike :)
+\item A similar test for liberals is left to the reader!
+\end{itemize}
+\end{frame}
+
+
+%_______________________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{drop1} Relieves Tedium}
+
+  \begin{itemize}
+  \item \texttt{drop1()} repeats the \texttt{anova()} procedure,
+    removing each variable one-at-a-time.
+
+\input{plots/t-029}
+
+   \item Recall ``Chisq'' $\Leftrightarrow$ L.L.R test.
+   \end{itemize}
+ \end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Termplot: Plotting The Linear Predictor}
+
+
+\input{plots/t-termplot10}
+\includegraphics[width=10cm]{plots/t-termplot10}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Termplot: Some of the Magic is Lost on a Logistic Model}
+
+
+\input{plots/t-termplot20}
+\includegraphics[width=10cm]{plots/t-termplot20}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Termplot: But If You Had Some Continuous Data, Watch Out!}
+
+\input{plots/t-termplot30}
+\includegraphics[width=10cm]{plots/t-termplot30}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{\texttt{termplot()} works because $\ldots$}
+
+  \begin{itemize}
+  \item termplot doesn't make calculations, it uses the
+    ``\texttt{predict}'' method associated with a model object.
+  \item \texttt{predict} is a generic method, it doesn't do any work either!
+  \item Actual work gets done by methods for models,
+    \texttt{predict.lm} or  \texttt{predict.glm}.
+  \item You can leave out the ``terms'' option, termplot will
+    cycle through all of the predictors in the model.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle {Why Termplot is Not the End of the Story}
+  \begin{itemize}
+  \item Termplot draws $X\hat{\beta}$, the linear predictor.
+  \item Maybe we want predicted probabilities instead.
+  \item Maybe we want predictions for certain case types: \texttt{ termplot} allows the predict implementation to decide which
+    values of the inputs will be used.
+  \item A regression expert will quickly conclude that a really
+    great graph may require direct use of the \texttt{predict}
+    method for the model object.
+  \end{itemize}
+\end{frame}
+
+
+% _____________________________________________
+
+\begin{frame}
+  \frametitle{\texttt{predict()} with newdata}
+
+  \begin{itemize}
+    \item If you run this:
+
+      \texttt{predict(bush5)}
+
+    R calculates $X\hat{\beta}$, a ``linear predictor'' value for each row in your dataframe
+
+  \item See ``\texttt{?predict.glm}.''
+
+  \item We ask for predicted probabilities like so
+
+    \texttt{predict(bush5, type="response")}
+
+    and you still get one prediction for each line in the data.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Use predict to calculate with ``for example'' values}
+  \begin{itemize}
+  \item Create ``example'' dataframes and get probabilities for
+    hypothetical cases.
+
+    \texttt{ > mydf <- \# Pretend there are some commands \\ \#to
+      create an example data frame}
+
+  \item Run that new example data frame through the predict function
+    \texttt{ > predict(bush5, newdata=mydf, type="response"}
+
+   \end{itemize}
+ \end{frame}
+
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Create the New Data Frame}
+
+\footnotesize{
+\input{plots/t-predict10}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Make Table of Predicted Probabilities}
+
+\input{plots/t-predict20}
+
+\input{plots/t-predict30}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Or Perhaps You Would Like A Figure?}
+
+
+\includegraphics[width=10cm]{plots/t-pred90}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{How Could You Make That Figure?}
+
+  \input{plots/t-pred90}
+\end{frame}
+
+%===================================================
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Covariance of $\hat{\beta}$}
+\input{plots/t-038}
+
+These will match the ``SE'' column in the summary of bush1
+\input{plots/t-039}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heteroskedasticity-consistent Standard Errors?}
+
+  Variants of the
+  Huber-White ``heteroskedasticity-consistent'' (slang: robust)
+  covarance matrix are available in ``car'' and ``sandwich''.
+
+  \begin{itemize}
+
+    \item  hccm() in car works for linear models only
+
+    \item vcovHC in the ``sandwich'' package returns a matrix of
+      estimates. One should certainly read ?vcovHC and the associated literature.
+
+\input{plots/t-040}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The heteroskedasticity consistent standard errors of the $\hat{\beta}$  are:}
+
+\input{plots/t-041}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Compare those:}
+
+\begin{columns}
+  \column{3cm}
+
+The HC and ordinary standard errors are almost identical:
+  \column{8cm}
+\input{plots/t-042}
+\includegraphics{plots/t-042}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Tons of Diagnostic Information}
+
+  Run plot() on the model object for a quick view.
+
+  Example: plot(myolsmod)
+
+
+
+
+\end{frame}
+
+\begin{frame}[plain]
+
+\includegraphics[width=10cm]{plots/t-diag09}
+
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Tough to read the glm plot, IMHO$\ldots$}
+
+\includegraphics[width=10cm]{plots/t-diag10}
+
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+   \frametitle{\texttt{influence()} Function Digs up the Diagnostics}
+
+\input{plots/t-046}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+ \frametitle{\texttt{influence.measures()} A bigger collection of influence measures}
+
+ From influence.measures, DFBETAS for each parameter, DFFITS, covariance ratios, Cook's distances and the diagonal elements of the hat matrix.
+
+
+\input{plots/t-047}
+
+     Can get component columns directly with ‘dfbetas’, ‘dffits’, ‘covratio’ and ‘cooks.distance’.
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+ \frametitle{But if You Want dfbeta, Not dfbetas, Why Not Ask?}
+
+
+\input{plots/t-048}
+
+      I wondered what dfbetas does. You can see for yourself. Look at
+      the code. Run:
+
+\begin{Schunk}\begin{Soutput}
+    >  stats:::dfbetas.lm
+  \end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+
+
+% > influencePlot(bush1)
+
+% opens up an interactive plot--user left-clicks on
+% the observations return their row number
+% \end{frame}
+
+% ===================================================
+\section{Output}
+
+\begin{frame}[containsverbatim]
+  \frametitle{You Will Want to Use \LaTeX{}     After You See This}
+
+  \begin{itemize}
+    \item How do you get regression tables out of your project?
+    \item Do you go through error-prone copying, pasting, typing,
+      tabling, etc?
+    \item What if your software could produce a finished
+      publishable table?
+    \end{itemize}
+  \end{frame}
+
+\input{plots/t-049}
+
+\begin{frame}[containsverbatim]
+  \frametitle{}
+  \begin{itemize}
+    \item Years ago, I wrote a function ``outreg''
+
+
+
+
+
+    \item This command:
+
+\input{plots/t-output10}
+   \item Produces the output on the next slide
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain,containsverbatim]
+
+
+\input{plots/t-output40}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Polish that up}
+
+  \begin{itemize}
+    \item you can beautify the variable labels, either by specifying
+      them in the outreg command or editing the table output.
+    \item outreg produces Latex that looks like this in the R session output.
+
+\input{plots/t-output41}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Push Several Models Into One Wide Table}
+
+\input{plots/t-output50}
+
+  Sorry, I had to split this manually across 3 slides :(
+
+\end{frame}
+
+
+\begin{frame}[plain,allowframebreaks]
+
+
+\footnotesize{
+\input{plots/t-output51}
+}
+\end{frame}
+
+%__________________________________
+
+
+\begin{frame}
+  \frametitle {R Packages for Producing Regression Output}
+
+  \begin{itemize}
+  \item memisc: works well, further from final form than outreg
+
+  \item xtable: incomplete output, but latex or HTML works
+
+  \item apsrtable: very similar to outreg
+
+  \item Hmisc ``latex'' function
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+
+\input{plots/t-output70}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{If you Can't Shake the MS Word ``Habit''}
+
+  The best you can do is HTML output, which you can copy paste-special
+  into a document.
+
+\input{plots/t-output80}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{memisc mtable is nice for comparing models (except for
+    verbosity of parameter labels)}
+
+\input{plots/t-059}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{memisc toLatex}
+
+\footnotesize{
+\input{plots/t-output84}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Relable Levels to Truncate Output}
+
+  \begin{itemize}
+    \item We could have to edit that output A LOT
+
+
+    \item Hack the Labels down
+\input{plots/t-061}
+
+    \item Re-run the models
+
+\input{plots/t-062}
+\end{itemize}
+\end{frame}
+
+%___________________________
+
+\begin{frame}[containsverbatim,allowframebreaks,plain]
+
+\footnotesize{
+\input{plots/t-output85}
+}
+
+
+
+\end{frame}
+
+
+%===================================================
+\end{document}

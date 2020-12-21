@@ -1,0 +1,7462 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch amelia
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch mice
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch hmisc
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch mi
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=T)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=180, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Multiple Imputation 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Center for Research Methods and Data Analysis, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2013
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2013
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Overview}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Why Impute?
+\end_layout
+
+\begin_layout Itemize
+Amelia
+\end_layout
+
+\begin_layout Itemize
+mice
+\end_layout
+
+\begin_layout Itemize
+mi
+\end_layout
+
+\begin_layout Itemize
+aregImpute
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Why Impute?
+\end_layout
+
+\begin_layout BeginFrame
+Listwise Deletion
+\end_layout
+
+\begin_layout Itemize
+In almost all software, 
+\begin_inset Quotes eld
+\end_inset
+
+listwise deletion
+\begin_inset Quotes erd
+\end_inset
+
+ has been the default.
+ If any variable is missing, a case is completely dropped from the analysis.
+\end_layout
+
+\begin_layout Itemize
+Most people seem to agree that is bad--
+\begin_inset Quotes erd
+\end_inset
+
+biased parameter estimates
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Until recently, practitioners ignored the problem.
+\end_layout
+
+\begin_layout Itemize
+Research on this has been steadily accumulating since 1970s
+\end_layout
+
+\begin_layout Itemize
+Statistical researchers are trying to find a more-or-less convenient, 
+\begin_inset Quotes eld
+\end_inset
+
+idiot proof
+\begin_inset Quotes erd
+\end_inset
+
+ procedure
+\end_layout
+
+\begin_layout BeginFrame
+Rubin proposed Multiple Imputation
+\end_layout
+
+\begin_layout Itemize
+Jargon: MAR (
+\begin_inset Quotes eld
+\end_inset
+
+Missing at Random
+\begin_inset Quotes erd
+\end_inset
+
+) means that the chance of a missing score is predictable using information
+ in other variables (and not predictable by other unmeasured forces)
+\end_layout
+
+\begin_layout Itemize
+Rubin's proposal
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Use many variables, including the dependent variable and variables not planned
+ for inclusion in the final model, to predict missings
+\end_layout
+
+\begin_layout Enumerate
+Create several 
+\begin_inset Quotes eld
+\end_inset
+
+Imputed
+\begin_inset Quotes erd
+\end_inset
+
+ data sets.
+\end_layout
+
+\begin_layout Enumerate
+Run Each analysis on Each Imputed Dataset
+\end_layout
+
+\begin_layout Enumerate
+Combine the estimates, weight them to take uncertainty into account.
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Do You Do It Yourself?
+\end_layout
+
+\begin_layout Itemize
+Rubin suggested the imputations could be done at a data center when they
+ supply the dataset.
+ MI would be done 
+\begin_inset Quotes eld
+\end_inset
+
+once and for all,
+\begin_inset Quotes erd
+\end_inset
+
+ and the imputed missings would be distributed as one collection.
+\end_layout
+
+\begin_layout Itemize
+That approach was impractical for a number of reasons.
+\end_layout
+
+\begin_layout Itemize
+Many routines to impute missing values have been proposed.
+\end_layout
+
+\begin_layout Itemize
+This research area is still under active development
+\end_layout
+
+\begin_layout Itemize
+Caution: I'm not an MI authority (just a guy demonstrating some R packages)
+\end_layout
+
+\begin_layout BeginFrame
+What are we looking for?
+\end_layout
+
+\begin_layout Itemize
+What format does a routine expect from our data?
+\end_layout
+
+\begin_layout Itemize
+Are the imputations returned in a manageable format?
+\end_layout
+
+\begin_layout Itemize
+Is it difficult to conduct the analysis on each separate dataset?
+\end_layout
+
+\begin_layout Itemize
+How to best pool the estimates together and summarize them?
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[allowframebreaks]
+\end_layout
+
+\end_inset
+
+Points of Concern
+\end_layout
+
+\begin_layout Itemize
+Calculation of 
+\begin_inset Quotes eld
+\end_inset
+
+imputation averaged
+\begin_inset Quotes erd
+\end_inset
+
+ results
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Good theory/method exists for MLE of 
+\begin_inset Quotes eld
+\end_inset
+
+slope coefficients
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Rubin's Rules
+\begin_inset Quotes erd
+\end_inset
+
+ for slope & variance estimates
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+For slope estimates, average the imputed, 
+\begin_inset Formula $\hat{\beta}=$
+\end_inset
+
+ 
+\begin_inset Formula $\sum_{i=1}^{m}\hat{\beta}_{j}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Variance estimate for 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ combines 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+average of 
+\begin_inset Formula $\widehat{Var(\hat{\beta}_{j})}$
+\end_inset
+
+, 
+\begin_inset Formula $\sum_{i=1}^{m}=\widehat{Var(\hat{\beta}_{j})}$
+\end_inset
+
+, plus 
+\end_layout
+
+\begin_layout Enumerate
+a penalty for uncertainty between 
+\begin_inset Formula $\hat{\beta}_{j}$
+\end_inset
+
+ , 
+\begin_inset Formula $\frac{1}{1+m}\sum(\hat{\beta_{j}}-\hat{\beta})^{2}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Less good theory/tools on other statistics (
+\begin_inset Formula $R^{2}$
+\end_inset
+
+, deviance, etc.)
+\end_layout
+
+\begin_layout Itemize
+Difficult choices about 
+\begin_inset Quotes eld
+\end_inset
+
+openness
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+interoperability
+\begin_inset Quotes erd
+\end_inset
+
+ with other R functions
+\end_layout
+
+\begin_layout Itemize
+Caution about terminology: imputation sometimes means 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The candidates to 
+\begin_inset Quotes eld
+\end_inset
+
+fill in
+\begin_inset Quotes erd
+\end_inset
+
+ for NAs
+\end_layout
+
+\begin_layout Itemize
+A completed data frame with the NAs are replaced by the candidates
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Amelia
+\end_layout
+
+\begin_layout BeginFrame
+Amelia
+\end_layout
+
+\begin_layout Verse
+King, Gary, James Honaker, Anne Joseph, and Kenneth Scheve.
+ 2001.
+ “Analyzing Incomplete Political Science Data: An Alternative Algorithm
+ for Multiple Imputation.” 
+\emph on
+The American Political Science Review
+\emph default
+ 95(1): 49-69.
+\end_layout
+
+\begin_layout Verse
+James Honaker, Gary King, Matthew Blackwell (2011).
+ Amelia II: A Program for Missing Data.
+ 
+\emph on
+Journal of Statistical Software
+\emph default
+, 45(7), 1-47.
+ URL http://www.jstatsoft.org/v45/i07/.
+ 
+\end_layout
+
+\begin_layout BeginFrame
+Rough Sketch of Amelia
+\end_layout
+
+\begin_layout Itemize
+Assume all variables are drawn from one Multivariate Normal Distribution,
+ 
+\begin_inset Formula $MVN(\mu,\Sigma)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Conduct series of complicated algorithms to estimate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+After estimating 
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+, then draw random samples from the MVN to fill in missing values
+\end_layout
+
+\begin_layout Itemize
+Basic idea similar to 
+\begin_inset Quotes eld
+\end_inset
+
+Norm
+\begin_inset Quotes erd
+\end_inset
+
+ (J.
+ Schafer), but algorithm may be faster (EM with 
+\begin_inset Quotes eld
+\end_inset
+
+importance sampling
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Interface}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+amelia(x, m = 5, p2s = 1,frontend = FALSE, idvars = NULL, ts = NULL, cs
+ = NULL, polytime = NULL, splinetime = NULL, intercs = FALSE, lags = NULL,
+ leads = NULL, startvals = 0, tolerance = 0.0001, logs = NULL, sqrts = NULL,
+ lgstc = NULL, noms = NULL, ords = NULL, incheck = TRUE, collect = FALSE,
+ arglist = NULL, empri = NULL, priors = NULL, autopri = 0.05, emburn = c(0,0),
+ bounds = NULL, max.resample = 100, ...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note: amelia uses all of the supplied variables in imputations except vars
+ declared as 
+\begin_inset Quotes eld
+\end_inset
+
+idvars.
+\begin_inset Quotes erd
+\end_inset
+
+ To save memory, one should remove all extraneous variables first, rather
+ than use the 
+\begin_inset Quotes eld
+\end_inset
+
+idvars
+\begin_inset Quotes erd
+\end_inset
+
+ feature to ask amelia to ignore them.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Surprising, Possibly True
+\end_layout
+
+\begin_layout Itemize
+Most people say 
+\begin_inset Quotes eld
+\end_inset
+
+but my variables are not Normal.
+\begin_inset Quotes erd
+\end_inset
+
+ (gender, survey scales, etc)
+\end_layout
+
+\begin_layout Itemize
+King (and others) argue the approximation is not harmful (various reasons)
+\end_layout
+
+\begin_layout Itemize
+Amelia allows user to specify variables as 
+\begin_inset Quotes eld
+\end_inset
+
+nominal
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+ordinal
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Nominal variables: The normal imputations are 
+\begin_inset Quotes eld
+\end_inset
+
+rounded off
+\begin_inset Quotes erd
+\end_inset
+
+ to values in the observed scale {0,1,2}
+\end_layout
+
+\begin_layout Itemize
+Ordinal variables: Optionally 
+\begin_inset Quotes eld
+\end_inset
+
+rounded off
+\begin_inset Quotes erd
+\end_inset
+
+ to integers, but instructions discourage that
+\end_layout
+
+\begin_layout Itemize
+They suggest a 7 point scale might meaningfully have imputed values in-between
+ the integers
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Grab Some Data, Impose Some Missings}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thanks to Chuck Cleland who suggested this example in r-help
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia10,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(digits=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+if (!file.exists("examples")) dir.create("examples")
+\end_layout
+
+\begin_layout Plain Layout
+
+if (!file.exists("examples/titanic.txt"))
+\end_layout
+
+\begin_layout Plain Layout
+
+download.file("http://lib.stat.cmu.edu/S/Harrell/data/ascii/titanic.txt", "examples/t
+itanic.txt")
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic <- read.table("examples/titanic.txt", sep = ',', header = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic0 <- titanic
+\end_layout
+
+\begin_layout Plain Layout
+
+save(titanic0, file="examples/titanic0.rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(4321)
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$sex[sample(nrow(titanic), 10)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$pclass[sample(nrow(titanic), 10)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$survived[sample(nrow(titanic), 10)] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The "Most Complete" Version of the Data Says ...}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia11,echo=T,include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fullglm <- glm(survived ~ pclass + sex + age, family = binomial, data =
+ titanic0)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+tout <- xtable(fullglm)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(tout, type = "latex")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia11.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{After Imposing some more Missings, The ListWise Deletion Results}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia12,echo=T,include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ldglm <- glm(survived ~ pclass + sex + age, family = binomial, data = titanic)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+tout <- xtable(ldglm)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(tout, type = "latex")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia12.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Use Amelia to create Imputed Data Sets}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia20,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(Amelia) # generate multiple imputations 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic.amelia <- amelia(subset(titanic, select = c('survived', 'pclass',
+ 'sex', 'age', 'embarked')), m = 10,  noms = c('survived', 'pclass', 'sex',
+ 'embarked'), 
+\end_layout
+
+\begin_layout Plain Layout
+
+emburn = c(500, 500), p2s = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+p2s=F turns off screen output that overflows the presentation software
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Note: Now use tools not from Amelia to Analyze the Data and Summarize
+ it}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Lets try to use general purpose tools to estimate and summarize these models.
+\end_layout
+
+\begin_layout Itemize
+The imputations are in an R list, so the general 
+\begin_inset Quotes eld
+\end_inset
+
+lapply
+\begin_inset Quotes erd
+\end_inset
+
+ function can be used to fit any kind of model that can accept a data frame
+ as an argument.
+\end_layout
+
+\begin_layout Itemize
+The R package mitools (Thomas Lumley) has tools to combine estimates of
+ slopes and calcuate the Rubin-adjusted standard errors.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{lapply Conducts the glm for Each Imputed Set}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia30,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+allimplogreg <- lapply(titanic.amelia$imputations, function(x){
+\end_layout
+
+\begin_layout Plain Layout
+
+    glm(survived ~ pclass + sex + age, family = binomial, data = x)
+\end_layout
+
+\begin_layout Plain Layout
+
+})
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia30.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Post Processing with "mitools"}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+footnotesize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+<<amelia40,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(digits=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mitools) # MIextract
+\end_layout
+
+\begin_layout Plain Layout
+
+betas <- MIextract(allimplogreg, fun = coef)
+\end_layout
+
+\begin_layout Plain Layout
+
+vars <- MIextract(allimplogreg, fun = vcov)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(MIcombine(betas, vars))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia40.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{mi.inference from mix offers effective df and fm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<<amelia50,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mix)
+\end_layout
+
+\begin_layout Plain Layout
+
+se.glm <- MIextract(allimplogreg, fun = function(x){sqrt(diag(vcov(x)))})
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+as.data.frame(mi.inference(betas, se.glm))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia50.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+df: degrees of freedom associated with the t reference distribution used
+ for interval estimates.
+\end_layout
+
+\begin_layout Standard
+r: estimated relative increases in variance due to nonresponse.
+\end_layout
+
+\begin_layout Standard
+fminf: estimated fractions of missing information.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare Side-by-Side: MI and LD results}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+<<amelia60,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+df1 <- as.data.frame(mi.inference(betas, se.glm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df2 <- cbind(df1[,1:2], ldbeta = coef(ldglm), ldse = sqrt(diag(vcov(ldglm))))
+\end_layout
+
+\begin_layout Plain Layout
+
+df2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia60}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Make the Missings Worse!}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia100,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(234234)
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic <- titanic0
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia100.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then estimate 
+\end_layout
+
+\begin_layout Itemize
+new 
+\begin_inset Quotes eld
+\end_inset
+
+ldglm
+\begin_inset Quotes erd
+\end_inset
+
+ (listwise deletion estimate)
+\end_layout
+
+\begin_layout Itemize
+10 fresh imputed datasets and regressions for each
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia111,echo=T,include=F,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ldglm <- glm(survived ~ pclass + sex + age, family =binomial, data = titanic)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(xtable)
+\end_layout
+
+\begin_layout Plain Layout
+
+tout <- xtable(ldglm)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(tout, type = "latex")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{New Listwise Deletion Model ldglm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia111.tex}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia120,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic.amelia <- amelia(subset(titanic,select=c('survived', 'pclass', 'sex',
+ 'age', 'embarked')), m = 10,  noms = c('survived', 'pclass', 'sex', 'embarked')
+, emburn = c(500,500), p2s = F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia130,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ allimplogreg <- lapply(titanic.amelia$imputations, function(x){glm(survived
+ ~ pclass + sex + age, family=binomial, data = x)})
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia140,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(digits = 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mitools) # MIextract
+\end_layout
+
+\begin_layout Plain Layout
+
+betas <- MIextract(allimplogreg, fun = coef)
+\end_layout
+
+\begin_layout Plain Layout
+
+vars <- MIextract(allimplogreg, fun = vcov)
+\end_layout
+
+\begin_layout Plain Layout
+
+se.glm <- MIextract(allimplogreg, fun = function(x){sqrt(diag(vcov(x)))})
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{MI summary estimates}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+footnotesize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+<<amelia150,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(MIcombine(betas,vars))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia150.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare Side-by-Side: MI and LD results}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia160,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+df2.1 <- as.data.frame(mi.inference(betas, se.glm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df2.2 <- cbind("MI",df2.1[,1:2], "LD", ldbeta = coef(ldglm), ldse = sqrt(diag(vcov
+(ldglm))), "full", est = coef(fullglm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df2.2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia160.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Maybe confidence intervals help}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+<<amelia180,include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+df2.1 <- as.data.frame(mi.inference(betas, se.glm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df3 <- cbind(df2.1[,c(1,5:6)], "full", beta = coef(fullglm), confint(fullglm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df3
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia180.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<amelia190,include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(digits=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+df4 <- cbind("LDbeta" = coef(ldglm),confint(ldglm))
+\end_layout
+
+\begin_layout Plain Layout
+
+df4
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-amelia190.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+mice
+\end_layout
+
+\begin_layout BeginFrame
+Multiple Imputation via Chained Equations
+\end_layout
+
+\begin_layout Verse
+Stef van Buuren, Karin Groothuis-Oudshoorn (2011).
+ MICE: Multivariate Imputation by Chained Equations in R.
+ 
+\emph on
+Journal of Statistical Software
+\emph default
+, 45(3): 1-67.
+\end_layout
+
+\begin_layout Verse
+Stef van Buuren (2012).
+ Flexible Imputation of Missing Data.
+ Boca Raton, FL: Chapman & Hall/CRC Press.
+\end_layout
+
+\begin_layout BeginFrame
+Rough Sketch
+\end_layout
+
+\begin_layout Itemize
+Strategy quite different from Amelia and other MVN based theories
+\end_layout
+
+\begin_layout Itemize
+MICE: separately process each column, predicting it from all the others.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+"The algorithm imputes an incomplete column (the target column) by generating
+ 'plausible' synthetic values given other columns in the data."
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Cycle through columns over and over, until model converges (in MCMC sense),
+ then draw samples to impute.
+\end_layout
+
+\begin_layout BeginFrame
+Recommends 
+\begin_inset Quotes eld
+\end_inset
+
+predictive mean matching
+\begin_inset Quotes erd
+\end_inset
+
+ to select imputed values
+\end_layout
+
+\begin_layout Itemize
+When filling in missings, find cases with similar predicted values to the
+ case in question
+\end_layout
+
+\begin_layout Itemize
+From among those cases, collect their list of actual observed scores
+\end_layout
+
+\begin_layout Itemize
+Draw imputations from that subset of actual scores
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Automatically
+\begin_inset Quotes erd
+\end_inset
+
+ solves the problem that imputations might have impossible values
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Imputations for categorical variables always match the original scale (sex
+ is always 0 or 1, never 0.64)
+\end_layout
+
+\begin_layout Itemize
+When a variable is badly skewed, the PMM always selects a realistic value.
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The mice Interface}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  mice(data, m = 5, method = vector("character", length=ncol(data)), predictorMa
+trix = (1 - diag(1, ncol(data))), visitSequence = (1:ncol(data))[apply(is.na(data
+), 2, any)], post = vector("character", length = ncol(data)), defaultMethod
+ = c("pmm", "logreg", "polyreg", "polr"), maxit = 5, diagnostics = TRUE,
+ printFlag = TRUE, seed = NA, ...
+\end_layout
+
+\begin_layout Plain Layout
+
+     )
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Special mice features
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+fine grained
+\begin_inset Quotes erd
+\end_inset
+
+ management of imputation algorithms for different types of data
+\end_layout
+
+\begin_layout Itemize
+Defaults:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+default
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+also available
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+numeric
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pmm (predictive mean matching)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+norm, 2level
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+binary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+logreg (logistic regression)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+lda
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+factor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+polyreg (Bayesian polytomous regression)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+factor: ordinal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+polr (prop.
+ odds logistic (MASS))
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Possible to
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+add user-defined predictive tools
+\end_layout
+
+\begin_layout Itemize
+control the sequence of column processing
+\end_layout
+
+\end_deeper
+\begin_layout BeginFrame
+Other Handy mice Features
+\end_layout
+
+\begin_layout Itemize
+complete: function can
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+return any of the individual imputed data frames
+\end_layout
+
+\begin_layout Itemize
+return all data frames combined in the 
+\begin_inset Quotes eld
+\end_inset
+
+long
+\begin_inset Quotes erd
+\end_inset
+
+ format (rows stacked together)
+\end_layout
+
+\begin_layout Itemize
+return all frames combined in the 
+\begin_inset Quotes eld
+\end_inset
+
+wide
+\begin_inset Quotes erd
+\end_inset
+
+ format (columns side-by-side)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+pool: outputs many of Rubin's suggested diagnostic formulae (param, var,
+ 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+summary(pool( )): distills parameter estimates
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{nhanes: small test data frame supplied with mice}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice10,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mice)
+\end_layout
+
+\begin_layout Plain Layout
+
+nhanes
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Test That Out}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice11,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+imp <- mice(nhanes, printFlag = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+fit <- with(data = imp, exp = lm(bmi ~ hyp + chl))
+\end_layout
+
+\begin_layout Plain Layout
+
+fitpool <- pool(fit)
+\end_layout
+
+\begin_layout Plain Layout
+
+fitpool
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice11.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What's all that?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inside the outpute object from pool, there is a wealth of information that
+ previous editions of mi did report automatically.
+ That structure includes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=   
+\end_layout
+
+\begin_layout Plain Layout
+
+fit <- list(call = call, call1 = object$call, call2 = object$call1, nmis
+ = object$nmis, m = m, qhat = qhat, u = u, qbar = qbar, ubar = ubar, b =
+ b, t = t, r = r, dfcom = dfcom, df = df,         fmi = fmi, lambda = lambda)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size footnotesize
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+qhat: matrix of m complete data fits
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+b: within imputation variance
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+r: rel.
+ incr var due to nonresponse
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+t: total variance of pooled estimates
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+qbar: pooled estimate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+u: Variance matrices from m fits (
+\begin_inset Formula $var\times var\times m$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+ubar: mean of variances across m fits
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+gamma: prop.
+ variance explained by imputations
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+dfcom: df in complete analysis
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+df: df for pooled estimates
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+fmi: fraction missing information
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{summary of pooled fit}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice15,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+round(summary(pool(fit))[,c(1:4,6:9)],2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice15.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{It Gracefully Handles Factor Variables}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice40,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+nhanesf <- nhanes
+\end_layout
+
+\begin_layout Plain Layout
+
+nhanesf$age <- factor(nhanesf$age, labels = c("20-39", "40-59", "60-99"))
+\end_layout
+
+\begin_layout Plain Layout
+
+nhanesf$hyp <- factor(nhanesf$hyp, labels = c("no","yes"))
+\end_layout
+
+\begin_layout Plain Layout
+
+imp2 <- mice(nhanes, printFlag = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+fit2 <- with(data = imp2, exp = lm(bmi~hyp+chl))
+\end_layout
+
+\begin_layout Plain Layout
+
+pool(fit2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice40.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Compare "real" and 2 imputed sets}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice45,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+cbind("F", nhanes,"imp1",complete(imp2,3),"imp2",complete(imp,3))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice45.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How About the Titanic Data?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice70,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(234234)
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic <- titanic0
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+miceTitanic <- mice( subset( titanic, select = c('survived', 'pclass', 'sex',
+ 'age', 'embarked')), m = 10, maxit  = 10, printFlag=FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+miceFitTitanic <- with(data = miceTitanic, exp = glm(survived ~ pclass +
+ sex + age, family = binomial))
+\end_layout
+
+\begin_layout Plain Layout
+
+pool(miceFitTitanic)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice70.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here's the error you see if you forget to subset the variables with select
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Error: chunk 7 (label=mice70) 
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax
+ = TRUE, : too many (3210)
+\end_layout
+
+\begin_layout Plain Layout
+
+weights Execution halted
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{summary of pooled fit}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mice
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mice75,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+round(summary(pool(miceFitTitanic)), 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mice75.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+mi
+\end_layout
+
+\begin_layout BeginFrame
+The mi Package (Gelman's Columbia U Team)
+\end_layout
+
+\begin_layout Standard
+Yu-Sung Su, Andrew Gelman, Jennifer Hill, Masanao Yajima.
+ 2011.
+ “Multiple Imputation with Diagnostics (mi) in R: Opening Windows into the
+ Black Box”.
+ 
+\emph on
+Journal of Statistical Software.
+ 
+\emph default
+45(2)
+\end_layout
+
+\begin_layout Standard
+Kobi Abayomi, Andrew Gelman and Marc Levy.
+ (2008).
+ “Diagnostics for multivariate imputations”.
+ 
+\emph on
+Applied Statistics
+\emph default
+ 57, Part 3: 273-291.
+\end_layout
+
+\begin_layout Quotation
+\begin_inset Quotes eld
+\end_inset
+
+Generate a multiply imputed matrix applying the elementary functions iteratively
+ to the variables with missingness in the data randomly imputing each variable
+ and looping through until approximate convergence.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Rough Sketch
+\end_layout
+
+\begin_layout Itemize
+Strategy similar to mice and aregImpute: proceed one-variable-at-a-time
+\end_layout
+
+\begin_layout Itemize
+Predict each variable from each of the others 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Start with median/mode for NAs
+\end_layout
+
+\begin_layout Itemize
+Conduct 
+\begin_inset Quotes eld
+\end_inset
+
+n.iter
+\begin_inset Quotes erd
+\end_inset
+
+ iterations, or until convergence
+\end_layout
+
+\begin_layout Itemize
+Provides a large set of mi.XXX functions to impute variables of different
+ types
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Draw bootstrap sample to create imputed values
+\end_layout
+
+\begin_layout Itemize
+Allows limited 
+\begin_inset Quotes eld
+\end_inset
+
+preprocessing
+\begin_inset Quotes erd
+\end_inset
+
+ of numeric variables (similar idea to aregImpute's use of avas)
+\end_layout
+
+\begin_layout Itemize
+As 
+\begin_inset Quotes eld
+\end_inset
+
+Opening Windows into the Black Box
+\begin_inset Quotes erd
+\end_inset
+
+ implies, this is intended to be less 
+\begin_inset Quotes eld
+\end_inset
+
+mysterious,
+\begin_inset Quotes erd
+\end_inset
+
+ more 
+\begin_inset Quotes eld
+\end_inset
+
+informative
+\begin_inset Quotes erd
+\end_inset
+
+, and easier to diagnose MI processes.
+\end_layout
+
+\begin_layout BeginFrame
+Type-Dependent Imputation Methods
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+model
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+binary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi.binary
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+logistic 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+unordered
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi.categorical
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+multinomial
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ordinal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi.polr
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuation logistic
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi.continous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+regression
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+count
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mi.count
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bayesian Poisson (w overdispersion)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Interface}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  mi(object, info,  n.imp = 3, n.iter = 30, R.hat = 1.1, max.minutes = 20, 
+\end_layout
+
+\begin_layout Plain Layout
+
+rand.imp.method="bootstrap", run.past.convergence = FALSE, seed = NA, check.coef.conve
+rgence = FALSE, add.noise = noise.control())
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Steps to Use mi}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Create an 
+\begin_inset Quotes eld
+\end_inset
+
+information table
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Use mi to create imputations
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Runs 1 separate 
+\begin_inset Quotes eld
+\end_inset
+
+chain
+\begin_inset Quotes erd
+\end_inset
+
+ for each desired imputation
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+pooling methods implemented for common R estimators like 
+\begin_inset Quotes eld
+\end_inset
+
+lm.mi
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+glm.mi
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+lmer.mi
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+These cycle through all imputed data frames 
+\end_layout
+
+\begin_layout Itemize
+create estimates for each
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+display or other extractor methods can present results
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Information Table for nhanes data with factor variables in it}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mi)
+\end_layout
+
+\begin_layout Plain Layout
+
+library(mice)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi00,echo=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+inf <- mi.info(nhanes2)
+\end_layout
+
+\begin_layout Plain Layout
+
+inf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi00.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Can customize variable types at this stage
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Run mi}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Caution: 2013-05-21 runtime errors were observed with n.imp = 10, only 8
+ will succeed.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi01,include=F,echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+miImputeNhanes2 <- mi(nhanes2, info = inf , n.imp = 8,  n.iter = 500, add.noise
+ = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi02,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<mi01>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi01.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Regression: mi Summary for 10 Imputations}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi04,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+M1 <- lm.mi(bmi ~ hyp + chl, miImputeNhanes2)
+\end_layout
+
+\begin_layout Plain Layout
+
+display(M1)
+\end_layout
+
+\begin_layout Plain Layout
+
+cbind(b=coef(M1), se=se.coef(M1), t=coef(M1)/se.coef(M1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi04.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Titanic, Featuring Kate Winslet and Leonardo DiCaprio}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi10,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(234234) 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic <- titanic0 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$sex[sample(nrow(titanic), 400)] <- NA  
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$pclass[sample(nrow(titanic), 400)] <- NA  
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$survived[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Grab Subset, then compute min.info (prepare for imputation)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi20,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ss <- subset( titanic,   select = c('survived', 'pclass', 'sex', 'age'))
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+inf <- mi.info(ss)
+\end_layout
+
+\begin_layout Plain Layout
+
+inf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Subset required to avoid use of extraneous variables by imputer.
+\end_layout
+
+\begin_layout Standard
+Can customize inf to change variable types, if desired.
+\end_layout
+
+\begin_layout Standard
+Note, mi did not converge with 
+\begin_inset Quotes eld
+\end_inset
+
+embarked
+\begin_inset Quotes erd
+\end_inset
+
+ included as predictor, so it was omitted here
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Create 10 Titanics}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi30,include=F,echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+miImpTitanic <- mi(ss, info = inf, n.imp = 10,  n.iter = 400, add.noise = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi31,echo=T,eval=T,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<mi30>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi30.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+n.iter set higher, convergence can take more than 100 iterations
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Use "glm.mi" from mi on the List of Imputed Datasets}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi40,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+M2 <- glm.mi( survived ~ pclass + sex + age, miImpTitanic, family = binomial(link
+ = "logit"))  
+\end_layout
+
+\begin_layout Plain Layout
+
+display(M2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi40.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch mi
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi50,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+(miTitanicResult <- cbind(b = coef(M2), se = se.coef(M2), t = coef(M2)/se.coef(M2)
+))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi50.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+aregImpute
+\end_layout
+
+\begin_layout BeginFrame
+The Hmisc & rms Packages
+\end_layout
+
+\begin_layout Standard
+Harrell, Frank E.
+ 2010.
+ 
+\emph on
+Regression Modeling Strategies: With Applications to Linear Models, Logistic
+ Regression, and Survival Analysis
+\emph default
+.
+ Springer.
+ 
+\end_layout
+
+\begin_layout Standard
+Frank E Harrell Jr (2013).
+ rms: Regression Modeling Strategies.
+ R package version 3.6-3.
+\end_layout
+
+\begin_layout Quotation
+‘aregImpute’ takes all aspects of uncertainty in the imputations into account
+ by using the bootstrap to approximate the process of drawing predicted
+ values from a full Bayesian predictive distribution.
+ Different bootstrap resamples are used for each of the multiple imputations,
+ i.e., for the ‘i’th imputation of a sometimes missing variable, ‘i=1,2,...
+ n.impute’, a flexible additive model is fitted on a sample with replacement
+ from the original data and this model is used to predict all of the original
+ missing and non-missing values for the target variable.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Rough Sketch
+\end_layout
+
+\begin_layout Standard
+Predict each variable from each of the others 
+\end_layout
+
+\begin_layout Itemize
+Start with random selections for NAs
+\end_layout
+
+\begin_layout Standard
+Do this 
+\begin_inset Quotes eld
+\end_inset
+
+burnin
+\begin_inset Quotes erd
+\end_inset
+
++
+\begin_inset Quotes erd
+\end_inset
+
+n.impute
+\begin_inset Quotes erd
+\end_inset
+
+ times
+\end_layout
+
+\begin_layout Itemize
+Draw bootstrap sample, fit a 
+\begin_inset Quotes eld
+\end_inset
+
+flexible
+\begin_inset Quotes erd
+\end_inset
+
+ model to it, predict outcomes for all cases from that model.
+\end_layout
+
+\begin_layout Itemize
+Default uses predictive mean matching to select an imputed value for each
+ NA.
+ (regression extrapolation is alternative)
+\end_layout
+
+\begin_layout Standard
+Note: Special emphasis on nonlinearity in imputation fitting (similar to
+ avas)
+\end_layout
+
+\begin_layout BeginFrame
+What's Avas?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+From:Squeeze and Stretch Variables
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+To: Estimate, Convert Back
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/avas-001.pdf
+	width 4.5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename importfigs/avas-002.pdf
+	width 4.5cm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Interface}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+aregImpute(formula, data, subset, n.impute = 5, group = NULL, nk = 3, tlinear
+ = TRUE, type = c('pmm', 'regression'), match = c('weighted', 'closest'),
+ fweighted = 0.2, curtail = TRUE, boot.method = c('simple', 'approximate bayesian'
+), burnin = 3, x = FALSE, pr = TRUE, plotTrans = FALSE, tolerance = NULL,
+ B = 75)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+Important Detail about 
+\begin_inset Quotes eld
+\end_inset
+
+rms
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Prof.
+ Harrell is a long-standing, highly distinguished programmer and statistician
+ (SAS PROC Logistic in mid 1980s)
+\end_layout
+
+\begin_layout Itemize
+He has developed his own set of fitting functions in S over 2 decades and
+ they are not perfectly interchangeable with R functions 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+rms 
+\begin_inset Quotes eld
+\end_inset
+
+ols
+\begin_inset Quotes erd
+\end_inset
+
+ is not exactly same as R's 
+\begin_inset Quotes eld
+\end_inset
+
+lm
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+rms 
+\begin_inset Quotes eld
+\end_inset
+
+lrm
+\begin_inset Quotes erd
+\end_inset
+
+ is not exactly same as R's glm(y~x, family=binomial(link=
+\begin_inset Quotes erd
+\end_inset
+
+logit
+\begin_inset Quotes erd
+\end_inset
+
+))
+\end_layout
+
+\begin_layout Itemize
+aregImpute and other rms functions are tailored for rms 
+\begin_inset Quotes eld
+\end_inset
+
+fitting routines
+\begin_inset Quotes erd
+\end_inset
+
+, but tolerate some R routines (with warnings).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Summary and Plotting functions for 
+\begin_inset Quotes eld
+\end_inset
+
+rms
+\begin_inset Quotes erd
+\end_inset
+
+ objects are usually expecting different options than functions in base
+ R
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Syntax Example}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms10,include=F,echo=F,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rms)
+\end_layout
+
+\begin_layout Plain Layout
+
+## Not run: 
+\end_layout
+
+\begin_layout Plain Layout
+
+print(paste("f <- aregImpute(~ age + bmi + hyp + chl, data=nhanesf, nk=0)"))
+\end_layout
+
+\begin_layout Plain Layout
+
+## End(Not run)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms10.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Can't actually run that, though, because of this error (which I have not
+ solved)
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Error in aregImpute(~age + bmi + hyp + chl, data = nhanesf, nk = 0) : a
+ bootstrap resample had too few unique values of the following variables:
+ age Execution halted
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Warning in aregImpute(~age + bmi + hyp + chl, data = nhanesf, nk = 1) :
+ hyp has the following levels with < 5 observations: yes Consider using
+ the group parameter to balance bootstrap samples
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{If that did work, we would run fit.mult.impute}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms20,include=F,echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+cat("fmi <- fit.mult.impute(bmi ~ hyp + chl, lm, f, data= nhanesf)")
+\end_layout
+
+\begin_layout Plain Layout
+
+cat("sqrt(diag(vcov(fmi)))")
+\end_layout
+
+\begin_layout Plain Layout
+
+@   
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms20.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Even if aregImpute did create imputations, it would be accompanied by this
+ warning
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Warning in fit.mult.impute(bmi ~ hyp + chl, lm, f, data = nhanesf) : Not using
+ a Design fitting function; summary(fit) will use standard errors, t, P
+ from last imputation only.
+ Use vcov(fit) to get the correct covariance matrix, sqrt(diag(vcov(fit)))
+ to get s.e.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Caused by my use of R's 
+\begin_inset Quotes eld
+\end_inset
+
+lm
+\begin_inset Quotes erd
+\end_inset
+
+, rather than rms's own function 
+\begin_inset Quotes eld
+\end_inset
+
+ols
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{The Titanic Rises Again}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms60,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(234234)
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic <- titanic0
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+\end_layout
+
+\begin_layout Plain Layout
+
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+\end_layout
+
+\begin_layout Plain Layout
+
+rmsImputeTitanic <- aregImpute(~ survived + pclass + sex + age + embarked,
+ n.impute=10, data=titanic, nk=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms60.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Use glm in fit.mult.impute}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms80,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+rmsFmiTitanic <- fit.mult.impute( survived ~ pclass + sex + age, glm, family=binom
+ial(link=logit), rmsImputeTitanic, data= titanic, fit.reps=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(rmsFmiTitanic)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms80.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Recall the Cautionary Warning about Fitting Functions?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+fit.mult.impute warns the user that when a fitting routine is not from rms,
+ then the standard errors and significance tests are based only on the last
+ fitted model
+\end_layout
+
+\begin_layout Itemize
+One should instead extract the standard errors from the covariance matrix
+\end_layout
+
+\begin_layout Itemize
+Which I do on the next slide 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Create a Homemade Summary for the Fit.Mult.Impute Output}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms90,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sqrt(diag(vcov(rmsFmiTitanic)))
+\end_layout
+
+\begin_layout Plain Layout
+
+(rmsTitanicResult <- cbind(b=rmsFmiTitanic$coefficients, se=diag(vcov(rmsFmiTita
+nic))))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms90.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Here's a Problem: I don't believe the se result.
+ Compare mitools}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms91,include=F,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+require(mitools)
+\end_layout
+
+\begin_layout Plain Layout
+
+rmsbetas <- MIextract(rmsFmiTitanic$fits, fun=coef)
+\end_layout
+
+\begin_layout Plain Layout
+
+rmsvars <- MIextract(rmsFmiTitanic$fits, fun=vcov)
+\end_layout
+
+\begin_layout Plain Layout
+
+rmsTitanicMItools <- summary(MIcombine(rmsbetas,rmsvars))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms91.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim,allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Notice the "fit.reps=T" option? It allows inspection of each fitted
+ model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms100,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:length(rmsFmiTitanic$fits)) print(summary(rmsFmiTitanic$fits[[i]]))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms100.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Using "lrm" from rms package (instead of glm from R)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms110,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fmi2 <- fit.mult.impute( survived ~ pclass + sex + age, lrm, rmsImputeTitanic,
+ data= titanic, fit.reps=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+fmi2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms110.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Please note: the standard errors in the output based on lrm match the std.errors
+ estimated by MItools.
+ Thus I conclude sqrt(diag(cov(fit.mult.impute.object) did not give correct
+ results.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{First Try at summary fails:}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Schunk}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(fmi2)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in summary.rms(fmi2) : adjustment values not defined here or with datadist
+ for pclass sex age Execution halted Error: Cannot convert file
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Schunk}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim, allowframebreaks]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{rms fitters require a "datadist" object must be defined}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch hmisc
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rms120,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+d <- datadist(titanic)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(datadist="d")
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(fmi2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-rms120.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Making Sense out of All of This
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{What Should You Do Now?}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Can't ignore 
+\begin_inset Quotes eld
+\end_inset
+
+missing data problem
+\begin_inset Quotes erd
+\end_inset
+
+ any more, but
+\end_layout
+
+\begin_layout Itemize
+No 
+\begin_inset Quotes eld
+\end_inset
+
+lead pipe cinch
+\begin_inset Quotes erd
+\end_inset
+
+ solution exists at this time
+\end_layout
+
+\begin_layout Itemize
+I wish there were decisive results comparing these algorithms to find out
+ 
+\begin_inset Quotes eld
+\end_inset
+
+which one is best.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Until then, I expect researchers will use whatever tools are prevalent in
+ their fields
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Encouraging Titanic News: 4 Results are Mostly the Same}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Amelia, aregImpute
+\end_layout
+
+\begin_layout Standard
+mi , mice
+\end_layout
+
+\begin_layout Standard
+\begin_inset Branch amelia
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi300,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+cbind("Amelia"="Amelia",df1[ , 1:2 ], "rms"="rms", rmsTitanicMItools[,1:2])
+\end_layout
+
+\begin_layout Plain Layout
+
+cbind( "mi"="mi", round(miTitanicResult,2),  "mice"="mice", round(summary(pool(m
+iceFitTitanic)),2)[,1:3])
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{plots/t-mi300.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mi1000,include=F,echo=T,eval=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+save.image(file = "/tmp/ws.rda")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+scriptsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+input{plots/t-miXX.tex}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

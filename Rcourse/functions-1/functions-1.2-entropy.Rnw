@@ -1,0 +1,424 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[Writing Functions I] % (short title, use only with long paper titles)
+{Writing Functions In R}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[\today] % (optional, should be abbreviation of conference name)
+{\today}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+
+% __________________________________________
+
+\section{Example: Calculate Entropy}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Entropy can summarize diversity for a categorical variable}
+
+  \begin{itemize}
+  \item Entropy in Physics means disorganization
+  \item Sometimes called Shannon's Information Index
+  \item Basic idea. List the possible outcomes and their probabilities
+
+  \item The amount of diversity in a collection of observations
+    depends on the equality of the proportions of cases observed within each type.
+  \end{itemize}
+\end{frame}
+
+
+%_____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{A Reasonable Person Would Agree $\ldots$}
+
+  \begin{itemize}
+  \item This distribution is ``less diverse''
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      outcome name & t1 & t2 & t3 & t4 & t5\tabularnewline
+      \hline
+      prob(outcome) & 0.1 & 0.3 & 0.05 & 0.55 & 0.0\tabularnewline
+      \hline
+    \end{tabular}
+
+  \item than this distribution:
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      outcome name & t1 & t2 & t3 & t4 & t5\tabularnewline
+      \hline
+      prob(outcome) & 0.2 & 0.2 & 0.2 & 0.2 & 0.2\tabularnewline
+      \hline
+    \end{tabular}
+  \end{itemize}
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Information Index}
+
+  \begin{itemize}
+  \item For each type, calculate the following information (or can I
+    say ``diversity''?)  value
+
+
+\begin{equation}
+-p_{t}*log_{2}(p_{t})\end{equation}
+
+    \item Note that if $p_{t} = 0$, the diversity value is 0
+    \item If $p_{t} = 1$, then diversity is also 0
+
+    \item Sum those values across the $m$ categories
+
+\begin{equation}
+\sum_{t=1}^{m}-p_{t}*log_{2}(p_{t})\end{equation}
+
+  \item Diversity is at a maximum when $p_t$ are all equal
+  \end{itemize}
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Calculate Diversity for One Type}
+
+<<entropy10,echo=T>>=
+divr <- function(p = 0){
+  ifelse ( p > 0 & p < 1, -p * log2(p), 0)
+}
+@
+
+\end{frame}
+
+%________________________________
+<<entropy20, echo=T, fig=T, include=F>>=
+  pseq <- seq(0.001, 0.999, length=999)
+  pseq.divr <- divr(pseq)
+  plot(pseq.divr ~ pseq, xlab = "p", ylab = "Diversity Contribution of One Observation",  main = expression(paste("Diversity: ", -p %*% log[2](p))), type = "l")
+@
+
+\begin{frame}[containsverbatim]
+  \frametitle{Let's plot that}
+
+ \input{plots/t-entropy20.tex}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \includegraphics[width=10cm]{plots/t-entropy20}
+\end{frame}
+ % ________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Diversity Function}
+
+  \begin{itemize}
+
+  \item Define an Entropy function that sums those values
+
+<<entropy40,echo=T>>=
+entropy <- function(p){
+    sum( divr(p) )
+}
+@
+
+
+\item Calculate some test cases
+<<entropy41,echo=T>>=
+entropy( c(1/5, 1/5, 1/5, 1/5, 1/5) )
+
+entropy( c(3/5, 1/5, 1/5, 0/5, 0/5) )
+@
+\end{itemize}
+\end{frame}
+
+%______________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{There's a Little Problem With This Approach}
+  \begin{itemize}
+    \item Diversity is sensitive to the number of categories
+
+      8 equally likely outcomes (rep(x,y): repeats x y times.)
+<<entropy50, echo=T>>=
+entropy(rep(1/8, 8))
+@
+      14 equally likely outcomes
+<<entropy51, echo=T>>=
+entropy(rep(1/14, 14))
+@
+   \item Write it out for a 3 category case
+
+
+\begin{equation}
+-\frac{1}{3}log_{2}(\frac{1}{3})-\frac{1}{3}log_{2}(\frac{1}{3})-\frac{1}{3}log_{2}(\frac{1}{3})=-log_{2}(\frac{1}{3})\end{equation}
+
+
+   \item The highest possible diversity with 3 types is $-log_2(\frac{1}{3})$
+
+   \item The highest possible diversity for N types is $-log_2(\frac{1}{N})$
+   \end{itemize}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{We Might As Well Plot That}
+
+<<entropy59,echo=T,fig=T,include=F>>=
+maximumEntropy <- function(N) - log2(1/N)
+Nmax <- 15
+M <- 2:Nmax
+plot(M, maximumEntropy(M), xlab = "N of Possible Types", ylab = "Maximum Possible Diversity",  main = "Maximum Possible Entropy For N Categories", type = "h", axes = FALSE)
+axis(1)
+axis(2)
+points(M, maximumEntropy(M), pch=19)
+@
+
+\input{plots/t-entropy59}
+
+\end{frame}
+
+
+%________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Maximum Entropy as a Function of the Number of Types}
+
+   \includegraphics[width=10cm]{plots/t-entropy59}
+
+\end{frame}
+
+%_______________________________
+
+\begin{frame}
+  \frametitle{Final Result: Normed Entropy as a Diversity Summary}
+<<entropy60,echo=T>>=
+normedEntropy <- function(x) entropy(x)/ maximumEntropy(length(x))
+@
+
+
+Compare some cases with 4 possible outcomes
+<<entropy61,echo=T>>=
+normedEntropy(c(1/4,1/4,1/4,1/4))
+
+normedEntropy(c(1/2, 1/2, 0, 0))
+
+normedEntropy(c(1, 0, 0, 0))
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{How about 7 types of outcomes:}
+
+<<entropy62, echo=T>>=
+
+normedEntropy(rep(1/7, 7))
+
+normedEntropy((1:7)/(sum(1:7)))
+
+normedEntropy(c(2/7, 2/7, 3/7, 0, 0, 0, 0))
+
+normedEntropy(c(5/7, 2/7, 0, 0, 0, 0, 0))
+
+@
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Compare 3 test cases}
+
+<<entropy90, echo=T,fig=T, include=F, height = 3.5, width =7>>=
+### Save par values so we can put them back later
+saveParVals <- par(no.readonly=T)
+
+par(mfcol=c(1,3), xpd=T)
+
+testcase1 <- c( 1/10, 1/10, 1/10, 1/10, 2/10, 2/10, 2/10, 0/10, 0/10, 0/10)
+testcase2 <- c( 1/5, 2/5, 2/5, 0, 0)
+testcase3 <- (1:7)/sum(1:7)
+
+et1 <- round(normedEntropy(testcase1),2)
+et2 <- round(normedEntropy(testcase2),2)
+et3 <- round(normedEntropy(testcase3),2)
+
+
+bp1 <- barplot( testcase1, names.arg=1:(length(testcase1)), density=12, ylim=c(0,0.5))
+
+legend("topright", legend=paste("Normed Entropy=", et1) )
+
+### Can slip xpd=T into text command, instead of running par(xpd=T)
+text(bp1, testcase1, testcase1, pos=3,  cex=0.7, xpd=T)
+
+bp2 <- barplot( testcase2, names.arg= 1:(length(testcase2)), density=12, ylim=c(0,0.5))
+
+legend("topleft", legend=paste("Normed Entropy=", et2 ))
+
+text(bp2, testcase2, testcase2, pos=3, cex=0.7, xpd=T)
+
+bp3 <- barplot( testcase3, names.arg= 1:(length(testcase3)), density=12, ylim=c(0,0.5))
+
+legend("topleft", legend=paste("Normed Entropy=", et3) )
+
+text(bp3, testcase3, round(testcase3,2), pos=3, cex=0.7, xpd=T, las=2)
+
+### Restore par values to default
+par(saveParVals)
+@
+
+\includegraphics[width=12cm]{plots/t-entropy90}
+
+Subjectively, I wrestle with the question of whether comparison across
+variables with different M is meaningful.
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Entropy is reported in \texttt{summarize()} and
+    \texttt{summarizeFactors()} in the rockchalk package}
+  Manufacture a variable to re-produce testcase3
+<<>>=
+round(testcase3,2)
+@
+<<>>=
+library(rockchalk)
+testcase3v <- factor(c(1,2,2,3,3,3, 4,4,4,4, 5,5,5,5,5, 6,6,6,6,6,6, 7,7,7,7,7,7,7 ))
+round((table(testcase3v)/length(testcase3v)), 2)
+dat <- data.frame(testcase3v)
+summarizeFactors(dat)
+@
+
+\end{frame}
+
+
+
+
+%===================================================
+\end{document}

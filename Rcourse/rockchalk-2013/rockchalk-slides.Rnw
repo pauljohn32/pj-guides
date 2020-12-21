@@ -1,0 +1,1310 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/rockchalk-2013//}}
+\makeatother
+\documentclass[11pt,canadian,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{url}
+\usepackage{graphicx}
+\ifx\hypersetup\undefined
+  \AtBeginDocument{%
+    \hypersetup{unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 1},backref=false,colorlinks=true}
+  }
+\else
+  \hypersetup{unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 1},backref=false,colorlinks=true}
+\fi
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\providecommand{\LyX}{\texorpdfstring%
+  {L\kern-.1667em\lower.25em\hbox{Y}\kern-.125emX\@}
+  {LyX}}
+\newcommand{\noun}[1]{\textsc{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newcommand*{\Rfunction}[1]{{\ttfamily #1}}
+ \newcommand*{\Rinput}[1]{{\ttfamily #1}}
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%%only for presentation
+%%not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+
+\usetheme{KU}
+\usecolortheme{dolphin} %dark blues
+%\usetheme{Antibes}
+% or ...
+
+\makeatother
+
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3.5,width=6}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=10)
+pdf.options(useDingbats = FALSE) ##suggestion to avoid bad symbols
+@
+
+\selectlanguage{canadian}%
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\selectlanguage{english}%
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\title[rockchalk]{rockchalk package }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}\\
+<pauljohn@ku.edu>}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date{{\huge{2013}}\hspace{3cm}}
+
+
+\titlegraphic{\includegraphics[width=1.5cm]{0_home_pauljohn_SVN_SVN-guides_Rcourse_rockchalk-2013_importfigs_jayhawk.pdf}}
+
+\makebeamertitle
+\pgfdeclareimage[height=0.5cm]{institution-logo}{importfigs/jayhawk.pdf}
+\logo{\pgfuseimage{institution-logo}}
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Outline}
+
+\tableofcontents{}
+
+
+\lyxframeend{}
+
+
+\lyxframeend{}\section{Introduction}
+
+\begin{frame}
+\frametitle{Thanks for Joining}
+
+Thanks to Ray DiGiacomo, Jr \& OC RUG for organizing 
+\begin{description}
+\item [{Downloads:}]~
+\end{description}
+\url{http://pj.freefaculty.org/guides} \{all my lectures on anything\}
+
+\hspace{1in}\href{http://pj.freefaculty.org/guides/Rcourse/rockchalk-2013}{.../Rcourse/rockchalk-2013}
+\{this lecture, source code, \LyX{} doc, etc\}
+
+\url{http://pj.freefaculty.org/R}: Rtips, links to other R stuff
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Why Make a Package?}
+\begin{itemize}
+\item Avoid a riot after an influx of 40 MA-bound behavioral scientists
+into my regression class 
+
+\begin{itemize}
+\item Honestly, I'd rather teach R programming, but
+\item I can understand the view that statistics exists apart from R
+\end{itemize}
+\item Package has ``convenience'' functions for
+
+\begin{description}
+\item [{Me}] preparing lectures
+\item [{Them}] doing papers (with nice looking graphs!)
+\end{description}
+\item I had distributed functions before, but never made a package
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What do you expect in rockchalk?}
+\begin{itemize}
+\item Functions for difficult/tedious/hard-to-teach chores
+\item Verbose documentation, (too) many examples
+\item vignettes 
+
+\begin{itemize}
+\item \emph{``rockchalk''}: Dicussion \& demonstration of package
+\item \emph{``Rchaeology''}: Deep insights into R programming I accumulate
+while working on the package
+\item ``\emph{Rstyle''}: The style manual I wish R Core would adopt
+\end{itemize}
+\item Hidden value added: the examples folder in the package install directory
+includes some special educational R examples (look for \Rfunction{noWords-001.R}
+and \Rfunction{centeredRegression.R})
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Where is the hard work in version 1.8?}
+\begin{itemize}
+\item \Rfunction{predictOMatic()}. \emph{Flexible }way to demonstrate marginal
+effects of predictors. Goal: make it easy to understand regression
+as a translation of inputs into predicted values (and uncertainty)
+\item Scan fitted regressions, create newdata objects with possible predictor
+values (``divider'' algorithms to create focal values for consideration).
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Data}
+
+\begin{frame}[containsverbatim]
+\frametitle{Make a Presentable Table Describing The Data}
+\begin{itemize}
+\item Assignment: create a summary table for your research article
+\item R's \Rinput{summary}() 
+
+\begin{itemize}
+\item does not include diversity estimates
+\item does not separate numeric from factor variables in the report
+\item does not provide output in a usable format 
+\end{itemize}
+\item rockchalk \Rfunction{summarize()}
+
+\begin{itemize}
+\item does
+\end{itemize}
+\end{itemize}
+<<echo=F>>=
+library(rockchalk)
+dat <- data.frame(income = rnorm(1000, m=10000, sd=20000), 
+educ = rpois(1000, lambda = 10),
+age = rpois(1000, lambda = 22),
+religion = factor(sample(c("cath","roman","prot","jewish","muslem","other"), 1000, replace = TRUE, prob = c(.20, .10, .20, .10, .10, .30))),
+gender = factor(sample(c("male","female"), 1000, replace = TRUE)))
+dat$educ[sample(1:1000, 42, replace = TRUE)] <- NA
+dat$income[sample(1:1000, 82, replace = TRUE)] <- NA
+dat$religion[sample(1:1000, 77, replace = TRUE)] <- NA
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Example}
+
+\def\Sweavesize{\tiny}
+
+<<desc10>>=
+(datsum <- summary(dat))
+@
+\begin{itemize}
+\item Can you wrestle that into a paper? I can't! It has text and values
+combined
+\end{itemize}
+\def\Sweavesize{\tiny}
+
+<<desc11>>=
+datsum[ ,1]
+@
+\begin{itemize}
+\item Default output from summarize separates numerics \& factors, alphabetizes
+
+
+<<desc20>>=
+datsum2 <- summarize(dat)
+@
+
+
+The result object datsum2 is a list with 2 parts, a numeric matrix
+part and a factor variable display.
+
+\item The numerics are a matrix, easy to take rows or columns to put into
+a paper
+\end{itemize}
+\def\Sweavesize{\scriptsize}
+
+<<>>=
+datsum2$numerics
+@
+\begin{itemize}
+\item The factors are a separate list
+\end{itemize}
+\def\Sweavesize{\scriptsize}
+
+<<>>=
+datsum2$factors
+@
+\begin{itemize}
+\item Indicators of central tendency and dispersion are included in both
+displays
+\item Try \Rfunction{summarizeNumerics()} and \Rfunction{summarizeFactors()}
+to get just one or the other. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Sidenote: recoding a factor}
+\begin{itemize}
+\item Note the religion variable has levels ``cath'' and ``roman'',
+which was a data entry error. Catholic and Roman Catholic represent
+the same idea
+\item Did you ever try to write R code to fix that (without killing yourself)?
+\item Try \Rfunction{rockchalk::combineLevels()}:
+\end{itemize}
+<<>>=
+dat$religion2 <- combineLevels(dat$religion, c("cath", "roman"), "cath")
+@
+
+\def\Sweavesize{\scriptsize}
+
+<<echo=T>>=
+table(dat$religion2, dat$religion, dnn = c("religion2", "religion"))
+@
+
+\end{frame}
+
+
+\lyxframeend{}\section{Outreg}
+
+\begin{frame}[containsverbatim]
+\frametitle{Need a Nice Looking Regression Table?}
+\begin{itemize}
+\item Each student should not invent a unique report format for regressions.
+\item MS Word users especially tempted to ``finger paint'' with fonts
+and formats.
+\item Solution: provide usable \LaTeX{} tables (added benefit: bait to get
+them to use \LaTeX{})
+\item rockchalk-1.8 provides HTML backend as well (compromise with reality)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{For many years, outreg was a function in search of a package}
+\begin{itemize}
+\item Dave Armstrong (then at U. Maryland student) gave me the outreg idea
+10 years ago
+\item I wrote up a function that more-or-less worked, distributed it, revised
+it as my R programming skills improved 
+\item I didn't know there was \textquotedbl{}outreg\textquotedbl{} module
+for Stata$\ldots$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{outreg example usage}
+
+I fit a regression using a subset of the American National Election
+Study 2004 (ICPSR), which I called ``mydta1''
+
+<<echo=F>>=
+mydta1 <- readRDS("/home/pauljohn/SVN/SVN-guides/Rcourse/rockchalk-2013/04245.rds")
+@
+
+<<anes40, eval=F, include=F, echo=T>>=
+mod1age <- lm(th.bush.kerry ~ V043250, data = mydta1)
+outreg(mod1age, tight = FALSE, modelLabels = c("Age as Predictor"))
+@
+
+\input{plots/t-anes40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Produces this LaTeX Markup}
+
+<<anes41, echo=F, eval=T, include=F>>=
+<<anes40>>
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes41.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Which LaTeX Renders as}
+
+<<anes45,echo=F,include=F,results=tex>>= 
+<<anes40>> 
+@
+
+\input{plots/t-anes45.tex}
+
+My terminology:
+
+tight = FALSE $\Rightarrow$ $\hat{\beta}$ and $std.err(\hat{\beta})$
+are side by side
+
+tight = TRUE $\Rightarrow$ $\hat{\beta}$ and $std.err(\hat{\beta})$
+are vertically aligned.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Gender}
+
+<<anes50, eval=F, include=F, echo=T, results=tex>>=
+## Run a new regression
+mod2age <- lm(th.bush.kerry ~ V043250 + V041109A, data = mydta1)
+## Put 2 regressions in same table
+outreg(list(mod1age, mod2age), tight = TRUE, modelLabels = c("Age Only","Age With Gender"))
+@
+
+\input{plots/t-anes50.tex}
+
+NB: tight = TRUE
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Output To LaTEX}
+
+<<anes51,echo=F,include=F,results=tex>>= 
+<<anes50>> 
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes51.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Alternative way to specify model labels (rockchalk 1.8)}
+
+<<anes60, eval=F, include=F, echo=T,results=tex>>=
+outreg(list("Age Only" = mod1age, "Age With Gender" = mod2age), tight = FALSE)
+@
+
+\input{plots/t-anes60.tex}
+
+Perhaps more coherent usage: keep labels with models in a list
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Output To LaTEX}
+
+<<anes61,echo=F,include=T,results=tex>>= 
+<<anes60>> 
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Beautify Variable Labels}
+
+<<anes70, eval=F, include=T, echo=T,results=tex>>=
+ outreg(list("Age Only" = mod1age, "Age With Gender" = mod2age), tight = TRUE, varLabels = list("V043250" = "Age", "V041109A" = "Gender")) 
+@
+
+Quotation marks optional before equal sign in list; this works too
+
+<<anes71, eval=F, include=T, echo=T,results=tex>>=
+ outreg(list("Age Only" = mod1age, "Age With Gender" = mod2age), tight = FALSE, varLabels = list(V043250 = "Age", V041109A = "Gender")) 
+@
+
+Not necessary to provide new labels for all variables
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{My Beautiful Table with Lovely Variable Labels}
+
+<<anes72,echo=F,include=T,results=tex>>= 
+<<anes71>> 
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Quick R style comment: My opinion}
+\begin{itemize}
+\item Students often have urge to rename variables in the analysis itself,
+to create new dat\$gender and dat\$age
+\item I urge them to resist the temptation 
+\item In a team setting, everybody has same input variables with names like
+V234234, cooperation is frustrated when everybody renames everything
+\item However, in output, no reader wants to see V234234 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{What is this Good For?}
+\begin{itemize}
+\item Good-enough tables in lectures \& term papers
+\item Possible to ``script'' together a lot of separate estimates for
+a lot of different datasets
+\item Especially when the students start to think they know everything,
+show \emph{I'm still smarter than you}: 
+
+\begin{itemize}
+\item \url{http://pj.freefaculty.org/R/gloating/test2}
+\item \url{http://pj.freefaculty.org/guides/stat/Regression/Multicollinearity/Multicollinearity-1-lecture.pdf}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recent updates to outreg}
+\begin{itemize}
+\item I get more emails about \Rfunction{outreg()} than any of the other
+functions. People want more and more features.
+\item Compromises so far allow customization of:
+
+\begin{itemize}
+\item model ``header'' labels and variable names
+\item the selection of ``goodness of fit'' indicators in the bottom of
+the table
+\item choice of alpha levels (Previously, I first refused p-values, then
+insisted only 0.05).
+\item HTML output (next slide)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{outreg can create html file output}
+\begin{itemize}
+\item This is a brand new feature in outreg 1.8 (June, 2013)
+
+\begin{itemize}
+\item outreg2HTML() receives outreg results and converts into Web markup.
+\item Wrestle that into Word however you like. 
+
+\begin{itemize}
+\item open the html document File -> Open
+\item view the html document in a web browser, copy \& paste manually into
+word (use paste Special HTML).
+\end{itemize}
+\item Not as nice looking or as automatic as \LaTeX{}, but I may try harder
+in future
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{HTML output}
+
+<<include=T, eval=F,echo=T>>=
+or1 <- outreg(list(mod1age, mod2age), tight = TRUE, modelLabels = c("Age Only", "Age With Gender"))
+outreg2HTML(or1, file = "or1-test.html")
+@
+
+That creates a file, ``or1-test.html''. See if your web browser
+can open it. See if Word can open that. I uploaded a copy you can
+inspect: \href{http://pj.freefaculty.org/R/or1-test.html}{http://pj.freefaculty.org/R/or1-test.html}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Plots}
+
+\begin{frame}[containsverbatim]
+\frametitle{I want it to be easy to make scatterplots with Predicted Values}
+
+\includegraphics[width=9cm]{1_home_pauljohn_SVN_SVN-guides_Rcourse_rockchalk-2013_importfigs_Hastie-ESL-2d-1.png}
+
+T. Hastie, R. Tibshirani, J. Friedman, \emph{Elements of Statistical
+Learning: Data Mining, Inference, And Prediction, 2ed} (Springer, 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Especially in 3D}
+
+\includegraphics[width=6cm]{2_home_pauljohn_SVN_SVN-guides_Rcourse_rockchalk-2013_importfigs_Hastie-ESL-3d-02.png}\includegraphics[width=7cm]{3_home_pauljohn_SVN_SVN-guides_Rcourse_rockchalk-2013_importfigs_Hastie-ESL-3d.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{abline is an R staple}
+
+<<mod05,include=F>>=
+set.seed(234234)
+x1 <- 0.5 * rpois(100, lambda = 7)
+x2 <- rnorm(100, m = 50, sd = 2)
+x3 <- sample(c(0,1), 100, replace = TRUE)
+y <- 2*x1 + 11.45*x2 + 2.8*x1*(x2-45) + 0.3*x1*x3 + rnorm(100, sd = 10)
+y2 <- 2*x1 + 0.15*x2 + 1*x1*x3 + rnorm(100, sd = 10)
+x3 <- factor(x3, labels=c("left", "right"))
+dat <- data.frame(x1, x2, x3, y, y2)
+@
+
+<<mod10,fig=T,include=F>>=
+mod1 <- lm(y ~ x1, data = dat)
+plot(y ~ x1, data = dat)
+abline(mod1)
+@
+\begin{itemize}
+\item Everybody has done this. (Right?)
+
+
+<<eval=F>>=
+<<mod10>>
+@
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{abline}
+
+\includegraphics[width=10cm]{plots/t-mod10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I'd rather look at this plot}
+
+<<ps1, fig=T, include=F>>=
+ps1 <- plotSlopes(mod1, plotx = "x1", interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps1>>
+@
+
+\includegraphics[width=11cm]{plots/t-ps1}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{abline's fatal flaws}
+\begin{itemize}
+\item Suppose the regression model is
+
+
+\begin{lstlisting}
+mod4 <- lm(y ~ x1 + x2 + x3, data = dat)
+\end{lstlisting}
+
+
+
+\begin{lstlisting}
+mod2 <- lm(y ~ log(x1), data = dat)
+\end{lstlisting}
+
+
+
+\begin{lstlisting}
+mod2 <- lm(y ~ x1*x2, data = dat)
+\end{lstlisting}
+
+
+
+\begin{lstlisting}
+mod3 <- glm(y ~ x1, data = dat, family = "binomial")
+\end{lstlisting}
+
+
+\item Common answer: abline is an epic fail.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{I have taught this "'easy' 3 step procedure" many times}
+\begin{description}
+\item [{Step~1.}] Create a ``newdata'' data frame that has values of
+the x's for which we want to calculate predictions.
+\item [{Step~2.}] Use that newdata object (say, ndat) with the regression
+model's predict method, with syntax like
+
+
+\begin{lstlisting}
+p1 <- predict(mod1, newdata = ndat)
+\end{lstlisting}
+
+
+
+or, if confidence intervals are desired,
+
+
+\begin{lstlisting}
+p2 <- predict(mod1, newdata = ndat, interval = "confidence")
+\end{lstlisting}
+
+
+
+Frustratingly, p1 and p2 are returned as different object types
+
+\item [{Step~3.}] Wrestle those predicted values into a plot
+\end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{A sophisticated R user should learn to do that}
+\begin{itemize}
+\item I've taught that (look for notes in \url{http://pj.freefaculty.org/R/WorkingExamples}),
+but it is too difficult
+\item I needed to create plots and calculate correlations as described in
+\emph{Applied Multiple Regression}, by Cohen, Cohen, West, and Aiken,
+(Routledge, 2002). Students needed lots of R help, some calculations
+not trivial.
+\item \Rfunction{plotSlopes()} is the ``simple-slope'' routine ala CCWA,
+it was improvised in an emergency, \Rfunction{plotCurves()} \& \Rfunction{plotPlane()}
+used same terminology for consistency. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Syntax}
+\begin{itemize}
+\item User fits \Rinput{m1}, a multiple regression
+\item Then gives that to \Rfunction{plotSlopes()}, with arguments
+
+\begin{description}
+\item [{plotx:}] The name of the variable on the horizontal axis
+\item [{modx:}] The name of a ``moderator'' variable on which predicted
+values may depend.
+\item [{modxVals:}] Values of the moderator for which ``simple slopes''
+are desired
+\end{description}
+\item Other arguments to will be passed through to \Rfunction{plot()} and
+\Rfunction{predict()}
+\item See the rockchalk vignette.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Difference between plotSlopes and plotCurves}
+\begin{itemize}
+\item \Rfunction{plotSlopes()}: for linear models
+
+\begin{itemize}
+\item Allows interactions (unlike \Rfunction{termplot()})
+\item Output object can be passed to rockchalk function \Rfunction{testSlopes()}
+\end{itemize}
+\item \Rfunction{plotCurves()}: for nonlinear models (\Rfunction{lm()}
+or \Rfunction{glm()}). 
+
+\begin{itemize}
+\item Complete drop-in replacement for \Rfunction{plotSlopes()}
+\item Nonlinear formulae in the predictors (succeeds where termplot fails)
+\item Does not create object suitable for \Rfunction{testSlopes()}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+
+\lyxframeend{}\subsection{Categorical modx}
+
+\begin{frame}[containsverbatim]
+\frametitle{Example: moderator is an R factor}
+
+<<ps10, fig=T, include=F>>=
+mod1 <- lm(y2 ~ x1*x3, data = dat)
+ps1 <- plotSlopes(mod1, plotx = "x1", modx = "x3")
+@
+\begin{itemize}
+\item x3 is a predictor with values ``left'' and ``right''
+\item If there are more predictors, they will be set to their central values
+(mean or mode) for calculation of predicted values
+\end{itemize}
+<<eval=F>>=
+<<ps10>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The estimated regression is}
+
+<<ps10b,echo=F,results=tex>>=
+outreg(list("Example Interaction" = mod1), tight = FALSE)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{2 lines, one for each value of modx}
+
+\includegraphics[width=12cm]{plots/t-ps10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add confidence interval}
+
+<<ps20,fig=T,include=F>>=
+ps2 <- plotSlopes(mod1, plotx = "x1", modx = "x3", interval = "confidence") 
+@
+
+<<>>=
+<<ps20>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add confidence interval}
+
+\includegraphics[width=12cm]{plots/t-ps20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot a particular group}
+
+<<ps30a,fig=T,include=F>>=
+ps3a <- plotSlopes(mod1, plotx = "x1", modx = "x3", modxVals = c("left"), interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps30a>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot of values for "left" group}
+
+\includegraphics[width=12cm]{plots/t-ps30a}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot of values for "right" group}
+
+<<ps30b,fig=T,include=F>>=
+ps3b <- plotSlopes(mod1, plotx = "x1", modx = "x3", modxVals = c("right"), interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps30b>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Note my hard work to keep colors consistent}
+
+\includegraphics[width=12cm]{plots/t-ps30b}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Numeric moderator}
+
+\begin{frame}
+\frametitle{What if the modx variable is numeric?}
+\begin{itemize}
+\item When modx is numeric, then particular values need to be chosen for
+plotting
+\item Originally, I thought users would explicitly specify values, modxVals
+\item Have received many user requests, rockchalk 1.8 offers a variety of
+selection methods.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What if the modx variable is numeric?}
+\begin{itemize}
+\item psychologists generally prefer $mean-std.dev.,$ $mean$, $mean+std.dev.$
+(or more standard deviations)
+\item other fields prefer quantiles, such as the 25\%, 50\% and 75\%
+\item User selects either particular values or a ``divider algorithm''
+to get this done
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Defaults}
+
+<<ps50,fig=T,include=F>>=
+mod2 <- lm(y ~ x1*x2, data = dat) 
+ps5 <- plotSlopes(mod2, plotx = "x1", modx = "x2")
+@
+
+<<eval=F>>=
+<<ps50>>
+@
+
+The default will select the 3 middle quartiles
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotSlopes with numeric modx}
+
+\includegraphics[width=12cm]{plots/t-ps50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add confidence intervals}
+
+<<ps60,fig=T,include=F>>=
+ps5 <- plotSlopes(mod2, plotx = "x1", modx = "x2", interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps60>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotSlopes with confidence intervals}
+
+\includegraphics[width=12cm]{plots/t-ps60}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Change the algorithm to chose modx values}
+
+<<ps70,fig=T,include=F>>=
+ps7 <- plotSlopes(mod2, plotx = "x1", modx = "x2", modxVals = "std.dev.", interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps70>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{std.dev, +/-}
+
+\includegraphics[width=12cm]{plots/t-ps70}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Want a lot of lines? n = 5}
+
+<<ps80,fig=T,include=F>>=
+ps8 <- plotSlopes(mod2, plotx = "x1", modx = "x2", modxVals = "std.dev.", n = 5, interval = "confidence")
+@
+
+<<eval=F>>=
+<<ps80>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{5 lines}
+
+\includegraphics[width=12cm]{plots/t-ps80}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Conclusion about plotSlopes}
+\begin{itemize}
+\item If you don't want a plot, but rather just the newdata matrix and the
+predicted values, please look at newdata() and predictOMatic().
+\item plotCurves() can do all of that stuff, and it works with nonlinear
+models and glm
+\item Have studied extension to other regression packages. 
+
+\begin{itemize}
+\item package writers are inconsistent, don't provide predict methods. 
+\item Conf. Intervals for glm objects controversial
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Analyzing Interaction effects}
+
+Selway \& Templeman (2012) ``Myth of Consocionalism?'' \emph{Comparative
+Political Studies}
+
+Model has PR{*}EthnicFractionalization
+
+\includegraphics[width=9cm]{4_home_pauljohn_SVN_SVN-guides_Rcourse_rockchalk-2013_importfigs_Selway-Tempelman-01.png}
+
+The ``marginal effect'' is the slope ($\hat{\beta}_{PR}+\hat{\beta}_{EF\cdot PR}EF_{i})PR_{i}$
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{testSlopes}
+\begin{itemize}
+\item \Rfunction{plotSlopes()}creates an output object that allows a 'simple-slopes'
+analysis of statistical significance.
+\item If modx is 
+
+\begin{description}
+\item [{categorical:}] simply calculates the slope of the relationship
+and tests whether it is different from 0
+\item [{numeric:}] calculates a Johnson-Neyman analysis: for which values
+of modx would the slope of plotx be different from 0?\end{description}
+\begin{itemize}
+\item J-N: if the fitted model is $\hat{y}_{i}=\hat{\beta}_{0}+(\hat{\beta}_{1}+\hat{\beta}_{3}x2_{i})x1_{i}$,
+for which values of $x2_{i}$ is $(\hat{\beta}_{1}+\hat{\beta}_{3}x2_{i})$
+statistically significantly different from 0?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{testSlopes}
+
+<<ts10,include=T>>=
+ps5ts <- testSlopes(ps5)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A method for testSlopes objects (plot.testSlopes)}
+
+<<ts20,fig=T,include=F>>=
+plot(ps5ts)
+@
+
+<<eval=F>>=
+<<ts20>>
+@
+
+rockchalk is an S3 type R package.
+
+If you are uncertain about the significance of S3 and the term ``method'',
+I strongly recommend you get a copy of Friedrich Leisch, ``Creating
+R Packages: A Tutorial'' (available in CRAN contributed documentation)
+which has many excellent insights!
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plot of a testSlopes object}
+
+\includegraphics[width=12cm]{plots/t-ts20}
+
+Note: intended verbosity of labels \& legend
+
+\end{frame}
+
+
+\lyxframeend{}\section{Free Lunch}
+
+\begin{frame}[containsverbatim]
+\frametitle{Mean-Center, Residual-Centered Regressions}
+\begin{itemize}
+\item Start with 
+
+
+lm (y \textasciitilde{} x1 {*} x2 + x3, data = dat)
+
+\item which implies
+
+
+lm (y \textasciitilde{} x1 + x2 + x1:x2 + x3, data = dat)
+
+\item Should it matter if we replace x1 with
+
+\begin{itemize}
+\item mean centered values, x1c = (x1 - mean(x1)) by fitting
+
+
+lm(y \textasciitilde{} x1c + x2 + x1c:x2 + x3, data = dat)
+
+\end{itemize}
+\item Or if we replace x1:x2 by with the
+
+\begin{itemize}
+\item ``residual centered'' value of the interaction term, which is the
+residual from this regresision?
+
+
+lm( (x1{*}x2) \textasciitilde{} x1 + x2, data = dat)
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Several authorities say those changes may be important}
+\begin{itemize}
+\item Cohen, Cohen, Aichen \& West (2002) strongly endorse mean-centering
+\item Little, T. D., Bovaird, J. A., \& Widaman, K. F. (2006). On the Merits
+of Orthogonalizing Powered and Product Terms: Implications for Modeling
+Interactions Among Latent Variables. \emph{Structural Equation Modeling,}
+13(4), 497-519.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{3 ease of use functions in rockchalk}
+\begin{itemize}
+\item \Rfunction{standardize()} calculates centered \& scaled values of
+all variables and re-fits the model.
+\item \Rfunction{meanCenter()} adjusts predictors by subtracting observed
+means
+\item \Rfunction{residualCenter()} calculates one variant of orthogonal
+regression
+\item rockchalk supplies \Rfunction{print()}, \Rfunction{predict()} and
+\Rfunction{summary()} methods for these functions
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Mean-Center}
+\begin{itemize}
+\item Fit some big multiple regression
+\end{itemize}
+\begin{lstlisting}
+m1 <- lm(someDV ~ x1 + x2 + x3 * x4, data = dat)
+\end{lstlisting}
+
+\begin{itemize}
+\item Center only the interactive predictors 
+\end{itemize}
+\begin{lstlisting}
+m1 <- lm(someDV ~ x1 + x2 + x3c*x4c, data = dat)
+m1mc <- meanCenter(m1)
+\end{lstlisting}
+
+
+ends up fitting
+
+\begin{lstlisting}
+lm(someDV ~ x1 + x2 + x3c + x4c + x3c:x4c, data = dat)
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Mean-Center}
+\begin{itemize}
+\item Center all predictors
+\end{itemize}
+\begin{lstlisting}
+m1mc2 <- meanCenter(m1, centerOnlyInteractors = FALSE)
+\end{lstlisting}
+
+
+ends up fitting
+
+\begin{lstlisting}
+lm(someDV ~ x1c + x2c + x3c + x4c + x3c:x4c, data = dat)
+\end{lstlisting}
+
+\begin{itemize}
+\item Center also the DV
+\end{itemize}
+\begin{lstlisting}
+m1mc3 <- meanCenter(m1, centerDV= TRUE, centerOnlyInteractors = FALSE)
+\end{lstlisting}
+
+
+ends up fitting
+
+\begin{lstlisting}
+lm(someDVc ~ x1c + x2c + x3c + x4c + x3c:x4c, data = dat)
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Why this is fool's gold}
+\begin{columns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Changing a predictor column from $X_{i}$ to $X_{i}-5$ cannot improve
+statistical precision. 
+\item It simply re-positions the Y axis.
+
+\begin{itemize}
+\item Slope same, standard error of slope same
+\item Intercept is ``bigger''
+\item Predicted value at Y axis is more precise, due to hour-glass shape
+of CI
+\end{itemize}
+\end{itemize}
+
+\column{6cm}
+
+
+<<mc10, fig=T, include=F, height = 4, width = 4>>=	
+dat$y5 <- dat$y + rnorm(length(dat$y), sd = 30)
+mod5 <- lm(y5 ~ x1, data = dat)
+plotSlopes(mod5, plotx = "x1", interval = "confidence", plotLegend = F, xlim = c(0, 1.05 * max(dat$x1)), axes = F)
+axis(1)
+axis(2, pos = 0)
+axis(2, pos = mean(dat$x1), labels = FALSE)
+arrows(0.3, 1.15*mean(dat$y5), 0.80 * mean(dat$x1), 1.2*mean(dat$y5), col = "red")
+@
+
+
+\includegraphics[width=6cm]{plots/t-mc10}
+
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I was not so sure about residual centering}
+\begin{itemize}
+\item The residualCenter() function leaves the linear terms in the model
+unchanged, but re-constructs interactive variables, replacing \Rinput{x3:x4}
+with the residual from \Rinput{\textrm{lm(x3{*}x4 \textasciitilde{} x3+x4)}},
+which I'm calling ``x3.X.x4''
+\end{itemize}
+\begin{lstlisting}
+m1rc <- lm(someDV ~ x1 + x2 + x3 + x4 + x5 + x6 + x5.X.x6, data = dat)
+\end{lstlisting}
+
+\begin{itemize}
+\item This is one way to create truly orthogonal columns. Before introduction
+of QR decomposition, it might have actually been a good way to do
+so
+\item Requires some serious fancy coding to make interactions like \Rinput{x3{*}x4{*}x5}
+work correctly (see also \Rfunction{predict.mcreg()})
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Alternatives seem better, but they are not actually different}
+\begin{itemize}
+\item The predicted values are identical
+\item See the rockchalk vignette, which gives a full argument.
+\item In directory with this presentation, find the small example file \noun{curve-example-1.R}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Conclusions}
+
+\begin{frame}[containsverbatim]
+\frametitle{Other functions worth mentioning}
+\begin{itemize}
+\item mcDiagnose: splattering of multicollinearity diagnostics
+\item getDeltaRsquare, getPartialCor: partial and semi-partial correlations
+\item See the rockchalk vignette, which gives a full argument.
+\item In directory with this presentation, find the small example file \noun{curve-example-1.R}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Guessing}
+
+\begin{frame}
+\frametitle{What makes package building easier?}
+
+\Rinput{roxygen2} (Hadley Wickham, Peter Danenberg, Manuel Eugster). 
+\begin{description}
+\item [{Usual~R~development:}] one writes R files, and documentation
+files in a separate directory. Very inconvenient to keep documents
+in sync with R code.
+\item [{roxygen2~approach:}] put documentation in the R files, use functions
+to extract \& format the documents.
+\end{description}
+\end{frame}
+
+\begin{frame}
+\frametitle{Am I competing with "car", "rms", "memisc", "texreg", etc?}
+\begin{itemize}
+\item No. ``car'' and ``rms'' are established industry leading packages
+that support widely sold textbooks. Those authors are ``up there'',
+I'm ``down here.'' 
+\item No. 
+
+\begin{itemize}
+\item I'm filling in perceived gaps to create convenience
+\end{itemize}
+\item Yes. Perhaps I think their 
+
+\begin{itemize}
+\item jargon is difficult (tough for me $\Longrightarrow$impossible for
+students)
+\item their functions are clumsy, or 
+\item I think their source code is not clear
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{document}

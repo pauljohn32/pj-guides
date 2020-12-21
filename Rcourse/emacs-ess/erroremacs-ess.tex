@@ -1,0 +1,1268 @@
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+
+\newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+
+% use 'handout' to produce handouts
+% \documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+
+% \setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\small} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+% \setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% \mode<presentation>
+% {
+% \usetheme{KU}
+% \usecolortheme{dolphin} %dark blues
+% }
+
+
+%%   not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+
+
+\begin{document}
+
+% \beamerdefaultoverlayspecification{<+->}
+
+\selectlanguage{english}%
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\date[2015]{2015}
+
+\makebeamertitle
+
+
+\begin{frame} 
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+\section{Why Use Emacs?}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Why Use Emacs? Multidimensional Availability}
+  \begin{itemize}
+  \item All Platforms (Windows, Mac, Linux, Unix, Atari,...)
+  \item Across Time: Will Always Exist (because eager fanatics maintain it)
+  \item Free \& Open Source
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Why Use Emacs? Super Tools}
+  \begin{itemize}
+  \item Emacs has ``major modes'' for most languages and types of files
+    (C, C++, Lisp, R, SAS, Stata, \LaTeX{}, English, $\ldots$). 
+  \item Incredibly powerful text management tools
+
+    \begin{itemize}
+    \item ``compare'' documents or buffers
+    \item Regular expression search and replace (even across many files)
+    \item Copy, paste, insert columns
+    \end{itemize}
+  \item Enormous power to edit very large files
+  \item At some point in the future, you may find that the only editor
+    that is capable for a particular project is Emacs. Prepare for
+    that time by using Emacs for other projects as well! 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Check the R FAQ}
+  \begin{itemize}
+  \item R FAQ, by Kurt Hornik (Version 2.15.2012-09-19):
+    \begin{lstlisting}[basicstyle={\small}, xleftmargin=0in]
+6.2 Should I run R from within Emacs?
+
+Yes, definitely. Inferior R mode provides a 
+readline/history mechanism, object name 
+completion, and syntax-based highlighting 
+of the interaction buffer using Font Lock 
+mode, as well as a very convenient interface 
+to the R help system.
+
+Of course, it also integrates nicely with the 
+mechanisms for editing R source using Emacs. 
+One can write code in one Emacs buffer and 
+send whole or parts of it for execution to R;
+this is helpful for both data analysis and 
+programming. One can also seamlessly integrate 
+with a revision control system, in order to 
+maintain a log of changes in your programs 
+and data, as well as to allow for the 
+retrieval of past versions of the code.  
+
+In addition, it allows you to keep a record 
+of your session, which can also be used for 
+error recovery through the use of the 
+transcript mode.
+    \end{lstlisting}
+
+  \end{itemize}
+\end{frame}
+
+
+\section{Emacs Anatomy}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Start Emacs. Here's What I See}
+
+  \includegraphics[width=11cm]{importfigs/emacs-start-01.png}
+
+  1: Pull Down Menus 2. Button Bar 3. Status Bar 4. Mini-buffer
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Terminology}
+  \begin{itemize}
+  \item Frame: That ``whole thing''. 
+  \item Window: The content display area inside a frame
+  \item Buffer: A chunk of ``content,'' (letters and words) that can
+    be shown inside a window.
+  \item Check for yourself.
+
+    \begin{itemize}
+    \item Chose File -> Split Window. You can have 2 ``windows'' showing same
+      ``buffer''
+    \item Choose File -> New Frame
+    \item Choose Menu Buffers to select a buffer to display in the currently
+      focused Window
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Emacs "Major Mode" system}
+  \begin{itemize}
+  \item We want the editor to customize itself to the language we are working
+    with.
+  \item A display of R code should differ from Lisp or Java
+  \item Emacs will guess the mode you want from the file extension (if you
+    open a file)
+  \item Or you can specify the mode while inside the session
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Emacs "Major Mode" system}
+  \begin{itemize}
+  \item Emacs automatically chooses the mode for you, from the file
+    name you opened.
+  \item Here's how to manually change the mode, if you want to. (M is
+    the Meta key, usually ``Alt''
+
+    \begin{itemize}
+    \item M-x text-mode
+    \item M-x c-mode
+    \item M-x tex-mode
+    \item M-x R-mode 
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Major Modes try to help with Formatting}
+  \begin{itemize}
+    \item The TAB key should indent a line.
+    \item Position the cursor ANYWHERE in a line and hit tab (Not
+      necessary to be at start of line).
+    \item SHOULD Indent properly.
+    \item Usually, languages want a certain number of spaces, and NOT
+      the literal TAB to be inserted. Emacs handles that.
+    \item The shortcut paragraph re-shape key, M-q, can be configured
+      to work very carefully, to re-shape long lines.  It works very
+      well in the major modes for LaTeX, for example. Not so well in
+      ESS at the current time.
+   \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Comment Characters}
+  \begin{itemize}
+      \item Programming languages differ in the comment symbol
+      \item Major modes generally know and can insert and arrange them
+        for you.
+      \item Hit TAB to force re-indentation
+      \item Comment and un-comment blocks.
+        \begin{enumerate}
+          \item Highlight a block of text
+          \item Hit the keystroke M-;. 
+          \item In an R file, that inserts two pound signs at front of
+            lines
+          \item If you insert one pound sign, text will get pushed to the
+            right when you hit TAB.
+          \item If you insert 3 pound signs, text will get pushed
+            flush left
+       \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\section{No Learning Curve}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Understand the History of Emacs}
+  \begin{itemize}
+  \item Emacs was created in the days before
+
+    \begin{itemize}
+    \item mice
+    \item multi-windowed ``desktop'' environments
+    \item Windows or Macintosh computers
+    \end{itemize}
+  \item Can still be used in a ``keyboard'' only world
+
+    \begin{itemize}
+    \item Combinations using (C) Control, (S) Shift
+      (S), and (M) Meta key (usually ``Alt'')
+    \item These are are featured in the Emacs tutorial
+    \item Note the prevalence of ``Emacs cheat sheets'' floating about on
+      the Internet
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Properly Understood, the Emacs Learning Curve is NOT STEEP}
+  \begin{itemize}
+  \item If you have a 
+    \begin{itemize}
+      \item a mouse, and 
+      \item Windows, Mac, Linux, or Unix
+    \end{itemize}
+   then Emacs will run with pull down menus.
+  \item It is tremendously programmable, most people can use Emacs
+    comfortably even if they don't customize it.
+  \item Settings that seem unusual can usually be changed, and I'll
+    handle most of that for you.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Don't Listen To People Who Want You To Memorize C-x C-g C-h whatever...}
+  \begin{itemize}
+  \item You can learn key-stroke combinations later, if you need them.
+  \item But you don't need most of them now.
+  \item What's easier to remember?
+
+    \begin{itemize}
+    \item Click the Edit Menu, Choose select all, or
+    \item Type C-x h (Control-x, release both keys, then the letter ``h'')
+    \end{itemize}
+  \item What's easier to remember?
+
+    \begin{itemize}
+    \item Hit the ``page down'' key on the keyboard for a few seconds and
+      watch a file fly by, or
+    \item Type ``M->'' (Alt, Shift and the greater-than sign) to go to
+      the bottom
+    \item I usually just hit ``page down'' for a moment. Yesterday I
+      had R output that was 150,000 lines and M-> would have been
+      useful.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Example of Previous}
+  \begin{itemize}
+  \item Here is an example from ``Experienced Programmers Introduction to
+    Emacs'' \url{http://weatherall.4all2u.com/work/emacs.htm}
+  \end{itemize}
+  \begin{lstlisting}[basicstyle={\small},tabsize=2]
+    Now to a more conventional learning order
+    C-a 	move to beginning of line
+    C-e 	move to end of line
+    M-< 	move to the beginning of the file
+    M-> 	move to the end of the tutorial.
+    C-k 	delete rest of line
+    
+    <Delete> 	delete the character just before the cursor
+    C-d 	delete the next character after the cursor
+  \end{lstlisting}
+
+  \begin{itemize}
+  \item To do those things, I use the mouse, delete key, and the arrow keys. 
+  \item I don't use Control key combinations that are unique to Emacs
+    very often.  If I did, I'd feel helpless when I had to use some
+    other editor. The HOME and END keys work fine.
+    Or arrow keys. I would only need C-a if I had no arrow keys, and no
+    mouse!
+  \item I don't deny the keystrokes might be faster, \emph{if you remember them}. 
+  \item New users should not become preoccupied
+    with memorizing C, M and S sequences. Note frequent needs, then
+    learn those keystrokes.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Another Intimidating Example}
+
+  Useful Emacs bits 'n' bobs \url{http://www.insectnation.org/howto/emacs-tips}
+
+  \begin{lstlisting}
+    Here's a few handy key combinations I wish I'd been told about when I started using emacs:
+
+    C-g or ESC ESC ESC: cancel minibrowser session
+    C-s: search for text
+    C-r: search for text backwards
+    C-%: replace text (press space to okay each suggested instance
+    C-M-%: replace regex (press space to okay each suggested instance
+    C-[space]: place mark (I don't use this...see above re. region selection)
+    C-w: cut region (std emacs)
+    M-w: copy region (std emacs)
+    C-k: cut line
+    C-y: paste (yank)
+    C-l: recentre buffer window vertically around active line
+    C-x C-f: open (find) file in buffer
+    C-x C-s: save buffer to file
+    C-x C-w: save buffer to new file
+    C-x C-z: stop (pause) emacs process (re-start with shell fg)
+    C-x k: kill buffer
+    C-x b: change active buffer
+    C-x 1: display only current buffer window
+    C-x 2: split buffer window
+    C-x 0: kill current buffer pane
+    C-x 4 f: open file in new window
+    C-x 4 b: open buffer in new window
+    C-x 5 2: open new frame
+    C-x 5 0: kill current frame
+    C-x 5 f: open file in new frame
+    C-x 5 b: open buffer in new frame
+    C-x o: switch between active sub-window
+    C-x D: enter the very nifty dired-mode
+    M-x global-font-lock-mode: toggle syntax highlighting
+    M-x perl-mode: a lot of code highlights fairly well in Perl mode
+    M-x goto-line: jump to line
+    F10: access menus in text mode (via the minibuffer)
+    M-x byte-compile-file .emacs: compile .emacs or another elisp file for faster operation
+  \end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Avoid the Emacs Tutorial Until Later}
+  \begin{itemize}
+  \item Emacs provides a nearly complete desktop environment.
+  \item The Emacs tutorial emphasizes memorization of keystrokes that
+    are not truly necessary with current Emacs.
+  \item Instead, \emph{listen to me!} Use my init file. Make Emacs behave
+    in a more familiar way.
+  \item We don't have to sacrifice on any of the other very powerful features
+    of Emacs 
+  \item Emacs enthusiasts are able to remember hundreds of key
+    combinations, but I can't. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{CUA Mode: Good Fix for Common "Problem"}
+  \begin{itemize}
+  \item People are accustomed to cut and paste keys (from MS or Macintosh):
+
+
+    \begin{tabular}{|c|c|}
+      \hline 
+      keystroke &
+      result\tabularnewline
+      \hline 
+      \hline 
+      C-x &
+      cut\tabularnewline
+      \hline
+      C-c &
+      copy\tabularnewline
+      \hline 
+      C-v &
+      paste\tabularnewline
+      \hline 
+      C-z &
+      undo\tabularnewline
+      \hline 
+    \end{tabular}
+
+  \item Emacs default keystrokes are
+
+
+    \begin{tabular}{|c|c|}
+      \hline 
+      keystroke &
+      result\tabularnewline
+      \hline 
+      \hline 
+      C-w &
+      cut (``wipe'' in Emacs-speak)\tabularnewline
+      \hline 
+      M-w &
+      copy\tabularnewline
+      \hline 
+      C-y &
+      paste (``yank'' in Emacs-speak)\tabularnewline
+      \hline 
+      C-\_ &
+      undo\tabularnewline
+      \hline 
+    \end{tabular}
+
+  \item Fix. Turn on ``CUA mode'' in Emacs. Will make C-x, C-v, C-c, C-z
+    do what you expect.
+  \item I turn on CUA mode in my init file, but now it can also be
+    done in a pull down menu. Look under Options.
+  \item Potential problem: Emacs has many keystroke combinations
+    that use C and M and anything we do to ``override'' them may cause
+    trouble. But most of these CUA bugs have been solved.
+  \item As an example of a bug, try to read the Emacs Tutorial with CUA mode
+    on. (Click the Emacs Help menu, choose Tutorial). The tutorial presumes
+    you can type C-v to go to the next ``page'' (in the old-fashioned
+    terminal sense of displaying the next ``screen sized chunk''). It
+    is necessary to turn off CUA mode to make any progress inside the
+    Emacs tutorial.
+  \item Of course, the fact that the first thing in the Emacs tutorial is
+    how to see the ``next screen'' with C-v illustrates my previous
+    point, that the Emacs tutorial is addressed to a much different user
+    audience than this presentation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{CUA mode Rectangular Selection Super-Power}
+  \begin{itemize}
+  \item Sometimes, you need to highlight a rectangular column of text
+    and copy and paste it.
+  \item This is a secret power of CUA mode! Very convenient
+  \item Here is the CUA way.
+
+    \begin{itemize}
+    \item Move the cursor ``top left'' of a rectangle you want to select
+    \item Hit ``C-return''
+    \item Use arrow keys to expand rectangle. Highlight will display a rectangle.
+    \end{itemize}
+  \item Cut, copy, paste \emph{just work!}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Customizations I Recommend}
+  \begin{itemize}
+  \item When Emacs starts, it reads a series of configuration files
+
+    \begin{itemize}
+    \item Some are ``system-wide''
+    \item Some are user specific (in the directory ~/.emacs.d)
+    \end{itemize}
+  \item I customize the settings thusly.  
+
+    \url{http://pj.freefaculty.org/Software/Emacs/init.el}
+
+  \item An administrator can drop that file in the Emacs install
+    folder under site-lisp/site.start.d
+  \item A user should create a folder .emacs.d in their home folder
+    and drop init.el in there
+
+    \begin{itemize}
+    \item Emacs will create ``~/.emacs.d'' folder for you if you use
+      pull down menu ``Options -> Save Options''
+    \item .emacs.d is a ``hidden'' folder, a file manager may not want
+      to show it to you.  Try harder.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Here's my Emacs init file (on my laptop 2015-02-04}
+
+  \begin{lstlisting}[basicstyle={\tiny},language=Lisp,numbers=left,numberstyle={\tiny},tabsize=2]
+ ;; Paul Johnson
+
+;; UPDATE: Because Emacs ESS changes made this MUCH easier, my
+;; re-work gets shorter :=)
+
+;; INSTRUCTIONS. Copy this file into the 
+;; folder ~/emacs.d, so its name would be ~/emacs.d/init.el
+;; or copy it into the Emacs site-start.d folder.
+
+;; R USER PREVIEW.
+;; Here are my special features related to ESS with R.
+
+;; 1. Shift+Enter will send the current line to R, and it will start R
+;; if it is not running.  ESS 13-05 chose instead CTL+Enter, which I
+;; DO NOT want because it conflicts with CUA mode. 
+;; 2. R will assume the current working directory is the document directory.
+;; 3. R runs in its own "frame" 
+;; 4. Emacs help pops up in its own frame. 
+
+
+;; JUSTIFICATION.  The intention is to make Emacs work more like a
+;; "modern" GUI editor. 
+;; See my companion lecture 
+;; "Emacs Has No Learning Curve"
+;; http://pj.freefaculty.org/guides/Rcourse
+
+
+;; Paul Johnson <pauljohn@ku.edu>
+;; 2012-11-24
+;;
+;; Conflicts between Emacs-ESS and SAS usage forced me to make
+;; some changes. And for no benefit, as SAS mode still not great.
+;; I had to cut out a lot of framepop stuff.
+;;
+
+
+;; 2013-07-10 TODO: Find out if this is still necessary, or for
+;; which versions of windows.
+
+;; Section I. Windows OS work-arounds
+;; 20141222: seems unnecessary now
+;;(if (eq system-type 'windows-nt)
+;;    (setq use-file-dialog nil)) 
+;; There's been a chronic problem with file selection dialogs on Windows
+;; Maybe you commment previous out and see if your Windows is fixed.
+
+
+;; Org-mode with R doesn't work without this
+;; http://orgmode.org/worg/org-contrib/babel/how-to-use-Org-Babel-for-R.html
+(custom-set-variables
+ '(ansi-color-names-vector ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
+ '(cua-auto-tabify-rectangles nil)
+ '(custom-enabled-themes (quote (whiteboard)))
+ '(org-babel-load-languages (quote ((emacs-lisp . t) (R . t))))
+ '(org-confirm-babel-evaluate nil)
+ '(tab-stop-list (quote (8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 4))))
+
+;; Section II. Keyboard and mouse customization
+
+;; IIA: make mouse selection work in the usual Mac/Windows way
+
+(delete-selection-mode t) ; delete seleted text when typing
+
+;; In Linux, I see weirdness in Emacs 24 with paste and clipboard. Confusing!
+;; http://stackoverflow.com/questions/13036155/how-to-to-combine-emacs-primary-clipboard-copy-and-paste-behavior-on-ms-windows
+(setq select-active-regions t)
+(global-set-key [mouse-2] 'mouse-yank-primary)  ; make mouse middle-click only paste from primary X11 selection, not clipboard and kill ring.
+
+;; highlight does not alter KILL ring
+(setq mouse-drag-copy-region nil)
+
+
+;; IIB: keyboard customization
+
+;; CUA mode is helpful not only for copy and paste, but also C-Enter is rectangle select
+(cua-mode t) ; windows style binding C-x, C-v, C-c, C-z
+(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+;;20130717(setq cua-keep-region-after-copy t) ;; Selection remains after C-c
+
+;; write line numbers on left of window
+;; Caution: if you do this, it makes Emacs much slower!
+;;(global-linum-mode 1) ; always show line numbers
+
+
+;; Section III. Programming conveniences:
+(show-paren-mode t) ; light-up matching parens
+(global-font-lock-mode t) ; turn on syntax highlighting
+(setq text-mode-hook (quote (turn-on-auto-fill text-mode-hook-identify)))
+
+;; Section IV. ESS Emacs Statistics
+
+;; start R in current working directory, don't let R ask user
+(setq ess-ask-for-ess-directory nil)
+
+;; ESS 13.05 default C-Ret conflicts with CUA mode rectangular selection.
+;; Change shortcut to use Shift-Return
+;; Suggested by Vitalie Spinu ESS-help email 2013-05-15
+;; Revision suggested 2013-09-30 to co-exist with Windows Emacs
+;; and the load order which has ess after user init file.
+(eval-after-load "ess-mode"
+ '(progn
+   (define-key ess-mode-map [(control return)] nil)
+   (define-key ess-mode-map [(shift return)] 'ess-eval-region-or-line-and-step))
+)
+
+;; create a new frame for each help instance
+;; (setq ess-help-own-frame t)
+;; If you want all help buffers to go into one frame do:
+(setq ess-help-own-frame 'one)
+
+;; I want the *R* process in its own frame
+;; This was a broken feature in ESS, fixed now. Helps massively!
+(setq inferior-ess-own-frame t)
+;;(setq inferior-ess-same-window nil)
+
+
+;; In Spring 2012, we noticed ESS SAS mode doesn't work well
+;; at all on Windows, that lead to removal of lots of stuff
+;; I really liked. Even then, we couldn't get much satisfaction.
+;;
+;; Following was needed for that, otherwise, it is not needed
+;; (load "ess-site")
+;; (ess-sas-global-unix-keys)
+
+
+;; ;; ;; Section V. Customize the use of Frames. Try to make new content
+;; ;; ;; appear in wholly new frames on screen.
+;; ;; ;; 
+;; ;; ;; V.A: Discourage Emacs from splitting "frames", encourage it to pop up new
+;; ;; ;; frames for new content.
+;; ;; ;; see: http://www.gnu.org/software/emacs/elisp/html_node/Choosing-Window.html
+;; (setq pop-up-frames t)
+;; (setq special-display-popup-frame t)
+(setq split-window-preferred-function nil) ;discourage horizontal splits
+;; (setq pop-up-windows nil)
+
+
+;; V.C: Make files opened from the menu bar appear in their own
+;; frames. This overrides the default menu bar settings.  Opening an
+;; existing file and creating new one in a new frame are the exact
+;; same operations.  adapted from Emacs menu-bar.el
+(defun menu-find-existing ()
+  "Edit the existing file FILENAME."
+  (interactive)
+  (let* ((mustmatch (not (and (fboundp 'x-uses-old-gtk-dialog)
+                              (x-uses-old-gtk-dialog))))
+         (filename (car (find-file-read-args "Find file: " mustmatch))))
+    (if mustmatch
+        (find-file-other-frame filename)
+      (find-file filename))))
+(define-key menu-bar-file-menu [new-file]
+  '(menu-item "Open/Create" find-file-other-frame
+	      :enable (menu-bar-non-minibuffer-window-p)
+	      :help "Create a new file"))
+(define-key menu-bar-file-menu [open-file]
+  '(menu-item ,(purecopy "Open File...") menu-find-existing
+              :enable (menu-bar-non-minibuffer-window-p)
+              :help ,(purecopy "Read an existing file into an Emacs buffer")))
+
+
+;; V.D  Open directory list in new frame.
+(define-key menu-bar-file-menu [dired]
+  '(menu-item "Open Directory..." dired-other-frame
+	      :help "Read a directory; operate on its files (Dired)"
+	      :enable (not (window-minibuffer-p (frame-selected-window menu-updating-frame)))))
+
+;; Section VI: Miscellaneous convenience
+
+;; Remove Emacs "splash screen"
+;; http://fuhm.livejournal.com/
+(defadvice command-line-normalize-file-name
+  (before kill-stupid-startup-screen activate)
+  (setq inhibit-startup-screen t))
+(setq inhibit-splash-screen t)
+
+
+;; Show file name in title bar
+;; http://www.thetechrepo.com/main-articles/549
+(setq frame-title-format "%b - Emacs")
+
+;; I'm right handed, need scroll bar on right (like other programs)
+;;(setq scroll-bar-mode-explicit t)
+;;(set-scroll-bar-mode `right) 
+
+;; Make Emacs scroll smoothly with down arrow key.
+;; 2011-10-14
+;; faq 5.45 http://www.gnu.org/s/emacs/emacs-faq.html#Modifying-pull_002ddown-menus
+(setq scroll-conservatively most-positive-fixnum)
+
+;; adjust the size of the frames, uncomment this, adjust values
+;;(setq default-frame-alist '((width . 90) (height . 65)))
+
+
+;; Remember password when connected to remote sites via Tramp
+;; http://stackoverflow.com/questions/840279/passwords-in-emacs-tramp-mode-editing
+;; Emacs "tramp" service (ssh connection) constantly
+;; asks for the log in password without this
+(setq password-cache-expiry nil)
+
+;; Section : Emacs shells work better
+;; http://snarfed.org/why_i_run_shells_inside_emacs
+(setq ansi-color-for-comint-mode 'filter)
+(setq comint-prompt-read-only t)
+(setq comint-scroll-to-bottom-on-input t)
+(setq comint-scroll-to-bottom-on-output t)
+(setq comint-move-point-for-output t)
+
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+  \end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Selection of text}
+  \begin{itemize}
+  \item The Mouse works!
+  \item But most Emacs documentation wants you to act as though you
+    don't have one. Use C-space to begin a selection,
+    followed by movement keys$\ldots$.  
+  \item Emacs defaults changed Emacs-23 and 24 to make Emacs work in a
+    more usual way. My my init file has only a minor fiddle now.
+
+    \begin{lstlisting}
+      (delete-selection-mode t) ; delete seleted text when typing
+    \end{lstlisting}
+
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Shortcuts I do remember}
+  \begin{itemize}
+  \item There are some keyboard shortcuts I do remember 
+
+    \begin{itemize}
+    \item C-s: I search frequently, this is easier than the menu Edit -> Search
+      (C-r searches in reverse)
+    \item M-\%: Query replace 
+    \item C-M-\%: Regular-Expression Query replace (can't live without them)
+    \item M-x: execute commands.
+    \item C-g : get out of jail free. If you mistakenly start something in the
+      minibuffer, C-g gets out of it.
+    \item M-q : re-shapes an ill-formed paragraph
+    \item M-; : for a selected region, will ``comment'' and ``uncomment''
+      all lines.
+    \end{itemize}
+  \item But for things that I only do once every 6 months, it is easier to
+    find them in a menu or type them by name. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Using M-x}
+  \begin{itemize}
+  \item M-x tells the minibuffer to get ready for a command
+  \item TAB completion works inside there, so if you remember the first few
+    letters of a command, this is an easy way to do things.
+  \item Example: indent code in a region
+
+    \begin{itemize}
+    \item Highlight some text and type: \lstinline!M-x indent-region!
+    \item After that, the indentation occurs, but Emacs minibuffer reminds me
+      I could have used a short cut:
+
+
+      \begin{lstlisting}
+        You can run the command 'indent-region' with C-M-\
+      \end{lstlisting}
+
+
+    \end{itemize}
+  \item Repeat previous using TAB completion feature of minibuffer
+
+    \begin{itemize}
+    \item Highlight some text and type: \lstinline!M-x inden!
+
+
+      Stop typing, hit the tab key once or twice. A set of legal completions
+      pops up, one of which is ``indent-region''. 
+
+    \item Middle-click the one you want to choose it
+    \item Hit enter
+    \end{itemize}
+  \item Example: accidentally open a read only file. Some file saved from
+    R sessions are marked ``read only'' automatically. Tedious! I want
+    to edit!. Emacs can try to make it writable.
+
+    \begin{itemize}
+    \item Run \lstinline!M-x toggle-read-only!
+    \item Emacs minibuffer pops up a reminder 
+      \begin{lstlisting}
+        You can run the command "toggle-read-only" with C-x C-q
+      \end{lstlisting}
+
+
+      \begin{itemize}
+      \item (thanks very much. Which is more memorable. ``toggle-read-only''
+        or C-x C-q?)
+      \end{itemize}
+    \item Maybe the joke's on me here. 
+
+      \begin{itemize}
+      \item A reader of the first draft of this presentation pointed out that
+        in the Emacs status bar, there is a click-able thing to toggle ``read
+        only.''
+      \item But it is hidden. Look in the left side of the status bar, for two
+        percent signs \%\%
+      \item hover the mouse over the first percent sign, and pops up ``buffer
+        is read-only. Mouse-1 toggles''
+      \item It works fine, \emph{as long as you know its there. }(Reminds me of
+        the secret doors in \emph{DOOM)}
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Tools -> Compare. Example of a "power feature" in Emacs}
+  \begin{itemize}
+  \item What's the difference between two text files?
+  \item Emacs has a great compare tool that relies on the GNU program
+    ``diff'', which is available for all systems. Linux and Mac have
+    it, Windows people need to install it separately.
+
+  \item There is a Pull Down menu Tools -> Compare (Ediff). Apply to
+    buffers or files on disk
+    \end{enumerate}
+  \item 2 things happen.
+
+    \begin{itemize}
+    \item The different parts of the 2 buffers are color highlighted
+    \item A small window pops up in which I can Navigate the differences. 
+
+      \begin{itemize}
+      \item Type ``n'' to step to the next difference between the buffers, or 
+      \item ``p'' for previous.
+      \end{itemize}
+    \end{itemize}
+  \item Don't forget to hit ``q'' to close the compare setup, and then it
+    makes you type ``yes'' in full to escape.
+  \end{itemize}
+\end{frame}
+
+
+\section{ESS}
+
+\begin{frame}[containsverbatim]
+  \frametitle{R-mode is provided by the ESS package}
+
+  \includegraphics[width=11cm]{importfigs/emacs-R-mode.png}
+
+  1. ESS menu 2. Blue R starter (same as M-x R) 3. Send one line to
+  R 4. Send selection to R 5. Send current function to R. 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Start an R Session Within Emacs}
+  \begin{itemize}
+  \item Hit the big blue R button
+  \item Hopefully, R starts inside a buffer, which Emacs refers to in the
+    buffer list as {*}R{*}
+  \item If Emacs can't find R in your system, you need to do some configuration
+    work so that the R/bin folder is added to your system path (I have
+    instructions for that in the crmda computing documentation)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Some People Prefer "Splits" with Code and *R* like so}
+
+  \includegraphics[width=11cm]{importfigs/emacs-R-splits.png}
+
+  The bottom part is the ESS ``R inferior mode'', a terminal in which
+  R is running
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{I prefer Separate Frames with R}
+
+  \includegraphics[width=13cm]{importfigs/emacs-R-frames.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Start Emacs within the Desired Working Directory}
+  \begin{itemize}
+  \item Don't Start Emacs from an applications menu: It won't know where to
+    look for files.
+  \item Keep your R files where you want them, and use the File
+    Manager or Terminal to open the R file with Emacs.
+  \item The easiest way to do that is to copy an R file into the
+    desired directory, and then open that file with Emacs. 
+  \item Open an R file, Emacs automatically knows to turn on R-mode (ESS Menu
+    \& Buttons)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{I'm Willing to Fight For Frames}
+  \begin{itemize}
+  \item I want separate Frames!
+  \item Spawning more Frames is very un-Emacs-like because it goes against
+    the decades-old tradition of Emacs (during which time one could only
+    have one Frame on one terminal).
+  \item Much of my Emacs init file is aimed at forcing Emacs to Start Frames
+    with new content, rather than simply starting new buffers that
+    bump my current content out of the way.
+  \item This is an area where reasonable people can disagree. I don't
+    want Emacs to be my window manager.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Using ESS button bar}
+  \begin{itemize}
+  \item I often use the big blue R button \includegraphics{importfigs/emacs-ess-BlueR.png}
+    to start R. 
+
+    \begin{itemize}
+    \item Sometimes I use M-x R, just to prove I still can. (There was a time
+      when Emacs for Windows had no button bar, so the M-x R was the only
+      way.)
+    \end{itemize}
+  \item After starting R within Emacs, run ``getwd()'' to make sure the
+    working directory is correct.
+  \item The function evaluator \includegraphics{importfigs/emacs-ess-Function.png}
+    is really handy. While revising a function in code, hit that button
+    and Emacs sends the whole function to {*}R{*}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{ESS Menu}
+  \begin{topcolumns}%{}
+
+    \column{6cm}
+
+
+    \includegraphics[width=5cm]{importfigs/emacs-ess-Menu.png}
+
+
+    \column{6cm}
+    \begin{itemize}
+    \item The ESS menu teaches you the keyboard shortcuts. You can decide if
+      you like them.
+    \item Eval versus Eval-and-go. 
+
+      \begin{itemize}
+      \item Eval commands send instructions to {*}R{*}. 
+      \item Eval-and-go send the instructions and transfer the focus to {*}R{*}
+      \end{itemize}
+    \end{itemize}
+  \end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Roxygen}
+  \begin{itemize}
+  \item Roxygen is a framework for generating R documentation files
+  \item In the ``olden days'' (last year), an R package would have separate
+    files for R functions and the help files that went with them.
+  \item Problem: programmers found it tedious to maintain the separate help
+    files
+  \item The package roxygen2 (by Hadley Wickham, Peter Danenberg, and Manuel
+    Eugster) addresses that by 
+
+    \begin{itemize}
+    \item creating a ``language'' for writing documentation inside R code
+      files
+    \item providing functions to translate the result into documentation files
+    \end{itemize}
+  \item Even if you aren't writing a package, the Roxygen style might be a
+    nice way to prepare your documents. 
+  \item Suppose a function is declared like so
+
+
+    \begin{lstlisting}
+      myFabFunc <- function(x, y, z, a){
+        x * y * z * a
+      }
+    \end{lstlisting}
+
+
+  \item Click on the first line and from the ESS menu, choose Roxygen and
+    ``Update/generate template''. 
+  \item Observe a skeleton is created in which the function can be described
+  \end{itemize}
+  \begin{lstlisting}[basicstyle={\small}]
+
+    ##' .. content for \description{} (no empty lines) ..
+    ##'
+    ##' .. content for \details{} ..
+    ##' @title 
+    ##' @param x 
+    ##' @param y 
+    ##' @param z 
+    ##' @param a 
+    ##' @return 
+    ##' @author pauljohn
+    myFabFunc <- function(x, y, z, a){
+      x * y * z * a
+    }
+  \end{lstlisting}
+
+  \begin{itemize}
+  \item If we then fill in the sections, we will have pretty good documentation
+    for the function and it will be package-ready (more or less).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{ESS Magic I Don't use Menus and Buttons For}
+  \begin{itemize}
+  \item My shortcut: Shift+Enter sends the current line of code to {*}R{*}.
+    I think that's convenient.
+
+    \begin{itemize}
+    \item Instead, you could :
+
+      \begin{itemize}
+      \item Hit the ESS button with one arrow: \includegraphics{importfigs/emacs-ess-SingleLine.png}
+      \item Or type: C-x C-n.
+      \end{itemize}
+    \end{itemize}
+  \item Edit an existing function object:
+
+    \begin{itemize}
+    \item C-c C-d
+
+
+      The mini buffer answers, \lstinline!Object to Edit:!
+
+    \item type the name of some function, such as ``lm''
+    \item Emacs opens a buffer called ``username.lm.R'', which shows the code
+      for linear models
+    \item We can edit that file, and then re-load it into R with
+    \item C-c C-l
+    \item After that, when you run functions that access lm, your new version
+      of that function will be used.
+    \item To test this, run \lstinline!C-c C-d lm! and in the beginning insert
+      ``\code{browser()}''.
+    \item Then run lm, or simply ``example(lm)''. When the computations come
+      to the line where you put in ``browser()'', the {*}R{*} terminal
+      will stop and give you a chance to interact with the inside of that
+      function. 
+    \item To me, that is a fun feature. However, I just got an email that indicates
+      it is controversial. (See \emph{ESS- Emacs Speaks Statistics}'' Version
+      12.04-4, Section 3.4: Philosophies for using ESS. The current ESS
+      core team believes that the R code files are the ``real'' stuff
+      on which we should be working, not fiddling about with functions in
+      memory.)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{ESS Help Mode}
+  \begin{itemize}
+  \item While reading a help file in Emacs, it is possible to run the example
+    code
+  \item Example. In {*}R{*} window, ask for help on lm
+
+
+    \begin{lstlisting}
+      > ?lm
+    \end{lstlisting}
+
+
+  \item Emacs will open the help file and the menu at the top will have an
+    ESS-help menu
+  \item In the help file, move the cursor to one of the examples at the end
+    of the file.
+  \item Click the ESS-help menu and choose ``Eval Line'' or one of the other
+    options.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Transcript Mode. Record Keeping.}
+  \begin{itemize}
+  \item In the perfect world, here is what happens.
+
+    \begin{enumerate}
+    \item Save the R code file.
+    \item Close R. Then Re-start R (so we have a clean canvas).
+    \item Step through your R code file line-by-line to be sure everything runs
+      properly
+    \item Save the output file with the extension {*}.Rout (that means it becomes
+      a ``transcript'' file).
+
+
+      Some people use the extension {*}.Rt for transcript files, but for
+      me it doesn't work (don't know why, yet)
+
+    \end{enumerate}
+  \item As long as you have the R code and the transcript file, you have all
+    the records you need for future reference.
+  \item What if you are working on an R code file, but you type some commands
+    into the {*}R{*} buffer interactively?
+  \item I do that all the time. While I'm testing code, I experiment in the
+    {*}R{*} buffer, then copy commands back to the R code file. 
+  \item I should save the {*}R{*} buffer in a file {*}.Rout. Let's suppose
+    I did.
+  \item The following problem may arise. 
+
+    \begin{itemize}
+    \item I open a new R session
+    \item I run the R code file that seemed good, but then it fails!
+    \item How can that be? It worked before?
+    \end{itemize}
+  \item Obviously, something I typed interactively in the {*}R{*} buffer did
+    not get copied into the code file properly.
+  \item Solution strategy. 
+
+    \begin{itemize}
+    \item Open the {*}.Rout file in Emacs. 
+    \item Emacs recognizes that this is a transcript file
+    \item Emacs won't let me edit that transcript because it is marked ``read
+      only'', so I either have to copy it to a new file or M-x toggle-read-only.
+    \item Then
+
+      \begin{enumerate}
+      \item Select All of the text (either Menu Edit -> Select All, or type ``C-x
+        h'')
+      \item In the ESS-trans menu, choose ``Clean''.
+      \end{enumerate}
+    \item Viola! That will erase all the output from that file, and leave behind
+      only the commands that were run.
+    \end{itemize}
+  \item Along the same lines, from a reviewer of these slides, I received
+    an email about an ESS feature. Since ESS 12.03, there is an R automatic
+    output ``scrub and paste.'' The key sequence is \lstinline!C-u C-u C-y!. 
+
+    \begin{itemize}
+    \item Highlight some material in an {*}R{*} output window. It should include
+      commands and output.
+    \item Copy that selection (To copy, use either 1) M-w or 2) C-c from CUA
+      or 3) Edit menu).
+    \item Move the focus to an R code file where you want to paste in only the
+      R commands, no output. 
+
+      \begin{itemize}
+      \item If you do the ordinary paste, with C-y, you get all that messy output.
+      \item But this key sequence will ``clean'' and paste the resulting R commands.
+
+
+        \begin{lstlisting}
+          C-u C-u C-y
+        \end{lstlisting}
+
+
+      \item Note, this requires the traditional C-y (``yank'') to paste, not
+        the CUA C-v. 
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\section{Conclusion}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Emacs in Retrospect}
+  \begin{itemize}
+  \item I think the documentation and publicity that goes with Emacs does
+    it great dis-service. 
+
+    \begin{itemize}
+    \item Bill Venables, is credited with the quip: ``The first five years
+      of Emacs are the worst; after that, it's just difficult.''
+    \end{itemize}
+  \item When I first tried Emacs, I looked through the tutorial and I thought
+    ``this really is trouble.'' 
+  \item I've told people that ``Emacs is like Democracy,'' adapting the
+    comment that Winston Churchill made to the House of Commons, 1947-11-11,
+    ``Democracy is the worst form of government, except for all those
+    other forms that have been tried from time to time.``
+  \item Almost all of the really smart people I know use Emacs.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Do I Really Believe There is No Learning Curve?}
+  \begin{itemize}
+  \item Of course not. 
+  \item But I'll get more hits in Google than with my original title, ``Emacs
+    Learning Curve 77\% Less Steep Than Previously Believed'' \includegraphics[width=0.5cm]{importfigs/smilie.jpg}
+  \item I honestly believe that if people are willing to try Emacs ``my way,''
+    they can use it comfortably and benefit from many powerful features. 
+  \item It is not necessary to memorize a raft of key sequences, even though
+    many Emacs experts do so.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Emacs is Extensible}
+  \begin{itemize}
+  \item I'm not denying the fact that 
+
+    \begin{itemize}
+    \item Customizing Emacs is possible, enriching, and frustrating (all at
+      the same time)
+    \end{itemize}
+  \item Some parts of Emacs are still difficult for me
+
+    \begin{itemize}
+    \item The help menus are still as confusing to me as ever. 
+    \item I find the Customization menus still very difficult. 
+    \end{itemize}
+  \item If a person is willing to use Emacs with the init file I provide,
+    using Emacs can be a very reasonable experience. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Useful Websites}
+
+  Introduction to Emacs: \url{http://cs.earlham.edu/~psg/tutorials/vtwm_emacs/part2.html}
+
+\end{frame}
+\end{document}

@@ -1,0 +1,1620 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-beamer
+\begin_preamble
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+\end_preamble
+\use_default_options false
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\branch R
+\selected 1
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\branch effects
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\branch termplot
+\selected 1
+\filename_suffix 0
+\color #ffffff
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Branch R
+status open
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dir.create("plots", showWarnings=F)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Sweavesize{
+\backslash
+normalsize} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color{black}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.95}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=160, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par() 
+\end_layout
+
+\begin_layout Plain Layout
+
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+#pjmar <- par("mar")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",pointsize=12)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Tidbits 
+\end_layout
+
+\begin_layout Subtitle
+Parting Wisdom 
+\begin_inset Argument
+status collapsed
+
+\begin_layout Plain Layout
+Descriptive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Paul E.
+ Johnson
+\begin_inset Flex InstituteMark
+status open
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ Pascal Deboeck
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Department of Political Science
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Dept.
+ of Psychology, University of Kansas
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+K.U.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2013
+\begin_inset Argument
+status open
+
+\begin_layout Plain Layout
+2012
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Don't Forget: R Documents Itself}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<chunk10, eval=F, include=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+help.start() 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+launches a browser (if it can find one) that overviews the 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+delivered documents
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Introduction to R (a book)
+\end_layout
+
+\begin_layout Itemize
+R FAQ
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+package documents
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Package help}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Remember also package 
+\begin_inset Quotes eld
+\end_inset
+
+vignettes
+\begin_inset Quotes erd
+\end_inset
+
+, pdf 
+\begin_inset Quotes eld
+\end_inset
+
+article
+\begin_inset Quotes erd
+\end_inset
+
+ documents that are delivered with many packages.
+\end_layout
+
+\begin_layout Itemize
+Every time you run
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(some-package-name)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+You should also run
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(help = "some-package-name")
+\end_layout
+
+\begin_layout Plain Layout
+
+##or, equivalently
+\end_layout
+
+\begin_layout Plain Layout
+
+help(package = "some-package-name")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Search for functions and packages}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+help.search(
+\begin_inset Quotes eld
+\end_inset
+
+regression
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+is OK if you are just looking for installed functions
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+RSiteSearch(
+\begin_inset Quotes eld
+\end_inset
+
+regression
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+opens a browser with options on what gets searched
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+R package 
+\begin_inset Quotes eld
+\end_inset
+
+sos
+\begin_inset Quotes erd
+\end_inset
+
+ offers search tools for finding material in CRAN
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Install that, then run 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(sos); library(help = sos); vignette("sos")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Email and Forum Support}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Google searches for R material may help, but may also lead to bad advice
+ from people who don't know more than you do.
+ 
+\end_layout
+
+\begin_layout Itemize
+Two solutions
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Join r-help, or at least read/search its archives
+\end_layout
+
+\begin_layout Enumerate
+Read Stack Overflow
+\end_layout
+
+\begin_layout Itemize
+http://stackoverflow.com/questions/tagged/r
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Feel the Power of the Source, Luke}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For example, go to 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://rweb.quant.ku.edu/cran
+\end_layout
+
+\end_inset
+
+.
+ You can get the R source code (e.g, R-3.0.1.tar.gz)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Explore in src/library
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+When you are perplexed with a package, download source 
+\begin_inset Quotes eld
+\end_inset
+
+tarball
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+They are easily downloaded from CRAN package listing.
+ Look for 
+\begin_inset Quotes eld
+\end_inset
+
+Contributed extension packages
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+All packages follow a standard format, with the R code in the R folder,
+ and the documentation and examples are under inst.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Ways to step through the Source code}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Don't be afraid to debug the R source code, or the code for any package
+\end_layout
+
+\begin_layout Itemize
+Easiest way: Run 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> debug(lm)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Then watch what happens.
+ Try and see!
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> x <- rnorm(100); y <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+> m1 <- lm(y ~ x)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Type 
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+ to step into the code.
+ After than, 
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+ (or just hit Enter) to step to next command
+\end_layout
+
+\begin_layout Itemize
+Type 
+\begin_inset Quotes eld
+\end_inset
+
+c
+\begin_inset Quotes erd
+\end_inset
+
+ to continue and finish function
+\end_layout
+
+\begin_layout Itemize
+While in debug mode, run commands to inspect data and variables.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ls()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+You will see the state of all variables 
+\begin_inset Quotes eld
+\end_inset
+
+inside
+\begin_inset Quotes erd
+\end_inset
+
+ the function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+[containsverbatim]debug package
+\end_layout
+
+\begin_layout Itemize
+Slightly fancier mtrace function in 
+\begin_inset Quotes eld
+\end_inset
+
+debug
+\begin_inset Quotes erd
+\end_inset
+
+ package (Mark Bravington)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(debug)
+\end_layout
+
+\begin_layout Plain Layout
+
+x <- rnorm(100); y <- 0.5* x + 4*rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+mtrace(lm)
+\end_layout
+
+\begin_layout Plain Layout
+
+mod <- lm(y~x)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+pops open a 
+\begin_inset Quotes eld
+\end_inset
+
+code browser
+\begin_inset Quotes erd
+\end_inset
+
+ window
+\end_layout
+
+\begin_layout Itemize
+Hit return in R window to go step-by-step.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How to not Betray yourself as a Stranger in R-land}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Refer to 
+\begin_inset Quotes eld
+\end_inset
+
+packages
+\begin_inset Quotes erd
+\end_inset
+
+, not libraries.
+ library() is a function that opens packages.
+\end_layout
+
+\begin_layout Itemize
+Use 
+\begin_inset Quotes eld
+\end_inset
+
+<-
+\begin_inset Quotes erd
+\end_inset
+
+, not 
+\begin_inset Quotes eld
+\end_inset
+
+=
+\begin_inset Quotes erd
+\end_inset
+
+ for assignments
+\end_layout
+
+\begin_layout Itemize
+Avoid unnecessary 
+\begin_inset Quotes eld
+\end_inset
+
+for loops,
+\begin_inset Quotes erd
+\end_inset
+
+ use automatic 
+\begin_inset Quotes eld
+\end_inset
+
+vectorization
+\begin_inset Quotes erd
+\end_inset
+
+ instead or (l-s)apply instead
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{How to ask a question}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We usually become tired and frustrated, and then send out emails like 
+\begin_inset Quotes eld
+\end_inset
+
+I can't make XYZ work
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Generally, those messages are not helpful because we need to know EXACTLY
+ what you tried and we need to know WHAT SYSTEM and WHICH PACKAGES you have.
+ 
+\end_layout
+
+\begin_layout Itemize
+r-help has a (longish) 
+\begin_inset Quotes eld
+\end_inset
+
+posting guide
+\begin_inset Quotes erd
+\end_inset
+
+ (that strains my patience).
+\end_layout
+
+\begin_layout Itemize
+The best advice is this: every time you ask a question, provide:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Output from R command 
+\begin_inset Quotes eld
+\end_inset
+
+sessionInfo()
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+a COMPLETE and run-able example of the 
+\begin_inset Quotes eld
+\end_inset
+
+problem
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Informative subject heading (NOT 
+\begin_inset Quotes eld
+\end_inset
+
+Need R help, please
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{R Bible has Four Books}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+VR: William Venables and Brian Ripley, 
+\emph on
+Modern Applied Statistics with S 
+\emph default
+(package: MASS)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Ripley has been a tireless code contributor and R maintainer.
+ The R authorities expect you have read MASS.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+PB: Pinheiro and Bates, 
+\emph on
+Mixed Effects Models in S and S-Plus
+\emph default
+ (packages: nlme, lme4)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If you want to talk about 
+\begin_inset Quotes eld
+\end_inset
+
+hierarchical models
+\begin_inset Quotes erd
+\end_inset
+
+, learn to think of it in the way R folks think of it
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+F: John Fox, 
+\emph on
+Applied Regression Analysis, Linear Models, and Related Methods
+\emph default
+ (and the 
+\emph on
+Companion to Applied Regression
+\emph default
+) (packages: car, Rcmdr)
+\end_layout
+
+\begin_layout Itemize
+H: Frank Harrell, 
+\emph on
+Regression Modeling Strategies
+\emph default
+ (packages, rms Hmisc)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Original author of Proc Logistic in SAS
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{There are Lots of Ways to Estimate the "Same" Model}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+OLS: stats::lm, rms::ols
+\end_layout
+
+\begin_layout Description
+ordinal: MASS::polr, rms::lrm, ordinal::clm, VGAM::vglm
+\end_layout
+
+\begin_layout Description
+multinomial: MASS::multinom, VGAM::vglm
+\end_layout
+
+\begin_layout Itemize
+These are generally compatible, but different as well.
+ If you have trouble with the ones provided with R, then r-help is an appropriat
+e venue to ask.
+\end_layout
+
+\begin_layout Itemize
+If you are using other packages, you should seek out the author or the discussio
+n forums that they want you to follow.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{
+\backslash
+url{http://pj.freefaculty.org/guides}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Now you know me, you might understand these stat write-ups.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Better-than-average writeups on OLS, logistic/probit models, GLM, and Distributi
+ons.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If you use Linux or are trying to do High Performance (
+\begin_inset Quotes eld
+\end_inset
+
+Cluster
+\begin_inset Quotes erd
+\end_inset
+
+) Computing, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://crmda.ku.edu/computing
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+If you are trying to administer Windows with Stat programs, I've got a growing
+ collection of tips as well in the WinStat Admin pages.
+ (Notepad++, Emacs -> R)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[containsverbatim]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+frametitle{Have a Nice Summer}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Don't forget to wear sun block.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

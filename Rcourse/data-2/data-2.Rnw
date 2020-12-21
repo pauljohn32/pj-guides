@@ -1,0 +1,2121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Revision History --
+%  2012-05-5 2013-05-05
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\usetheme{Antibes}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+
+%=============================================================================
+%
+
+
+
+\title[Data Importation II] % (short title, use only with long paper titles)
+{Importation II}
+
+\subtitle{Foreign}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{data}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4}
+
+<<Roptions, echo=F>>=
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+@
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\AtBeginSubsection[]{
+
+  \frame<beamer>{
+
+    \frametitle{Outline}
+
+    \tableofcontents[currentsection,currentsubsection]
+
+  }
+
+}
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+
+%===========================================================
+\section{Foreign}
+
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Here's The Problem}
+  \begin{itemize}
+  \item Proprietary/secret data storage formats are used.
+  \item Export/Import lead to frustration.
+  \item Many little wrinkles with
+    ``text encoding'' and communication across formats.
+  \end{itemize}
+\end{frame}
+
+% __________________________________________
+\begin{frame}
+  \frametitle{The Usual: Use One Rectangular Data Set}
+  \begin{itemize}
+  \item Following the introduction of SPSS in 1968, social scientists
+    became accustomed to the idea of using a ``rectangular data set.''
+
+\begin{equation}
+\begin{array}{ccccc}
+Var1 & Var2 & Var3 & Var4 & Var5\\
+1 & 5 & 6 & 4 & 31\\
+2 & 2 & 3 & 5 & 29\\
+3 & 4 & 5 & 5 & 53\\
+4 & 2 & 2 & 3 & 22
+\end{array}
+\end{equation}
+
+   \item The first columns are usually ``respondent identifier''
+
+   \item Some programs (first SPSS, later Stata) insist the user may access only
+     one data collection at a time.
+   \item SAS (later R), diverged, allowing users to have many data
+     collections open at one time.
+  \end{itemize}
+\end{frame}
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Variable ``name'' ``value'' and ``value label''}
+
+  SPSS also established the terms variable name, value, and value label.
+  \begin{description}
+  \item[Value] The values of the variables are kept in a numeric
+    format, say 1,2,3.
+  \item[Value Label] Substantive labels, one for each value.
+
+
+\begin{tabular}{|c|r|r|}
+\hline
+\multicolumn{3}{|c|}{Var2}\tabularnewline
+\hline
+\hline
+Value & Label & Count\tabularnewline
+\hline
+1 & Never & 145\tabularnewline
+\hline
+2 & Sometimes & 424\tabularnewline
+\hline
+3 & Often & 321\tabularnewline
+\hline
+4 & Always & 40\tabularnewline
+\hline
+8 & Don't Know & 188\tabularnewline
+\hline
+9 & Other Missing & 200\tabularnewline
+\hline
+\end{tabular}
+
+ \item[Codebook] A listing of variables, each with values and labels, often including
+   frequency distributions.
+
+  \end{description}
+\end{frame}
+
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Transition from ``data set'' to ``database''}
+
+  \begin{description}
+
+    \item [Database] A collection of separate rectangular tables
+    that are linked ``relationally''. Storage, insertion, and
+    retrieval of particular bits is optimized for speed and efficiency
+    of memory usage.
+
+  \item [Why Database?] Less ``data copying''. If you have ``Age''
+    data on 2000 respondents, but ``Calcium'' data on only 10, keep 2 tables.
+
+\begin{tabular}{|c|c|}
+\hline
+\begin{tabular}{|c|c|}
+\hline
+ID & Age\tabularnewline
+\hline
+\hline
+1 & 24\tabularnewline
+\hline
+2 & 44\tabularnewline
+\hline
+$\ldots$ & \emph{2000 rows}\tabularnewline
+\hline
+2000 & 66\tabularnewline
+\hline
+\end{tabular} & \begin{tabular}{|c|c|}
+\hline
+ID & Calcium\tabularnewline
+\hline
+\hline
+1 & \tabularnewline
+\hline
+193 & \tabularnewline
+\hline
+$\ldots$ & \emph{200 rows}\tabularnewline
+\hline
+1932 & \tabularnewline
+\hline
+\end{tabular}\tabularnewline
+\hline
+\end{tabular}
+
+  \end{description}
+\end{frame}
+
+%___________________________________________
+\begin{frame}
+  \frametitle{Prediction: more database storage in future}
+  \begin{itemize}
+    \item The problem we see now is that data sets are ``too big'' to
+      be opened ``all at once''
+    \item Will be more efficient to leave most of the data ``in the
+      box'' and just take out columns when needed
+    \item Will require some new skills (SQL language, perhaps)
+    \item Prediction: large-ish collections of data are increasingly
+      likely to be stored in SQL-accessible databases, rather than
+      ``big rectangular data sets''.
+    \item Tools exist for R to allow one to draw data from a data base
+      when needed, although this is still a new thing, an area of
+      active development.
+    \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}
+  \frametitle{Many Competing Storage Formats Currently Exist}
+  \begin{itemize}
+  \item SPSS, SAS, STATA, WinRATS, all maintain their own
+    proprietary ``mini-database'' routines to keep data and make it available.
+  \item ``Inside'' their guts, they aren't necessarily just storing
+    the data as a ``big rectangle'' of numbers.
+  \item They have unique/special/secret code to remove numbers from
+    their storage and make them available to users.
+  \end{itemize}
+
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}
+  \frametitle{R's Data Frame Roughly Equivalent to SPSS Data Set}
+  \begin{description}
+  \item [Data Frame] R calls a ``rectangular data thing'' a data
+    frame.
+
+  \item [Definition]  A list of Columns, all of which have the same number of elements
+
+  \item [Important Note] Many R functions allow the ``formula
+    interface'' which will require a data frame:
+<<eval=F>>=
+plot(y ~ x, data = mydf)
+@
+    or
+<<eval=F>>=
+lm(y ~ x, data = mydf)
+@
+\end{description}
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}
+  \frametitle{What's Different about R}
+
+  \begin{description}
+  \item [Open Many Frames] R will allow
+    the user to have many data frames ``open'' at the same time
+
+  \item [Data Management] R has many tools to merge, sort, and re-shape
+    ``rectangular data things'' to eventually create new data frames
+    that will be used in analysis.
+
+  \end{description}
+\end{frame}
+
+
+\section{Importing Data}
+
+\begin{frame}
+  \frametitle{Raw Text Transfer: The worst case scenario}
+
+  \begin{itemize}
+
+  \item Use ``whatever'' program to write a text file (say, comma
+    delimited or such).
+
+  \item[Caution]: Putting a data set into a ``flat'' text file may lose some
+    information (e.g., value labels)
+
+  \item In R, use read.table() (or similar) to access the file.
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Best Case Scenario}
+
+  \begin{itemize}
+  \item A program's data storage format is
+    \begin{itemize}
+    \item well documented, and
+    \item no proprietary tools are used to compress or encrypt the file.
+    \end{itemize}
+  \item There is an R volunteer (or R Core Development member) who
+    wants to import that data format and does the work required to
+    translate that data into R
+  \item R's foreign package, which was put into the R base collection
+    in 1999, is a focal point for us.
+  \item In my experience, Stata Data format is the only member of this
+    group that almost always works. \texttt{read.dta()} is very well
+    done (Thanks to Thomas Lumley) and \texttt{write.dta()} is the
+    only R function I know of that, without fail, creates files that
+    are readable as native by another program.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Middle Case Scenario \#1 (Neutral Formats)}
+   \begin{itemize}
+   \item There is no export from program A into R. (Presumably, A's format
+       is either 1) secret or 2) badly designed or 3) uninteresting to
+       all R users on earth.)
+     \item Format A's developers (or users) offer an export tool that
+       convert format A to some other format in which R
+       developers have had interest.
+     \item Examples of such interchange formats
+       \begin{itemize}
+       \item Science-oriented formats: HDF5 (from
+         NCSA) and netCDF (from UCAR)
+       \item SQL database text. A more-or-less standardized language
+         for exchange of tables via carefully formatted text files.
+       \end{itemize}
+   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Middle Case Scenario \#2 (Excel)}
+
+  \begin{itemize}
+  \item Some other program exists which is able to open format A
+    and write a format that R can understand.
+  \item Example: Microsoft Excel
+    \begin{itemize}
+    \item Since Excel has a proprietary, poorly
+      documented storage format, opening and sorting those files
+      requires hard work by somebody who \emph{really needs} to
+      access data in that format.
+    \item The program Perl is used worldwide by many people who
+      \emph{really need} to read/write Excel files.
+    \item Greg Warnes, author of the R package ``gdata'', wrote
+      connective tissue between Perl and R called
+      \texttt{read.xls()}.  This is by far the most reliable Excel
+      importer.
+    \end{itemize}
+  \item The Good News is that Excel is not a highly nuanced storage
+    format--it does not have ``factor variables'' to worry about.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Middle Case Scenario \#2 (SPSS)}
+
+  \begin{itemize}
+  \item SPSS has had many formats for file storage, documentation not
+    profusely available.
+  \item The PSPP is a open source volunteer effort made up of people
+    who \emph{really} want to import SPSS files for statistical
+    analysis.
+  \item The PSPP project's code is written in C and
+    distributed under GPL. It is used in
+    \begin{itemize}
+    \item R Core's foreign package as the basis of \texttt{read.spss()}
+    \item Martin Elff's memisc package (which offers several very
+      SPSS-like data interaction functions).
+    \end{itemize}
+  \item  My experience is that \texttt{read.spss()} succeeds about 2/3 of
+    the time. (More success with small, single-developer datasets).
+  \item Many peculiar problems arise with character encoding. I've
+    asked in r-help, they say SPSS GUI does not ``defend'' itself
+    against users who enter characters that are from unexpected encodings.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The Middle Case Scenario \#3 (I/E Programs)}
+
+  \begin{itemize}
+  \item I often find that hard-to-open datasets can be opened by one
+    of these programs.
+    \begin{itemize}
+    \item GRETL. An open source software project Gretl (GNU regression and
+      econometrics library) can open E-view, SPSS (again, relying on
+      PSPP code), and other formats.
+    \item psppire. The PSPP project's user interface program, not
+      entirely unfamiliar to social scientists.
+    \item StatTransfer. A commercial product that purports to be
+      able to open data in many formats and convert between them.
+      directly competes with R as a modeling tool for social
+      science researchers.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Importing is just the start, however}
+  Suppose we've opened the data in R.
+
+  We still need to
+  \begin{itemize}
+    \item Verify that it is imported correctly
+    \item Check missing value codes
+    \item Recode variables to suit our purposes
+  \end{itemize}
+
+  In the following, I offer some detailed case studies of data
+  importation and management.
+
+\end{frame}
+
+
+% ___________________________________________
+\section{Stata}
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Stata Data is Most Reliably Imported}
+  \begin{itemize}
+  \item I've tested these over the years, nothing lately has changed
+    my opinion:
+  \item \texttt{read.dta()} and \texttt{write.dta()} are most stable, reliable data  exchange options
+  \item If you have a choice of formats from which to import, \emph{pick Stata}.
+  \item As with other data formats, the primary problem is usually the
+    handling of factors
+  \end{itemize}
+\end{frame}
+
+
+% __________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Example: The American National Election Study, 2004}
+  \begin{itemize}
+  \item If your institution is a member of the ICPSR:
+
+\url{http://www.icpsr.umich.edu/cgi-bin/bob/newark?study=4245}
+
+   \item Choose the ``Take All Files in One Archive'' option.
+
+   \item Unzip that in the R current working directory. It is probably
+     easier to use some program like 7-zip in your operating system,
+     but you can unzip without leaving R if you want to:
+<<eval=F>>=
+system("unzip 10243963.zip")
+@
+    \item Snoop around in there, you find codebooks and various
+      scripts and data files. I decided to concentrate on the file
+      ``04245-0001-Data.dta'' which is in a subdirectory called
+      ``10243963/ICPSR\_04245/DS0001.
+
+   \item I have a copy of that Stata data file in the examples subdirectory
+   \end{itemize}
+ \end{frame}
+%__________________________________________
+
+\begin{frame}
+  \frametitle{Exercise: Try This For Yourself}
+<<exercise10, eval=F>>=
+require(foreign)
+mydta1 <- read.dta("examples/04245-0001-Data.dta")
+str(mydta1)
+colnames(mydta1)
+attributes(mydta1)
+View(mydta1)
+@
+\end{frame}
+
+% __________________________________________
+\begin{frame}
+  \frametitle{Look at the Input Data One Column at a Time}
+  \begin{itemize}
+  \item As with other data formats, the primary problem is usually the
+    handling of factors
+  \item The default value for convert.factors = TRUE.
+  \item If read.dta finds a column with
+    \begin{description}
+    \item [only numbers] it creates a numeric variable
+    \item [characters] it creates a factor
+    \item [value labels] it creates a factor using the value labels
+    \item [both numbers and letters] it creates a factor
+    \end{description}
+  \end{itemize}
+\end{frame}
+
+
+
+
+% __________________________________________
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{There is a Codebook Somewhere}
+  \begin{itemize}
+  \item Review the file ``DS0001/04245-0001-Codebook.pdf''
+  \item Example
+\def\Sweavesize{\scriptsize}
+\begin{Sinput}
+=============================================================================
+V043116 J1x. Summary: R party ID
+=============================================================================
+PRE-ELECTION SURVEY:
+QUESTION:
+---------
+Generally speaking, do you usually think of yourself as a
+REPUBLICAN, a DEMOCRAT, an INDEPENDENT, or what?
+Would you call yourself a STRONG [Democrat/Republican] or
+a NOT VERY STRONG [Democrat/Republican]?
+Do you think of yourself as CLOSER to the Republican
+Party or to the Democratic party?
+VALID CODES:
+------------
+0. Strong Democrat (2/1/.)
+1. Weak Democrat (2/5-8-9/.)
+2. Independent-Democrat (3-4-5/./5)
+3. Independent-Independent
+(3/./3-8-9 ; 5/./3-8-9 if not apolitical)
+4. Independent-Republican (3-4-5/./1)
+5. Weak Republican (1/5-8-9/.)
+6. Strong Republican (1/1/.)
+7. Other; minor party; refuses to say (9/./. ; 4/./3-8-9)
+MISSING CODES:
+--------------
+8. Apolitical (5/./3-8-9 if apolitical)
+9. DK
+\end{Sinput}
+\end{itemize}
+\end{frame}
+
+
+
+
+% __________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{The Most Famous Variable in Political Science}
+  \begin{itemize}
+  \item Observe levels of the party variable as it stands now:
+
+<<eval=F>>=
+levels(mydta1$V043116)
+@
+I see:
+\begin{Schunk}
+  \begin{Soutput}
+ [1] "0. Strong Democrat (2/1/.)"
+ [2] "1. Weak Democrat (2/5-8-9/.)"
+ [3] "2. Independent-Democrat (3-4-5/./5)"
+ [4] "3. Independent-Independent"
+ [5] "4. Independent-Republican (3-4-5/./1)"
+ [6] "5. Weak Republican (1/5-8-9/.)"
+ [7] "6. Strong Republican (1/1/.)"
+ [8] "7. Other;minor party;refuses to say"
+ [9] "8. Apolitical (5/./3-8-9 if apolitical)"
+[10] "9. DK (8/./.)"
+\end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+
+
+% __________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Yes, Virginia. The Factor's Levels Really Are Ugly}
+  \begin{itemize}
+  \item read.dta tries to convert variables that have labels into factors
+  \item this factor has troublesome labels for the levels, as in:
+\begin{Schunk}
+  \begin{Soutput}
+    "4. Independent-Republican (3-4-5/./1)"
+  \end{Soutput}
+\end{Schunk}
+\end{itemize}
+\end{frame}
+
+
+%__________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Look at This Ugly Table}
+<<eval=F>>=
+table(mydta1$V043116)
+@
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+  \begin{Soutput}
+             0. Strong Democrat (2/1/.)            1. Weak Democrat (2/5-8-9/.)
+                                    203                                     179
+    2. Independent-Democrat (3-4-5/./5)              3. Independent-Independent
+                                    210                                     118
+  4. Independent-Republican (3-4-5/./1)          5. Weak Republican (1/5-8-9/.)
+                                    138                                     154
+           6. Strong Republican (1/1/.)     7. Other;minor party;refuses to say
+                                    193                                       5
+8. Apolitical (5/./3-8-9 if apolitical)                           9. DK (8/./.)
+                                      0                                       0
+
+   \end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+
+% __________________________________________
+
+% __________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Some More Succinct Labels Would help}
+  \begin{itemize}
+  \item Let's go terse!
+  \item First, lets make a copy of the party ID variable and re-assign
+    labels for the levels (careful! keep ordering)
+
+<<eval=F>>=
+partyid <- mydta1$V043116
+levels(partyid) <- c("SD","WD","ILD","II",
+              "ILR","WR","SR","O","APol","DK")
+@
+
+  \item Second, get rid of unused levels ("APol" and "DK")
+
+<<eval=F>>=
+partyid <- partyid[ , drop=TRUE]
+# same as partyid <- factor(partyid)
+table(partyid)
+@
+\begin{Schunk}
+  \begin{Soutput}
+partyid
+ SD  WD ILD  II ILR  WR  SR   O
+203 179 210 118 138 154 193   5
+
+\end{Soutput}
+\end{Schunk}
+
+ \end{itemize}
+
+\end{frame}
+
+%______________________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The 5  Os Bug Me}
+
+   \begin{itemize}
+
+   \item Notice the use of \texttt{\%in\%} and \texttt{levels()} here:
+   \end{itemize}
+
+<<eval=F>>=
+partyid[partyid %in% levels(partyid)[8]] <- NA
+@
+
+  \begin{description}
+   \item [levels(partyid)] is an array of level names for partyid
+   \item [levels(partyid){[}8{]}] is the 8'th level.
+   \item [\%in\%] selects rows where partyid is set at 8th level.
+   \item [\textless- NA] replaces those as NA, making O an ``unused level''
+  \end{description}
+
+
+<<eval=F>>=
+table(partyid, exclude = NULL)
+@
+\begin{Schunk}
+  \begin{Soutput}
+ partyid
+  SD  WD ILD  II ILR  WR  SR   O
+ 203 179 210 118 138 154 193   0
+
+ \end{Soutput}
+ \end{Schunk}
+
+Can eliminate a range of levels if you want:
+<<eval=F>>=
+partyid[partyid %in% levels(partyid)[5:8] ] <- NA
+@
+
+\end{frame}
+
+
+% __________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Factors. Can't Live With 'Em. Can't Live  $\ldots$ ?}
+  \begin{itemize}
+  \item It is possible to avoid factors altogether
+
+<<eval=F>>=
+mydtanum1 <- read.dta("examples/04245-0001-Data.dta",
+                convert.factors=F)
+@
+
+  \item That "throws away" the information, but if you just want the
+    numerical variables, who cares?
+  \item  With the "numbers only" version, no ``factor hassle''
+
+   \item Then "make due" (like in the \emph{olden days}) by
+     \begin{itemize}
+     \item Comparing the Codebook against the observed numbers
+     \item Creating new factor variables
+     \end{itemize}
+   \item I often import data both ways and compare, e.g.
+
+
+<<eval=F>>=
+table(mydtanum1$V1234, mydat1$V1234)
+@
+\end{itemize}
+\end{frame}
+
+% __________________________________________
+
+
+
+
+\section{Excel Files}
+
+\begin{frame}
+  \frametitle{I've Heard there is a Program called Excel, by Microsoft}
+
+  But I've not seen it :)
+
+  \begin{itemize}
+    \item Excel uses a proprietary data storage format
+    \item Despite repeated efforts by the manufacturer to obscure the
+      storage format, intrepid volunteers have found ways to
+      rescue data.
+    \end{itemize}
+  \end{frame}
+
+%_________ _______________________________
+
+\begin{frame}
+  \frametitle{The ``Boy Scout'' Approach}
+
+  \begin{itemize}
+  \item Open the Excel file in a Spread Sheet program
+    \item Make sure
+    \begin{itemize}
+    \item Make the sheet is rectangular
+    \item Each column is of a ``homogeneous'' type
+    \item All variables are numeric or character (no ``generic'', no ``percent'').
+    \item File-> SaveAs (CSV) or (TXT).
+    \item If you see buttons for customization, take them!
+    \end{itemize}
+  \item Review the text file in a plain text editor (e.g., Emacs)
+  \item Use ``read.table'' to bring that file into R.
+  \end{itemize}
+\end{frame}
+
+%_______________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Use A Special Package To Access the Excel Spreadsheet}
+
+  \begin{itemize}
+  \item The ``gdata'' package (by Gregory Warnes) has a long-standing
+    track record
+  \item It requires Perl (For which free versions are available)
+
+  \item \texttt{read.xls()} has syntax similar to \texttt{read.table()}
+
+\begin{Sinput}
+myfn <- "practiceData.xls"
+dat <- read.xls(myfn, sheet=1, header=T)
+\end{Sinput}
+
+  \end{itemize}
+\end{frame}
+
+%____________________________________
+
+\begin{frame}
+  \frametitle{Use An Intermediate Program To Transfer Data}
+
+  \begin{itemize}
+  \item gretl
+    \begin{itemize}
+    \item ``gretl'' is the GNU Econometrics and Time Series
+      program.
+    \item Gretl can import Excel, Eviews, SPSS,  and other formats
+    \item Gretl can export to text,  R, Octave
+    \end{itemize}
+  \item Stat Transfer is a commercial product for Windows that can
+    exchange data between formats.
+  \end{itemize}
+\end{frame}
+
+
+
+%____________________________________
+\begin{frame}
+  \frametitle{You Want to Write R Data To Excel?}
+  \begin{itemize}
+   \item R can create ``comma delimited text'' files that Spreadsheets
+     can import
+   \item Several package writers are endeavoring to create a workable
+     write.xls function. When I last tested, the one that worked best
+     was a commerical product (that I was unwilling to purchase).
+  \end{itemize}
+\end{frame}
+
+%____________________________________
+
+
+
+
+%------------------------------------------------
+\section{SPSS}
+
+\begin{frame}
+  \frametitle{Some SPSS Files Are Imported Easily. Some Not}
+  \begin{itemize}
+  \item SPSS "sav" files often work
+  \item SPSS "por" (portable) files seem less portable than "sav" files.
+  \item Two major problems with SPSS files are
+    \begin{itemize}
+    \item Character Encoding Problems
+    \item Accidental Factor Variables
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check ?read.spss}
+
+\footnotesize{
+\begin{Verbatim}
+
+Read an SPSS Data File
+
+Description:
+
+     'read.spss' reads a file stored by the SPSS
+     'save' or 'export' commands.
+
+Usage:
+
+     read.spss(file, use.value.labels = TRUE, to.data.frame = FALSE,
+               max.value.labels = Inf, trim.factor.names = FALSE,
+               trim_values = TRUE, reencode = NA,
+               use.missings = to.data.frame)
+
+\end{Verbatim}
+}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Highlights in read.spss}
+
+  \begin{itemize}
+  \item Notice ``to.data.frame'': Otherwise, it creates a list.
+  \item use.value.labels: Do you want to try to create R factors
+    using the SPSS value labels
+  \item reencode: R may be able to spot characters from foreign,
+    unsupported character sets and convert them to current
+    locale. Every time I open an SPSS data set, a message appears
+    ``reencoding from latin1'' or such.
+  \end{itemize}
+\end{frame}
+
+% _____________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{SPSS and the factor problem}
+  \begin{itemize}
+  \item By default, read.spss  will scan for variables that have one or more
+    labeled values. Those variables will be interpreted as factors.
+  \item For ``gender'' or ``race'', we want that.
+  \item But some SPSS variables are numeric, but they also have labels!
+
+    Ex: ``age'' is in years, but the value 998 is labeled ``Unknown''.
+
+  \item R becomes confused, it wants to turn ``age'' into a factor, with levels
+
+    ``1'',''2'',''3'',$\ldots$,''99'',''100'',''Unknown''
+
+  \item To avoid that one case, read.spss allows the option
+\begin{Verbatim}
+    max.value.labels = 8
+\end{Verbatim}
+    A variable with more than 8 values will not be converted to a
+    factor.
+
+  \end{itemize}
+\end{frame}
+
+%_______________________________
+
+\begin{frame}
+  \frametitle{Bizarre, Interesting Things Happen}
+  \begin{itemize}
+  \item My experience: read.spss() is a ``fragile'' function
+  \item Sometimes the import will fail entirely
+  \item Sometimes it will succeed with frightening warnings
+  \item Has been getting better
+  \item Never ``damages'' data or recovers it incorrectly
+
+  \end{itemize}
+\end{frame}
+
+%___________________________
+
+
+\begin{frame}
+  \frametitle{The General Social Survey}
+
+  \begin{itemize}
+  \item NORC (Nat'l Opinion Research Center)
+  \item Administered Annually or Bi-annually
+
+    \begin{itemize}
+    \item Permanent Questions
+    \item Question Modules (addressed to subsets of respondents)
+    \item Some Questions only asked once or twice
+    \end{itemize}
+  \item Davis, James A., Tom W. Smith, and Peter V. Marsden. \emph{General
+      Social Surveys, 1972-2006 {[}Cumulative File{]}} Storrs, CT: Roper
+    Center for Public Opinion Research,
+
+
+    {[}Computer file{]}. ICPSR04697-v4 University of Connecticut/Ann
+    Arbor, MI: Inter-university Consortium for Political and Social
+    Research {[}distributors{]}, 2009-12-04.
+
+  \end{itemize}
+\end{frame}
+
+% ___________________________
+
+\subsection{General Social Survey}
+\begin{frame}
+  \frametitle{General Social Survey}
+
+  \begin{itemize}
+
+  \item The ICPSR (U. of Michigan) is a canonical source
+
+    \begin{itemize}
+    \item \url{http://www.icpsr.umich.edu/icpsrweb/ICPSR/}
+    \item \url{General Social Surveys, 1972-2006 [Cumulative File]}
+
+      \begin{itemize}
+      \item ``Download All'' button grabs a file called ``10805932.zip''
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%_______________________________________
+
+\begin{frame}
+ \frametitle{What's in that Zip File?}
+ \begin{itemize}
+ \item Unzip that to reveal the contents:
+
+ \begin{itemize}
+ \item TermsOfUse.html
+ \item \textcolor{blue}{ICPSR\_04697}\textcolor{black}{: a folder}
+ \item Inside \textcolor{blue}{ICPSR\_04697}
+
+
+\begin{tabular}{|c|c|}
+\hline
+04697-descriptioncitation.pdf & how to cite\tabularnewline
+\hline
+04697-manifest.txt & list of files\tabularnewline
+\hline
+04697-related\_literature.txt & citations\tabularnewline
+\hline
+series-28-related\_literature.txt & citations\tabularnewline
+\hline
+\noalign{\vskip\doublerulesep}
+\hline
+\textcolor{blue}{DS0001} & Another Folder\tabularnewline
+\hline
+\end{tabular}
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+%_________________________________________
+
+\begin{frame}
+\frametitle{Its Like Peeling an Onion: Inside \textcolor{blue}{DS0001}}
+\footnotesize{
+\begin{tabular}{|c|c|}
+\hline
+04697-0001-Codebook.pdf & List of Variables \& Summary Info\tabularnewline
+\hline
+\hline
+04697-0001-Data.dta & Stata Format \tabularnewline
+\hline
+04697-0001-Data.sav & SPSS save Format\tabularnewline
+\hline
+04697-0001-Data.stc & Terrasoft SAS data file\tabularnewline
+\hline
+04697-0001-Data.tsv & tab-separated text\tabularnewline
+\hline
+04697-0001-Data.txt & {}``fixed field'' text\tabularnewline
+\hline
+04697-0001-Setup.dct & Stata {}``data dictionary''\tabularnewline
+\hline
+04697-0001-Setup.do & Example Stata code uses txt{*}\tabularnewline
+\hline
+04697-0001-Setup.sas & Example SAS code uses txt{*}\tabularnewline
+\hline
+04697-0001-Setup.sps & Example SPSS code uses tsv{*}\tabularnewline
+\hline
+04697-0001-Supplemental\_syntax.do & Cleans up missing values\tabularnewline
+\hline
+04697-0001-Supplemental\_syntax.sas & Cleans up missing values\tabularnewline
+\hline
+\end{tabular}
+}
+
+\end{frame}
+
+
+%_______________________________________
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Getting GSS into R: read.spss}
+  \begin{itemize}
+
+<<eval=F>>=
+datraw <- read.spss("04697-0001-Data.sav", to.data.frame=T,
+                 trim.factor.names=T)
+@
+
+  \item Before 2010-02-26, read.spss() would fail entirely.
+  \item As of 2010-02-26, it succeeds, but gives warnings:
+  \end{itemize}
+
+\footnotesize{
+\begin{Schunk}
+  \begin{Soutput}
+re-encoding from CP1252
+There were 24 warnings (use warnings() to see them)
+> warnings()
+Warning messages:
+1: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable TVRELIG
+2: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable SEI
+3: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable FIRSTSEI
+4: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable PASEI
+5: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable MASEI
+6: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 99.9 for variable SPSEI
+7: In read.spss("04697-0001-Data.sav", to.data.frame = T, trim.factor.names = T) :
+  04697-0001-Data.sav: File contains duplicate label for value 0.75 for variable YEARSJOB
+8: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+9: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+10: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+11: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+12: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+13: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+14: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+15: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+16: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+17: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+18: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+19: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+20: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+21: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+22: In xi >= z[1L] | xi <= z[2L] | xi[xi == z[3L]] :
+  longer object length is not a multiple of shorter object length
+23: In `levels<-`(`*tmp*`, value = c("NA", "DK", "NA")) :
+  duplicated levels will not be allowed in factors anymore
+24: In `levels<-`(`*tmp*`, value = c("1ADLT,0KIDS", "1ADLT,1+KIDS",  ... :
+  duplicated levels will not be allowed in factors anymore
+\end{Soutput}
+\end{Schunk}
+}
+
+\end{frame}
+%___________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{What Do I Do If I See That?}
+  \begin{itemize}
+    \item Snoop in the data, compare to Codebook
+    \item Create a number-only version of the data set by turning off
+      the labels to factors converter
+
+<<eval=F>>=
+datnum <- read.spss("04697-0001-Data.sav", use.value.labels = FALSE,
+                 to.data.frame=T, trim.factor.names=T)
+@
+
+    \item Compare values:
+<<eval=F>>=
+table(datraw$SEX, datnum$SEX)
+@
+
+ \item Usually, you find the information is read in ``correctly'', in the sense that you can recode to get what you need.
+ \end{itemize}
+
+
+\end{frame}
+
+ %______________________________________________________
+
+\begin{frame}
+
+\frametitle{Got a Bull By the Horns? Or Does It Have You?}
+
+This data set includes responses from several thousand people in each of 26 surveys
+
+In each survey, there will be 1500-4300 respondents.
+
+Laptop can't handle this file (even with 2GB memory)
+
+\end{frame}
+
+%__________________________________
+
+\begin{frame}
+\frametitle{Imagine a spreadsheet with 51020 rows and 5137 columns}
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+year & id & Q1 & Q2 & Q3 & Q4 & Q5 & $\cdots$ & Q5135\tabularnewline
+\hline
+1972 & 1 & 3 & 1 & NAP & NAP & NAP &  & 3\tabularnewline
+\hline
+1972 & 2 & 2 & 2 & NAP & NA & NAP &  & 2\tabularnewline
+\hline
+$\vdots$ &  &  &  &  &  &  &  & \tabularnewline
+\hline
+1974 & 3455 & 3 & 3 & 5 & NAP & NAP &  & NA\tabularnewline
+\hline
+1974 & 3456 & 1 & 2 & 6 & NAP & NAP &  & NA\tabularnewline
+\hline
+$\vdots$ &  &  &  &  &  &  &  & \tabularnewline
+\hline
+2006 & 44555 & NAP & 4 & NAP & 1 & 4 &  & 3\tabularnewline
+\hline
+2006 & 44556 & NAP & 5 & NAP & 2 & 3 &  & 1\tabularnewline
+\hline
+\end{tabular}
+
+NAP: question not included in survey for that year or for that respondent
+
+NAs: ordinary missings are also observed
+
+\end{frame}
+
+
+%____________________________________
+
+\begin{frame}
+  \frametitle{Obviously, One Must Select Some Information}
+
+  \begin{itemize}
+  \item Select some variables, and compare over time
+  \item Select one year, study some variables
+  \end{itemize}
+\end{frame}
+
+%_____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{"SEXFREQ" Sounds More Interesting Than It Really Is}
+  \begin{itemize}
+  \item SEXFREQ : About how often did you have sex during the last 12 months?
+  \end{itemize}
+\footnotesize{
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+Val & Label & 1989 & 1990 & $\vdots$ & 1994 & $\vdots$ & 2006\tabularnewline
+\hline
+\hline
+0 & not at all & 298 & 110 &  & 563 &  & 595\tabularnewline
+\hline
+1 & once or twice & 99 & 39 &  & 188 &  & 205\tabularnewline
+\hline
+2 & once a month & 114 & 57 &  & 290 &  & 265\tabularnewline
+\hline
+3 & 2-3 times a month & 221 & 91 &  & 416 &  & 361\tabularnewline
+\hline
+4 & weekly & 258 & 110 &  & 483 &  & 343\tabularnewline
+\hline
+5 & 2-3 per week & 307 & 108 &  & 538 &  & 430\tabularnewline
+\hline
+6 & 4+ per week & 64 & 37 &  & 155 &  & 134\tabularnewline
+\hline
+8 & don't know & 0 & 0 &  & 3 &  & 6\tabularnewline
+\hline
+-1/9 & NAP/NA & 136/40 & 199/621 &  & 201/155 &  & 2096/75\tabularnewline
+\hline
+ & Valid N & 1361 & 552 &  & 2533 &  & 2333\tabularnewline
+\hline
+\end{tabular}
+}
+\begin{itemize}
+\item Never included in surveys before 1989
+\item Asked of {*}some{*} respondents in other years
+\end{itemize}
+\end{frame}
+
+
+%____________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Consider 2006}
+  \begin{itemize}
+  \item Drop all of those other years
+
+<<eval=F>>=
+dat2 <- datraw[datraw$YEAR == 2006, ]
+@
+\end{itemize}
+\end{frame}
+
+
+% _________________________________________
+
+\begin{frame}
+
+  \frametitle{There's a Whole Lot of Nothin' In There}
+  \begin{itemize}
+  \item The GSS is a cumulative project, accumulating questions.
+  \item There are many ``unasked questions'' in any particular year
+  \end{itemize}
+\end{frame}
+
+%_________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Get Rid of Variables That are Mostly ``NAP''}
+
+<<eval=F>>=
+### sapply a function that counts NAP in each variable
+### result sout is a vector with an NAP count for each column
+sout <- sapply( dat2, function(x) length(x[x == "NAP"]))
+### which variables have less than 4000 cases NAP
+wsout <- which(sout < 4000)
+### choose those variables
+datnew <- dat2[, wsout]
+### Save to R data frame
+save(datnew, file="gss-subset1.Rda")
+@
+\begin{itemize}
+  \item examples folder has copies of large and small gss extracts
+    along with codebook information
+  \end{itemize}
+\end{frame}
+% ________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Voter Participation in 2006}
+
+  \begin{Schunk}
+    \begin{Soutput}
+
+   Cell Contents
+|--------------------------|
+|        N                 |
+|       N / Table Total    |
+|--------------------------|
+| VOTED      | DID NOT VOTE | INELIGIBLE |
+|------------|--------------|------------|
+| 1826       |    715       |    389     |
+| 0.623      |   0.244      |   0.133    |
+|------------|--------------|------------|
+
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+%________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Men and Women Really Are The Same!}
+
+
+\hspace{1in}Voter Participation by Sex in 2006
+
+\begin{tabular}{lD{.}{.}{0}D{.}{.}{0}}
+\toprule
+& \multicolumn{1}{c}{MALE} & \multicolumn{1}{c}{FEMALE} \\
+\midrule
+VOTED & 61\% & 63\% \\
+DID NOT VOTE & 25 & 24 \\
+INELIGIBLE & 14 & 13 \\
+REFUSED TO ANSWER & 0 & 0 \\
+N & 1273 & 1657 \\
+\bottomrule
+\end{tabular}
+
+Note: This is LaTeX table output from the memisc function \texttt{toLatex()}.
+
+\end{frame}
+
+
+% __________________________________________
+
+\subsection{European Social Survey}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The European Social Survey}
+  \begin{itemize}
+    \item ESS is a large, multinational project
+    \item  \url{http://ess.nsd.uib.no/ess}
+    \item Free download allowed after registration
+    \item Students asked for help with these Files:
+    \end{itemize}
+
+\begin{Schunk}
+\begin{Soutput}
+   ESS3e03_2.spss.zip
+
+   ESS2e03_1.spss.zip
+\end{Soutput}
+\end{Schunk}
+
+
+\end{frame}
+
+%________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Try the Standard Approach}
+
+<<eval=F>>=
+d2 <- read.spss("ESS3e03_2.por", to.data.frame = TRUE)
+@
+
+\begin{Schunk}
+  \begin{Soutput}
+
+### BIG DISASTER, all variables are missing. Observe
+
+#> table(d2$UEMPLAP)
+#
+#Not marked     Marked
+#         0          0
+\end{Soutput}
+\end{Schunk} %$
+
+\end{frame}
+
+
+% _________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Huh? Try Again, This Time More Slowly}
+
+
+<<eval=F>>=
+d2 <- read.spss("ESS3e03_2.por")
+@
+
+Inspect, then coerce into a data frame!
+<<eval=F>>=
+d2 <- as.data.frame(d2)
+@
+\begin{Schunk}
+  \begin{Soutput}
+
+> table(d2$UEMPLAP)
+
+Not marked     Marked
+     42336        664
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}
+  \frametitle{Is Something Rotten in the State of Denmark? (Probably Not}
+   \begin{itemize}
+   \item re-read data as numeric, compare 2 data frames
+
+   \item Import data into PSPP and compare.
+   \end{itemize}
+\end{frame}
+
+% __________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Students want to compare data from 2 years of ESS}
+
+\begin{itemize}
+
+\item Create a marker for the first survey
+<<eval=F>>=
+d2$whichSurvey <- 2
+@
+
+\item Get the other one
+
+<<eval=F>>=
+d3 <- read.spss("ESS2e03_1.por")
+d3 <- as.data.frame(d3)
+d3$whichSurvey <- 3
+@
+
+\end{itemize}
+\end{frame}
+
+%__________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Putting 2 Years of ESS Together}
+  \begin{itemize}
+
+   \item We want to "stack those surveys together" into one data frame.
+   \item But they don't have all of the same variables
+
+   \item Couldn't figure how to make merge() do this, so take the
+     brute force method:
+
+     "reorganize" the columns by name and then use rbind.
+
+<<eval=F>>=
+namesd2 <- names(d2)
+namesd3 <- names(d3)
+
+commonNames <- intersect( namesd3, namesd2)
+combod23 <- rbind(d2[ , commonNames], d3[, commonNames])
+save(combod23, file = "combod23.Rda")
+@
+\end{itemize}
+\end{frame}
+
+% __________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Funny Factor Problem (again)}
+  \begin{itemize}
+  \item The question HAPPY is scored on a 0-10 point scale.
+  \item The SPSS data has value labels for some values
+
+\begin{Schunk}
+\begin{Soutput}
+    0: Extremely unhappy
+    10: Extremely happy
+    11: Refusal to answer
+    12: Don't know
+    13: No answer
+  \end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+%__________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Wow! Here's a Problem}
+
+<<eval=F>>=
+levels(combod23$HAPPY)
+@
+
+\begin{Schunk}
+\begin{Soutput}
+ [1] "Extremely unhappy" "1"                 "2"
+ [4] "3"                 "4"                 "5"
+ [7] "6"                 "7"                 "8"
+ [10] "9"                 "Extremely happy"   "Refusal"
+ [13] "Don't know"        "No answer"
+\end{Soutput}
+\end{Schunk}
+
+That's wrong on several levels
+  \begin{itemize}
+    \item It is not a numeric variable
+      \item Off by one: R gives internal value 1 to the outcome that
+        SPSS called 0, and so forth.
+   \end{itemize}
+ \end{frame}
+%$
+%____________________________________
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{How To Fix HAPPY?}
+
+  \begin{itemize}
+  \item Create a new variable to play with
+
+<<eval=F>>=
+combod23$HAPPY2 <- combod23$HAPPY
+@
+
+\item Change Extremely Unhappy to text "0"
+
+<<eval=F>>=
+levels(combod23$HAPPY2)[1] <- "0"
+@
+
+\item  Rename level Extremely Happy to "10"
+
+<<eval=F>>=
+levels(combod23$HAPPY2)[11] <- "10"
+@
+
+\item Get a copy of the levels from HAPPY2
+
+<<eval=F>>=
+happyLevels <- levels(combod23$HAPPY2)
+@
+
+\begin{Schunk}
+\begin{Soutput}
+> happyLevels
+
+ [1] "0"   "1"    "2"    "3"    "4"
+ [6] "5"   "6"    "7"    "8"    "9"
+[11] "10"         "Refusal"    "Don't know" "No answer"
+\end{Soutput}
+\end{Schunk}
+
+\item  Set NA on levels 12, 13, and 14
+
+<<eval=F>>=
+combod23$HAPPY2[combod23$HAPPY2 %in% happyLevels[12:14] ] <- NA
+## Check result
+table(combod23$HAPPY, combod23$HAPPY2)
+@
+
+\item Eliminate the unused levels from HAPPY2
+
+<<eval=F>>=
+combod23$HAPPY2 <- factor(combod23$HAPPY2)
+@
+
+\item Use this "factor trick". It will convert a factor
+ that has numeric-looking levels back to a numeric variable:
+<<eval=F>>=
+combod23$HAPPYN <- as.numeric(happyLevels)[combod23$HAPPY2]
+@
+
+\item I'm delighted to report there are many happy Europeans
+
+
+<<eval=F>>=
+table(combod23$HAPPYN)
+@
+
+\begin{Schunk}
+\begin{Soutput}
+    0     1     2     3     4     5
+  756   731  1424  2457  2974 10336
+
+    6     7     8     9    10
+  8119 15923 23860 13838  9447
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+\end{frame}
+
+%$
+
+% __________________________________________
+
+\subsection{Social Capital Benchmark Survey}
+\begin{frame}
+  \frametitle{Professor Putnam is not "Bowling Alone" Anymore}
+  \begin{itemize}
+  \item Robert Putnam's famous Social Capital Benchmark Survey
+  \item \url{http://www.ropercenter.uconn.edu/data_access/data/datasets/social_capital_community_survey.html}
+  \item Free for download after registration
+  \item An SPSS "portable" file is offered:
+
+    usmisc2000-soccap.por
+
+  \end{itemize}
+\end{frame}
+
+
+
+% __________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{I Have Never Succeeded with read.spss and SCBS}
+  \begin{itemize}
+  \item The ``character encoding'' of some variable names is
+    unacceptable to my operating system
+  \item Error looks like this:
+      \end{itemize}
+\begin{Schunk}
+  \begin{Soutput}
+Error in read.spss("usmisc2000-soccap.por", to.data.frame = T) :
+  error reading portable-file dictionary
+In addition: Warning message:
+In read.spss("usmisc2000-soccap.por", to.data.frame = T) :
+  Duplicate label for value 0.5 for variable WWWTIME
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+
+
+% __________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{There Are Several Workarounds}
+  \begin{itemize}
+  \item PSPP version 0.6 or higher can import and then re-save to
+    SPSS ``sav'' format, which R can open.
+  \item GRETL also can open the SPSS por file and save as an R data
+    object file.
+
+  \item The ``memisc'' package  (by Martin Elff) has its own SPSS importing routines
+    (author has incorporated fixes to allow importation of troublesome
+    encodings like this one)
+  \end{itemize}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{memisc has a nice ``codebook'' feature}
+
+\def\Sweavesize{\scriptsize}
+
+<<eval=F>>=
+library(memisc)
+scbs <- spss.portable.file("usmisc2000-soccap.por")
+## shows var names & descriptions
+description(scbs)
+## Generates a codebook
+codebook(scbs)
+## Causes the data to actually be read
+scbsdat <- as.data.frame(scbs)
+## If only need a few variables, do this instead
+##scbsdat <- subset(scbs, select = c(tr2nei,tr2cop, effcom, polknow))
+@
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The memisc description output looks like this}
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+  \begin{Soutput}
+ belrel   '5D. Your place of worship gives you a sense of community'
+ belwrk   '5E. The people you work with or go to school with give you a sense of community'
+ beleth   '5F. People who share your ethnic background give you a sense of community'
+ belcom   '5G. People you have met online give you a sense of community'
+ trust    '6. Whether most people can be trusted or...'
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+%_____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The memisc Codebook Output Is Excellent}
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+  \begin{Soutput}
+   trust '6. Whether most people can be trusted or...'
+
+----------------------------------------------------
+
+   storage.mode double
+   measurement nominal
+
+                 Values and labels     N     Percent
+
+   -9   'Other (specify)'              0     0.0   0.0
+   -7   'Don't know'                   0     0.0   0.0
+   -6   'Refused'                      0     0.0   0.0
+   -5   'No Answer'                    0     0.0   0.0
+   -4   'Blank'                        0     0.0   0.0
+    1   'People can be trusted'    14502    50.0  49.6
+    2   'You can't be too careful' 12612    43.5  43.1
+    3   '(VOLUNTEERED) Depends'     1902     6.6   6.5
+    8 M 'Don't know'                 174           0.6
+    9 M 'Refused'                     43           0.1
+
+=============================================================
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\subsection{Arab Barometer}
+
+\begin{frame}
+  \frametitle{Arab Barometer}
+
+  \begin{itemize}
+    \item \url{http://www.arabbarometer.org/survey/survey.html}
+    \item Includes Countries (with Frequencies):
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{rr}
+  \hline
+  Country & freq \\
+  \hline
+Jordan & 1143 \\
+  Palestine & 1270 \\
+  Algeria & 1300 \\
+  Morocco & 1277 \\
+  Kuwait & 750 \\
+  Lebanon & 1200 \\
+  Yemen & 1182 \\
+   \hline
+\end{tabular}
+\end{center}
+\end{table}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Data provided in SPSS format}
+
+  \begin{itemize}
+    \item File name: ``\texttt{AB\_10-23-2009\_Eng\_for\_deposit.sav}''
+    \item Rename to eliminate spaces (spaces are EVIL)
+
+    \item To my shock and amazement, R-2.15 gracefully imports this data:
+
+<<eval=T, results=hide>>=
+library(foreign)
+dat <- read.spss("examples/AB_10-23-2009_Eng_for_deposit.sav", to.data.frame = TRUE)
+@
+
+There is a message like this, but otherwise no drama
+\begin{Soutput}
+ re-encoding from latin1
+\end{Soutput}
+And it worked!
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Recoding Problems: Country Subsets}
+
+  \begin{itemize}
+    \item The survey in Morocco was administered differently,
+      resulting in a complicated problem of different measurements for
+      data reported in the same variables.
+    \item For example, age is recorded in years in all of the countries
+      except Morocco.
+    \item In Morocco, a categorical value was assigned for age. The
+      categories were assigned thusly:
+
+      \begin{table}[ht]
+\begin{center}
+\begin{tabular}{rrr}
+  \hline
+  Value & range & freq\\
+  \hline
+1 & 18-24 & 269 \\
+  2 & 25-34 & 361 \\
+  3 & 35-44 & 261 \\
+  4 & 45-54 & 182 \\
+  5 & 55-64 & 117 \\
+  6 & 65-74 & 62 \\
+  7 & 75+ &  23 \\
+   \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The strange histogram for age}
+
+<<hist1, fig=T, echo=T, include=F, eval=T>>=
+hist(dat$q701, breaks = 20, prob = TRUE, xlab = "Age in Years, except Morocco 1-7")
+@
+\input{plots/t-hist1.tex}
+\includegraphics[width=6cm]{plots/t-hist1}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Create Country Subsets}
+
+  \begin{itemize}
+  \item It is easy to ``grab'' separate chunks for the different
+    countries.
+  \item datm is the data for respondents in the country Morocco
+<<echo=T>>=
+datm <- dat[dat$country == "Morocco", ]
+@
+  \item dato is the data for respondents in all of the other countries
+<<echo=T>>=
+dato <- dat[!dat$country == "Morocco", ]
+@
+  \item We want to re-work the age variable so that it is the same in
+    both data frames, then we will stack them back together.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Morocco is the easy one}
+
+  \begin{itemize}
+    \item All we need to do is turn variable datm\$q701 into a factor
+      with the proper levels.
+<<>>=
+datm$q701f <- factor(datm$q701, levels = 1:7, labels = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+"))
+table(datm$q701f, datm$q701)
+@
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{How to match age for the other countries to that?}
+
+  \begin{itemize}
+    \item R's cut function can manufacture a categorical variable from
+      a numeric variable by ``collapsing'' ranges.
+<<>>=
+dato$q701f <- cut(dato$q701,  breaks <- c(17, 24, 34, 44, 54, 64, 74, 110),
+labels = c("18-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+"))
+table(dato$q701f)
+@
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Finish Up}
+  \begin{itemize}
+     \item Then row bind datm and dato back together
+
+\def\Sweavesize{\scriptsize}
+<<>>=
+dat2 <- rbind(dato, datm)
+table(dat2$q701f, dat2$country)
+@
+
+\end{itemize}
+\end{frame}
+
+
+% ===============================
+
+
+
+
+\section{Merge \& Shape}
+
+\begin{frame}
+  \frametitle{Merge puts together data frames}
+   \begin{itemize}
+     \item SCBS has data on individuals in communities
+     \item We can separately gather data on the communities
+     \item Use R's merge function to put them together
+     \item Many ``hierarchical'' or ``multi-level'' models will be
+      managed in this way
+    \end{itemize}
+  \end{frame}
+
+
+\begin{frame}
+  \frametitle{Wide Versus Long Data}
+   \begin{itemize}
+     \item Wide Format: one column for observations on each unit
+
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+year & canada & usa & denmark & belgium\tabularnewline
+\hline
+2000 & 44 & 43 & 55 & 22\tabularnewline
+\hline
+2001 & 23 & 33 & 33 & 33\tabularnewline
+\hline
+2002 & 11 & 22 & 42 & 44\tabularnewline
+\hline
+2003 & 19 & 11 & 27 & 55\tabularnewline
+\hline
+
+\end{tabular}
+
+\end{itemize}
+\end{frame}
+
+%______________________________________
+
+
+\begin{frame}
+  \frametitle{Some Stat Tools Need the Long Format Instead}
+
+\begin{tabular}{|c|c|c|}
+\hline
+year & country & depvar\tabularnewline
+\hline
+2000 & canada & 44\tabularnewline
+\hline
+2001 & canada & 23\tabularnewline
+\hline
+2002 & canada & 11\tabularnewline
+\hline
+2003 & canada & 19\tabularnewline
+\hline
+2000 & usa & 43\tabularnewline
+\hline
+2001 & usa & 33\tabularnewline
+\hline
+2002 & usa & 22\tabularnewline
+\hline
+2003 & usa & 11\tabularnewline
+\hline
+ &  & \tabularnewline
+\hline
+\end{tabular}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Why The Difference?}
+
+  \begin{itemize}
+  \item Some R tools work with the ``wide'' format (e.g., matplot)
+  \item Most statistical models expect data in the ``long'' format
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Going Between the Wide and the Long Formats}
+  \begin{itemize}
+    \item See ?reshape
+    \item See ?stack
+    \end{itemize}
+
+  \end{frame}
+
+
+\begin{frame}
+  \frametitle{Here's An Example Recently Encountered}
+  \begin{itemize}
+    \item Given 3 columns, ``lat'', ``lon'' and ``val''
+      \begin{description}
+      \item[lat] latitude
+      \item[lon] longitude
+      \item[val] CO$_2$ Observations at position
+      \end{description}
+    \end{itemize}
+
+\begin{tabular}{|c|c|c|}
+\hline
+lat & lon & val\tabularnewline
+\hline
+0 & 0 & 44\tabularnewline
+\hline
+0 & 1 & 23\tabularnewline
+\hline
+0 & 2 & 11\tabularnewline
+\hline
+1 & 0 & 19\tabularnewline
+\hline
+1 & 1 & 43\tabularnewline
+\hline
+1 & 2 & 33\tabularnewline
+\hline
+2 & 0 & 22\tabularnewline
+\hline
+2 & 1 & 11\tabularnewline
+\hline
+2 & 2 & 18\tabularnewline
+\hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{We Need a Matrix like so:}
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{lat}\tabularnewline
+\cline{3-5}
+\multicolumn{1}{|c}{} &  & 0 & 1 & 2\tabularnewline
+\hline
+lon & 0 & 44 & 23 & 11\tabularnewline
+\hline
+ & 1 & 19 & 43 & 33\tabularnewline
+\hline
+ & 2 & 22 & 11 & 18\tabularnewline
+\hline
+\end{tabular}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{The ``reshape'' package to the Rescue}
+  \begin{itemize}
+    \item As it so often happens, Hadley Wickham has encountered this
+      problem and he's written an R package especially designed to
+      help with it.
+    \end{itemize}
+
+\begin{Schunk}
+  \begin{Soutput}
+> library(reshape)
+> nd
+   lat lon         val
+1    1   1  0.88372864
+2    1   2  1.46431589
+3    1   3 -0.68027313
+4    1   4  0.07207392
+5    1   5  0.70322429
+6    2   1 -0.35695088
+7    2   2  0.16997932
+8    2   3  0.43363888
+9    2   4  1.74066891
+10   2   5 -1.66335276
+
+> mnd <- melt(nd, id=c("lat","lon"))
+> weWant <- cast(mnd, lat ~ lon ~ variable)
+> weWant
+, , variable = val
+
+   lon
+lat          1         2          3          4          5
+  1  0.8837286 1.4643159 -0.6802731 0.07207392  0.7032243
+  2 -0.3569509 0.1699793  0.4336389 1.74066891 -1.6633528
+\end{Soutput}
+\end{Schunk}
+
+The help page on ?cast has a ton of examples,
+
+\end{frame}
+
+
+
+% ==========================================================
+\end{document}

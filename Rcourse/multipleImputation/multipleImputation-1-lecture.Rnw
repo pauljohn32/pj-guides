@@ -1,0 +1,1322 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/multipleImputation//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=T)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=180, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Multiple Imputation }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2013]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}
+
+\frametitle{Overview}
+\begin{itemize}
+\item Why Impute?
+\item Amelia
+\item mice
+\item mi
+\item aregImpute
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Why Impute?}
+
+
+\lyxframeend{}\lyxframe{Listwise Deletion}
+\begin{itemize}
+\item In almost all software, ``listwise deletion'' has been the default.
+If any variable is missing, a case is completely dropped from the
+analysis.
+\item Most people seem to agree that is bad--''biased parameter estimates''
+\item Until recently, practitioners ignored the problem.
+\item Research on this has been steadily accumulating since 1970s
+\item Statistical researchers are trying to find a more-or-less convenient,
+``idiot proof'' procedure
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Rubin proposed Multiple Imputation}
+\begin{itemize}
+\item Jargon: MAR (``Missing at Random'') means that the chance of a missing
+score is predictable using information in other variables (and not
+predictable by other unmeasured forces)
+\item Rubin's proposal
+
+\begin{enumerate}
+\item Use many variables, including the dependent variable and variables
+not planned for inclusion in the final model, to predict missings
+\item Create several ``Imputed'' data sets.
+\item Run Each analysis on Each Imputed Dataset
+\item Combine the estimates, weight them to take uncertainty into account.
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Do You Do It Yourself?}
+\begin{itemize}
+\item Rubin suggested the imputations could be done at a data center when
+they supply the dataset. MI would be done ``once and for all,''
+and the imputed missings would be distributed as one collection.
+\item That approach was impractical for a number of reasons.
+\item Many routines to impute missing values have been proposed.
+\item This research area is still under active development
+\item Caution: I'm not an MI authority (just a guy demonstrating some R
+packages)
+\end{itemize}
+
+\lyxframeend{}\lyxframe{What are we looking for?}
+\begin{itemize}
+\item What format does a routine expect from our data?
+\item Are the imputations returned in a manageable format?
+\item Is it difficult to conduct the analysis on each separate dataset?
+\item How to best pool the estimates together and summarize them?
+\end{itemize}
+
+\lyxframeend{}\lyxframe{[allowframebreaks]Points of Concern}
+\begin{itemize}
+\item Calculation of ``imputation averaged'' results
+
+\begin{itemize}
+\item Good theory/method exists for MLE of ``slope coefficients''.
+\end{itemize}
+\item ``Rubin's Rules'' for slope \& variance estimates
+
+\begin{itemize}
+\item For slope estimates, average the imputed, $\hat{\beta}=$ $\sum_{i=1}^{m}\hat{\beta}_{j}$
+\item Variance estimate for $\hat{\beta}$ combines 
+
+\begin{enumerate}
+\item average of $\widehat{Var(\hat{\beta}_{j})}$, $\sum_{i=1}^{m}=\widehat{Var(\hat{\beta}_{j})}$,
+plus 
+\item a penalty for uncertainty between $\hat{\beta}_{j}$ , $\frac{1}{1+m}\sum(\hat{\beta_{j}}-\hat{\beta})^{2}$.
+\end{enumerate}
+\end{itemize}
+\item Less good theory/tools on other statistics ($R^{2}$, deviance, etc.)
+\item Difficult choices about ``openness'' and ``interoperability''
+with other R functions
+\item Caution about terminology: imputation sometimes means 
+
+\begin{itemize}
+\item The candidates to ``fill in'' for NAs
+\item A completed data frame with the NAs are replaced by the candidates
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\section{Amelia}
+
+
+\lyxframeend{}\lyxframe{Amelia}
+\begin{verse}%{}
+King, Gary, James Honaker, Anne Joseph, and Kenneth Scheve. 2001.
+“Analyzing Incomplete Political Science Data: An Alternative Algorithm
+for Multiple Imputation.” \emph{The American Political Science Review}
+95(1): 49-69.
+
+James Honaker, Gary King, Matthew Blackwell (2011). Amelia II: A Program
+for Missing Data. \emph{Journal of Statistical Software}, 45(7), 1-47.
+URL http://www.jstatsoft.org/v45/i07/. 
+\end{verse}%{}
+
+\lyxframeend{}\lyxframe{Rough Sketch of Amelia}
+\begin{itemize}
+\item Assume all variables are drawn from one Multivariate Normal Distribution,
+$MVN(\mu,\Sigma)$
+\item Conduct series of complicated algorithms to estimate $\mu$ and $\Sigma$
+\item After estimating $\mu$ and $\Sigma$, then draw random samples from
+the MVN to fill in missing values
+\item Basic idea similar to ``Norm'' (J. Schafer), but algorithm may be
+faster (EM with ``importance sampling'')
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interface}
+
+\inputencoding{latin9}\begin{lstlisting}
+amelia(x, m = 5, p2s = 1,frontend = FALSE, idvars = NULL, ts = NULL, cs = NULL, polytime = NULL, splinetime = NULL, intercs = FALSE, lags = NULL, leads = NULL, startvals = 0, tolerance = 0.0001, logs = NULL, sqrts = NULL, lgstc = NULL, noms = NULL, ords = NULL, incheck = TRUE, collect = FALSE, arglist = NULL, empri = NULL, priors = NULL, autopri = 0.05, emburn = c(0,0), bounds = NULL, max.resample = 100, ...)
+\end{lstlisting}
+\inputencoding{utf8}
+
+Note: amelia uses all of the supplied variables in imputations except
+vars declared as ``idvars.'' To save memory, one should remove all
+extraneous variables first, rather than use the ``idvars'' feature
+to ask amelia to ignore them. 
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Surprising, Possibly True}
+\begin{itemize}
+\item Most people say ``but my variables are not Normal.'' (gender, survey
+scales, etc)
+\item King (and others) argue the approximation is not harmful (various
+reasons)
+\item Amelia allows user to specify variables as ``nominal'' and ``ordinal''
+
+\begin{itemize}
+\item Nominal variables: The normal imputations are ``rounded off'' to
+values in the observed scale \{0,1,2\}
+\item Ordinal variables: Optionally ``rounded off'' to integers, but instructions
+discourage that
+\item They suggest a 7 point scale might meaningfully have imputed values
+in-between the integers
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Grab Some Data, Impose Some Missings}
+
+Thanks to Chuck Cleland who suggested this example in r-help
+
+<<amelia10,echo=T,include=F>>=
+options(digits=2)
+if (!file.exists("examples")) dir.create("examples")
+if (!file.exists("examples/titanic.txt"))
+download.file("http://lib.stat.cmu.edu/S/Harrell/data/ascii/titanic.txt", "examples/titanic.txt")
+titanic <- read.table("examples/titanic.txt", sep = ',', header = TRUE)
+titanic0 <- titanic
+save(titanic0, file="examples/titanic0.rda")
+set.seed(4321)
+titanic$sex[sample(nrow(titanic), 10)] <- NA 
+titanic$pclass[sample(nrow(titanic), 10)] <- NA 
+titanic$survived[sample(nrow(titanic), 10)] <- NA
+@
+
+\input{plots/t-amelia10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The "Most Complete" Version of the Data Says ...}
+
+<<amelia11,echo=T,include=F,results=tex>>=
+fullglm <- glm(survived ~ pclass + sex + age, family = binomial, data = titanic0)
+library(xtable)
+tout <- xtable(fullglm)
+print(tout, type = "latex")
+@
+
+\input{plots/t-amelia11.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{After Imposing some more Missings, The ListWise Deletion Results}
+
+<<amelia12,echo=T,include=F,results=tex>>=
+ldglm <- glm(survived ~ pclass + sex + age, family = binomial, data = titanic)
+library(xtable)
+tout <- xtable(ldglm)
+print(tout, type = "latex")
+@
+
+\input{plots/t-amelia12.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Use Amelia to create Imputed Data Sets}
+
+<<amelia20,echo=T,include=F>>=
+library(Amelia) # generate multiple imputations 
+titanic.amelia <- amelia(subset(titanic, select = c('survived', 'pclass', 'sex', 'age', 'embarked')), m = 10,  noms = c('survived', 'pclass', 'sex', 'embarked'), 
+emburn = c(500, 500), p2s = F)
+@
+
+\input{plots/t-amelia20.tex}
+
+p2s=F turns off screen output that overflows the presentation software
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Note: Now use tools not from Amelia to Analyze the Data and Summarize it}
+\begin{itemize}
+\item Lets try to use general purpose tools to estimate and summarize these
+models.
+\item The imputations are in an R list, so the general ``lapply'' function
+can be used to fit any kind of model that can accept a data frame
+as an argument.
+\item The R package mitools (Thomas Lumley) has tools to combine estimates
+of slopes and calcuate the Rubin-adjusted standard errors.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{lapply Conducts the glm for Each Imputed Set}
+
+<<amelia30,echo=T,include=F>>=
+allimplogreg <- lapply(titanic.amelia$imputations, function(x){
+    glm(survived ~ pclass + sex + age, family = binomial, data = x)
+})
+@
+
+\input{plots/t-amelia30.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Post Processing with "mitools"}
+
+\def\Sweavesize{\footnotesize} 
+<<amelia40,echo=T,include=F>>=
+options(digits=2)
+library(mitools) # MIextract
+betas <- MIextract(allimplogreg, fun = coef)
+vars <- MIextract(allimplogreg, fun = vcov)
+summary(MIcombine(betas, vars))
+@
+
+\input{plots/t-amelia40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{mi.inference from mix offers effective df and fm}
+
+
+<<amelia50,echo=T,include=F>>=
+library(mix)
+se.glm <- MIextract(allimplogreg, fun = function(x){sqrt(diag(vcov(x)))}) 
+as.data.frame(mi.inference(betas, se.glm))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-amelia50.tex}
+
+df: degrees of freedom associated with the t reference distribution
+used for interval estimates.
+
+r: estimated relative increases in variance due to nonresponse.
+
+fminf: estimated fractions of missing information.
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Compare Side-by-Side: MI and LD results}
+
+\def\Sweavesize{\scriptsize} 
+<<amelia60,include=F,echo=T>>=
+df1 <- as.data.frame(mi.inference(betas, se.glm))
+df2 <- cbind(df1[,1:2], ldbeta = coef(ldglm), ldse = sqrt(diag(vcov(ldglm))))
+df2
+@
+
+\input{plots/t-amelia60}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Make the Missings Worse!}
+
+<<amelia100,echo=T,include=F>>=
+set.seed(234234)
+titanic <- titanic0
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+@
+
+\input{plots/t-amelia100.tex}
+
+Then estimate 
+\begin{itemize}
+\item new ``ldglm'' (listwise deletion estimate)
+\item 10 fresh imputed datasets and regressions for each
+\end{itemize}
+\end{frame}
+
+<<amelia111,echo=T,include=F,results=tex>>=
+ldglm <- glm(survived ~ pclass + sex + age, family =binomial, data = titanic)
+library(xtable)
+tout <- xtable(ldglm)
+print(tout, type = "latex")
+@
+
+\begin{frame}[containsverbatim]
+\frametitle{New Listwise Deletion Model ldglm}
+\input{plots/t-amelia111.tex}
+\end{frame}
+
+<<amelia120,echo=T,include=F>>=
+titanic.amelia <- amelia(subset(titanic,select=c('survived', 'pclass', 'sex', 'age', 'embarked')), m = 10,  noms = c('survived', 'pclass', 'sex', 'embarked'), emburn = c(500,500), p2s = F)
+@
+
+<<amelia130,echo=T,include=F>>=
+ allimplogreg <- lapply(titanic.amelia$imputations, function(x){glm(survived ~ pclass + sex + age, family=binomial, data = x)})
+@
+
+<<amelia140,echo=T,include=F>>=
+options(digits = 2)
+library(mitools) # MIextract
+betas <- MIextract(allimplogreg, fun = coef)
+vars <- MIextract(allimplogreg, fun = vcov)
+se.glm <- MIextract(allimplogreg, fun = function(x){sqrt(diag(vcov(x)))}) 
+@
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{MI summary estimates}
+
+\def\Sweavesize{\footnotesize} 
+<<amelia150,include=F,echo=T>>=
+summary(MIcombine(betas,vars))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-amelia150.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Compare Side-by-Side: MI and LD results}
+
+<<amelia160,include=F,echo=T>>=
+df2.1 <- as.data.frame(mi.inference(betas, se.glm))
+df2.2 <- cbind("MI",df2.1[,1:2], "LD", ldbeta = coef(ldglm), ldse = sqrt(diag(vcov(ldglm))), "full", est = coef(fullglm))
+df2.2
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-amelia160.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Maybe confidence intervals help}
+
+ 
+<<amelia180,include=F,echo=F>>=
+df2.1 <- as.data.frame(mi.inference(betas, se.glm))
+df3 <- cbind(df2.1[,c(1,5:6)], "full", beta = coef(fullglm), confint(fullglm))
+df3
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-amelia180.tex}
+
+<<amelia190,include=F,echo=F>>=
+options(digits=2)
+df4 <- cbind("LDbeta" = coef(ldglm),confint(ldglm))
+df4
+@
+
+\input{plots/t-amelia190.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{mice}
+
+
+\lyxframeend{}\lyxframe{Multiple Imputation via Chained Equations}
+\begin{verse}%{}
+Stef van Buuren, Karin Groothuis-Oudshoorn (2011). MICE: Multivariate
+Imputation by Chained Equations in R. \emph{Journal of Statistical
+Software}, 45(3): 1-67.
+
+Stef van Buuren (2012). Flexible Imputation of Missing Data. Boca
+Raton, FL: Chapman \& Hall/CRC Press.
+\end{verse}%{}
+
+\lyxframeend{}\lyxframe{Rough Sketch}
+\begin{itemize}
+\item Strategy quite different from Amelia and other MVN based theories
+\item MICE: separately process each column, predicting it from all the others.
+
+
+\textquotedbl{}The algorithm imputes an incomplete column (the target
+column) by generating 'plausible' synthetic values given other columns
+in the data.\textquotedbl{}
+
+\item Cycle through columns over and over, until model converges (in MCMC
+sense), then draw samples to impute.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Recommends ``predictive mean matching'' to select imputed values}
+\begin{itemize}
+\item When filling in missings, find cases with similar predicted values
+to the case in question
+\item From among those cases, collect their list of actual observed scores
+\item Draw imputations from that subset of actual scores
+\item ``Automatically'' solves the problem that imputations might have
+impossible values
+
+\begin{itemize}
+\item Imputations for categorical variables always match the original scale
+(sex is always 0 or 1, never 0.64)
+\item When a variable is badly skewed, the PMM always selects a realistic
+value.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{The mice Interface}
+
+\inputencoding{latin9}\begin{lstlisting}
+  mice(data, m = 5, method = vector("character", length=ncol(data)), predictorMatrix = (1 - diag(1, ncol(data))), visitSequence = (1:ncol(data))[apply(is.na(data), 2, any)], post = vector("character", length = ncol(data)), defaultMethod = c("pmm", "logreg", "polyreg", "polr"), maxit = 5, diagnostics = TRUE, printFlag = TRUE, seed = NA, ...
+     )
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Special mice features}
+\begin{itemize}
+\item ``fine grained'' management of imputation algorithms for different
+types of data
+\item Defaults:
+\end{itemize}
+\begin{tabular}{|c|c|c|}
+\hline 
+data type &
+default &
+also available\tabularnewline
+\hline 
+\hline 
+numeric &
+pmm (predictive mean matching) &
+norm, 2level\tabularnewline
+\hline 
+binary &
+logreg (logistic regression) &
+lda\tabularnewline
+\hline 
+factor &
+polyreg (Bayesian polytomous regression) &
+\tabularnewline
+\hline 
+factor: ordinal &
+polr (prop. odds logistic (MASS)) &
+\tabularnewline
+\hline 
+\end{tabular}
+\begin{itemize}
+\item Possible to
+
+\begin{itemize}
+\item add user-defined predictive tools
+\item control the sequence of column processing
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Other Handy mice Features}
+\begin{itemize}
+\item complete: function can
+
+\begin{itemize}
+\item return any of the individual imputed data frames
+\item return all data frames combined in the ``long'' format (rows stacked
+together)
+\item return all frames combined in the ``wide'' format (columns side-by-side)
+\end{itemize}
+\item pool: outputs many of Rubin's suggested diagnostic formulae (param,
+var, $R^{2}$)
+\item summary(pool( )): distills parameter estimates
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{nhanes: small test data frame supplied with mice}
+
+<<mice10,include=F,echo=T>>=
+library(mice)
+nhanes
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Test That Out}
+
+<<mice11,include=F,echo=T>>=
+imp <- mice(nhanes, printFlag = FALSE) 
+fit <- with(data = imp, exp = lm(bmi ~ hyp + chl))
+fitpool <- pool(fit)
+fitpool
+@
+
+\input{plots/t-mice11.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{What's all that?}
+
+Inside the outpute object from pool, there is a wealth of information
+that previous editions of mi did report automatically. That structure
+includes
+
+<<eval=F>>=   
+fit <- list(call = call, call1 = object$call, call2 = object$call1, nmis = object$nmis, m = m, qhat = qhat, u = u, qbar = qbar, ubar = ubar, b = b, t = t, r = r, dfcom = dfcom, df = df,         fmi = fmi, lambda = lambda)
+@
+
+{\footnotesize }%
+\begin{tabular}{|c|c|}
+\hline 
+{\footnotesize qhat: matrix of m complete data fits} &
+{\footnotesize b: within imputation variance}\tabularnewline
+\hline 
+{\footnotesize r: rel. incr var due to nonresponse} &
+{\footnotesize t: total variance of pooled estimates}\tabularnewline
+\hline 
+{\footnotesize qbar: pooled estimate} &
+{\footnotesize u: Variance matrices from m fits ($var\times var\times m$)}\tabularnewline
+\hline 
+{\footnotesize ubar: mean of variances across m fits} &
+{\footnotesize gamma: prop. variance explained by imputations}\tabularnewline
+\hline 
+{\footnotesize dfcom: df in complete analysis} &
+{\footnotesize df: df for pooled estimates}\tabularnewline
+\hline 
+ &
+{\footnotesize fmi: fraction missing information}\tabularnewline
+\hline 
+\end{tabular}{\footnotesize \par}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{summary of pooled fit}
+
+<<mice15,include=F,echo=T>>=
+round(summary(pool(fit))[,c(1:4,6:9)],2)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice15.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{It Gracefully Handles Factor Variables}
+
+<<mice40,include=F,echo=T>>=
+nhanesf <- nhanes
+nhanesf$age <- factor(nhanesf$age, labels = c("20-39", "40-59", "60-99"))
+nhanesf$hyp <- factor(nhanesf$hyp, labels = c("no","yes"))
+imp2 <- mice(nhanes, printFlag = FALSE) 
+fit2 <- with(data = imp2, exp = lm(bmi~hyp+chl))
+pool(fit2)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Compare "real" and 2 imputed sets}
+
+<<mice45,include=F,echo=T>>=
+cbind("F", nhanes,"imp1",complete(imp2,3),"imp2",complete(imp,3))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice45.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{How About the Titanic Data?}
+
+<<mice70,include=F,echo=T>>=
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+set.seed(234234)
+titanic <- titanic0
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+miceTitanic <- mice( subset( titanic, select = c('survived', 'pclass', 'sex', 'age', 'embarked')), m = 10, maxit  = 10, printFlag=FALSE) 
+miceFitTitanic <- with(data = miceTitanic, exp = glm(survived ~ pclass + sex + age, family = binomial))
+pool(miceFitTitanic)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice70.tex}
+
+Here's the error you see if you forget to subset the variables with
+select
+
+\inputencoding{latin9}\begin{lstlisting}
+Error: chunk 7 (label=mice70) 
+Error in nnet.default(X, Y, w, mask = mask, size = 0, skip = TRUE, softmax = TRUE, : too many (3210)
+weights Execution halted
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{summary of pooled fit}
+
+<<mice75,include=F,echo=T>>=
+round(summary(pool(miceFitTitanic)), 2)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mice75.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{mi}
+
+
+\lyxframeend{}\lyxframe{The mi Package (Gelman's Columbia U Team)}
+
+Yu-Sung Su, Andrew Gelman, Jennifer Hill, Masanao Yajima. 2011. “Multiple
+Imputation with Diagnostics (mi) in R: Opening Windows into the Black
+Box”. \emph{Journal of Statistical Software. }45(2)
+
+Kobi Abayomi, Andrew Gelman and Marc Levy. (2008). “Diagnostics for
+multivariate imputations”. \emph{Applied Statistics} 57, Part 3: 273-291.
+\begin{quotation}%{}
+``Generate a multiply imputed matrix applying the elementary functions
+iteratively to the variables with missingness in the data randomly
+imputing each variable and looping through until approximate convergence.''
+\end{quotation}%{}
+
+\lyxframeend{}\lyxframe{Rough Sketch}
+\begin{itemize}
+\item Strategy similar to mice and aregImpute: proceed one-variable-at-a-time
+\item Predict each variable from each of the others 
+
+\begin{itemize}
+\item Start with median/mode for NAs
+\item Conduct ``n.iter'' iterations, or until convergence
+\item Provides a large set of mi.XXX functions to impute variables of different
+types
+\end{itemize}
+\item Draw bootstrap sample to create imputed values
+\item Allows limited ``preprocessing'' of numeric variables (similar idea
+to aregImpute's use of avas)
+\item As ``Opening Windows into the Black Box'' implies, this is intended
+to be less ``mysterious,'' more ``informative'', and easier to
+diagnose MI processes.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Type-Dependent Imputation Methods}
+
+\begin{tabular}{|c|c|c|}
+\hline 
+type &
+mi name &
+model\tabularnewline
+\hline 
+\hline 
+binary &
+mi.binary &
+logistic \tabularnewline
+\hline 
+unordered &
+mi.categorical &
+multinomial\tabularnewline
+\hline 
+ordinal &
+mi.polr &
+continuation logistic\tabularnewline
+\hline 
+continuous &
+mi.continous &
+regression\tabularnewline
+\hline 
+count &
+mi.count &
+Bayesian Poisson (w overdispersion)\tabularnewline
+\hline 
+\end{tabular}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interface}
+
+\inputencoding{latin9}\begin{lstlisting}
+  mi(object, info,  n.imp = 3, n.iter = 30, R.hat = 1.1, max.minutes = 20, 
+rand.imp.method="bootstrap", run.past.convergence = FALSE, seed = NA, check.coef.convergence = FALSE, add.noise = noise.control())
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}\begin{frame}[containsverbatim]
+\frametitle{Steps to Use mi}
+\begin{enumerate}
+\item Create an ``information table'' 
+\item Use mi to create imputations
+
+\begin{itemize}
+\item Runs 1 separate ``chain'' for each desired imputation
+\end{itemize}
+\item pooling methods implemented for common R estimators like ``lm.mi'',''glm.mi'',''lmer.mi''
+
+\begin{itemize}
+\item These cycle through all imputed data frames 
+\item create estimates for each
+\end{itemize}
+\item display or other extractor methods can present results
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Information Table for nhanes data with factor variables in it}
+
+<<include=F>>=
+library(mi)
+library(mice)
+@
+
+<<mi00,echo=T,include=F>>=
+inf <- mi.info(nhanes2)
+inf
+@\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi00.tex}
+
+Can customize variable types at this stage
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Run mi}
+
+Caution: 2013-05-21 runtime errors were observed with n.imp = 10,
+only 8 will succeed. 
+
+<<mi01,include=F,echo=T,eval=F>>=
+miImputeNhanes2 <- mi(nhanes2, info = inf , n.imp = 8,  n.iter = 500, add.noise = FALSE)
+@
+
+<<mi02,include=F,echo=T,eval=T>>=
+<<mi01>>
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi01.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Regression: mi Summary for 10 Imputations}
+
+<<mi04,include=F,echo=T,eval=T>>=
+M1 <- lm.mi(bmi ~ hyp + chl, miImputeNhanes2)
+display(M1)
+cbind(b=coef(M1), se=se.coef(M1), t=coef(M1)/se.coef(M1))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi04.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Titanic, Featuring Kate Winslet and Leonardo DiCaprio}
+
+<<mi10,include=F,echo=T,eval=T>>=
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+set.seed(234234) 
+titanic <- titanic0 
+titanic$sex[sample(nrow(titanic), 400)] <- NA  
+titanic$pclass[sample(nrow(titanic), 400)] <- NA  
+titanic$survived[sample(nrow(titanic), 400)] <- NA 
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Grab Subset, then compute min.info (prepare for imputation)}
+
+<<mi20,include=F,echo=T,eval=T>>=
+ss <- subset( titanic,   select = c('survived', 'pclass', 'sex', 'age'))  
+inf <- mi.info(ss)
+inf
+@
+
+Subset required to avoid use of extraneous variables by imputer.
+
+Can customize inf to change variable types, if desired.
+
+Note, mi did not converge with ``embarked'' included as predictor,
+so it was omitted here
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi20.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Create 10 Titanics}
+
+<<mi30,include=F,echo=T,eval=F>>=
+miImpTitanic <- mi(ss, info = inf, n.imp = 10,  n.iter = 400, add.noise = FALSE)
+@
+
+<<mi31,echo=T,eval=T,include=F>>=
+<<mi30>>
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi30.tex}
+
+n.iter set higher, convergence can take more than 100 iterations
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Use "glm.mi" from mi on the List of Imputed Datasets}
+
+<<mi40,include=F,echo=T,eval=T>>=
+M2 <- glm.mi( survived ~ pclass + sex + age, miImpTitanic, family = binomial(link = "logit"))  
+display(M2)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+<<mi50,include=F,echo=T,eval=T>>=
+(miTitanicResult <- cbind(b = coef(M2), se = se.coef(M2), t = coef(M2)/se.coef(M2)))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi50.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{aregImpute}
+
+
+\lyxframeend{}\lyxframe{The Hmisc \& rms Packages}
+
+Harrell, Frank E. 2010. \emph{Regression Modeling Strategies: With
+Applications to Linear Models, Logistic Regression, and Survival Analysis}.
+Springer. 
+
+Frank E Harrell Jr (2013). rms: Regression Modeling Strategies. R
+package version 3.6-3.
+\begin{quotation}%{}
+‘aregImpute’ takes all aspects of uncertainty in the imputations into
+account by using the bootstrap to approximate the process of drawing
+predicted values from a full Bayesian predictive distribution. Different
+bootstrap resamples are used for each of the multiple imputations,
+i.e., for the ‘i’th imputation of a sometimes missing variable, ‘i=1,2,...
+n.impute’, a flexible additive model is fitted on a sample with replacement
+from the original data and this model is used to predict all of the
+original missing and non-missing values for the target variable.''
+\end{quotation}%{}
+
+\lyxframeend{}\lyxframe{Rough Sketch}
+
+Predict each variable from each of the others 
+\begin{itemize}
+\item Start with random selections for NAs
+\end{itemize}
+Do this ``burnin''+''n.impute'' times
+\begin{itemize}
+\item Draw bootstrap sample, fit a ``flexible'' model to it, predict outcomes
+for all cases from that model.
+\item Default uses predictive mean matching to select an imputed value for
+each NA. (regression extrapolation is alternative)
+\end{itemize}
+Note: Special emphasis on nonlinearity in imputation fitting (similar
+to avas)
+
+
+\lyxframeend{}\lyxframe{What's Avas?}
+
+\begin{tabular}{|c|c|}
+\hline 
+From:Squeeze and Stretch Variables &
+To: Estimate, Convert Back\tabularnewline
+\hline 
+\includegraphics[width=4.5cm]{0_home_pauljohn_SVN_SVN-guides_Rcourse_multipleImputation_importfigs_avas-001.pdf} &
+\includegraphics[width=4.5cm]{1_home_pauljohn_SVN_SVN-guides_Rcourse_multipleImputation_importfigs_avas-002.pdf}\tabularnewline
+\hline 
+\end{tabular}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interface}
+
+\inputencoding{latin9}\begin{lstlisting}
+aregImpute(formula, data, subset, n.impute = 5, group = NULL, nk = 3, tlinear = TRUE, type = c('pmm', 'regression'), match = c('weighted', 'closest'), fweighted = 0.2, curtail = TRUE, boot.method = c('simple', 'approximate bayesian'), burnin = 3, x = FALSE, pr = TRUE, plotTrans = FALSE, tolerance = NULL, B = 75)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Important Detail about ``rms''}
+\begin{itemize}
+\item Prof. Harrell is a long-standing, highly distinguished programmer
+and statistician (SAS PROC Logistic in mid 1980s)
+\item He has developed his own set of fitting functions in S over 2 decades
+and they are not perfectly interchangeable with R functions 
+
+\begin{itemize}
+\item rms ``ols'' is not exactly same as R's ``lm''
+\item rms ``lrm'' is not exactly same as R's glm(y\textasciitilde{}x,
+family=binomial(link=''logit''))
+\item aregImpute and other rms functions are tailored for rms ``fitting
+routines'', but tolerate some R routines (with warnings).
+\end{itemize}
+\item Summary and Plotting functions for ``rms'' objects are usually expecting
+different options than functions in base R
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Syntax Example}
+
+<<rms10,include=F,echo=F,eval=T>>=
+library(rms)
+## Not run: 
+print(paste("f <- aregImpute(~ age + bmi + hyp + chl, data=nhanesf, nk=0)"))
+## End(Not run)
+@
+
+\input{plots/t-rms10.tex}
+\begin{itemize}
+\item Can't actually run that, though, because of this error (which I have
+not solved)
+\end{itemize}
+\inputencoding{latin9}\begin{lstlisting}
+Error in aregImpute(~age + bmi + hyp + chl, data = nhanesf, nk = 0) : a bootstrap resample had too few unique values of the following variables: age Execution halted
+\end{lstlisting}
+\inputencoding{utf8}
+
+\inputencoding{latin9}\begin{lstlisting}
+Warning in aregImpute(~age + bmi + hyp + chl, data = nhanesf, nk = 1) : hyp has the following levels with < 5 observations: yes Consider using the group parameter to balance bootstrap samples
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{If that did work, we would run fit.mult.impute}
+
+<<rms20,include=F,echo=F>>=
+cat("fmi <- fit.mult.impute(bmi ~ hyp + chl, lm, f, data= nhanesf)")
+cat("sqrt(diag(vcov(fmi)))")
+@   
+
+\input{plots/t-rms20.tex}
+\begin{itemize}
+\item Even if aregImpute did create imputations, it would be accompanied
+by this warning
+\end{itemize}
+\inputencoding{latin9}\begin{lstlisting}
+Warning in fit.mult.impute(bmi ~ hyp + chl, lm, f, data = nhanesf) : Not using a Design fitting function; summary(fit) will use standard errors, t, P from last imputation only. Use vcov(fit) to get the correct covariance matrix, sqrt(diag(vcov(fit))) to get s.e.
+\end{lstlisting}
+\inputencoding{utf8}
+\begin{itemize}
+\item Caused by my use of R's ``lm'', rather than rms's own function ``ols''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{The Titanic Rises Again}
+
+<<rms60,include=F,echo=T>>=
+load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+set.seed(234234)
+titanic <- titanic0
+titanic$sex[sample(nrow(titanic), 400)] <- NA 
+titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+titanic$survived[sample(nrow(titanic), 400)] <- NA
+rmsImputeTitanic <- aregImpute(~ survived + pclass + sex + age + embarked, n.impute=10, data=titanic, nk=3)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms60.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Use glm in fit.mult.impute}
+
+<<rms80,include=F,echo=T,eval=T>>=
+rmsFmiTitanic <- fit.mult.impute( survived ~ pclass + sex + age, glm, family=binomial(link=logit), rmsImputeTitanic, data= titanic, fit.reps=TRUE)
+summary(rmsFmiTitanic)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms80.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Recall the Cautionary Warning about Fitting Functions?}
+\begin{itemize}
+\item fit.mult.impute warns the user that when a fitting routine is not
+from rms, then the standard errors and significance tests are based
+only on the last fitted model
+\item One should instead extract the standard errors from the covariance
+matrix
+\item Which I do on the next slide 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create a Homemade Summary for the Fit.Mult.Impute Output}
+
+<<rms90,include=F,echo=T>>=
+sqrt(diag(vcov(rmsFmiTitanic)))
+(rmsTitanicResult <- cbind(b=rmsFmiTitanic$coefficients, se=diag(vcov(rmsFmiTitanic))))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms90.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here's a Problem: I don't believe the se result. Compare mitools}
+
+<<rms91,include=F,echo=T>>=
+require(mitools)
+rmsbetas <- MIextract(rmsFmiTitanic$fits, fun=coef)
+rmsvars <- MIextract(rmsFmiTitanic$fits, fun=vcov)
+rmsTitanicMItools <- summary(MIcombine(rmsbetas,rmsvars))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms91.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Notice the "fit.reps=T" option? It allows inspection of each fitted model}
+
+<<rms100,include=F,echo=T,eval=T>>=
+for(i in 1:length(rmsFmiTitanic$fits)) print(summary(rmsFmiTitanic$fits[[i]]))
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms100.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Using "lrm" from rms package (instead of glm from R)}
+
+<<rms110,include=F,echo=T,eval=T>>=
+fmi2 <- fit.mult.impute( survived ~ pclass + sex + age, lrm, rmsImputeTitanic, data= titanic, fit.reps=TRUE)
+fmi2
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms110.tex}
+\begin{itemize}
+\item Please note: the standard errors in the output based on lrm match
+the std.errors estimated by MItools. Thus I conclude sqrt(diag(cov(fit.mult.impute.object)
+did not give correct results.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{First Try at summary fails:}
+
+\begin{Schunk}
+\begin{Sinput}
+summary(fmi2)
+\end{Sinput}
+
+\begin{Soutput}
+Error in summary.rms(fmi2) : adjustment values not defined here or with datadist for pclass sex age Execution halted Error: Cannot convert file
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{rms fitters require a "datadist" object must be defined}
+
+<<rms120,include=F,echo=T,eval=T>>=
+d <- datadist(titanic)
+options(datadist="d")
+summary(fmi2)
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-rms120.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Making Sense out of All of This}
+
+\begin{frame}[containsverbatim]
+\frametitle{What Should You Do Now?}
+\begin{itemize}
+\item Can't ignore ``missing data problem'' any more, but
+\item No ``lead pipe cinch'' solution exists at this time
+\item I wish there were decisive results comparing these algorithms to find
+out ``which one is best.''
+\item Until then, I expect researchers will use whatever tools are prevalent
+in their fields
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Encouraging Titanic News: 4 Results are Mostly the Same}
+
+Amelia, aregImpute
+
+mi , mice
+
+<<mi300,include=F,echo=T,eval=T>>=
+cbind("Amelia"="Amelia",df1[ , 1:2 ], "rms"="rms", rmsTitanicMItools[,1:2])
+cbind( "mi"="mi", round(miTitanicResult,2),  "mice"="mice", round(summary(pool(miceFitTitanic)),2)[,1:3])
+@
+
+\def\Sweavesize{\scriptsize} 
+\input{plots/t-mi300.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+<<mi1000,include=F,echo=T,eval=T>>=
+save.image(file = "/tmp/ws.rda")
+@
+
+%\def\Sweavesize{\scriptsize} 
+%\input{plots/t-miXX.tex}
+
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

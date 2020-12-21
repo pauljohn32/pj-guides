@@ -1,0 +1,497 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/First-R/First-R-03//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \newenvironment{centercolumns}{\begin{columns}[c]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/p,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt="> ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\title[Descriptive]{First R-03 }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{\today}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Introduction}
+\begin{itemize}
+\item These notes are about the ``path'' and the ``current working directory''
+\item Key concepts
+
+\begin{itemize}
+\item ``current working directory''
+\item Relative and absolute file paths
+\end{itemize}
+\item Key R functions that are emphasized
+
+\begin{itemize}
+\item getwd()
+\item setwd()
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When R starts, Where are you?}
+\begin{columns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item When you start R, ``where are you''?
+\item This example: I started R in my Linux home directory, \url{/home/pauljohn}
+\item getwd() $\Longleftrightarrow$ get Working Directory (WD)!
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{0_home_pauljohn_SVN_SVN-guides_Rcourse_First-R_First-R-03_importfigs_terminal-01.png}
+
+\end{columns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When R starts, Where are you?}
+\begin{columns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item Suppose instead I create a directory \url{/home/pauljohn/tmp/funnyDirname}
+\item I change into that directory, and start R
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{1_home_pauljohn_SVN_SVN-guides_Rcourse_First-R_First-R-03_importfigs_terminal-02.png}
+
+\end{columns}%{}
+\begin{itemize}
+\item R notices the difference, so the current WD becomes R's WD
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Working Directory Means...}
+\begin{itemize}
+\item Everything R reads (and writes) has to be (or go) ``somewhere''
+\item When you read or write a file WITHOUT SPECIFYING A FULL PATH, R looks
+in the current working directory.
+\item The FULL PATH would be (long, boring, typo-prone) like
+
+
+Mac: ``/user/your-name/Documents/psych790/exercise-1/mydata.dat''
+
+
+Windows: ``C:/users/your-name-here/Documents/psych790/exercise-1/mydata.dat''
+
+\item Less error prone to keep data and output in current working directory,
+or in a directory that is ``relative'' to it (explanation below). 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Path}
+\begin{itemize}
+\item Graphical Computer Interfaces are making it tougher to know ``where
+am I?''. 
+\item Windows launcher icons have a ``Start In'' argument...
+\item If you launch R from a menu or icon, where does it ``put you?''
+\item The getwd() command displays the current working directory
+\end{itemize}
+<<eval=F, echo=T>>=
+getwd()
+@
+
+
+\lyxframeend{}\lyxframe{Windows Slashes}
+\begin{itemize}
+\item Misty Water Colored Memories of MS Windows
+
+\begin{itemize}
+\item Olden days: R would think your working directory was ``C:\textbackslash{}Program
+Files\textbackslash{}R'' or something silly like that.
+\item Now, perhaps it guesses ``C:\textbackslash{}user\textbackslash{}your-name-here\textbackslash{}Documents''
+or such.
+\end{itemize}
+\item ALTHOUGH Windows uses the backslash for a separator, inside R we DO
+NOT use the backslash, even on Windows. Instead, that path would be
+typed in as ``C:/usr/your-name-here/Documents''. 
+\end{itemize}
+
+\lyxframeend{}\lyxframe{Please Be organized}
+\begin{itemize}
+\item Be like me. Make a directory structure
+
+\begin{itemize}
+\item Macintosh: /user/your-name-here/documents/ps706/First-R-03
+\item Windows: C:\textbackslash{}users\textbackslash{}your-name-here\textbackslash{}Documents\textbackslash{}ps706\textbackslash{}First-R-03
+\item Linux/Unix: /home/your-name/documents/ps706/First-R-03
+\end{itemize}
+\item Each separate project is in a separate folder.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Relative file paths}
+\begin{centercolumns}%{}
+
+
+\column{6cm}
+
+
+Suppose your directories are like so
+
+
+\begin{lstlisting}
+school
+	pols706
+		homework
+			ex-1
+			ex-2
+		test
+			test-1
+			test-2
+\end{lstlisting}
+
+
+
+Set working directory: \lstinline!"school/.../test/test-2"!
+\begin{itemize}
+\item Ask for ``mydata.dat'', R looks in CWD \lstinline!"./test-2"!
+\end{itemize}
+
+\column{6cm}
+\begin{itemize}
+\item Want mydata.dat stored in ``test''? Use file name \lstinline!"../mydata.dat"!
+
+\begin{alertblock}
+{Notice the 2 dots}``../'' means ``go up one level''
+\end{alertblock}
+\item Want myditty.dat in ``test/test-1''? Use file name \lstinline!"../test-1/myditty.dat"!
+\item Want myex1.dat from ex-1? Ask for \lstinline!"../../homework/ex-1/myex1.dat"!
+\end{itemize}
+
+\end{centercolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Be the Boss of R!}
+\begin{itemize}
+\item It is OK to ask R where it is working.
+
+
+\begin{lstlisting}
+> getwd()
+\end{lstlisting}
+
+
+\item Better than asking, is Telling R where to work. Be assertive!
+\item I manage that by starting R from a terminal (or actually, an editor
+in that directory), and R notices where I was when I started.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Set the Working Directory}
+\begin{itemize}
+\item Perhaps you don't start R from a terminal, as I do. You can still
+tell R where it is supposed to work. 
+\item For that, you need to develop a little ``routine''.
+\item But it's a GOOD routine, generally valuable in all kinds of research
+computing. 
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Option 1: setwd("some-full-path-name")}
+\begin{itemize}
+\item This is the difficult way. The first line in any R program is setwd().
+Almost all R novices think is the most obvious way.
+\item Start R, let it open up anywhere it wants, and
+
+\begin{itemize}
+\item Use setwd() to make R change its working directory 
+\begin{lstlisting}
+> setwd("some-directory-name-here")
+\end{lstlisting}
+
+\item Use ``setwd()'', with a full directory name IN QUOTES.
+
+\begin{itemize}
+\item Windows:
+\end{itemize}
+
+<<include=T, eval=F, echo=T>>=
+setwd("c:/users/your-name-here/Documents/ps706/First-R-03")
+@
+
+\item YES, I mean forward slashes, even in Windows.
+\end{itemize}
+\item FYI: For other Windows tips, please see the FAQ for Windows that is
+distributed with R documentation. (don't forget ``help.start()''). 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Method \#2 (Smarter way)}
+\begin{itemize}
+\item Make a directory
+\item Put an R file in that directory. 
+\item Open that file in an editor (even the R editor window will do, if
+your OS has one)
+\item R will figure out where the file was and assume that is the working
+directory.
+\item Works with Emacs (and ESS), Notepad++ (with NPPTOR), or RStudio.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Relative File Locations are OK}
+\begin{itemize}
+\item Suppose your default working directory is ``/home/your-name/''
+\item You could keep a data file ``mydata.dat'' in the directory ``/home/your-name/ps706''
+\item Start R, Use the setwd() command on that relative path:
+
+
+\begin{lstlisting}
+> setwd("ps706")
+\end{lstlisting}
+
+
+\item If all your input is in ``/home/your-name/ps706'', then it will
+all be available.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Another idea: relative directories above and below}
+\begin{itemize}
+\item Another idea: set the working directory ``/home/your-name/ps706/exercise\_1''. 
+
+\begin{itemize}
+\item Gives access to all files in that directory
+\end{itemize}
+\item Can still refer to the data file in ``one directory above'' as
+
+
+\begin{lstlisting}
+"../mydata.dat"
+\end{lstlisting}
+
+
+\item If you moved the data into ``/home/your-name/ps706/exercise\_1/data'',
+you could
+
+\begin{itemize}
+\item start R and set the working directory \lstinline!"/home/your-name/ps706/exercise_1"!
+\item then load a data file with a relative name \lstinline!"../data/mydata.dat"!.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create a Subdirectory for your plots}
+\begin{itemize}
+\item In R you can also create subfolders and then write output in them.
+
+
+<<eval=F>>=
+myPlotDir <- "outdir"
+dir.create(myPlotDir)
+@
+
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Just one more thing before finishing}
+\begin{itemize}
+\item R has separate functions to write graphs in files with various formats
+(pdf, postscript, png, jpeg)
+\item The ``pull down'' Save As menu seems convenient, but it is not ``scriptable''
+or flexible.
+\item So learn to write commands that can save output images automatically
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recall PDF example from Frist-R-01}
+
+<<p5, echo=T, include = F, results=hide>>=
+x <- rgamma(100, 1.5, 2.2)
+y <- rnorm(100) + 0.2 * x
+pdf("RegPlot1.pdf", height=6, width=6, paper="special")
+plot(y ~ x, main="Here comes a line of best fit!")
+mod1 <- lm(y ~ x)
+abline(mod1)
+dev.off() #turns off pdf output device
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/p-p5.tex}
+
+That creates a pdf and writes it in the Current Working Directory. 
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{You can write the files in other locations}
+
+<<p10, echo=T, include = F, results=hide>>=
+x <- rgamma(100, 1.5, 2.2)
+y <- rnorm(100) + 0.2 * x
+dir.create("plots2")
+pdf("plots2/RegPlot1.pdf", height=6, width=6, paper="special")
+plot(y ~ x, main = "I'm saved in plots folder!")
+mod1 <- lm(y ~ x)
+abline(mod1)
+dev.off() #turns off pdf output device
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/p-p10.tex}
+
+Creates a directory ``plots2'' and writes the file in there
+\begin{itemize}
+\item In addition to creating plots2 in the working directory, can place
+the new directory elsewhere
+
+\begin{itemize}
+\item relative placement, above: \lstinline!"../plots2/RegPlot1.pdf"!
+\item absolute path: \lstinline!"C:/user/long-annoying-directory/plots2/RegPlot1.pdf"!
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

@@ -1,0 +1,1097 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/intro-R-1//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4}
+
+<<Roptions, echo=F>>=
+options(width=60, prompt="> ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 4.1, 1.5, 2.1) 
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+@
+
+
+\title{R Overview }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2013]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}
+
+\frametitle{What is this Presentation?}
+\begin{itemize}
+\item A survey of R
+\item Some ``review'' of elementary concepts
+\item Some ``preview'' of advanced possibilities
+\item Not a substitute for careful reading of \emph{An Introduction to R
+}or the\emph{ R-FAQ}
+\item In case you found this and you are not at the KU Summer Stats Camp,
+consider signing up and coming on over! We have a 1 week-long session
+on R taught by some well qualified folks :) \url{http://crmda.ku.edu}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{R is a little bit like an elephant}
+
+\includegraphics[height=5cm]{8_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_blind-men-elephant-web.jpg}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ouch. That's not my Trunk!}
+
+R is a
+\begin{itemize}
+\item \textbf{calculator}
+\item \textbf{statistical~package~framework}
+\item \textbf{graphical~plotter}
+\item \textbf{statistical~toolbench }
+\item \textbf{computing~language}
+\end{itemize}
+\end{frame}
+
+\section{Calculator}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Free Form Calculator}
+\begin{itemize}
+\item Start an R session ``interactively'' (R or Rterm, for example)
+
+
+> is the ``prompt''. Type stuff there!
+
+\end{itemize}
+\begin{center}
+\includegraphics[width=10cm]{9_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_terminal-snap.png}
+\par\end{center}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{A Calculator for Your Math Homework}
+
+<<calc1, echo=T>>=
+2+3 #addition
+43 * 67 #multiplication
+33/699 #division
+5%%3   #modulo (remainer)
+3^4 #power
+log(17.44) #natural log
+exp(2.33)  #exponentiation
+sin(2*pi)  #sine
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Its a Calculator that Remembers!}
+\begin{itemize}
+\item Create a new variable with the symbol ``<-'' (read: is assigned
+as).
+
+
+> x <- 5
+
+\item x is now a collection with just one number, 5
+\item R has many functions that we ``call'' with x as an ``argument''.
+
+\begin{itemize}
+\item The square root of x is found by 
+
+
+> sqrt(x)
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Its "Vectorized"}
+
+<<calc2, echo=T>>=
+myvector <- c(1,2,3,4,5,6,7)
+sqrt(myvector)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Its "Matricized"}
+<<calc3, echo=T>>=
+x <- c(1,2,3,4,5,6,7,8,9)
+xmat <- matrix(x, ncol=3)
+xmat
+xmat[1,3]
+xmat[ ,2]
+xmat[2, ]
+apply(xmat, 2, sum)
+@
+\end{frame}
+
+\section{Statistical Package Framework}
+
+\begin{frame}
+\frametitle{Its Like a "Statistical Package" (sorta)}
+\begin{itemize}
+\item Programs like SPSS or SAS are called ``stat packs.'' 
+\item These are ``pre-packaged'' routines
+
+\begin{itemize}
+\item No chance to review internal code
+\item Difficult to modify/extend calculations
+\end{itemize}
+\item User has a ``plug and play'' list. ``If data is like X, then run
+procedure X''
+\item Many people use R that way, although they are missing part of the
+point.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]\frametitle{More Correct: R is a Package Framework}
+\begin{itemize}
+\item R has plenty of pre-packaged routines
+\item Inspect Your Computer: What packages are currently installed?
+
+
+\begin{lstlisting}
+> library()
+\end{lstlisting}
+
+
+\item Want version numbers, install locations, etc?
+
+
+\begin{lstlisting}
+> installed.packages()
+\end{lstlisting}
+
+
+\item Want package names only?
+
+
+\begin{lstlisting}
+> row.names(installed.packages())
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Large Collection of Regression Routines}
+\begin{itemize}
+\item Linear Regression is in the base stats package
+
+
+\begin{Sinput}
+mymodel <- lm (depvar ~ indepvar1 + indepvar2, data = mydfname)
+\end{Sinput}
+
+\item ``nls'' nonlinear least squares
+\item ``glm'' Generalized Linear model
+\item Countless packages for other regression models
+
+\begin{itemize}
+\item nlme - nonlinear mixed effects
+\item lme4 - linear mixed effect (next generation of nlme)
+\item MASS - negative binomial regression, robust and smooth regressions
+\item mgcv - generalized additive models
+\item ``mars'' - Multivariate Adaptive Regression Splines
+\item ``betareg'' - regression with a ``Beta distributed'' outcome variable
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Little Introspection, Please}
+\begin{itemize}
+\item After a fresh install, one has only the packages written by the R
+core team and a very selective set of packages that they recommend.
+\item Thousands of other packages available
+\item Tip: Where does R search for packages in your system
+
+
+\begin{lstlisting}
+> .libPaths()
+\end{lstlisting}
+
+
+\item Note some paths can only be written into by an ``administrator'',
+but some may be written in by an ``ordinary user''.
+\item If somebody emails you a package (``whatever-2.1.tar.gz'') it can
+be manually installed. In a Linux shell:
+
+
+\begin{lstlisting}
+$ R CMD INSTALL whatever-2.1.tar.gz
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{CRAN: a service from the R Core Team}
+\begin{itemize}
+\item CRAN is the largest indexed set of packages (but others exist)
+\item R Package Writers follow a set of guidelines, but nobody ``certifies''
+them ``officially''
+\item Available after passing build checks \& sanity tests
+\item Package server allows ``automagical'' installation
+\item For convenience, R users can download \& install from within R.
+
+
+\begin{lstlisting}
+> install.packages(c("lmtest","car"), dep = TRUE)
+\end{lstlisting}
+
+
+\item Install path depends on user's admin authority (In Windows, run R
+``as administrator'' to do package installs).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Prodigious Profusion of Packages}
+\begin{itemize}
+\item Wonder what you are missing out on?
+
+
+\begin{lstlisting}
+> rownames(available.packages())
+\end{lstlisting}
+
+
+
+On 2011-01-31, that command returned a list of 2769 packages.
+
+
+On 2013-05-10, that returned 4467 packages!
+
+\item I want it ALL!
+
+
+I wrote a script that installed them all on a Windows system. Download
+and Install took
+\begin{itemize}
+\item 3 hours
+\item 2.7 Gigabytes of storage
+\item Scripts: \url{http://pj.freefaculty.org/R/SystemAdmin}
+\end{itemize}
+\item Periodic Maintenance: Check for updates periodically
+
+
+\begin{lstlisting}
+> update.packages(ask=F, checkBuilt = TRUE)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Every Time I Load a Package, I $\ldots$}
+\begin{itemize}
+\item Load a package that is already installed, e.g. ``lme4''
+
+
+> library(lme4)
+
+\item Review the list of functions in that package
+
+
+\begin{lstlisting}
+> library(help = lme4)
+\end{lstlisting}
+
+
+\item Read the vignettes listed.
+\item Read the help on the important functions
+
+
+\begin{lstlisting}
+> ?lmer
+\end{lstlisting}
+
+
+\item Run the examples on the important functions
+
+
+\begin{lstlisting}
+> example(lmer)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim] 
+
+\frametitle {A Vignette on Sudoku }
+\begin{itemize}
+\item I recently learned there is an R package for making and playing SudoKu
+puzzles. 
+\item I installed it 
+
+
+\begin{lstlisting}
+> install.packages("sudoku") 
+\end{lstlisting}
+
+
+\item I loaded it
+
+
+\begin{lstlisting}
+> library(sudoku)
+\end{lstlisting}
+
+
+\end{itemize}
+<<loadsudo,echo=F>>=
+library(sudoku)
+@
+
+\end{frame}
+\begin{frame}[containsverbatim] 
+
+\frametitle{What is that Sudoku thing?}
+
+Always do this:
+
+\begin{lstlisting}
+> library(help = sudoku)
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+
+\frametitle{Documentation Included! No Extra Charge!} 
+
+\begin{lstlisting}[basicstyle={\footnotesize},breaklines=true]
+Information on package 'sudoku'
+Description:
+Package: sudoku
+Version: 2.2
+Date: 2009-02-02
+Title: Sudoku Puzzle Generator and Solver
+Author: David Brahm <brahm@alum.mit.edu> and Greg Snow <Greg.Snow@intermountainmail.org>, with contributions from Curt Seeliger <Seeliger.Curt@epamail.epa.gov> and Henrik Bengtsson <hb@maths.lth.se>.
+Maintainer: David Brahm <brahm@alum.mit.edu>
+Suggests: tkrplot
+Description: Generates, plays, and solves Sudoku puzzles. The GUI playSudoku() needs package "tkrplot" if you are not on Windows.
+License: GPL
+Packaged: Mon Feb 2 16:28:15 2009; a215020
+Built: R 2.10.1; ; 2010-03-19 06:50:35 UTC; unix
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+\begin{lstlisting}[basicstyle={\footnotesize}]
+Index:
+
+fetchSudokuUK       Fetch the daily sudoku puzzle from
+                    http://www.sudoku.org.uk/
+generateSudoku      Randomly Generate a Sudoku Puzzle Grid
+hintSudoku          Give a Hint for a Sudoku Cell
+playSudoku          Interactively play a game of Sudoku
+printSudoku         Print a Sudoku Grid to the Terminal.
+readSudoku          Read a File Containing a Sudoku Grid
+solveSudoku         Solve a Sudoku Puzzle
+writeSudoku         Write a Sudoku Grid to a File
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+\frametitle{Documentation Included! No Extra Charge!} 
+\begin{itemize}
+\item Then I use the help feature to find out more on the interesting-looking
+ones: 
+
+
+\begin{lstlisting}
+> ?generateSudoku
+\end{lstlisting}
+ 
+
+\item That's the same as: 
+
+
+\begin{lstlisting}
+> help(generateSudoku) 
+\end{lstlisting}
+ 
+
+\item Perhaps I run the example that is displayed on the help page: 
+
+
+\begin{lstlisting}
+> example(generateSudoku)
+\end{lstlisting}
+ 
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+When you run a function, the parentheses are required, even if you
+don't add any specific arguments. This tells generateSudoku to use
+the default settings. 
+
+<<>>=
+generateSudoku()
+@
+
+\include{0_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_Rintro-003}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Nicer Looking Sudoku Puzzle}
+
+<<printmypuzzle,echo=T>>=
+myPuzzle <- generateSudoku(Nblank = 20, print.it = FALSE)
+printSudoku(myPuzzle)
+@\input{1_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_Rintro-004.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Torture Yourself with British Sudoku}
+
+<<printUK,echo=T, eval=F>>=
+printSudoku(fetchSudokuUK())
+@
+
+\input{importfigs/Rintro-005.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Play Sudoku interactively against R}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+There is even an interactive on-screen game to be played (with hints
+for cheaters)
+
+\column{6cm}
+
+
+\includegraphics[width=6cm]{10_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_sudoku-play.png} 
+
+\end{topcolumns}%{}
+\end{frame}
+
+\section{Graphics}
+
+\begin{frame}
+\frametitle{Consider an Ugly Basic Graph}
+\begin{itemize}
+\item A graph pop ups when you type ``hist(x)''
+
+
+\includegraphics[width=6cm]{11_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_hist-snap.png}
+
+\item But clicking on the graph doesn't do anything. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{But you do interact with R}
+\begin{itemize}
+\item Re-run hist() with more details to beautify the graph.
+\item Then decorate with ``lines()'' ``text()'' etc.
+\end{itemize}
+\includegraphics[width=8cm]{12_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_terminal-snap-2.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{And a nicer looking histogram pops up}
+
+\includegraphics[width=6cm]{13_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_hist-snap-2.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{I Use R to Make Line Art}
+\begin{itemize}
+\item R can create a ``blank canvas'' 
+\item Which can then be decorated with subsidiary plotting commands like
+
+\begin{itemize}
+\item lines
+\item points
+\item text
+\item polygon
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hold your Seats! Prepare for the Graphic of the Century}
+
+I'm serious. I won't be responsible for injuries to people who faint
+from a standing position. This sight may be overwhelming to the elderly
+and infirm.
+
+Be Careful. Sit down.
+
+\end{frame}
+
+\begin{frame}
+
+\includegraphics[width=9cm]{14_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_Normal-2009.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Data Displays are Nice too}
+
+``Box and whisker'' plot
+
+\includegraphics[width=8cm]{15_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_plot-boxplot.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Barplots are nice too}
+
+The Gender Gap in 2004
+
+\includegraphics[bb=0bp 0bp 432bp 400bp,width=8cm]{16_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_plot-bar2009-genderGap.pdf}
+
+\end{frame}
+
+\section{Stat Toolbench}
+
+\begin{frame}[containsverbatim]
+\frametitle{R has random variables}
+\begin{itemize}
+\item Create ``random data'' 
+\item Want some numbers between 0 and 1?
+\end{itemize}
+<<toolbench1, echo=T>>=
+x <- runif(10)
+x
+mean(x)
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conduct "Monte Carlo" Experiments}
+\begin{itemize}
+\item Draw 1000 samples 
+\item Repeat a calculation with each one
+\item Consider the 1000 results
+\item In R this is easy, whereas it is tedious with SAS and impossible with
+SPSS 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{One Normal Sample, $\mu$=50, $\sigma$=20, 1500 Observations}
+
+\includegraphics[bb=0bp 0bp 432bp 288bp,width=8cm]{17_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig1.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{1000 Sample Means}
+
+\includegraphics[bb=0bp 0bp 432bp 288bp,width=8cm]{18_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig3.pdf}
+
+ Consistent with theory, means should be Normal($\mu$=50, $\sigma$ =20/$\sqrt 1500$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Sample from an Exponential Distribution}
+
+\includegraphics[width=8cm]{19_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig5.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Surprise. Look how Unimodal and "normal" the Exponential Means Look}
+
+\includegraphics[width=8cm]{20_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig6.pdf}
+
+As we shall see, this is a general phenomenon called ``the Central
+Limit Theorem''. Even ``funny shaped'' distributions have means
+that are ``pleasant''!
+
+\end{frame}
+
+\section{Programming Language}
+
+\begin{frame}[containsverbatim]
+\frametitle{It is a Functional Language}
+
+One can create functions ``on the fly'' and then put them to use
+
+<<proglang1,echo=T>>=
+celToFaren <- function(input=0){ 9/5 * input + 32 }
+celToFaren(100)
+celToFaren(25)
+celToFaren(0)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Note we get Free Vectorization}
+
+<<proglang2,echo=T>>=
+mytemps <- 50 * runif(10)
+mytemps
+celToFaren(mytemps)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{There's a Lot of Computer Science in There}
+
+This is not the time to go in to detail, but here's the big idea.
+\begin{itemize}
+\item A function can create an ``object'' and mark it with a ``class''
+indicator
+\item Other functions can receive that object, inspect its class, and then
+``do the right thing.''
+\item In R packages, policy says use the ``period'' as a joining character
+for functions that are applied to certain types of things, such as 
+
+\begin{itemize}
+\item ``plot.lm'' to plot lm objects
+\item ``summary.lm'' to summarize an lm object
+\item ``vcov.lm'' to extract the variance matrix from an lm object
+\end{itemize}
+\item Hence, a commonly used idioms like
+
+
+\begin{lstlisting}
+mod1 <- lm ( y ~ x, data=mine)
+summary(mod1)
+plot(mod1)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{R Reinterprets and Re-arranges Input}
+\begin{itemize}
+\item User can freely rearrange arguments, optional to name them if context
+is clear
+
+
+\begin{lstlisting}
+plot( myinput, myoutput)
+\end{lstlisting}
+
+\begin{itemize}
+\item Same as
+
+
+\begin{lstlisting}
+plot(x = myinput, y = myoutput)
+\end{lstlisting}
+
+
+\item Same effect as
+
+
+\begin{lstlisting}
+plot(y = myoutput, x = myinput)
+\end{lstlisting}
+
+
+\end{itemize}
+\item Can abbreviate argument names if unique.
+
+
+\begin{Sinput}
+plot(x1, y1, main = "my name") 
+\end{Sinput}
+\begin{itemize}
+\item Same as
+
+
+\begin{Sinput}
+plot(x1, y1, m = "my name")
+\end{Sinput}
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Verbose code may be Clear, But its also Verbose}
+\begin{itemize}
+\item The R experts prefer brevity
+\item I tend to like fully named function arguments, probably because I'm
+a teacher
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim] 
+\frametitle{Sudoku, for example}
+
+R interprets all of these commands in the same way: 
+
+\begin{lstlisting}
+> generateSudoku(Nblank=20, print.it = TRUE)
+> generateSudoku(20,T)
+> generateSudoku(N=20, p=T)
+> generateSudoku(p=T, N=20) 
+\end{lstlisting}
+
+
+R will try to match up the options with your arguments, but I try
+to avoid gambling by explicitly naming options.
+
+This does not give what you want because the arguments are out of
+order and unnamed
+
+\begin{lstlisting}
+> generateSudoku(T, 20) 
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{I Like "Camel Case" names}
+\begin{itemize}
+\item I don't mind smashing together words like ``myX'' or ``smallSampleData''.
+\item Historically, ``\_'' was the assignment operator in S, so I don't
+use that in R names.
+\item Period ``.'' is a joining character in R functions that are part
+of the ``class'' structure
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Be Careful about the Names You Choose}
+\begin{itemize}
+\item Don't steal names of R ``built in'' functions and variables. 
+\item Naming variables by special names like ``mymod1'' or such offers
+some protection.
+\item More formally, the function ``exists()'' will ask R if a symbol
+is currently used. 
+\end{itemize}
+<<proglang3, echo=T>>=
+exists("sqrt")
+exists("c")
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{About Those Parentheses}
+\begin{itemize}
+\item Parentheses are required to let R know you are trying to call one
+of its functions
+
+\begin{itemize}
+\item To quit R, run the quit() function, for which q is an abbreviation:
+
+
+<<eval=F>>=
+q()
+@
+
+\end{itemize}
+\item Without parentheses, it thinks you want it to print the contents of
+``q'' function.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Many Functions Let You Read Them}
+\begin{itemize}
+\item q is not interesting, but it is there.
+\item And many other functions are there. Please run:<<eval=F>>=
+lm
+lm.fit
+predict.glm
+@
+\item That doesn't show the ``actual R source code'', but rather one stylized,
+tidied up presentation of the logical structure of the function after
+R has read the source code and gobbled it into the runtime engine
+(See the rockchalk vignette ``Rstyle'' for an explanation).
+\end{itemize}
+\end{frame}
+
+\section{If You Want To Get Started}
+
+\begin{frame}
+\frametitle{R usage for Dummies}
+
+My new policy. Students should follow my ``Workspace Advice'' for
+R.%
+\footnote{I put it in the Emacs wiki, it must be right! \url{http://www.emacswiki.org/emacs/CategoryESS}%
+}. Keep related files IN A FOLDER! In essence,
+\begin{enumerate}
+\item Create a ``folder''
+\item Copy a template R file into that folder
+\item Open that R file with the programmer's file text editor (for me, Emacs)
+\item Launch an R session inside the editor's awareness, so code can be
+``sent'' to R for evaluation.
+\item Develop the R code by going back-and-forth between the ``program
+buffer'' and the ``R buffer''
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Commands on left, R session on Right}
+
+\includegraphics[width=0.9\paperwidth]{21_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_Emacs-ESS-snap-01.png}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Emacs is like Democracy. Its the worst, except for all of the others that have been tried...}
+\begin{itemize}
+\item Emacs 
+
+\begin{itemize}
+\item Free
+\item Available on all platforms (Mac (AquaMacs)), Windows
+\item Highly configurable
+\item Useful for many other kinds of projects.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{I'm not a Mac User, but...}
+
+I observe
+\begin{itemize}
+\item R for Macintosh is provided with a MUCH better editor than the one
+which is provided with R for Windows. It has
+
+\begin{itemize}
+\item indentation
+\item paren matching
+\item highlighting
+\end{itemize}
+\item So, if you are a Mac user, it is not bad to use the base Macintosh
+editor 
+
+\begin{itemize}
+\item and then ignore the Windows and Linux users who fight about which
+editor is best
+\end{itemize}
+\item But you might also be aware of Emacs for Macintosh, AquaMacs. If you
+learn to use that, then you can be comfortable if you go onto other
+operating systems.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{Other Editors: Multi-Platform}
+\begin{itemize}
+\item [RStudio], a somewhat limited but more idiot-proof R ``integrated
+development environment'' (IDE). This is not a general purpose programming
+editor, but rather it is intended for convenience of R elementary
+users.
+
+\begin{itemize}
+\item I recommend this for R novices who don't have much experience at installing
+software. Almost always, it finds R and interacts with it.
+\item Disadvantages:
+
+\begin{itemize}
+\item horrible interaction with plot devices
+\item frustrating Rstudio-specific package management framework
+\end{itemize}
+\end{itemize}
+\item [Eclipse] An expansive, general purpose programming editor and IDE
+with a special plugin for R. Has many eager proponents. In 2009, I
+thought Eclipse would take over the world.
+\item [vim] The updated version of 'vi' (pronounced ``vee-eye''). Like
+Emacs, was developed in the time before mice. Many of the most disciplined
+programmers I know cling to vi like a flotation device.
+\item [Rcmdr] An R packages that provides ``pull down menu'' system provided
+by Prof. John Fox in support of his excellent stats textbooks. 
+
+\begin{itemize}
+\item Disadvantage
+
+\begin{itemize}
+\item requires the tcltk programming library (which is becoming more tenuous)
+\item makes it very easy to run some commands, but others completely omitted
+\end{itemize}
+\end{itemize}
+\item [JGR] An R package that launches a program editor in Java. This still
+works, but it appears most of the people who would use it are now
+adopting RStudio.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Other Editors: Windows Only}
+\begin{itemize}
+\item Notepad++, including the ``addon'' NPPTOR. A better program editor
+that RStudio, and NPPTO R allows a function key (usually F8) to send
+lines to an R session. This is the most popular option among the Windows-using
+R programmers that I know.
+
+\begin{itemize}
+\item I don't use it because it is Windows only (why hobble oneself by marrying
+an OS?).
+\end{itemize}
+\item WinEdt: a commercial product that was quite popular before Notepad++
+was introduced.
+\end{itemize}
+\end{frame}
+
+\section{Appendix 1: Code for Simulation Examples}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw a Sample from the Normal, Create a Histogram}
+
+\input{2_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig1.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare Theoretical Probabilities and Observed Sample}
+
+\input{3_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig2.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw Lots of Samples, Calculate their Means, and Plot}
+
+\input{4_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig3.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Re-scale the Previous Histogram}
+
+\input{5_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig4.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create and Plot an Exponential Variate}
+
+\input{6_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig5.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Central Limit Theorem is Correct}
+
+\input{7_home_pauljohn_SVN_SVN-guides_Rcourse_intro-R-1_importfigs_t-demofig6.tex}
+
+\end{frame}
+\end{document}

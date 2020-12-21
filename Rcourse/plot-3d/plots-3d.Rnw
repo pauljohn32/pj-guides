@@ -1,0 +1,1940 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/plot-3d//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{3 D Plotting }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2013]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+\begin{frame}
+
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Overview}
+
+\begin{frame}[containsverbatim]
+\frametitle{Kinds of 3d Plot}
+\begin{itemize}
+\item Static ``draw on the screen, like R plot''
+
+\begin{itemize}
+\item persp: in the R base graphics
+\item cloud in lattice package
+\item scatterplot3d
+\end{itemize}
+\item scatter3d: by John Fox for the car package, uses OpenGL (computer
+3d programming library)
+
+\begin{itemize}
+\item interactive and easy to get started
+\item can be accessed from Fox's Rcmdr package interface
+\item final output not as likely to be ``publishable''
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here's what we usually want the 3d Plot For}
+\begin{itemize}
+\item Show the ``cloud'' of points scattered in space
+\item Show the ``predicted plane'' of a fitted regression model
+\item persp can do these things, although it is somewhat tough to grasp
+at first
+\item Why keep trying: persp is in the base of R, so if something is wrong
+with it, it is likely somebody will know how to fix it.
+\item If you show up in r-help asking about 3D plotting, many folks there
+will suggest you learn persp, since most other routines draw upon
+its concepts.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{persp}
+
+\begin{frame}[containsverbatim]
+\frametitle{persp is the Place to Start}
+\begin{itemize}
+\item The key thing to understand: if your variables are $x1$, $x2$ (the
+inputs), and $z$ (the output), persp does not ``want'' your variables
+like this
+
+
+\begin{lstlisting}
+persp(x1,x2,z)
+\end{lstlisting}
+
+
+\item persp requires ``plotting sequences'' for $x1$ and for $x2$. These
+are not observed values, but rather sequences from the minimum score
+to the maximum. 
+\item For ``real data,'' $x1$, for example, get the range, then make
+a sequence: 
+
+
+\begin{lstlisting}
+x1r <- range(x1)
+x1seq <- seq(x1r[1], x1r[2], length.out = 30)
+## or use the rockchalk short-cut
+x1seq <- plotSeq(x1, length.out = 30)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{For z, persp wants a matrix}
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item z has a value for each combination of $x1seq$ and $x2seq$
+\item Various ways to create, but the ``outer'' function is often convenient.
+
+
+\begin{lstlisting}
+z <- outer(x1seq, x2seq, FUN)
+\end{lstlisting}
+
+
+\item FUN is a function that returns a value for each combination of values
+in the 2 sequences
+\end{itemize}
+
+\column{6cm}
+
+
+\begin{tabular}{cc|c|c|c|}
+\cline{3-4} 
+ &
+ &
+\multicolumn{2}{c|}{x2seq} &
+\multicolumn{1}{c}{}\tabularnewline
+\cline{3-4} 
+ &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{$x_{21}$} &
+\multicolumn{1}{c}{$x_{22}$} &
+\multicolumn{1}{c}{$x_{23}$}\tabularnewline
+\cline{3-5} 
+ &
+$x_{11}$ &
+$z_{11}$ &
+$z_{12}$ &
+$z_{13}$\tabularnewline
+\cline{1-1} \cline{3-5} 
+\multicolumn{1}{|c|}{x1seq} &
+$x_{12}$ &
+$z_{21}$ &
+$z_{22}$ &
+$z_{23}$\tabularnewline
+\cline{1-1} \cline{3-5} 
+ &
+$x_{13}$ &
+$z_{31}$ &
+$z_{32}$ &
+$z_{33}$\tabularnewline
+\cline{3-5} 
+\end{tabular}
+
+\medskip{}
+
+
+$z_{11}=f(x_{11},x_{21})$, and so forth
+
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Why Does R Call it "outer?"}
+
+Remember, an ``inner product'' in linear algebra
+
+\begin{equation}
+\left[\begin{array}{cccc}
+a & b & c & d\end{array}\right]\left[\begin{array}{c}
+e\\
+f\\
+g\\
+h
+\end{array}\right]=ae+bf+cg+dh=??
+\end{equation}
+
+
+An ``outer product'' is
+\begin{equation}
+\left[\begin{array}{c}
+e\\
+f\\
+g\\
+h
+\end{array}\right]\left[\begin{array}{cccc}
+a & b & c & d\end{array}\right]=\left[\begin{array}{cccc}
+ea & eb & ec & ed\\
+fa & fb & fc & fd\\
+ga & gb & gc & gd\\
+ha & hb & hc & hd
+\end{array}\right]
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Create Some Data for a Regression}
+
+<<threed10,echo=T, include=F>>=
+x1 <- rnorm(100); x2 <- -4 + rpois(100,lambda=4);
+y = 0.1 * x1 + 0.2 *x2 + rnorm(100);
+dat <- data.frame(x1, x2, y); rm (x1, x2, y)
+m1 <- lm(y ~ x1 + x2, data=dat)
+summary(m1)
+@
+
+\input{plots/t-threed10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create the predictor sequences}
+
+<<threed15,echo=T, include=F>>=
+x1r <- range(dat$x1)
+x1seq <- seq(x1r[1], x1r[2], length = 30)
+x2r <- range(dat$x2) 
+x2seq <- seq(x2r[1], x2r[2], length = 30)
+@
+
+\input{plots/t-threed15.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create the z matrix}
+
+<<threed20,echo=T, include=F>>=
+z <- outer(x1seq, x2seq, function(a, b) predict(m1, newdata = data.frame(x1 = a, x2 = b)))
+@
+
+\input{plots/t-threed20.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Persp with No Special Settings}
+
+<<threed30,echo=T, fig=T, include=F>>=
+persp(x = x1seq, y = x2seq, z = z)
+@
+
+\input{plots/t-threed30.tex}
+
+\includegraphics[width=10cm]{plots/t-threed30}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Many Opportunities for Beautification}
+\begin{itemize}
+\item xlim,ylim,zlim play same role as in ordinary R plots
+\item xlab, ylab, zlab same
+\item theta and phi control the viewing angle. 
+
+\begin{itemize}
+\item theta moves the viewing angle left and right
+\item phi moves it up and down. 
+\end{itemize}
+\item Example, this ``raises'' one's viewing angle (a negative value would
+lower it)
+
+
+\begin{lstlisting}
+persp(x=x1seq,y=x2seq, z=z, phi=40)
+\end{lstlisting}
+
+
+\item Example, this ``rotates'' one's viewing angle to the left
+
+
+\begin{lstlisting}
+persp(x=x1seq,y=x2seq, z=z, theta=-20)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+<<threed40,echo=T, fig=T, include=F>>=
+persp(x = x1seq, y = x2seq, z = z, zlim = c(-3,3), theta = 40)
+@
+
+<<threed50,echo=T, fig=T, include=F>>=
+persp(x = x1seq, y = x2seq, z = z, zlim = c(-3,3), theta = 40, phi = -20)
+@
+
+\begin{tabular}{|c|c|}
+\hline 
+\begin{minipage}[t]{5cm}%
+\def\Sweavesize{\scriptsize}
+\input{plots/t-threed40}%
+\end{minipage} &
+\begin{minipage}[t]{5cm}%
+\def\Sweavesize{\scriptsize}
+\input{plots/t-threed50}%
+\end{minipage}\tabularnewline
+\hline 
+\includegraphics[width=5.5cm]{plots/t-threed40} &
+\includegraphics[width=5.5cm]{plots/t-threed50}\tabularnewline
+\hline 
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Everything Else We Draw Has to be "Perspective Adjusted"}
+\begin{itemize}
+\item This ``looks'' 3-dimensional, but it is really a flat two dimensional
+screen
+\item Thus, a point to be inserted at $(x1=0.3,x2=-2,z=2)$
+
+\begin{itemize}
+\item has to be translated into a position in the 2-dimensional screen
+\end{itemize}
+\item To do that, we use
+
+\begin{itemize}
+\item A ``Viewing Transformation Matrix'' that persp creates
+\item trans3d, a function that converts a 3 dimensional coordinate into
+a 2 dimensional coordinate
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Points on a perspective plot}
+
+<<threed60,echo=T, fig=T, include=F>>=
+res <- persp(x = x1seq, y = x2seq, z = z, zlim = c(-3,3), theta = 40, phi = -15)
+mypoints <- trans3d(dat$x1, dat$x2, dat$y, pmat = res)
+points(mypoints, pch = 1, col = "red")
+@
+
+\input{plots/t-threed60}
+\begin{itemize}
+\item persp generates ``res'' as a plot by-product
+\item res is the perspective transformation matrix (used by trans3d)
+\item mypoints is a 2 dimensional value in the ``surface of the computer
+screen'' displaying the 3d plot.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Points overlaid on persp plot via trans3d}
+
+\includegraphics[width=10cm]{plots/t-threed60}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Remember the Fitted Regression model?}
+
+\def\Sweavesize{\scriptsize}
+
+\input{plots/t-threed10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Now draw dotted lines from Predicted to Observed Values}
+
+<<threed70,echo=T,fig=F, include=F>>=
+res <- persp(x = x1seq, y = x2seq, z = z, zlim = c(-3,3), theta = 40, phi = -15)
+mypoints <- trans3d(dat$x1, dat$x2, dat$y, pmat = res)
+points(mypoints, pch = 1, col = "red")
+vpred <- trans3d(dat$x1, dat$x2, fitted(m1),   pmat = res) 
+vobs <- trans3d(dat$x1, dat$x2, dat$y,   pmat = res) 
+segments(vpred$x, vpred$y, vobs$x, vobs$y, col = "red", lty = 2)
+@
+\begin{itemize}
+\item This took 8-10 tries
+\item Calculate predicted (vpred) and observed values (vobs)
+\item Use segments to draw
+\end{itemize}
+\input{plots/t-threed70}
+
+<<threed71, fig=T, echo=F, include=F>>=
+<<threed60>>
+<<threed70>>
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{This Makes Me Happy}
+
+\includegraphics[width=10cm]{plots/t-threed71}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plotting Response Surfaces}
+\begin{itemize}
+\item People who fit nonlinear models often want to see the graceful curvature
+of their result
+\item Often nice to have some color for drama
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plotting Response Surfaces: Surprisingly Easy}
+
+<<threed80,echo=T,fig=T, include=F>>=
+x1 <- rnorm(100); x2 <- rpois(100,lambda=4) 
+logist <- function(x1,x2){
+y <- 1/(1 + exp((-1)*(-3 + 0.6*x1 + .5*x2))) } 
+par(bg = "white") 
+x1r <- range(x1) ; x1seq <- seq(x1r[1], x1r[2], length = 30)
+x2r <- range(x2) ; x2seq <- seq(x2r[1], x2r[2], length = 30)
+z <- outer(x1seq, x2seq, logist)
+persp(x = x1seq, y = x2seq, z = z, theta = -30, zlim = c(-0.2,1.2))
+@
+
+\input{plots/t-threed80}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Curved Surface, but No Color (yet)}
+
+\includegraphics[width=10cm]{plots/t-threed80}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+<<threed200,echo=T,fig=T, include=F>>=
+nrz <- nrow(z)
+ncz <- ncol(z)
+# Create a function interpolating colors in the range of specified colors
+jet.colors <- colorRampPalette( c("blue", "green") )
+# Generate the desired number of colors from this palette
+nbcol <- 100
+color <- jet.colors(nbcol)
+# Compute the z-value at the facet centres
+zfacet <- z[-1, -1] + z[-1, -ncz] + z[-nrz, -1] + z[-nrz, -ncz]
+# Recode facet z-values into color indices
+facetcol <- cut(zfacet, nbcol)
+persp(x = x1seq, y = x2seq, z = z, col = color[facetcol], theta = -30, zlim = c(-0.2,1.2))
+@
+
+\input{plots/t-threed200}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Curved Colored Surface}
+
+\includegraphics[width=10cm]{plots/t-threed200}
+
+\end{frame}
+
+
+\lyxframeend{}\section{scatter3d}
+
+\begin{frame}[containsverbatim]
+\frametitle{Now try scatter3d and the OpenGL Library Framework}
+\begin{itemize}
+\item OpenGL is an ``open standards'' 3-D software library (most platforms,
+newer video cards)
+\item ``rgl'' is an R package that uses OpenGL routines
+\item scatter3d is John Fox's R function (in ``car'') that uses rgl functions
+in a very convenient way
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Scatterplot with a Regression Surface}
+
+\begin{Sinput}
+scatter3d(y ~ x1 + x2,  data=dat) 
+rgl.snapshot(filename="scat1.png", fmt="png") 
+\end{Sinput}
+\begin{itemize}
+\item Note: a ``formula interface''
+\item scatter3d handles the creation of ``plotting sequences'' and the
+perspective/trans3d work is hidden
+\item left-button mouse click rotates
+\item middle-button mouse click ``zooms'' the image 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{A Scatterplot with a Regression Surface}
+
+\includegraphics[width=10cm]{importfigs/scat1.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Just the Scatter, No Plane}
+
+\begin{Sinput}
+scatter3d(y ~ x1 + x2,  data=dat, surface=FALSE) 
+rgl.snapshot(filename="scat2.png", fmt="png")
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Just the Scatter, No Plane}
+
+\includegraphics[width=10cm]{importfigs/scat2.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ask For an Ordinary and a Smoothed Regression Surface}
+
+\begin{Sinput}
+scatter3d(y ~ x1 + x2,  data=dat, fit=c("linear", "additive"))
+rgl.snapshot(filename = "scat3.png", fmt = "png") 
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ask For an Ordinary and a Smoothed Regression Surface}
+
+\includegraphics[width=10cm]{importfigs/scat3.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Evaluation}
+\begin{itemize}
+\item scatter3d makes it \emph{very easy} to get started
+\item The GUI in Rcmdr makes it even easier!
+\item Great for quick \& dirty data exploration
+\item Disadvantages
+
+\begin{itemize}
+\item Output quality not suitable for presentation (labels not ``sharp'')
+\item png only workable output format at current time (others generate HUGE
+files)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Scatterplot3d}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confessions}
+\begin{itemize}
+\item I have tested, but not mastered, these 3d plotting frameworks
+
+\begin{itemize}
+\item cloud (in lattice)
+\item scatterplot3d (package same name)
+\end{itemize}
+\item These try to hide the ``trans3d'' problem from the user as much
+as possible
+\item IF you enjoy the 
+
+\begin{itemize}
+\item plot interface in R, \emph{then} consider scatterplot3d
+\item lattice and the xyplot interface, \emph{then }you should consider
+trying to master ``cloud''
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{scatterplot3d Works Quite a Bit Like Plot}
+
+<<scatter3d04,fig=T,echo=T,include=F, width=8, height=5>>=
+library(scatterplot3d)
+x <- rnorm(80); y <- rpois(80,l=7); z <- 3 + 1.1*x + 0.4*y + 15*rnorm(80)
+s3d <- scatterplot3d(x, y, z)
+@
+
+\input{plots/t-scatter3d04}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d: Quite a Bit like plot}
+
+\includegraphics[height=6cm]{plots/t-scatter3d04}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d: Quite a Bit like plot}
+\begin{itemize}
+\item Note: Not necessary to construct a z matrix (scatterplot3d handles
+that)
+\item Many options same name as plot: xlab, ylab, type, etc.
+\item angle: viewpoint specifier quite unlike other 3d packages
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Use More Arguments: labels, plot character}
+
+<<scatter3d05,fig=T,echo=T,include=F, width=8, height=5>>=
+library(scatterplot3d)
+s3d <- scatterplot3d(x, y, z, type = "p", color = "blue", angle = 45, pch = 18, main = "", xlab = "normal x", ylab = "poisson y", zlab = "linear z")
+@
+
+\input{plots/t-scatter3d05}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d: Quite a Bit like plot}
+
+\includegraphics[height=6cm]{plots/t-scatter3d05}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{scatterplot3d: Also Accepts a "Data Frame" for x}
+
+<<scatter3d10,fig=T,echo=T,include=F>>=
+library(scatterplot3d)
+s3d <- scatterplot3d(dat, type = "p", color = "blue", angle = 55, pch = 16, main = "", xlab = "x1", ylab = "x2", zlab = "y")
+@
+
+\input{plots/t-scatter3d10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d}
+
+\includegraphics[width=10cm]{plots/t-scatter3d10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add a plane from a fitted model!}
+
+<<scatter3d11,fig=T,echo=T,include=F>>=
+library(scatterplot3d)
+s3d <- scatterplot3d(dat, type = "p", color = "blue", angle = 55, pch = 16, main = "scatterplot3d")
+s3d$plane3d(m1)
+@
+
+\input{plots/t-scatter3d11}
+\begin{itemize}
+\item Note s3d is the 3d plot object, it is told to draw plane corresponding
+to model m1
+\item That ``internalizes'' the ``translate to 3d coordinates'' works
+that persp required us to do explicitly
+\item supplies function ``xyz.convert'' when explicit translation from
+3d to 2d is required (in placing text or lines)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d}
+
+\includegraphics[width=10cm]{plots/t-scatter3d11}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Residual Lines: Quite a Bit Like Using persp}
+
+<<scatter3d12,fig=T,echo=T,include=F>>=
+s3d <- scatterplot3d(dat, type = "p", color = "blue", angle = 55, pch = 16, main = "scatterplot3d")
+s3d$plane3d(m1, lty = "dotted", lwd = 0.7)
+obser2d <- s3d$xyz.convert(dat$x1, dat$x2, dat$y)
+pred2d <- s3d$xyz.convert(dat$x1, dat$x2, fitted(m1))
+segments(obser2d$x, obser2d$y, pred2d$x, pred2d$y, lty = 4)
+@
+
+\input{plots/t-scatter3d12}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{scatterplot3d}
+
+\includegraphics[width=10cm]{plots/t-scatter3d12}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{scatterplot3d: Syntax Closer "Object Oriented" Ideal" }
+\begin{itemize}
+\item scatterplot3d creates an output object
+
+
+<<echo=T>>=
+attributes(s3d)
+@
+
+\item Which can then be told to add points, a plane, etc:
+
+
+\begin{Sinput}
+s3d$plane3d( mod1)
+s3d$points3d(x,y,z, pch=18, col="pink")
+\end{Sinput}
+
+\item Also works well with plotmath functions
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Consider the Bivariate Normal Example from s3d Vignette}
+
+<<scatter3d20,fig=T,echo=T,include=F, height=8, width=8>>=
+library(mvtnorm) 
+x1 <- x2 <- seq(-10, 10, length = 51) 
+dens <- matrix(dmvnorm(expand.grid(x1, x2), sigma = rbind(c(3, 2), c(2, 3))), ncol = length(x1)) 
+s3d <- scatterplot3d(x1, x2, seq(min(dens), max(dens), length = length(x1)), type = "n", grid = FALSE, angle = 70, zlab = expression(f(x[1], x[2])), xlab = expression(x[1]), ylab = expression(x[2]), main = "Bivariate normal distribution")
+for(i in length(x1):1) {
+  s3d$points3d(rep(x1[i], length(x2)), x2, dens[i,], type = "l") 
+}
+for(i in length(x2):1) { 
+  s3d$points3d(x1, rep(x2[i], length(x1)), dens[,i], type = "l")
+}
+ text(s3d$xyz.convert(-1, 10, 0.07),
+        labels = expression(f(x) == frac(1, sqrt((2 * pi)^n *
+            phantom(".") * det(Sigma[X]))) * phantom(".") * exp * {
+            bgroup("(", - scriptstyle(frac(1, 2) * phantom(".")) *
+                (x - mu)^T * Sigma[X]^-1 * (x - mu), ")")}))
+
+### fix. insert {} around Sigma[X] == ... ##
+ text(s3d$xyz.convert(1.5, 10, 0.05),
+        labels = expression("with" * phantom("m") *
+            mu == bgroup("(", atop(0, 0), ")") * phantom(".") * "," *
+                phantom(0) * {Sigma[X] == bgroup("(", atop(3 * phantom(0) * 2,
+                2 * phantom(0) * 3), ")") }) )
+@
+
+\includegraphics[width=8cm]{plots/t-scatter3d20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The first step is the empty box}
+
+<<scatter3d30,fig=T,echo=T,include=F, height=8, width=8>>=
+x1 <- x2 <- seq(-10, 10, length = 51) 
+dens <- matrix(dmvnorm(expand.grid(x1, x2), sigma = rbind(c(3, 2), c(2, 3))), ncol = length(x1)) 
+s3d <- scatterplot3d(x1, x2, seq(min(dens), max(dens), length = length(x1)), type = "n", grid = FALSE, angle = 70, zlab = expression(f(x[1], x[2])), xlab = expression(x[1]), ylab = expression(x[2]), main = "Bivariate normal distribution")
+@
+
+\input{plots/t-scatter3d30}
+
+Note: type=''n'', just like 2D plot function
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{}
+
+\includegraphics[width=8cm]{plots/t-scatter3d30}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw the lines from One End to the Other}
+
+<<scatter3d30b,echo=T,include=F, height=8, width=8>>=
+for(i in length(x1):1){
+   s3d$points3d(rep(x1[i], length(x2)), x2, dens[i,], type = "l")
+}
+@
+
+<<scatter3d40,fig=T,echo=F,include=F, height=8, width=8>>=
+<<scatter3d30>>
+<<scatter3d30b>>
+@
+
+\input{plots/t-scatter3d30b}
+\begin{itemize}
+\item in English: for each value of x1, draw a line from ``front to back''
+that traces out the density at (x1,x2).
+\item The for loop goes to each value of x1
+\end{itemize}
+\begin{Sinput}
+for (i in length(x1):1){ ...
+\end{Sinput}
+\begin{itemize}
+\item inserts points from lowest x2 to highest x2 and connects them by a
+line
+\end{itemize}
+\begin{Sinput}
+s3d$points3d( ... type=l)
+\end{Sinput}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Lines in One Direction}
+
+\includegraphics[width=8cm]{plots/t-scatter3d40}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw Lines the Other Way}
+
+<<scatter3d30c,echo=T,include=F, height=8, width=8>>=
+for(i in length(x2):1) {
+  s3d$points3d(x1, rep(x2[i], length(x1)), dens[,i], type = "l")
+}
+@
+\begin{itemize}
+\item for each x2, draw a line from lowest to highest x1
+\item line traces out density at (x1,x2)
+\end{itemize}
+<<scatter3d50,fig=T,echo=T,include=F, height=8, width=8>>=
+<<scatter3d30>>
+<<scatter3d30b>>
+<<scatter3d30c>>
+@
+
+\input{plots/t-scatter3d30c}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Draw Lines the Other Way}
+
+\includegraphics[width=8cm]{plots/t-scatter3d50}
+
+\end{frame}\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Use R's text function with plotmath to Write Equation}
+
+<<scatter3d30d,echo=T,include=F, height=8, width=8>>=
+text(s3d$xyz.convert(-1, 10, 0.07),labels = expression(f(x) == frac(1, sqrt((2 * pi)^n * phantom(".") * det(Sigma[X]))) * phantom(".") * exp * { bgroup("(", - scriptstyle(frac(1, 2) * phantom(".")) *
+(x - mu)^T * Sigma[X]^-1 * (x - mu), ")")}))
+
+### fix. insert {} around Sigma[X] == ... ##
+text(s3d$xyz.convert(1.5, 10, 0.05), labels = expression("with" * phantom("m") * mu == bgroup("(", atop(0, 0), ")") * phantom(".") * "," * phantom(0) * {Sigma[X] == bgroup("(", atop(3 * phantom(0) * 2, 2 * phantom(0) * 3), ")") }) )
+@
+
+<<scatter3d70,fig=T,echo=T,include=F, height=8, width=8>>=
+<<scatter3d30>>
+<<scatter3d30b>>
+<<scatter3d30c>>
+<<scatter3d30d>>
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-scatter3d30d}
+
+The first one is the probability density function (PDF)
+
+The second one is the Expected Value and Variance matrix
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Use Plotmath}
+
+\includegraphics[width=8cm]{plots/t-scatter3d70}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{About cloud}
+\begin{itemize}
+\item Like other procedures in the lattice package (tremendous result for
+small effort)
+\item More difficult to customize plots (my humble opinion)
+\item Convenient presentation of plots ``by group'' or ``by sex'' or
+such.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{rockchalk}
+
+\begin{frame}
+\frametitle{3D Tools in rockchalk}
+\begin{itemize}
+\item The lack of adjust-ability of scatterplot3d caused me to not rely
+on it too heavily
+\item I don't want to interactively point-and-click the way rgl requires.
+\item I could not make lattice output combine different components in the
+way I wanted to. 
+\item But I could make persp work, sometimes.
+\item So I kept track of thinks I could succeed with and boiled them down
+to functions in rockchalk.
+\end{itemize}
+\end{frame}
+
+\subsection{mcGraph}
+
+<<mc1-0, include=F, echo=T>>=
+## Create data with x1 and x2 correlated at 0.10
+require(rockchalk)
+dat <- genCorrelatedData(rho=0.10, stde=7)
+par(mar= c(1,1,1,1))
+@
+
+\begin{frame}
+\frametitle{Depicting Multicollinearity: My first 3d functions}
+\begin{itemize}
+\item mcGraph1(x1, x2, y): Creates an ``empty box'' showing the footprint
+of the (x1,x2) pairs in the bottom of the display.
+\item mcGraph2(x1, x2, y, rescaley=0.5): Shows points ``rising above''
+footprint
+\item mcGraph3(x1, x2, y): fits a regression of y on x1 and x2, and plots
+it. Includes optional interaction term.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{mcGraph1}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<mc1-1, include=F, fig=T, echo=T>>=
+mod1 <- mcGraph1(dat$x1, dat$x2, dat$y, theta=-30, phi=8)
+@
+\begin{itemize}
+\item No values drawn yet for dependent variable
+\item Please notice dispersion in the x1-x2 plane
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=7cm]{plots/t-mc1-1.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc1-1.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{mcGraph uses rescaley argument}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\item $\rho_{x1,x2}=0.1$
+\end{itemize}
+
+<<mc-2-1, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.1, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-1.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-1.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-3, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.2, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-3.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-3.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-5, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.3, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-5.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-5.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-6, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.4, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-6.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-6.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-7, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.5, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-7.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-7.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-8, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.6, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-8.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-8.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-9, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.7, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-9.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-9.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-10, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.80, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-10.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-10.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-11, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 0.90, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-11.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-11.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step up rescaley bit by bit, its almost a movie!}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+\begin{itemize}
+\item The true relationship is
+\[
+y_{i}=.2\, x1_{i}+.2\, x2_{i}+e_{i},\, e_{i}\sim N(0,7^{2})
+\]
+
+\end{itemize}
+
+<<mc-2-13, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 1.0, theta = -30)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-13.pdf}
+
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-13.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-20, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 1.0, theta = 20)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-20.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-20.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-21, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 1.0, theta = 40)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-21.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-21.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-22, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 1.0, theta = 60)
+@
+
+
+\column{10cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-22.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-22.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Can Spin the Cloud (Just Showing Off)}
+\begin{topcolumns}%{}
+
+
+\column{2cm}
+
+
+<<mc-2-23, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat$x1, dat$x2, dat$y, rescaley = 1.0, theta = 80)
+@
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-2-23.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-23.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-50, fig=T, echo=T, include=F>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -30)
+@
+
+<<mc-2-50m, echo=F, include=F, results=tex>>=
+outreg(mod1[[1]], tight=FALSE)
+@
+
+\small
+\input{plots/t-mc-2-50m}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-50.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-50.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-51, fig=T, echo=T, include=F>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=0)
+@
+
+
+<<mc-2-51m, fig=T, echo=F, include=F,results=tex>>=
+outreg(mod1[[1]], tight=FALSE)
+@
+
+
+\small
+\input{plots/t-mc-2-51m}
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-51.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-51.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Regression Plane Sits Nicely in the Data Cloud}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<mc-2-52, fig=T, echo=T, include=F>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=-10)
+@
+
+
+<<mc-2-52m,echo=F, include=F,results=tex>>=
+mod1 <- mcGraph3(dat$x1, dat$x2, dat$y, theta = -10, phi=-10)
+outreg(mod1[[1]], tight=FALSE)
+@
+
+\small
+\input{plots/t-mc-2-52m}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-2-52.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-2-52.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Severe Collinearity: r(x1,x2)=0.9}
+\begin{topcolumns}%{}
+
+
+\column{3cm}
+
+
+<<include=F>>=
+## Create data with x1 and x2 correlated at 0.10
+rm(dat)
+dat2 <- genCorrelatedData(rho=0.9, stde=7)
+@
+
+
+<<echo=F>>=
+par(mar=c(0.5,0.5,0.5,0.5))
+@
+
+
+<<mc-3-1, include=F, fig=T, echo=T>>=
+mod2 <- mcGraph1(dat2$x1, dat2$x2, dat2$y, theta=20, phi=8)
+@
+\begin{itemize}
+\item Nearly linear dispersion in the x1-x2 plane
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-3-1.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-3-1.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cloud Is More like Data Tube}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<echo=F>>=
+par(mar=c(0.5,0.5,0.5,0.5))
+@
+
+
+<<echo=F>>=
+par(mar=c(0.5,0.5,0.5,0.5))
+@
+
+
+<<mc-3-2, fig=T, echo=T, include=F>>=
+mod <- mcGraph2(dat2$x1, dat2$x2, dat2$y, theta = -30)
+@
+
+
+\input{plots/t-mc-3-2.tex}
+
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-3-2.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Cloud Is More like Data Tube}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<echo=F>>=
+par(mar=c(0.5,0.5,0.5,0.5))
+@
+
+
+<<mc-3-3, fig=T, echo=T, include=F>>=
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, theta = -30)
+@
+
+
+<<mc-3-3m, echo=F, include=F, results=tex>>=
+outreg(mod[[1]], tight=F)
+@
+
+
+\small
+\input{plots/t-mc-3-3m}
+\begin{itemize}
+\item plane does not sit ``comfortably''
+\item greater standard errors
+\end{itemize}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-mc-3-3.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-3-3.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fit Interaction \texttt{lm(y $\sim~$ x1 * x2)}}
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+
+<<echo=F>>=
+par(mar=c(0.5,0.5,0.5,0.5))
+@
+
+
+<<mc-3-4, fig=T, echo=T, include=F>>=
+mod <- mcGraph3(dat2$x1, dat2$x2, dat2$y, interaction=TRUE, theta = -30)
+@
+
+
+<<mc-3-4m, echo=F, include=F, results=tex>>=
+outreg(mod[[1]], tight=F)
+@
+
+
+\small
+\input{plots/t-mc-3-4m}
+
+
+\column{8cm}
+
+
+\includegraphics[width=8cm]{plots/t-mc-3-4.pdf}
+
+\end{topcolumns}%{}
+\input{plots/t-mc-3-4.tex}
+
+\end{frame}
+
+\subsection{plotPlane}
+
+\begin{frame}
+\frametitle{Next Step: Plot any Fitted Regression}
+\begin{itemize}
+\item After mcGraph worked, I was encouraged (because I could fill up a
+whole lecture on multicollinearity)
+\item But the mcGraph interface was too limiting 
+
+\begin{itemize}
+\item had to specify and provide variables
+\item could not work with larger regression models
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotPlane: quick regression tool for presentations}
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+\begin{itemize}
+\item Generate data, fit a model with 4 predictors, 
+\end{itemize}
+
+<<pp10, echo=T, fig=F, include=F>>=
+dat3 <- genCorrelatedData(N=150, beta = c(0, 0.15, 0.25, 0.1), stde = 150)
+dat3$x3 <- rpois(150, lambda = 7)
+dat3$x4 <- rgamma(150, 2, 1)
+m1 <- lm(y ~ x1 + x2 + x3 + x4, data=dat3)
+@
+
+\small{
+\input{plots/t-pp10}
+}
+
+\column{6cm}
+
+
+<<pp10m, echo=F, fig=F, include=F, results=tex>>=
+outreg(m1, tight = F)
+par(mar=c(1,0.5,0.5,0.5))
+@
+
+
+\small{
+\input{plots/t-pp10m}
+}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotPlane: choose x1 and x2}
+
+<<pp20, echo=T, fig=T, include=F>>=
+plotPlane(m1, plotx1 = "x1", plotx2 = "x2", theta = -40, npp = 15, drawArrows = TRUE)
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+\small{
+\input{plots/t-pp20}
+}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-pp20.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{plotPlane: choose x1 and x2}
+
+<<pp25, echo=T, fig=T, include=F>>=
+plotPlane(m1, plotx1 = "x1", plotx2 = "x2", theta = -40, npp = 8, llwd = 0.105, drawArrows = TRUE, ticktype = "detailed")
+@
+\begin{topcolumns}%{}
+
+
+\column{4cm}
+
+\small{
+\input{plots/t-pp25}
+}
+
+\column{8cm}
+
+
+\includegraphics[width=10cm]{plots/t-pp25.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interchange Information between 2D and 3D plots}
+
+<<pp30, echo=T, fig=T, include=F, height=4, width=5>>=
+ps30 <- plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "std.dev.", llwd = 3)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+Putting x3 and x4 at their means, plot the predicted values for several
+values of x2 with plotSlopes
+
+\small{
+\input{plots/t-pp30}
+}
+
+The output object ps30 has information in it that can be used to supplement
+a 3D graph.
+
+\column{8cm}
+
+
+\includegraphics[width=7cm]{plots/t-pp30.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare 3D and 2D depictions}
+
+<<pp50, fig=T, echo=F, include=F, height=5>>= 
+## method 1: "linesFrom" in plotPlane
+#pp50 <- plotPlane(m1, plotx1 = "x1", plotx2 = "x2", linesFrom = ps30)
+## method 2: addLines as secondary step:
+pp50 <- plotPlane(m1, plotx1 = "x1", plotx2 = "x2", llwd = 1, npp = 8)
+addLines(to = pp50, from = ps30, lwd = 6)
+@
+\begin{topcolumns}%{}
+
+
+\column{6cm}
+
+
+\includegraphics[width=7cm]{plots/t-pp30.pdf}
+
+
+\column{6cm}
+
+
+\includegraphics[width=7cm]{plots/t-pp50.pdf}
+
+\end{topcolumns}%{}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Next Step: Visualization of Factor Predictors}
+\begin{itemize}
+\item Suppose x2 is a categorical variable. 
+\item Shouldn't force that to a numeric scale and 3D plot with an ordinary
+plane, should we?
+\item lattice package tools can draw one plot per level of the factor (maybe
+that's best)
+\item But I've wrestled trying to find a more informative view
+\end{itemize}
+<<pp100A,include=F>>=
+xf <- gl(4, 20)
+xfn <- as.numeric(xf)
+x1 <- rnorm(80)
+x2 <- rnorm(80)
+xfcontrasts <- contrasts(xf)[xf, ]
+y <- 2 + 0.2 * x1 + xfcontrasts %*% c(0.1, 0.2, -0.04) + rnorm(80, s=3)
+dat <- data.frame(xf, xfn, x1, x2, y) 
+rm(xf, xfn, x1, x2, y) 
+@
+
+<<pp100B, include=F, fig=T>>=
+drawGroup <- function(j, dat){
+    newdat1 <- data.frame(x1=plotSeq(dat$x1, length.out=2), x2 = mean(dat$x2, na.rm=TRUE), xf= levels(dat$xf)[j])
+    newdat1$fit <- predict(m1, newdata= newdat1)
+    yseq <-  plotSeq(dat$y[dat$xfn == j], length.out=8)
+    yseq <- mean(yseq) + 0.95 * (yseq - mean(yseq))
+    x1seq <- plotSeq(dat$x1[dat$xfn == j], length.out=8)
+    x1seq <- mean(x1seq) + 0.95 * (x1seq - mean(x1seq))
+    for ( z in yseq){
+        lines( trans3d(range(x1seq),  rep(unique(dat$xfn)[j],2),  c(z,z), res), lwd=0.2, col= mycol[j])
+    }
+    for ( jj in x1seq){
+        lines(trans3d(c(jj,jj), rep(unique(dat$xfn)[j],2), range(yseq), res), lwd=0.2, col=mycol[j])
+    }
+
+    lines(trans3d(newdat1$x1, j, newdat1$fit, res), col=mycol[j])
+    with(dat[dat$xfn %in% j, ],  points(trans3d(x1, j, y, res), col=mycol[j]))
+}
+
+m1 <- lm(y ~ x1 * xf+ x2, data=dat)
+#res <- perspEmpty(x1=dat$x1, x2=dat$xfn, y=dat$y, x1lab="x1 numeric", x2lab="x2 categorical", #theta=80, phi=15, ticktype="detailed")
+#mycol <- rainbow(7:14)
+
+#drawGroup(1, dat)
+#drawGroup(4, dat)
+#drawGroup(3, dat)
+#drawGroup(2, dat)
+@
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Group 1}
+
+<<pp201, include=F, fig=T>>=
+par(mar=c(2.5,1, 1, 1))
+res <- perspEmpty(x1 = plotSeq(dat$x1, 5), x2 = 1:length(levels(dat$xf)), y=dat$y, x1lab="x1 numeric", x2lab="x2 categorical", theta=80, phi=15, ticktype="detailed")
+mycol <- rainbow(7:14)
+drawGroup(1, dat)
+@
+
+\includegraphics[width=10cm]{plots/t-pp201}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Group 1, Group 4}
+
+<<pp202, include=F, fig=T>>=
+par(mar=c(2.5,1, 1, 1))
+res <- perspEmpty(x1 = plotSeq(dat$x1, 5), x2 = 1:length(levels(dat$xf)), y = dat$y, x1lab="x1 numeric", x2lab="x2 categorical", theta=80, phi=15, ticktype="detailed")
+mycol <- rainbow(7:14)
+drawGroup(1, dat)
+drawGroup(4, dat)
+@
+
+\includegraphics[width=10cm]{plots/t-pp202}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Groups 1-4}
+
+<<pp203, include=F, fig=T>>=
+par(mar=c(2.5,1, 1, 1))
+res <- perspEmpty(x1 = plotSeq(dat$x1, 5), x2 = 1:length(levels(dat$xf)), y=dat$y, x1lab="x1 numeric", x2lab="x2 categorical", theta=80, phi=15, ticktype="detailed")
+mycol <- rainbow(7:14)
+drawGroup(1, dat)
+drawGroup(4, dat)
+drawGroup(3, dat)
+drawGroup(2, dat)
+@
+
+\includegraphics[width=10cm]{plots/t-pp203}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+\item If you can ``sketch'' what you want with a pencil, you can probably
+get R to draw you a good example.
+\item Search (AGGRESSIVELY) for working example code from problems like
+yours. Accumulate them whenever you find them.
+\item If you want a quick view of a regression model--either linear or not
+linear--I'd suggest plotPlane
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

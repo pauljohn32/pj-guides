@@ -1,0 +1,376 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/tidbits//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{3 on 1 with notes}[letterpaper, border shrink=5mm]
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title{Tidbits }
+
+
+\subtitle[Descriptive]{Parting Wisdom }
+
+
+\author{Paul E. Johnson\inst{1} \and Pascal Deboeck\inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Dept. of Psychology,
+University of Kansas}
+
+
+\date[2012]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Don't Forget: R Documents Itself}
+
+<<chunk10, eval=F, include=T>>=
+help.start() 
+@
+\begin{itemize}
+\item launches a browser (if it can find one) that overviews the 
+
+\begin{itemize}
+\item delivered documents
+
+\begin{itemize}
+\item Introduction to R (a book)
+\item R FAQ
+\end{itemize}
+\item package documents
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Package help}
+\begin{itemize}
+\item Remember also package ``vignettes'', pdf ``article'' documents
+that are delivered with many packages.
+\item Every time you run
+\end{itemize}
+<<eval=F>>=
+library(some-package-name)
+@
+\begin{itemize}
+\item You should also run
+\end{itemize}
+<<eval=F>>=
+library(help = "some-package-name")
+##or, equivalently
+help(package = "some-package-name")
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Search for functions and packages}
+\begin{itemize}
+\item help.search(``regression'') 
+
+\begin{itemize}
+\item is OK if you are just looking for installed functions
+\end{itemize}
+\item RSiteSearch(``regression'')
+
+\begin{itemize}
+\item opens a browser with options on what gets searched
+\end{itemize}
+\item R package ``sos'' offers search tools for finding material in CRAN
+
+\begin{itemize}
+\item Install that, then run 
+
+
+<<eval=F>>=
+library(sos); library(help = sos); vignette("sos")
+@
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Email and Forum Support}
+\begin{itemize}
+\item Google searches for R material may help, but may also lead to bad
+advice from people who don't know more than you do. 
+\item Two solutions
+
+\begin{enumerate}
+\item Join r-help, or at least read/search its archives
+\item Read Stack Overflow\end{enumerate}
+\begin{itemize}
+\item http://stackoverflow.com/questions/tagged/r
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Feel the Power of the Source, Luke}
+\begin{itemize}
+\item For example, go to \url{http://rweb.quant.ku.edu/cran}. You can get
+the R source code (e.g, R-3.0.1.tar.gz)
+
+\begin{itemize}
+\item Explore in src/library
+\end{itemize}
+\item When you are perplexed with a package, download source ``tarball''
+\item They are easily downloaded from CRAN package listing. Look for ``Contributed
+extension packages'' 
+\item All packages follow a standard format, with the R code in the R folder,
+and the documentation and examples are under inst.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Ways to step through the Source code}
+\begin{itemize}
+\item Don't be afraid to debug the R source code, or the code for any package
+\item Easiest way: Run 
+
+
+\begin{lstlisting}
+> debug(lm)
+\end{lstlisting}
+
+
+\item Then watch what happens. Try and see!
+\end{itemize}
+\begin{lstlisting}
+> x <- rnorm(100); y <- rnorm(100)
+> m1 <- lm(y ~ x)
+\end{lstlisting}
+
+\begin{itemize}
+\item Type ``n'' to step into the code. After than, ``n'' (or just hit
+Enter) to step to next command
+\item Type ``c'' to continue and finish function
+\item While in debug mode, run commands to inspect data and variables.
+
+
+\begin{lstlisting}
+ls()
+\end{lstlisting}
+
+
+\item You will see the state of all variables ``inside'' the function.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{{[}containsverbatim{]}debug package}
+\begin{itemize}
+\item Slightly fancier mtrace function in ``debug'' package (Mark Bravington)
+\end{itemize}
+<<eval=F, echo=T>>=
+library(debug)
+x <- rnorm(100); y <- 0.5* x + 4*rnorm(100)
+mtrace(lm)
+mod <- lm(y~x)
+@
+\begin{itemize}
+\item pops open a ``code browser'' window
+\item Hit return in R window to go step-by-step.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{How to not Betray yourself as a Stranger in R-land}
+\begin{itemize}
+\item Refer to ``packages'', not libraries. library() is a function that
+opens packages.
+\item Use ``<-'', not ``='' for assignments
+\item Avoid unnecessary ``for loops,'' use automatic ``vectorization''
+instead or (l-s)apply instead
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{How to ask a question}
+\begin{itemize}
+\item We usually become tired and frustrated, and then send out emails like
+``I can't make XYZ work''. 
+\item Generally, those messages are not helpful because we need to know
+EXACTLY what you tried and we need to know WHAT SYSTEM and WHICH PACKAGES
+you have. 
+\item r-help has a (longish) ``posting guide'' (that strains my patience).
+\item The best advice is this: every time you ask a question, provide:
+
+\begin{itemize}
+\item Output from R command ``sessionInfo()''.
+\item a COMPLETE and run-able example of the ``problem'' 
+\end{itemize}
+\item Informative subject heading (NOT ``Need R help, please'')
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{R Bible has Four Books}
+\begin{itemize}
+\item VR: William Venables and Brian Ripley, \emph{Modern Applied Statistics
+with S }(package: MASS)
+
+\begin{itemize}
+\item Ripley has been a tireless code contributor and R maintainer. The
+R authorities expect you have read MASS.
+\end{itemize}
+\item PB: Pinheiro and Bates, \emph{Mixed Effects Models in S and S-Plus}
+(packages: nlme, lme4)
+
+\begin{itemize}
+\item If you want to talk about ``hierarchical models'', learn to think
+of it in the way R folks think of it
+\end{itemize}
+\item F: John Fox, \emph{Applied Regression Analysis, Linear Models, and
+Related Methods} (and the \emph{Companion to Applied Regression})
+(packages: car, Rcmdr)
+\item H: Frank Harrell, \emph{Regression Modeling Strategies} (packages,
+rms Hmisc)
+
+\begin{itemize}
+\item Original author of Proc Logistic in SAS
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{There are Lots of Ways to Estimate the "Same" Model}
+\begin{description}
+\item [{OLS:}] stats::lm, rms::ols
+\item [{ordinal:}] MASS::polr, rms::lrm, ordinal::clm, VGAM::vglm
+\item [{multinomial:}] MASS::multinom, VGAM::vglm\end{description}
+\begin{itemize}
+\item These are generally compatible, but different as well. If you have
+trouble with the ones provided with R, then r-help is an appropriate
+venue to ask.
+\item If you are using other packages, you should seek out the author or
+the discussion forums that they want you to follow.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{\url{http://pj.freefaculty.org/guides}}
+\begin{itemize}
+\item Now you know me, you might understand these stat write-ups. 
+
+
+Better-than-average writeups on OLS, logistic/probit models, GLM,
+and Distributions.
+
+\item If you use Linux or are trying to do High Performance (``Cluster'')
+Computing, \url{http://crmda.ku.edu/computing}
+\item If you are trying to administer Windows with Stat programs, I've got
+a growing collection of tips as well in the WinStat Admin pages. (Notepad++,
+Emacs -> R)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Have a Nice Summer}
+
+Don't forget to wear sun block.
+
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

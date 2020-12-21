@@ -1,0 +1,354 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/stat/Elementary/First-R-02//}}
+\makeatother
+\documentclass[11pt,canadian,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+
+\input{plots/p-Roptions}
+
+\selectlanguage{canadian}%
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\selectlanguage{english}%
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\title[Descriptive]{First R-02 }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{R provides books, help pages, and vignettes}
+\begin{itemize}
+\item Get the big overview to documents with 
+
+
+\begin{lstlisting}
+> help.start()
+\end{lstlisting}
+
+
+\end{itemize}
+\includegraphics[width=10cm]{0_home_pauljohn_SVN_SVN-guides_stat_Elementary_First-R-02_importfigs_help_start.eps}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples for functions}
+\begin{itemize}
+\item Get help on a function: 2 methods
+
+
+\begin{lstlisting}
+> ?some-function
+> help(some-function)
+\end{lstlisting}
+
+
+\item Read the help page. 
+\item See the example at the bottom? Gaze in wonder at it.
+
+
+Get out of the help page (hit ``q'') and then
+
+\item Run the example
+
+
+\begin{lstlisting}
+> example(some-function)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{How to read a help page}
+\begin{enumerate}
+\item Get a general idea of what the function does
+\item Go to the bottom for the example usage. 
+\item If still interested, go back to top
+
+\begin{enumerate}
+\item Scan the arguments (the variables you specify to use the function)
+\item Look for the ``Value'' heading. That's a description of what you
+get back from the function
+\item Look for the ``Details'' heading.
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{R is an agglomeration of "packages"}
+\begin{itemize}
+\item The CRAN repository offers 1000s of package, some good some bad
+\item R is provided with ``recommended packages'' which are good.
+\item Many of the recommended packages are ``attached'' (available for
+use) automatically.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interact with packages}
+\begin{itemize}
+\item Packages installed are linked to the help.start() page
+\item Same list all packages that are installed now available in R:
+
+
+\begin{lstlisting}
+> library()
+\end{lstlisting}
+
+
+\item Read about a package, get a list of all functions \& features
+
+
+\begin{lstlisting}
+> help(package = "stats")
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Load a package}
+\begin{itemize}
+\item Make a package's functions immediately accessible. 
+
+
+\begin{lstlisting}
+> library("lme4")
+\end{lstlisting}
+
+
+\item After that, we can use functions easily
+
+
+\begin{lstlisting}
+> ?lmer
+> ?glmer
+\end{lstlisting}
+
+
+\item Without running library(), functions are still accessible with a \alert{namespace}
+name
+
+
+\begin{lstlisting}
+> lme4::glmer()
+\end{lstlisting}
+
+
+
+That's generally irrelevant to elementary R usage, but is becoming
+more noticeable in examples and help pages.
+\begin{itemize}
+\item The ``namespace'' idea is increasingly popular in computer programming,
+part of an widespread emphasis on ``disambiguation''
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\lyxframe{Package Survey}
+\begin{itemize}
+\item See a giant list of packages that exist on CRAN
+
+
+\begin{lstlisting}
+> giantList <- available.packages()
+> row.names(giantList)
+\end{lstlisting}
+
+
+
+Generally, to find packages I use a web browser on a CRAN server. 
+\begin{itemize}
+\item Mirror list on \url{http://r-project.org} (look left for CRAN link)
+\item KU mirror: \url{http://rweb.quant.ku.edu/cran}
+\end{itemize}
+\item All good KU students install the package ``rockchalk''.
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Install and Update packages}
+\begin{itemize}
+\item Install a package (example: ``lme4'') and all dependencies from
+a CRAN server
+
+
+\begin{lstlisting}
+> install.packages(c("lme4"), dep = TRUE)
+\end{lstlisting}
+
+
+\item Check for updates
+
+
+\begin{lstlisting}
+> update.packages(checkBuild = TRUE)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When you ask for help}
+
+1. Provide the output of sessionInfo(). For example, I see
+
+\input{plots/p-004}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{These things called "vignettes"}
+\begin{itemize}
+\item A vignette is supposed to be a ``human readable'' discussion of
+a package's features
+\item Some are quite excellent!
+\item Vignettes are listed at the end of \lstinline!help(package=whatever')!
+\item Clickable links in \lstinline!help.start()!
+\item loadable by name with the function \lstinline!vignette(rockchalk)!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When you ask for help}
+
+2. Provide the smallest set of code that reproduces the problem you
+are concerned about. 
+\begin{itemize}
+\item It is tempting to just copy 100s of lines of disorganized code and
+hope somebody else will wade through it, but don't.
+\item Produce a small, clear example of the problem you are trying to solve. 
+\item Never write to somebody and ask for help unless you close R, re-start,
+and re-produce the same problem with your clear exampel script.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples For functions}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples For functions}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples For functions}
+
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

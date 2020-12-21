@@ -1,0 +1,551 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/First-R/First-R-02//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+%\usepackage{Sweavel}
+
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+%\mode<presentation>
+%{
+ % \usetheme{KU}
+ % \usecolortheme{dolphin} %dark blues
+%}
+
+
+%%not for article, but for presentation
+\mode<presentation>
+\newcommand\makebeamertitle{\frame{\maketitle}}
+
+
+%%only for presentation
+\mode<presentation>
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/p,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(device = pdf)
+options(width=160, prompt="> ", continue="  ")
+options(useFancyQuotes = FALSE) 
+#set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\AtBeginSection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+
+\title[Descriptive]{First R-02 }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2011]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{R provides books, help pages, and vignettes}
+\begin{itemize}
+\item Get the big overview to documents with 
+
+
+\begin{lstlisting}
+> help.start()
+\end{lstlisting}
+
+
+\end{itemize}
+\includegraphics[width=10cm]{0_home_pauljohn_SVN_SVN-guides_Rcourse_First-R_First-R-02_importfigs_help_start.png}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples for functions}
+\begin{itemize}
+\item You can point-and-click though that Web browser
+\item Or you can ask for same information at R command line. 2 equivalent
+methods to ask about a particular function ``someFunction''
+
+
+\begin{lstlisting}
+> ?someFunction
+> help(someFunction)
+\end{lstlisting}
+
+\begin{description}
+\item [{Note:}] no quotation marks are necessary around the function's
+name. 
+\end{description}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Example of help}
+\begin{itemize}
+\item For example, here's what I see for help on the linear model (lm) function.
+
+
+<<lmhelp, echo=T, include=T>>=
+?lm
+@
+
+\end{itemize}
+\begin{lstlisting}[breaklines=true,tabsize=2]
+lm                 package:stats           R Documentation
+
+Fitting Linear Models
+
+Description:
+
+	'lm' is used to fit linear models. It can be used to carry out regression, single stratum analysis of variance and analysis of covariance (although 'aov' may provide a more convenient interface for these).
+
+Usage:
+
+	lm(formula, data, subset, weights, na.action, method = "qr", model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE, contrasts = NULL, offset, ...)
+
+Arguments:
+
+	formula: an object of class '"formula"' (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
+
+	data: an optional data frame, list or environment (or object coercible by 'as.data.frame' to a data frame) containing the variables in the model. If not found in 'data', the variables are taken from 'environment(formula)', typically the environment from which 'lm' is called. 
+
+	subset: an optional vector specifying a subset of observations to be used in the fitting process.
+
+	weights: an optional vector of weights to be used in the fitting process. Should be 'NULL' or a numeric vector. If non-NULL, weighted least squares is used with weights 'weights' (that is, minimizing 'sum(w*e^2)'); otherwise ordinary least squares is used. See also 'Details'.
+
+	na.action: a function which indicates what should happen when the data contain 'NA's. The default is set by the 'na.action' setting of 'options', and is 'na.fail' if that is unset. The 'factory-fresh' default is 'na.omit'. Another possible value is 'NULL', no action. Value 'na.exclude' can be useful.
+
+	method: the method to be used; for fitting, currently only 'method = "qr"' is supported; 'method = "model.frame"' returns the model frame (the same as with 'model = TRUE', see below). model, x, y, qr: logicals. If 'TRUE' the corresponding components of the fit (the model frame, the model matrix, the response, the QR decomposition) are returned.
+
+	singular.ok: logical. If 'FALSE' (the default in S but not in R) a singular fit is an error. 
+
+	contrasts: an optional list. See the 'contrasts.arg' of 'model.matrix.default'.
+
+	offset: this can be used to specify an _a priori_ known component to be included in the linear predictor during fitting. This should be 'NULL' or a numeric vector of length equal to the number of cases. One or more 'offset' terms can be included in the formula instead or as well, and if more than one are specified their sum is used. See 'model.offset'.
+
+	...: additional arguments to be passed to the low level regression fitting functions (see below).
+
+Details:
+
+	Models for 'lm' are specified symbolically. A typical model has the form 'response $\sim$ terms' where 'response' is the (numeric) response vector and 'terms' is a series of terms which specifies a linear predictor for 'response'. A terms specification of the form 'first + second' indicates all the terms in 'first' together with all the terms in 'second' with duplicates removed. A specification of the form 'first:second' indicates the set of terms obtained by taking the interactions of all terms in 'first' with all terms in 'second'. The specification 'first*second' indicates the _cross_ of 'first' and 'second'. This is the same as 'first + second + first:second'. 
+
+	If the formula includes an 'offset', this is evaluated and subtracted from the response. If 'response' is a matrix a linear model is fitted separately by least-squares to each column of the matrix. See 'model.matrix' for some further details. The terms in the formula will be re-ordered so that main effects come first, followed by the interactions, all second-order, all third-order and so on: to avoid this pass a 'terms' object as the formula (see 'aov' and 'demo(glm.vr)' for an example).
+
+	A formula has an implied intercept term. To remove this use either 'y ~ x - 1' or 'y ~ 0 + x'. See 'formula' for more details of allowed formulae. Non-'NULL' 'weights' can be used to indicate that different observations have different variances (with the values in 'weights' being inversely proportional to the variances); or equivalently, when the elements of 'weights' are positive integers w_i, that each response y_i is the mean of w_i unit-weight observations (including the case that there are w_i observations equal to y_i and the data have been summarized).
+
+	'lm' calls the lower level functions 'lm.fit', etc, see below, for the actual numerical computations. For programming only, you may consider doing likewise.
+
+	All of 'weights', 'subset' and 'offset' are evaluated in the same way as variables in 'formula', that is first in 'data' and then in the environment of 'formula'.
+
+Value:
+
+	'lm' returns an object of 'class' '"lm"' or for multiple responses of class 'c("mlm", "lm")'.
+
+	The functions 'summary' and 'anova' are used to obtain and print a summary and analysis of variance table of the results. The generic accessor functions 'coefficients', 'effects', 'fitted.values' and 'residuals' extract various useful features of the value returned by 'lm'.
+
+	An object of class '"lm"' is a list containing at least the following components: 
+
+	coefficients: a named vector of coefficients
+	residuals: the residuals, that is response minus fitted values.
+	fitted.values: the fitted mean values.
+	rank: the numeric rank of the fitted linear model.
+	weights: (only for weighted fits) the specified weights.
+	df.residual: the residual degrees of freedom.
+	call: the matched call.
+	terms: the 'terms' object used.
+	contrasts: (only where relevant) the contrasts used.
+	xlevels: (only where relevant) a record of the levels of the factors used in fitting.
+	offset: the offset used (missing if none were used).
+	y: if requested, the response used.
+	x: if requested, the model matrix used.
+	model: if requested (the default), the model frame used.
+	na.action: (where relevant) information returned by 'model.frame' on the special handling of 'NA's.
+	
+	In addition, non-null fits will have components 'assign', 'effects' and (unless not requested) 'qr' relating to the linear fit, for use by extractor functions such as 'summary' and 'effects'.
+
+Using time series:
+
+	Considerable care is needed when using 'lm' with time series. Unless 'na.action = NULL', the time series attributes are stripped from the variables before the regression is done. (This is necessary as omitting 'NA's would invalidate the time series attributes, and if 'NA's are omitted in the middle of the series the result would no longer be a regular time series.) Even if the time series attributes are retained, they are not used to line up series, so that the time shift of a lagged or differenced regressor would be ignored. It is good practice to prepare a 'data' argument by 'ts.intersect(..., dframe = TRUE)', then apply a suitable 'na.action' to that data frame and call 'lm' with 'na.action = NULL' so that residuals and fitted values are time series.
+
+Note:
+
+	Offsets specified by 'offset' will not be included in predictions by 'predict.lm', whereas those specified by an offset term in the formula will be.
+
+Author(s):
+
+	The design was inspired by the S function of the same name described in Chambers (1992). The implementation of model formula by Ross Ihaka was based on Wilkinson & Rogers (1973).
+
+References:
+
+	Chambers, J. M. (1992) _Linear models._ Chapter 4 of _Statistical Models in S_ eds J. M. Chambers and T. J. Hastie, Wadsworth  & Brooks/Cole.
+
+	Wilkinson, G. N. and Rogers, C. E. (1973) Symbolic descriptions of factorial models for analysis of variance. _Applied Statistics_, *22*, 392-9.
+
+See Also:
+
+	'summary.lm' for summaries and 'anova.lm' for the ANOVA table; 'aov' for a different interface.
+
+	The generic functions 'coef', 'effects', 'residuals', 'fitted', 'vcov'. 'predict.lm' (via 'predict') for prediction, including confidence and prediction intervals; 'confint' for confidence intervals of _parameters_.
+
+	'lm.influence' for regression diagnostics, and 'glm' for *generalized* linear models. 
+	
+	The underlying low level functions, 'lm.fit' for plain, and 'lm.wfit' for weighted regression fitting.
+
+	More 'lm()' examples are available e.g., in 'anscombe', 'attitude', 'freeny', 'LifeCycleSavings', 'longley', 'stackloss', 'swiss'. 'biglm' in package 'biglm' for an alternative way to fit linear models to large datasets (especially those with many cases).
+
+Examples:
+
+	require(graphics)
+	 # # Annette Dobson (1990) "An Introduction to Generalized Linear Models".
+	 # # Page 9: Plant Weight Data.
+	ctl <- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
+	trt <- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
+	group <- gl(2,10,20, labels=c("Ctl","Trt"))
+	weight <- c(ctl, trt)
+	lm.D9 <- lm(weight $\sim$ group)
+	lm.D90 <- lm(weight $\sim$ group - 1) # omitting intercept
+	anova(lm.D9)
+	summary(lm.D90)
+	opar <- par(mfrow = c(2,2), oma = c(0, 0, 1.1, 0))
+	plot(lm.D9, las = 1) # Residuals, Fitted, ...
+	par(opar)
+	## less simple examples in "See Also" above
+\end{lstlisting}
+
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Run the Examples described on the help page}
+\begin{itemize}
+\item Scroll to the bottom of the help page. See the example usage? Gaze
+in wonder at it.
+
+
+Get out of the help page (hit ``q'') and then
+
+\item Run the example
+
+
+\begin{lstlisting}
+> example(someFunction)
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{How to read a help page}
+\begin{enumerate}
+\item Get a general idea of what the function does
+\item Go to the bottom for the example usage. 
+\item If still interested, go back to top
+
+\begin{enumerate}
+\item Scan the arguments (the variables you specify to use the function)
+\item Look for the ``Value'' heading. That's a description of what you
+get back from the function
+\item Look for the ``Details'' heading.
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Packages: Installable Globs of Goodness}
+
+Explaining the next part requires a little detour from my theme.
+\begin{itemize}
+\item The CRAN repository offers 1000s of package, some good some bad
+
+\begin{itemize}
+\item Our mirror of CRAN is \url{http://rweb.quant.ku.edu/cran}
+\end{itemize}
+\item Other servers (Bioconductor, Omega) offer 100s of other packages
+\item R is provided with a set of ``recommended packages''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Package Survey}
+\begin{itemize}
+\item See a giant list of packages that exist on CRAN
+
+
+\begin{lstlisting}
+> giantList <- available.packages()
+> row.names(giantList)
+\end{lstlisting}
+
+
+\item Generally, I Web browse a CRAN server. 
+
+\begin{itemize}
+\item Mirror list on \url{http://r-project.org} (look left for CRAN link)
+\item KU mirror: \url{http://rweb.quant.ku.edu/cran}
+\end{itemize}
+\item All good KU students install the package ``rockchalk'' and look
+at its beautiful vignettes.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{However, your system does not have "help" for packages that are not installed}
+\begin{itemize}
+\item ?someFunction (help(``someFunction'') looks in your system for functions
+in packages that are both installed and loaded
+\item ??someFunction (help.search(``someFunction'')) looks in packages
+that are installed, even if not loaded
+\item RSiteSearch(``someFunction'') looks on the main R website (some
+wrinkles).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Install and Update packages}
+\begin{itemize}
+\item Install a package (example: ``lme4'') and all dependencies from
+a CRAN server
+
+
+\begin{lstlisting}
+> install.packages(c("lme4"), dep = TRUE)
+\end{lstlisting}
+
+
+\item Faster to specify a particular repository 
+
+
+\begin{lstlisting}
+> install.packages(c("lme4"), dep = TRUE, repos="http://rweb.quant.ku.edu/cran")
+\end{lstlisting}
+
+
+\item Check for updates
+
+
+\begin{lstlisting}
+> update.packages(checkBuilt = TRUE)
+\end{lstlisting}
+
+
+\end{itemize}
+\begin{description}
+\item [{Caution:}] the operating system has a list of places where it will
+install packages (Run ``.libPaths()'' to see it). If you are logged
+in as an ``administrator'', packages will be installed into the
+system libraries. Otherwise, they will be installed in a folder for
+only the current user.
+\end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Interact with packages}
+\begin{itemize}
+\item Packages installed are linked to the help.start() page
+\item Same: list all packages that are installed now in R:
+
+
+\begin{lstlisting}
+> library()
+\end{lstlisting}
+
+
+\item Read about a package, get a list of all functions \& features
+
+
+\begin{lstlisting}
+> help(package = "stats")
+\end{lstlisting}
+
+
+\item Synonym: The ``old way'' I used to teach still works, but maybe
+not for long
+
+
+\begin{lstlisting}
+> library(help = "stats")
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Load a package}
+\begin{itemize}
+\item When R starts, it ``attaches'' some packages, so their functions
+are easily accessed. But not all. 
+\item Make a package's functions immediately accessible. 
+
+
+\begin{lstlisting}
+> library(lme4)
+\end{lstlisting}
+
+
+\item Synonym \lstinline!require(lme4)!
+\item After that, we can use functions easily, for example, to read their
+help pages
+
+
+\begin{lstlisting}
+> ?lmer
+> ?glmer
+\end{lstlisting}
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Package Namespaces: Using non-attached packages}
+\begin{itemize}
+\item Without running library(), functions are still accessible with a \alert{namespace}
+prefix
+
+
+\begin{lstlisting}
+> lme4::glmer()
+\end{lstlisting}
+
+
+
+That's generally irrelevant to elementary R usage, but is becoming
+more noticeable in examples and help pages.
+\begin{itemize}
+\item The ``namespace'' idea is increasingly popular in computer programming,
+part of an widespread emphasis on ``disambiguation''
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{These things called "vignettes"}
+\begin{itemize}
+\item A vignette is supposed to be a ``human readable'' discussion of
+a package's features
+\item Some are quite excellent!
+\item Vignettes are listed at the end of \lstinline!help(package = "whatever")!
+\item Clickable links in \lstinline!help.start()!
+\item loadable by name with the function \lstinline!vignette(rockchalk)!
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When you ask for help}
+
+1. Provide the output of sessionInfo(). For example, I see
+
+<<echo=T>>=
+sessionInfo()
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{When you ask for help}
+
+2. Provide the smallest set of code that reproduces the problem you
+are concerned about. 
+\begin{itemize}
+\item It is tempting to just copy 100s of lines of disorganized code and
+hope somebody else will wade through it, but don't.
+\item Produce a small, clear example of the problem you are trying to solve. 
+\item Never write to somebody and ask for help unless you close R, re-start,
+and re-produce the same problem with your clear example script.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Help and Examples For functions}
+
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

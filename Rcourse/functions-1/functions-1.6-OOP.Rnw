@@ -1,0 +1,504 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[OOP] % (short title, use only with long paper titles)
+{OOP programming in R}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[2016] % (optional, should be abbreviation of conference name)
+{2016}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+
+
+\section{Object Oriented Programming}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Object Oriented Programming}
+
+  \begin{itemize}
+  \item A re-conceptualization of programming to reduce programmer error
+  \item OO includes a broad set of ideas, only a few of which are
+    directly applicable to R programming
+  \item The ``rise'' to pre-eminance of OO indicated by the
+    \begin{itemize}
+    \item introduction of object frameworks in existing languages
+      (C++, Objective-C)
+    \item growth of
+      wholly new object-oriented languages (Java)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Decipher R OO by Intuition}
+
+  Run the command
+
+\begin{Sinput}
+  methods(print)
+\end{Sinput}
+
+What do you see? I see 170 lines, like so:
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+  \begin{Soutput}
+  [1] print.acf*
+  [2] print.anova
+  [3] print.aov*
+  [4] print.aovlist*
+...
+[167] print.warnings
+[168] print.xgettext*
+[169] print.xngettext*
+[170] print.xtabs*
+
+   Non-visible functions are asterisked
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{170 print.??? Methods.}
+
+  \begin{itemize}
+  \item Yes: there are really 170 print ``methods''
+  \item No: the R team does not expect or want you to know all of
+    them. Users just run
+    \begin{Sinput}
+    print(x)
+    \end{Sinput}
+    Try not to worry about ``how'' the
+    printing is achieved.
+  \item Yes: R team wants package writers to create specialized print
+    methods to control presentation of their output for the object
+    they create.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The R Runtime System Handles the Details}
+  \begin{itemize}
+  \item The user runs
+
+\begin{Schunk}
+  \begin{Sinput}
+    print(x)
+  \end{Sinput}
+\end{Schunk}
+  \item The R runtime system
+  \begin{enumerate}
+  \item  notices that x is of a certain type, say
+  ``classOfx''
+  \item   and then the runtime system uses print.classOfX to handle
+    the user's request
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{print is a ``Generic Function''}
+
+  Definition of ``Generic Function'': the function that users call
+  which causes an object-specific function to be called for the work
+  to get done. Examples:``print'', ``plot'', ``summary'', ``anova''
+  \begin{itemize}
+  \item Generic Function is terminology unique to R(AFAIK)
+  \item In the standard case, a generic function does not do any
+    work. It sends the work to the appropriate ``implementation'' in a method.
+    \begin{quotation}
+      ``A standard generic function does no computation other than
+      dispatching a method, but R generic functions can do other
+      coumputations as well before and/or after method
+      dispatch''(Chambers, \emph{Software for Data Analysis}, p. 398)
+    \end{quotation}
+  \item UseMethod() is the function that declares a function as
+    generic: The R runtime system is warned to ``be alert'' to usage
+    of the function.
+
+  \item Example: the print generic function from R source (base package).
+
+\begin{Sinput}
+print <- function(x, ...) UseMethod("print")
+    \end{Sinput}
+
+  \item Example: the plot generic function from R source (graphics package).
+
+\begin{Sinput}
+plot <- function (x, y, ...)  UseMethod("plot")
+\end{Sinput}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Here's Where R Gains its Analytical Power}
+  \begin{itemize}
+  \item The generic is just a place holder. User runs
+    print(x), then R knows it is supposed to ask x for its class and
+    then the appropriate thing is supposed to happen. No Big Deal.
+
+  \item But the statisticians in the S \& R projects saw enormous
+    simplifying potential in developing a battery is standard generic
+    accessor functions
+    \begin{itemize}
+    \item summary()
+    \item anova()
+    \item predict()
+    \item plot()
+    \item AIC()
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Object}
+
+  Object:  self-contained ``thing''. A container for data.
+    \begin{itemize}
+    \item Operationally, in R: just about anything on the left hand side in an
+      assignment ``<-''
+    \item Each ``thing'' in R carries with it enough information so
+      that generic functions ``know what to do.''.
+    \item If there is no function specific to an object, the work is
+      sent to a default method (see print.default).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Class}
+
+  Definition: As far as R with S3 is concerned, class is a
+  characteristic label assigned to an object (an object can have a
+  vector of classes, such as c(``lm'', ``glm'')).
+  \begin{itemize}
+    \item The class information is used by R do decide which method
+      should be used to fulfill the request.
+    \item Run class(x), ask x what class it inherits from.
+    \item In R, the principal importance of the ``class'' of an object
+      is that it is used to decide which function should be used to
+      carry out the required work when a generic function is used.
+    \item Classes called ``numeric'', ``integer'', ``character'' are
+      all vector classes
+\end{itemize}
+\begin{Soutput}
+> y <- c(1, 10, 23)
+> class(y)
+[1] "numeric"
+> x <- c("a", "b", "c")
+> x
+[1] "a" "b" "c"
+> class(x)
+[1] "character"
+> x <- factor(x)
+> class(x)
+[1] "factor"
+> m1 <- lm(y ~ x)
+> class(m1)
+[1] "lm"
+> m2 <- glm( y ~ x, family=Gamma)
+> class(m2)
+[1] "glm" "lm"
+
+\end{Soutput}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Method, a.k.a, ``Method Function''}
+  Definition: The ``implementation'': the function that does the
+  work for an object of a particular type.
+
+  \begin{itemize}
+  \item When the user runs print(m1), and m1 is from class ``lm'',
+    the work is sent to a method print.lm()
+  \item   Methods are always named
+  in the format ``generic.class'', such as ``print.default'',
+  ``print.lm'', etc.
+  \item Note: Most methods do not ``double-check'' whether the
+    object they are given is from the proper class. They count in
+    R's runtime system to check and then call print.whatever for
+    obejcts of type whatever
+  \item That's why many methods are ``hidden'' (can only access via
+    ::: notation)
+  \item Accessing methods directly
+    \begin{itemize}
+    \item If a method is ``exported'', can be called directly via
+      ``package::method.class()'' format
+    \item If a package is ``attached'' to the search path, then
+      ``method.class()'' will suffice, but is not as clear
+      \item If a method is NOT exported, then user can reach into the
+        package and grab it by running ``package:::method.class()''
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Detour: attributes() Function and Confusing Output}
+
+  The class is stored as an attribute in many object types. Run attributes()
+\def\Sweavesize{\scriptsize}
+\begin{Soutput}
+> attributes(x)
+$levels
+[1] "a" "b" "c"
+
+$class
+[1] "factor"
+
+> attributes(m1)
+$names
+ [1] "coefficients"  "residuals"     "effects"       "rank"
+ [5] "fitted.values" "assign"        "qr"            "df.residual"
+ [9] "contrasts"     "xlevels"       "call"          "terms"
+[13] "model"
+
+$class
+[1] "lm"
+
+> attributes(y)
+NULL
+> is.object(y)
+[1] FALSE
+
+\end{Soutput}
+
+\begin{itemize}
+\item puzzle: why has y no attribute?  Why is it not an object?
+\item Honestly, I'm baffled, I thought "everything in R is an object."
+  (And I still do.)
+\end{itemize}
+  \begin{quotation}
+    If the object does not have a class attribute, it has an implicit
+    class, ``matrix'', ``array'' or the result of ``mode(x)'' (except
+    that integer vectors have the implicit class ``integer''). (from ?class
+    in R-2.15.1)
+  \end{quotation}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{How Objects get ``into'' Classes}
+
+  \begin{itemize}
+   \item In older S3 terminology, user is allowed to simply
+      claim that x is from one or more classes
+      \begin{Sinput}
+class(x) <- c(``lm'', ``glm'', class(x))
+      \end{Sinput}
+    \item That would say x's class includes ``lm'' and ``glm'' as new
+      classes, and also would keep x's old classes as well.
+    \item The class is an attribute, can be set thusly
+      \begin{Sinput}
+attr(x, ``class'') <- c(``lm'', ``whateverISay'')
+      \end{Sinput}
+     \item When a generic method ``run'' is called with x, the R runtime will
+       first try to use run.lm. If run.lm is not found, then
+       run.whateverISay will be tried, and if that fails, it falls
+       back to run.default.
+    \end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{How Objects get ``into'' Classes: S4}
+
+  \begin{itemize}
+   \item S4 has more structure, makes classes \& methods work more
+     like truly object oriented programs.
+   \item S4 classes are defined with a list of variables BEFORE
+     objects are created.
+   \item Variables are typed!
+   \item Example imitates Matloff, p. 223
+
+<<s410, include=T, echo=T>>=
+ setClass("pjfriend", representation(
+ name="character",
+ gender="factor",
+ food="factor",
+ age="integer"))
+@
+
+
+   \item Create an instance of class pjfriend (Note: to declare an
+     integer, add letter ``L'' to end of number).
+
+<<s420, include=T, echo=T>>=
+william <- new("pjfriend", name = "william", gender =
+  factor("male"), food=factor("pizza"), age=33L)
+william
+
+jane <- new("pjfriend", name="pumpkin", gender = factor("female"), food=factor("hamburger"), age=21L)
+jane
+@
+ \item jane and william are \emph{instances} of class ``pjfriend''
+    \item The variables inside an S4 object are called \emph{``slots''} in R
+    \item ``slot'' would be called
+      ``instance variable'' in most OO-languages)
+    \item values in slots can be retrieved with symbol @, not \$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Implement an S4 method}
+
+  \begin{itemize}
+  \item Step 1. Write a function that can receive a function of type
+    ``pjfriend'' and do something with it.
+  \item Step 2. Use setMethod to tell the R system that the function
+    implements the method that is called for.
+  \item setMethod ``wraps'' a function.
+<<s450, eval=F, include=T, echo=T>>=
+setMethod("some-generic-function-name", "pjfriend",
+          function(x) {
+              #do something with x
+              }
+)
+@
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Difficult to Account For Changes between S3 and S4}
+
+  I think it is difficult to explain some of the notational and
+  terminological changes between S3 and S4.
+  \begin{itemize}
+  \item If you type an S4 object's name on the command line
+\begin{Sinput}
+  > x
+\end{Sinput}
+  the R runtime looks for a method ``show.class'' (where class is the
+  class of x).
+\item Why change from ``print'' to ``show''? (IDK)
+  \item Why change the ``accessor'' symbol from \$ to @ ?
+  \item Why call things accessed with @ ``slots'' rather than instance
+    variables?
+
+  \end{itemize}
+\end{frame}
+
+%===================================================
+\end{document}

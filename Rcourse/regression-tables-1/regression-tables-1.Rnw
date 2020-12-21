@@ -1,0 +1,664 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/regression-tables-1//}}
+\makeatother
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{babel}
+\usepackage{url}
+\ifx\hypersetup\undefined
+  \AtBeginDocument{%
+    \hypersetup{unicode=true}
+  }
+\else
+  \hypersetup{unicode=true}
+\fi
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,citecolor=blue}
+
+\makeatother
+
+\begin{document}
+<<echo=F>>=
+##unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+
+<<Roptions, echo=F>>=
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Regression Presentations: Tables }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2013]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\AtBeginSubsection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+\begin{frame}
+
+\frametitle{Presenting OLS To The Masses}
+\begin{itemize}
+\item We Nice Looking Regression Tables
+\item Better to output a close-to-final result from R
+
+\begin{itemize}
+\item Reduces typographical errors
+\item Easy to re-run estimates and produce another automatic table.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Data}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Get Some Data from Nat. Election Study 2004}
+
+<<echo=F>>=
+library(foreign)
+mydta1 <- read.dta("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/04245-0001-Data.dta")
+@
+
+\inputencoding{latin9}\begin{lstlisting}[basicstyle={\footnotesize}]
+## V043038     B1a. Feeling Thermometer: GW Bush
+## V043039     B1b. Feeling Thermometer: John Kerry
+## V043210     R1. R position on gay marriage
+## V043213     S3. National economy better/worse since GW Bush took ofc
+## V045117     G4a. Liberal/conservative 7-point scale: self-placement
+## V045145X    H5x. Summary: Pre-Post US flag makes R feel
+## V041109A    HHListing.9a. Respondent gender
+## V043116     J1x. Summary: R party ID
+## V043250     Y1x. Summary: Respondent age
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{This was a surprise to me}
+
+<<anes10,fig=T,include=F,echo=T>>=
+plot(V043038~V043039,data=mydta1,xlab="V043039: Kerry Thermo",ylab="V043039: Bush Thermo")
+@
+
+\includegraphics[width=10cm]{plots/t-anes10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Create a New Dependent Variable}
+
+<<anes20,include=F,echo=T>>=
+mydta1$th.bush.kerry <- mydta1$V043038 - mydta1$V043039
+@
+
+The difference in thermometer scores:
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes20.tex}
+
+<<anes30,include=F,echo=T>>=
+##Party
+mydta1$V043116 <- mydta1$V043116[, drop = TRUE]
+levels(mydta1$V043116) <- c("SD","WD","ID","I","IR","WR","SR","O")
+mydta1$V043116[ mydta1$V043116 %in% levels(mydta1$V043116)[8] ] <- NA
+mydta1$V043116 <- mydta1$V043116[, drop = TRUE]
+table(mydta1$V043116)
+
+##IDEO
+mydta1$V045117 <- mydta1$V045117[ , drop = TRUE]
+levels(mydta1$V045117) <- c("EL","L","SL","M","SC","C","EC")
+table(mydta1$V045117)
+
+##Gender
+levels(mydta1$V041109A) <- c("M","F")
+
+## Gay Marriage
+levels(mydta1$V043210) 
+mydta1$V043210[ mydta1$V043210 %in% levels(mydta1$V043210)[4:10] ] <-NA  
+mydta1$V043210 <- mydta1$V043210[, drop = TRUE]
+levels(mydta1$V043210) <- c("Allow","No","Med") 
+
+## Economy
+mydta1$V043213 <- mydta1$V043213[ , drop = TRUE]
+l <- levels(mydta1$V043213)
+econnew <- factor(mydta1$V043213, levels=c(l[2],l[3],l[1]), labels=c("Worse","Same","Better"))
+table(mydta1$V043213, econnew)
+mydta1$V043213 <- econnew
+rm(econnew)
+##Flag
+mydta1$V045145X <- mydta1$V045145X[, drop = TRUE] 
+@
+
+Clean up a bunch of variables \& value labels
+
+\input{plots/t-anes30.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Making Regression Tables}
+
+\begin{frame}
+\frametitle{What Should a Regression Table Look Like?}
+\begin{itemize}
+\item It needs 
+
+\begin{itemize}
+\item coefficients
+\item standard errors (or t-values, possibly)
+\item model diagnostics like $N$ and $R^{2}$ and so forth.
+\end{itemize}
+\item I want it to be easy to generate nice looking tables automatically
+to make it easy to prepare presentations and class notes.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle {R Functions/Packages for Producing Regression Output}
+  \begin{itemize}
+  \item outreg: An R function I prepared 2006, now in "rockchalk" package
+  \item memisc: works well, output not quite "presentation ready"
+  \item xtable: incomplete output, but latex or HTML works 
+  \item apsrtable: very similar to outreg
+  \item Hmisc ``latex'' function
+  \item texreg: a new regression table making framework
+  \end{itemize}    
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Are Your A LaTeX User?}
+\begin{itemize}
+\item Some scientists say it is required, same with math. Many of the smart
+people I know prepare documents in \LaTeX{}. 
+\item if using MS Word or similar makes you feel like you are ``finger
+painting'' to format material, \LaTeX{} may be the right thing for
+you.
+\item My \LaTeX{} notes page: \url{http://pj.freefaculty.org/latex}
+\item My \LaTeX{} lecture notes and example documents are linked on that
+site. 
+\end{itemize}
+Maybe we should stop and talk that over. Maybe I should show you my
+\href{http://pj.freefaculty.org/guides/Computing-HOWTO/LatexAndLyx/LaTeX-General-1/LaTeX-lecture-1.pdf}{LaTeX Overview}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Automatic Tables are Easiest for LaTeX users}
+\begin{itemize}
+\item \LaTeX{} is structured document ``markup'', and most table-making
+packages in R cater to \LaTeX{} users, rather than other folks. 
+\item However, for the MS Word (Libre Office) addicted, all is not lost.
+Several packages now can export to HTML, which Word is often able
+to import gracefully. 
+\item I'm preparing these lectures using Sweave, which means that R runs
+and inserts the tables in automatically, I literally never touch them.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Consider making 50 sets of tables, one for each student}
+\begin{itemize}
+\item In my regression class, I create random data sets that are individualized
+to the students, and then I need to show them what their results ought
+to be. 
+\item I could write 50 MS Word documents, one for each student, or
+\item I DID make a \LaTeX{} based script that automated the production of
+one report per student. Please inspect the result:
+
+
+\url{http://pj.freefaculty.org/stat/ps706/pj-test2}
+
+\item Please examine one or two of those files and then tell me it would
+be easier to use MS Word...
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{rockchalk: outreg}
+
+\begin{frame}[containsverbatim]
+\frametitle{Here's what To Do}
+
+Load the rockchalk package, in which the outreg function resides.
+
+<<anes39B,include=F>>=
+library(rockchalk)
+@
+
+<<anes40, eval=F, include=F, echo=T>>=
+library(rockchalk)
+mod1age <- lm(th.bush.kerry~V043250, data=mydta1)
+outreg(mod1age, tight=F, modelLabels=c("Age as Predictor"))
+@
+
+\input{plots/t-anes40.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Produces this LaTeX Markup}
+
+<<anes41, echo=F, eval=T, include=F>>=
+<<anes40>>
+@
+
+\input{plots/t-anes41.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Which LaTeX Renders as}
+
+<<anes45,echo=F,include=T,results=tex>>= 
+<<anes40>> 
+@ \input{plots/t-anes45.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Add Gender}
+
+<<anes50, eval=F, include=F, echo=T,results=tex>>=
+## Run a new regression
+mod2age <- lm(th.bush.kerry~V043250 + V041109A, data=mydta1)
+## Put 2 regressions in same table
+outreg(list(mod1age,mod2age), tight=T, modelLabels=c("Age Only","Age With Gender"))
+@
+
+\input{plots/t-anes50.tex}
+
+My terminology: ``tight'' means coefficients and standard errors
+vertically aligned
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Output To LaTEX}
+
+<<anes51,echo=F,include=T,results=tex>>= 
+<<anes50>> 
+@ \input{plots/t-anes51.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Recent updates to outreg}
+\begin{itemize}
+\item outreg was the first useful R function I created, I was distributing
+it (sans packaging) since 2006.
+\item The rockchalk package includes it now, I've made some ``user convenience''
+changes.
+
+\begin{itemize}
+\item easier customization of model ``header'' labels and variable names
+\item easier to customize the selection of ``goodness of fit'' indicators
+in the bottom of the table
+\item I'm not an alpha 0.05 insister anymore, you can choose 1 or more alpha
+levels (with stars!)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{outreg can create html file output}
+\begin{itemize}
+\item This is a brand new feature in outreg 1.8 (June, 2013)
+
+\begin{itemize}
+\item outreg2HTML() receives outreg results and converts into Web markup.
+\item Word 2010 will not ``paste special'' the HTML markup I generate,
+but it can ``Insert -> File'' and it absorbs the HTML markup in
+a reasonable way. You can finger paint to customize.
+\item Not as nice looking or as automatic as \LaTeX{}, but I would use it
+if somebody made me use MS Word.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lets put that to the test}
+
+<<include=T, echo=T>>=
+or1 <- outreg(list(mod1age,mod2age), tight=T, modelLabels=c("Age Only","Age With Gender"))
+outreg2HTML(or1, file = "or1-test.html")
+@
+
+I've copied the file ``or1-test.html'' to a Website, where you can
+download it for yourself and try to import it into a word processor
+of your choice. \href{http://pj.freefaculty.org/R/or1-test.html}{http://pj.freefaculty.org/R/or1-test.html}
+
+\end{frame}
+
+
+\lyxframeend{}\section{xtable}
+
+\begin{frame}
+\frametitle{The xtable package is as old as R itself}
+\begin{itemize}
+\item In the old old days, xtable was ``THE'' one to use for \LaTeX{}
+output
+\item I still use it to create quick tables of some summary output, particularly
+output from rockchalk::summarizeNumeric. (There's an example in each
+file in pj-test2 mentioned above).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{xtable is Nice Too}
+
+<<anes55,echo=T,eval=F,include=F>>=
+library(xtable)
+tabout1 <- xtable(mod2age)
+print(tabout1, type="latex")
+@  
+
+This code:
+
+\input{plots/t-anes55.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Generates A LaTeX Table}
+
+<<anes57, echo=F, eval=T, include=F, results=tex>>=
+<<anes55>>
+@
+
+\input{plots/t-anes57.tex}
+
+Maybe I'm missing something, but this is not really a presentable,
+finished table.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{xtable: HTML Markup Output}
+
+<<anes58,echo=T,eval=F,include=F>>=
+print(tabout1, type="HTML")
+@  
+
+This code:
+
+\input{plots/t-anes58.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Produces HTML Markup that another program can Absorb}
+
+<<anes59, echo=F, eval=T, include=F>>=
+<<anes58>>
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes59.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{memisc}
+
+\begin{frame}[containsverbatim]
+\frametitle{And a nice LaTeX converter "toLatex"}
+\begin{itemize}
+\item [memisc] (by Martin Elf) is a general purpose social science package
+that has many excellent features
+\item It is the ONLY program I use to make presentable ``Cross Tabulation
+Tables''
+\item It has excellent support for SPSS user therapy and post-addiction
+recovery.
+\item So far as I know, memisc was the first R package to offer the special
+features that other packages are now emulating.
+
+\begin{itemize}
+\item Easy ability to incorporate results from several regression models
+in a single table
+\item Easy ability to export that result to a presentable \LaTeX{} format.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{memisc: "mtable" Feature was a Major Breakthrough}
+
+<<anes60,echo=T,eval=T,include=F>>= 
+library(memisc) 
+mod3age <- lm(th.bush.kerry~V043250 * V041109A, data=mydta1)
+mtable(mod1age,mod2age,mod3age) 
+@ 
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes60.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{memisc also offers a nice LaTeX converter "toLatex"}
+
+<<anes65, echo=T, eval=F, include=F>>=
+toLatex(mtable(mod1age,mod2age,mod3age))
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-anes65.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{And the Result}
+
+<<anes66, results=tex, echo=F, eval=T, include=F>>=
+<<anes65>>
+@
+
+\scriptsize{
+\input{plots/t-anes66.tex}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Critique}
+\begin{itemize}
+\item ``Too Much'' information at the bottom of the plot. I'd rather have
+the default be minimal and allow users to ask for more.
+\item No symbol key to indicate what {*} {*}{*} mean
+\item Variable Labels difficult to understand
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Other packages}
+
+
+\lyxframeend{}\lyxframe{rms has offered \LaTeX{} for 20 years}
+\begin{itemize}
+\item The package now known as ``rms'' (Regression Modeling Strategies,
+by Frank Harrell) has been offering latex as a generic function for
+20 years, even before R existed (because S did exist).
+\item Has many latex functions customized to the regression fitting routines
+in rms
+\end{itemize}
+
+\lyxframeend{}\lyxframe{apsrtable}
+\begin{itemize}
+\item Prepared by a then-graduate student at my Alma Mater Washington University
+in St. Louis.
+\item Perhaps the title is unfortunate because it suggests that it is intended
+for the American Political Science Review, but that is not its only
+target audience.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{texreg}
+\begin{itemize}
+\item The most recent entry in the regression table sweepstakes, by Philip
+Leifeld
+\item It has specialized converters designed for many of the popular kinds
+of regression model, including many in packages I've never heard of.
+
+\begin{itemize}
+\item At first I had admiration and awe at the dedication to write separate
+``back end'' functions for all of the different kinds of regression
+\item Later, I became angry that regression package writers do not standardize
+their object structures to be compatible with glm() and lm() in R
+base, necessitating a nearly heroic effort to translate each one,
+one by one.
+\item After that, I decided it is crazy to cater to inconsistent package
+writers and tried to generalize outreg to accomodate that diversity
+without writing 100 separate little functions for 100 separate little
+regression packages.
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+\begin{frame}[containsverbatim]
+\frametitle{Example texreg usage}
+
+<<tr10, eval = F>>=
+library(texreg)
+to1 <- texreg(list(mod1age,mod2age), return.string = TRUE, use.packages = FALSE, booktabs = TRUE, dcolumn = TRUE)
+@
+\begin{itemize}
+\item One criticism: user interface to texreg almost unbelievably filled
+up with complicated looking options. Perhaps not for beginners in
+R or \LaTeX{}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Example texreg output}
+
+<<eval = T, echo = F,  results=tex>>=
+<<tr10>>
+@
+\begin{itemize}
+\item Another criticism: Who presents a regression without RMSE (standard
+error of estimate = sigma...)?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I wondered what that LaTeX Markup would look like}
+
+\def\Sweavesize{\scriptsize}
+
+<<tr20>>=
+cat(to1)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{One Extra Large Attraction for texreg}
+\begin{itemize}
+\item The author, unlike others, has exerted himself to learn what CSS formatting
+and HTML magic MS Word can tolerate, and the function htmlreg() creates
+an output file that Word can import and it will look almost as good
+as in \LaTeX{}.
+\item On my system (where Word runs in an emulation layer for Linux), the
+resulting table did look nice, but it would tolerate no finger painting
+by me. I was not able to adjust anything. But that's probably more
+of a reflection on me than on texreg.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}
+\end{document}

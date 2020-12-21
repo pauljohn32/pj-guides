@@ -1,0 +1,1137 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{multicol}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+\usetheme{Antibes}
+
+%Switch comment character to turn on/off \pause commands given as \pausealt
+%\newcommand{\pausealt}{\par }
+\newcommand{\pausealt}{\pause}
+
+
+\usepackage{color}
+\definecolor{gray1}{gray}{0.75}
+
+\newlength{\figurewidth}
+\figurewidth \textwidth  % This is for rectangular graphs
+\newlength{\figurewidthB}
+\figurewidthB .7\textwidth  % This is for square graphs
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+\title[Plotting II] % (short title, use only with long paper titles)
+{Plotting II}
+
+\subtitle{Important Ingredients in the Best Plot Recipes}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2}Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{Plotting (2)}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+\input{plots/t-Roptions}
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%=============================================================================
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+
+
+
+%=============================================================================
+
+
+\section{Saving Plots}
+
+\begin{frame}
+  \frametitle{The Screen as an Output Device}
+
+  \begin{itemize}
+  \item You make a nice plot and view it on the screen.
+
+  \item The ``window'' is a device, as far as R is concerned.
+  \item You can create more than one plotting device. Try:
+\input{plots/t-sav10}
+or
+\input{plots/t-sav15}
+   That should create a new ``screen'' device and the next plot
+   command you run will draw on it.
+
+  \item Possible to have several devices, and alternate among them.
+
+  \item What's my current device? Run:
+\input{plots/t-sav20}
+  \item Related functions: ``dev.next()'' and ``dev.set()'' and ``dev.off()''
+  \end{itemize}
+\end{frame}
+
+
+%_________________________
+\begin{frame}
+  \frametitle{A Printer is also a Device}
+
+  \begin{itemize}
+
+  \item Send the current device's output to the default printer
+
+\input{plots/t-sav30}
+
+\item Here's our major problem.  If the screen device is a different
+  size \& shape, then copying or printing it to another device \&
+  shape will usually create a ugly result.
+
+\item Users frequently note that a plot looks great if they draw it on
+  a 8 inch by 6 inch plot, but when they try to print that in a
+  smaller section of paper, the result is horrible.
+
+  \item Furthermore, on-screen devices do not always gracefully resize
+    when we stretch and resize them.
+
+\end{itemize}
+\end{frame}
+
+% _____________________________
+\begin{frame}
+  \frametitle{Save pdf, postscript, png, etc}
+  \begin{itemize}
+
+  \item Things we call ``file types'' or ``formats'' are \textbf{devices} in R.
+
+  \item Recall the ``window'' where you see the graph is a ``device''
+    in the eyes of R.
+
+  \item Problems arise translating ``that'' device into a
+    file-formatted device.
+
+    \begin{itemize}
+      \item Screen devices are generally ``square'', say 7'' by 7''
+      \item  A screen device output sized for 7'' x 7'' will look
+      bad if it is written into a 6 inch x 4 inch output device.
+      \item This is a major problem with Rstudio, because it
+        constrains the graphic device to be a particular rectangle on
+        the screen.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}
+  \frametitle {Many Devices Are Available}
+
+  \begin{itemize}
+
+    \item Today, I almost always save in  \texttt{pdf} or \texttt{png}
+      devices. \texttt{pdf} is scalable, \texttt{png} is for web pages.
+    \item Many other excellent devices exist, I'm considering studying
+      up on \texttt{svg} or \texttt{tikz}
+    \item \texttt{xfig} device creates output that can be revised in
+      xfig (Godfather of free line art software). That's useful sometimes.
+    \item \texttt{pdf} is now R's default recommendation (was
+      postscript when I started)
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {Ask your system what it has.}
+
+  \begin{itemize}
+    \item Run
+\input{plots/t-sav50}
+    should list the base devices and some other possibilities your
+    system \emph{might} have.
+
+    \item Check your particular system for extra devices.
+\input{plots/t-sav55}
+Today I see
+     \end{itemize}
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+\begin{Soutput}
+jpeg      png     tiff    tcltk      X11     aqua http/ftp  sockets
+TRUE     TRUE     TRUE     TRUE     TRUE    FALSE     TRUE     TRUE
+libxml     fifo   cledit    iconv      NLS  profmem    cairo
+TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+%_____________________________________
+
+\begin{frame}
+  \frametitle {``But I Can Just Point and Click,'' you say...}
+
+  Almost all of my students don't pay attention to me on this. They
+  use a ``graphical environment'' with a pull down menu
+  ``File Save As''.  I say STOP that.
+
+  Why?
+  \begin{itemize}
+  \item \textbf{Quality} The result will be bad if the output device
+    shape and size is not similar to the screen device. Better to
+    create a ``certain'' sized device and let R write on it.
+  \item \textbf{Reproducibility}: Pointing and Clicking does not equal
+    reproducible output. You can't ``give'' that to students \& co-authors
+  \item \textbf{Speed}: Suppose you need to scan through 200 datasets
+    and make 3 plots each. Do you really want to point-and-click
+    through there? Really?
+  \end{itemize}
+\end{frame}
+
+%________________________________________
+
+\begin{frame}
+  \frametitle {The Step-by-Step Procedure}
+
+  Your Code will
+  \begin{enumerate}
+  \item Create an output device (pdf, png, etc)
+  \item Run the commands that create the figure (will not show on the screen)
+
+  \item Turn off the device in order to finish off the file.
+  \end{enumerate}
+
+  While you are ``experimenting'' with code, don't execute
+  code in steps 1 and 3, so you can see output on screen. If you see
+  my example code with \texttt{if (SAVEME) pdf(file =
+    "somefile.pdf", ...)}, you will know what what I mean.
+
+  Check WorkingExample scripts like ``glm-logit-unbalanced-1.R'' or ``glm-logit-compareLinks-1.R''
+
+\end{frame}
+
+%________________________________________
+
+
+
+\begin{frame}
+  \frametitle {Save Files from the R Script}
+
+  \begin{itemize}
+
+    \item I try to remember to have this ``boiler plate'' at the top
+      of every R program that I write when I might need to save graphs
+\input{plots/t-009}
+
+    \item These set my taste for the ``postscript'' and ``pdf'' output devices.
+
+    \item \emph{IF} I remember those, then saving a file is not so tedious.
+  \end{itemize}
+\end{frame}
+
+%________________________________________________________
+\begin{frame}
+  \frametitle {Explain those arguments}
+  \begin{description}
+    \item [horizontal = FALSE]: I prefer ``portrait'' output
+    \item [onefile = FALSE]: Don't try to put all plots into a single file (I
+      want separate images in separate files)
+    \item [onefile = FALSE]: vital for postscript devices. Otherwise, no
+      bounding box is included and the result is not true EPS  (Encapsulated Postscript)
+    \item [paper = "special"]: Helps with pdf output. Otherwise, it
+      assumes all pdf images are full page size
+    \item [family="Times"]: I prefer to see figures with fonts that
+      match the text.
+  \end{description}
+\end{frame}
+
+
+%________________________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Typical Experience}
+  \begin{itemize}
+  \item First, begin with the process of creating a graph. Run it on
+    screen until you get it right, and then ``wrap'' your commands
+    in this way:
+
+\input{plots/t-posts10}
+
+  \item BIG WARNING 1. If you ``turn on'' the file device, you
+    will not get to see the output on the screen in the R graphic device.
+  \item BIG WARNING 2. If you ``turn on'' an output device, and forget
+    to run dev.off(), you will cause lots of trouble for yourself. Try
+    it and see.
+
+  \end{itemize}
+\end{frame}
+
+
+%___________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {If You Forget the Boilerplate}
+  \begin{itemize}
+  \item You omit pdf.options, then you need to write in details each time, e.g.
+
+  \input{plots/t-pdf30}
+
+    \item Instead of
+
+  \input{plots/t-pdf31}
+
+  \item Even if you did set pdf.options, you can customize
+
+
+  \input{plots/t-pdf32}
+
+  \end{itemize}
+\end{frame}
+
+
+%___________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle {Conditionalize Code To Make This Less Tedious}
+  \begin{itemize}
+  \item Do your on-screen work like this
+\input{plots/t-014}
+
+    \item To save figures in files, change
+    \begin{verbatim}
+SAVEME <- TRUE
+     \end{verbatim}
+
+      and then run the whole script over again.
+  \end{itemize}
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle {Another Way To Make This Less Tedious}
+  \begin{itemize}
+  \item Let R number the figures for you.
+
+  \item Put this in the program BEFORE creating plots
+
+\input{plots/t-015}
+
+  \item When finished, tell R to stop creating output files.
+\input{plots/t-016}
+
+   \item When you run this program, no graphs will ``show on the screen.''
+   \item Each graph you draw will go in a separate file,
+     \texttt{myfile001.pdf}, \texttt{myfile002.pdf},
+     \texttt{myfile003.pdf}.
+
+  \item The downside here is that all figures have to have same
+    height, width
+  \end{itemize}
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}
+  \frametitle{Example Code that Writes a Bunch of Figures}
+
+
+\input{plots/t-pdf70}
+
+\end{frame}
+
+
+%___________________________________________
+\section{Layout}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Brief Note on par}
+  \begin{itemize}
+  \item Many settings that affect graphs are sitting ``out there''
+    in memory
+  \item To see them, run
+\input{plots/t-018}
+  \item To see a particular one, run
+\input{plots/t-019}
+  \item To set one, run
+\input{plots/t-020}
+  \end{itemize}
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Brief Note on par}
+  \begin{itemize}
+  \item Danger: those settings will remain in effect for the
+    duration of the device.
+  \item When you close that device, all of the changes are
+    ``forgotten'' and par() for that device reverts.
+    \begin{itemize}
+    \item Need to re-run if you change devices
+    \item Many people recommend getting in the routine of saving par
+      settings and replacing them when done.
+\input{plots/t-021}
+    \item Seems somewhat unnecessary to me because you can close
+      the device and ``start fresh''
+
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{par: mfcol and mfrow}
+  \begin{itemize}
+  \item Either of these will cause R to subdivide a plotting device into 3 rows
+\input{plots/t-022}
+  \item Either of these will subdivide a plotting device into 3 rows, 2 columns
+\input{plots/t-023}
+  \end{itemize}
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{mfrow fills rows, mfcol fills columns}
+  \begin{itemize}
+
+  \item The order of ``drawing'' is the difference between mfcol and mfrow
+
+  \item  Suppose 6 plots are A, B, C, D, E, F
+  \end{itemize}
+
+\begin{topcolumns}
+  \column{6cm}
+  \begin{description}
+    \item [mfcol]  fills the columns first
+      \begin{tabular}{|c|c|}
+        \hline
+        A & D \tabularnewline
+        \hline
+        \hline
+        B & E\tabularnewline
+        \hline
+         \hline
+        C & F\tabularnewline
+        \hline
+         \hline
+      \end{tabular}
+    \end{description}
+
+   \column{6cm}
+   \begin{description}
+
+   \item [mfrow]  fills the rows first
+
+     \begin{tabular}{|c|c|}
+       \hline
+       A & B \tabularnewline
+       \hline
+       \hline
+       C & D\tabularnewline
+       \hline
+       \hline
+       E & F\tabularnewline
+       \hline
+       \hline
+     \end{tabular}
+   \end{description}
+ \end{topcolumns}
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Example: to fit horizontal screen}
+
+\input{plots/t-mfcol10}
+
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+
+\includegraphics[totalheight=65mm]{plots/t-mfcol10}
+
+
+\end{frame}
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{When you are finished...}
+
+  Either:
+  \begin{itemize}
+  \item Reset the option manually
+
+    par(mfcol=c(1,1))
+
+  \item Or close the device
+
+    dev.off()
+
+  \end{itemize}
+\end{frame}
+
+%________________________________
+
+\begin{frame}
+  \frametitle{Some R Functions Use \texttt{mfcol} Behind the Scenes}
+  \begin{itemize}
+  \item Suppose you have a factor variable like ``race'' or ``sex''
+  \item coplot generates separate plot for each value of the factor
+\input{plots/t-025}
+
+\end{itemize}
+\end{frame}
+
+
+%_______________________________
+\begin{frame}[containsverbatim]
+  \frametitle{R's Layout() Function Offers More Control}
+
+  \begin{itemize}
+  \item Check the current layout:
+
+    \texttt{"layout.show(1)"}
+
+    It should put a numeral ``1'' on a screen device.
+  \item layout wants you to specify an R matrix to
+    \begin{itemize}
+    \item divide the space by rows and columns, and
+    \item let R know which figure will be drawn in which area
+    \end{itemize}
+
+  \item Stupid example
+
+    \begin{equation}
+      mymat=\left[\begin{array}{cc}
+          1 & 1\\
+          1 & 1 \\
+        \end{array}\right]\end{equation}
+
+
+    Meaning: divide my plotting area into 4 parts, but let
+    figure ``1'' use all 4 parts.
+
+
+  \end{itemize}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}[containsverbatim]
+
+\input{plots/t-layout10}
+\includegraphics[totalheight=65mm]{plots/t-layout10}
+\end{frame}
+
+%______________________________________
+
+\begin{frame}[containsverbatim]
+
+\includegraphics[totalheight=65mm]{plots/t-layout11}
+
+\end{frame}
+
+%___________________________________
+
+\begin{frame}[containsverbatim]
+\input{plots/t-layout20}
+\includegraphics[totalheight=65mm]{plots/t-layout20}
+
+\end{frame}
+
+%____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{R Squishes the Figures to Fit!}
+
+\includegraphics[totalheight=65mm]{plots/t-layout21}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Layout 5 images in a ``rainbow'' shape}
+
+  \begin{equation}
+    mymat=\left[\begin{array}{ccc}
+        1 & 1 & 1\\
+        2 & 0 & 3\\
+        4 & 0 & 5\end{array}\right]\end{equation}
+
+
+\input{plots/t-layout30}
+
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{You Need 5 Plots for 5 Indicated Spaces}
+
+\input{plots/t-layout31}
+
+
+\end{frame}
+
+%_____________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Voila}
+  \includegraphics[totalheight=65mm]{plots/t-layout31}
+
+\end{frame}
+
+%_______________________________________________
+
+\begin{frame}
+  \frametitle{Cautionary Comment about Layout}
+  \begin{itemize}
+    \item Layout affords the ability to fill a page with an
+      arbitrarily complicated array of figures.
+    \item I worry that some of this effort is wasted because some/many
+      journals do not want a full page layout of graphs. If they will
+      give you the space at all, they probably want the individual
+      figures in separate graphs that can be arranged according to
+      their style.
+    \item Exception would be layout used to link together inseparable
+      drawings, e.g. ``rug'' plots below scatterplots.
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+\section{Lattice Layouts}
+
+\begin{frame}
+  \frametitle{Trellis Graphics with the lattice Package}
+
+  \begin{itemize}
+  \item Trellis graphics in S/S+ are highly prized (natural scientists
+    especially)
+  \item Main idea: make it easy/simple to create many plots that
+    subdivide a sample and illustrate for subgroups (coplot, but a
+    fully worked out framework)
+  \item Deepayan Sarkar contributed the lattice package for R
+  \item Some see lattice graphs as a complete replacement for
+    existing 2D plotting framework (e.g., Doug Bates).
+  \item I am more cautious, possibly because
+    \begin{itemize}
+    \item lattice graphics came along after I had mastered the others
+    \item seems tougher to get individual pieces ``just right''
+    \item see previous concern about difficulty of layout in publication.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}
+  \frametitle{xyplot is the workhorse generic function}
+  \begin{itemize}
+    \item xyplot will accept a formula and figure out what to do with it.
+    \item After a vertical bar, | , factors indicate desired subgroups.
+
+
+  \end{itemize}
+
+\end{frame}
+
+% _______________________________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+
+\input{plots/t-xyplot10}
+
+\includegraphics[totalheight=65mm]{plots/t-xyplot11}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+\input{plots/t-lathist30}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist31}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+\input{plots/t-lathist40}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist41}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+\input{plots/t-lathist50}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist51}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+
+\input{plots/t-lathist60}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist61}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+  Appears we just need to cut some extreme values.
+
+\input{plots/t-043}
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+\input{plots/t-lathist70}
+
+\includegraphics[totalheight=65mm]{plots/t-lathist71}
+
+
+
+\end{frame}
+
+%______________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+
+
+\input{plots/t-lathist80}
+\includegraphics[totalheight=65mm]{plots/t-lathist81}
+
+
+\end{frame}
+
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+
+
+
+\input{plots/t-lathist90}
+\includegraphics[totalheight=65mm]{plots/t-lathist91}
+
+\end{frame}
+
+%_________________________________________
+\section{Plotmath}
+
+\begin{frame}
+  \frametitle{The plotmath Framework}
+
+  \begin{itemize}
+  \item R has a ``\LaTeX like'' math markup called ``plotmath''
+  \item Create an R ``expression'', then when plotted, math will appear!
+  \item read \texttt{?plotmath}
+    \item run \texttt{example(plotmath)}
+
+  \end{itemize}
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Simple example}
+
+
+\input{plots/t-pm10}
+
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Simple example}
+
+
+\includegraphics[totalheight=65mm]{plots/t-pm11}
+\end{frame}
+
+%____________________________
+
+\begin{frame}
+  \frametitle{A Few plotmath Tips}
+  \begin{itemize}
+    \item Two Equal Signs (== outputs =)
+  %%  \item $\[\]$ marks subscripts, ^ for superscripts
+    \item Want * to show? Type \%*\%
+    \item Want $\cdot$ ? Type  cdot
+
+  \end{itemize}
+\end{frame}
+
+%____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Only Really Big Gotcha Is...}
+
+  \begin{itemize}
+  \item Blending calculations and math.
+  \item This does not work:
+\begin{Sinput}
+x <- 10
+text(4, 5, expression(paste("x is ", x)))
+\end{Sinput}
+
+  \item Instead, a more elaborate procedure is required.
+  \item One method is bquote
+
+
+  \end{itemize}
+\end{frame}
+
+%________________________
+
+\begin{frame}
+  \frametitle{bquote example usage}
+
+
+\input{plots/t-pm20}
+
+\end{frame}
+
+
+%_________________________________
+\begin{frame}[containsverbatim]
+
+
+\includegraphics[totalheight=65mm]{plots/t-pm21}
+
+\end{frame}
+
+%_______________________________
+\begin{frame}
+  \frametitle{I've Been Proposing This as a plotmath Example}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\includegraphics[totalheight=70mm]{plots/t-pm91}
+
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Set Parameters, Create $x$, $y$, Make Title}
+\input{plots/t-pm90A}
+
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Create Plot and axes}
+\input{plots/t-pm90B}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92AB}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Label Lower Axis, Draw Line Across Range}
+\input{plots/t-pm90C}
+
+\end{frame}
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92C}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Mark Interval from mean to $\sigma$}
+\input{plots/t-pm90D}
+
+\end{frame}
+
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92D}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Create formula for Normal Distribution}
+\input{plots/t-pm90E}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92E}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Write Left Side Critical Value Below Axis}
+\input{plots/t-pm90F}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92F}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Use polygon to Shade the Area Under Curve on Left}
+\input{plots/t-pm90G}
+
+\end{frame}
+
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92G}
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Make Calculations about Area on Left Side}
+\input{plots/t-pm90H}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}
+  \frametitle{Write Annotation Above Shaded Area on Left}
+  \input{plots/t-pm90H2}
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92H}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Insert arrow and text from mean to $-1.96 \sigma$}
+\input{plots/t-pm90I}
+
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92I}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Shade right side critical region}
+
+\input{plots/t-pm90J}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92J}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Gather data on right side shaded area}
+\input{plots/t-pm90K}
+
+\end{frame}
+%________________________________________
+
+% \begin{frame}[plain]
+
+% <<pm92K,fig=T,echo=T,include=F,height=6, width=6>>=
+% <<pm90A>>
+% <<pm90B>>
+% <<pm90C>>
+% <<pm90D>>
+% <<pm90E>>
+% <<pm90F>>
+% <<pm90G>>
+% <<pm90H>>
+% <<pm90I>>
+% <<pm90J>>
+% <<pm90K>>
+% @
+% \includegraphics[totalheight=65mm]{plots/t-pm92K}
+% \end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Annotate right shaded area}
+\input{plots/t-pm90L}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+\includegraphics[totalheight=70mm]{plots/t-pm92L}
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+  \frametitle{Insert arrow from mean to $1.96 \sigma$}
+\input{plots/t-pm90M}
+
+\end{frame}
+%________________________________________
+
+\begin{frame}[plain]
+
+
+\includegraphics[totalheight=70mm]{plots/t-pm92M}
+
+\end{frame}
+%__________________________
+
+% ==========================================================
+
+\end{document}

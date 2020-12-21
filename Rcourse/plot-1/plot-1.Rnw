@@ -1,0 +1,1648 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+\usepackage{multicol}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\usetheme{Antibes}
+
+%Switch comment character to turn on/off \pause commands given as \pausealt
+%\newcommand{\pausealt}{\par }
+\newcommand{\pausealt}{\pause}
+
+
+\usepackage{color}
+\definecolor{gray1}{gray}{0.75}
+
+\newlength{\figurewidth}
+\figurewidth \textwidth  % This is for rectangular graphs
+\newlength{\figurewidthB}
+\figurewidthB .7\textwidth  % This is for square graphs
+
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+%=============================================================================
+%
+
+
+
+\title[Plotting 1] % (short title, use only with long paper titles)
+{Plotting With R (Vol 1)}
+
+\subtitle{Plotting I}
+
+\author[Johnson] {Paul E. Johnson\inst{1,2}}
+
+\institute[University of Kansas]{\inst{1} Department of Political Science \\
+  University of Kansas \and \inst{2} Center for Research Methods and Data Analysis \\ University of Kansas} % (optional, but mostly needed)
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{data}
+
+%=============================================================================
+%=============================================================================
+\begin{document}
+
+<<echo=F>>=
+unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=5}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=180, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par(no.readonly = TRUE)
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3.5, width=5.25)
+options(papersize="special")
+@
+
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+%=============================================================================
+%=============================================================================
+
+
+\section{Detour: R Classes and Methods}
+
+\begin{frame}
+  \frametitle{R's plot is Magic}
+
+<<echo=F>>=
+set.seed(1234321)
+x <- rnorm(5)
+y <- rnorm(5)
+@
+
+\begin{itemize}
+\item Do you have a data frame ``mydata''? Try this:
+<<eval=F>>=
+plot(mydata)
+@
+
+\item Do you have 2 variables, x and y inside mydata? Try this:
+<<eval=F>>=
+plot(y ~ x, data = mydata)
+@
+\item I prefer that ``formula interface,'' but it is also going to
+  work if you run this:
+<<eval=F>>=
+plot(mydata$x, mydata$y)
+@
+
+Or,
+<<eval=F>>=
+with(mydata,  plot(x, y))
+@
+\end{itemize}
+\end{frame}
+
+%________________________________________________
+
+\begin{frame}
+  \frametitle{R's plot is Really Magic}
+
+
+\begin{itemize}
+\item plot will try to guess what kind of drawing you want
+<<eval=F, include=T>>=
+  plot(y ~ x, data = mydata )
+@
+Depending on the characteristics of x and y, this might
+generate completely different kinds of figures.
+
+\item Figure result depends on 2 things.
+  \begin{enumerate}
+  \item The primary argument--which implies data types for R to
+    inspect
+  \item Default graphical settings (inherited from the larger graphic environment (run ``par()'' to see it)).
+  \end{enumerate}
+
+\item My usual workflow is like this
+  \begin{enumerate}
+    \item use plot with defaults
+    \item notice flaws, start removing defaults and replacing
+    \item most radical approach is to add arguments
+<<>>=
+## plot( ...whatever..., type="n", axes = F)
+@
+  \end{enumerate}
+
+\end{itemize}
+\end{frame}
+
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Scatterplot: y and x are both numeric}
+  \includegraphics[totalheight=70mm]{importfigs/plot-scatter1}
+
+  General Social Survey (2006)
+\end{frame}
+
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{``Box'' plot: y numeric, x categorical}
+  \includegraphics[totalheight=70mm]{importfigs/plot-boxplot}
+
+
+  General Social Survey (2006)
+\end{frame}
+
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{``Ugly Barplot'': y categorical, x categorical}
+  \includegraphics[totalheight=70mm]{importfigs/plot-spineplot}
+
+  Actually, this is a ``spinogram''
+
+  General Social Survey (2006)
+\end{frame}
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{But It Doesn't Have To Stay Ugly}
+  \includegraphics[totalheight=70mm]{importfigs/plot-bar2009-genderGap}
+
+  Used the ``barplot()'' method to get more control
+\end{frame}
+
+
+% _______________________________________
+\begin{frame}
+  \frametitle{Read ``?plot''. plot is a ``generic function'' for 2D drawings}
+
+  \begin{itemize}
+  \item terminology: \textbf{a generic function} is an ``entry point''
+    to a family of functions that do special work on objects of
+    various types.
+
+  \item \textbf{method function} Run:
+    \texttt{someFunction(some.object)}. The R runtime system asks
+    \texttt{some.object} what its class is, and then it looks for a
+    \emph{method function} named \texttt{someFunction.class} that will
+    do the work.
+
+  \item \texttt{plot (y ~ x, data=dat)} has a formula as its first
+    argument, so \texttt{plot.formula} is called. It discerns the data
+    types and sends work to ``barplot'', ``boxplot'', etc.
+
+  \item This framework simplifies user interaction with R by reducing
+   the number of separate function names that one must learn.
+
+  \item Not necessary to use generic \texttt{plot} to make a barplot.
+    Read \texttt{?barplot}, use it directly if you want to. If I know
+    I want bars, I don't mess about with \texttt{plot()}.
+  \end{itemize}
+\end{frame}
+
+%_______________________________________
+\begin{frame}
+  \frametitle{R also will try to guess what you want from an object}
+  \begin{itemize}
+  \item Most calculations in R create ``R objects''
+<<eval=F>>=
+#     myObject <- SomeWonderfulFunction (X, myArgument = 7)
+@
+
+  \item You could ask \texttt{myObject} for its type
+<<eval=F>>=
+#  class(myObject)
+@
+
+  \item If you run
+<<eval=F>>=
+#  plot(myObject)
+@
+    R asks for the type and then finds the right method.
+
+  \end{itemize}
+\end{frame}
+%_______________________________________
+\begin{frame}
+  \frametitle{What kinds of objects will plot handle?  run ``methods(plot)''}
+  \begin{multicols}{3}
+    \small{
+ [1] plot.acf*
+
+ [2] plot.data.frame*
+
+ [3] plot.Date*
+
+ [4] plot.decomposed.ts*
+
+ [5] plot.default
+
+ [6] plot.dendrogram*
+
+ [7] plot.density
+
+ [8] plot.ecdf
+
+ [9] plot.factor*
+
+ [10] plot.formula*
+
+ [11] plot.hclust*
+
+[12] plot.histogram*
+
+[13] plot.HoltWinters*
+
+[14] plot.isoreg*
+
+[15] plot.lm
+
+[16] plot.medpolish*
+
+[17] plot.mlm
+
+[18] plot.POSIXct*
+
+[19] plot.POSIXlt*
+
+[20] plot.ppr*
+
+[21] plot.prcomp*
+
+[22] plot.princomp*
+
+[23] plot.profile.nls*
+
+[24] plot.spec
+
+[25] plot.spec.coherency
+
+[26] plot.spec.phase
+
+[27] plot.stepfun
+
+[28] plot.stl*
+
+[29] plot.table*
+
+[30] plot.ts
+
+[31] plot.tskernel*
+
+[32] plot.TukeyHSD
+
+   Non-visible functions are asterisked
+   }
+  \end{multicols}
+\end{frame}
+
+
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{That's TMI}
+
+  \begin{itemize}
+
+  \item Before you skip past it $\ldots$
+
+  \item notice syntax.  ``plot.ts'' : if you
+    have a ``ts'' object called ``myobject'', something is
+    supposed to happen if you run:
+<<eval=F>>=
+#  plot(myobject)
+@
+  \item If the R runtime finds no method your object's class, it will
+    try to run
+
+<<eval=F>>=
+#  plot.default(myobject)
+@
+
+  \end{itemize}
+
+\end{frame}
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Here's an example with a ``density'' object.}
+
+
+  \begin{itemize}
+    \item Create 1500 random numbers from a Poisson, get the density
+      object, then plot it.
+
+
+<<den0, echo=T,include=F>>=
+myx <- rpois(1500,lambda=17)
+den1 <- density(myx)
+plot(den1)
+@
+
+   \input{plots/t-den0}
+
+<<den1, fig=T, include=F, echo=T>>=
+plot(density(rpois(1500, lambda = 17)))
+@
+
+   \item Same as creating object ``on the fly''
+
+   \input{plots/t-den1}
+
+   \item Except that this leaves behind no object to investigate.
+\end{itemize}
+
+\end{frame}
+
+% _______________________________________
+\begin{frame}[plain,containsverbatim]
+
+The default plot of the density object, output from
+
+\input{plots/t-den1}
+\includegraphics[totalheight=70mm]{plots/t-den1}
+
+\end{frame}
+
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{But I did not want that plot!}
+  \begin{itemize}
+  \item If plot() gives the wrong output, then customize it!
+  \item Investigate ``den1'', the density object
+
+<<denplot02, fig=F, echo=T>>=
+attributes(den1)
+@
+
+<<denplot03, fig=T, include=F, echo=T>>=
+plot(den1$x,den1$y,type="l", xlab="x is Poisson(17)", ylab="density")
+abline(h=0, col="gray50", lwd=0.6)
+@
+\end{itemize}
+\end{frame}
+
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{But I did not want that plot!}
+  \begin{itemize}
+\item Use the information inside that object to make the
+    kind of plot you want, using the plot tools described in the next section.
+
+    \input{plots/t-denplot03}
+
+  \end{itemize}
+\end{frame}
+
+%_________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{A customized plot of density}
+
+\includegraphics[totalheight=70mm]{plots/t-denplot03}
+
+\end{frame}
+%________________________________________
+
+\section{High and Low Level Plot Functions}
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{High Level Functions allocate a ``device'' and draw on it}
+  \begin{itemize}
+  \item High level functions
+    \begin{itemize}
+    \item plot.default
+    \item hist
+    \item barplot
+    \item boxplot
+    \item dotplot
+    \item piechart
+    \end{itemize}
+  \item Ironically, you can ask these functions to not plot!
+    \begin{itemize}
+    \item plot(x, y, type=''n'')
+    \item That will create the ``device'' and draw axes only.
+    \item Ask for no axes: plot(x,y, type=''n'', axes=F)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Low Level Functions: ``doodle'' on an Existing Plot Device}
+  \begin{itemize}
+  \item Low level functions
+    \begin{itemize}
+    \item text: for writing inside the plot area
+    \item mtext: for writing margin text
+    \item points: puts plot characters in plot area
+    \item abline: draws straight lines
+    \item lines: draws a smooth curve through indicated points
+    \item legend: for annotation of lines, points, or bars
+    \item segments: draws straight lines between indicated points
+    \item polygon: for a shaded region in the plot area
+    \item axis: customize axes
+    \item and others exist
+    \end{itemize}
+  \item Once you get the hang of it,
+    you can make some awesome, publication-quality drawings.
+  \end{itemize}
+\end{frame}
+
+% _______________________________________
+\begin{frame}
+  \frametitle{Various types of options to 2D plot commands}
+
+  \begin{itemize}
+  \item Hints to the generic itself to help it know what you want
+    plot(x, y, type=''s'')
+  \item Options common to all 2D plot methods.
+    \begin{description}
+    \item [main] a main title
+    \item [xlab] a label for the horizontal axis
+    \item [xlim] a vector of axis limits, as in c(0,100)
+    \end{description}
+  \item Options that are interpreted by the graphic environment
+    \begin{description}
+    \item [cex=0.5] sets ``character expansion factor''
+    \end{description}
+  \item Options that are intended for the specific method that is
+    chosen. (If the work is dispatched to the wrong method, an error
+    will result).
+  \item The importance of ``$\ldots$'' in definition ?plot. An
+    option that \textit{might be used} at some stage in the process.
+  \item The function ``par()'' can get or set parameters that affect
+    the way plotting methods work.
+  \end{itemize}
+\end{frame}
+
+
+
+
+%_______________________________________
+
+\section{Scatters}
+
+\begin{frame}
+  \frametitle{Fiddle Around with a Scatterplot}
+  \begin{itemize}
+  \item The ``easy, automatic'' plot is almost never what you want.
+  \item With numeric $x$ and $y$, plot(x,y) sends the data
+    to a method called ``plot.default''
+  \item Expert users might work with plot.default directly, most users
+    never need to.
+
+  \end{itemize}
+\end{frame}
+
+%________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Exercise: I've create a simple example dataset: mydf.txt}
+<<ex1,include=F,echo=T>>=
+age <- c( 14, 16, 19, 18, 21, 17, 15, 15)
+sex <- c( "M","M","M","M","F","F","F","F")
+salary <- c(8.00, 7.55, 20, 9.00, 26.00, 7.55, 5.00, 13.00)
+mydf <- data.frame( age, sex, salary)
+rm(age, sex, salary) ## clean up workspace
+write.table(mydf, file = "examples/mydf.txt", sep = ",", row.names = FALSE)
+@
+\input{plots/t-ex1}
+
+\begin{itemize}
+\item Bring mydf.txt into your session
+<<eval=F>>=
+mydf <- read.table("examples/mydf.txt", sep = ",", header = TRUE)
+@
+\item Test these commands
+<<eval=F>>=
+plot(salary ~ age, data = mydf)
+plot(salary ~ age, data = mydf, cex = 2)
+plot(salary ~ age, data = mydf, col = "pink", cex = 2, pch = 16)
+plot(salary ~ age, data = mydf, col = as.numeric(sex), cex = salary, pch = 16)
+plot(salary ~ age, data = mydf, type = "l")
+plot(salary ~ age, data = mydf, type = "b")
+plot(salary ~ age, data = mydf, type = "h")
+plot(salary ~ age, data = mydf, type = "s")
+plot(salary ~ age, data = mydf, type = "c")
+text(salary ~ age, data = mydf, labels = 1:8)
+@
+\end{itemize}
+\end{frame}
+
+%_______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{The Default Plot}
+
+<<ex2,fig=T, include=F, echo=T>>=
+plot(salary ~ age , data = mydf)
+@
+
+\input{plots/t-ex2}
+\includegraphics[width=10cm]{plots/t-ex2}
+
+\end{frame}
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Make A Plot That's Empty in the Middle}
+
+<<ex3prepplot, include=F, echo=T>>=
+plot(salary~age , data=mydf, type="n", xlab="Age (years)", ylab="Hourly Wage (US)")
+@
+
+<<ex3,fig=T,include=F>>=
+<<ex3prepplot>>
+@
+\input{plots/t-ex3prepplot}
+\includegraphics[width=10cm]{plots/t-ex3}
+
+\end{frame}
+
+% _______________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Use ``points()'' to put the points back}
+
+<<ex44prep, include=F, echo=T>>=
+with(mydf, points(age, salary, pch=6, cex=0.8))
+@
+
+<<ex44, fig=T, include=F>>=
+<<ex3prepplot>>
+<<ex44prep>>
+@
+
+\input{plots/t-ex44prep}
+See ?points; pch ``plotting character'', cex resizes it
+
+\includegraphics[width=10cm]{plots/t-ex44}
+
+\end{frame}
+
+
+
+%_______________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Use ``text'' to write gender data}
+
+<<ex4prepplot, include=T, echo=T>>=
+##with(mydf, text(age, salary, labels = mydf$sex)) ## same as:
+text(salary ~ age, data = mydf, labels = mydf$sex)
+@
+
+<<ex4, fig=T, include=F>>=
+<<ex3prepplot>>
+<<ex4prepplot>>
+@
+
+\includegraphics[width=10cm]{plots/t-ex4}
+
+\end{frame}
+
+%_________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Perhaps You Like Named Subjects}
+
+<<ex90names,include=F,echo=T>>=
+mydf$subjects <- c("Pat","Chris","Kris","Stacey","Leslie","Jaime","Terry","Mickey")
+@
+
+<<ex90plotnames, include=F,echo=T>>=
+myColors <- ifelse(mydf$sex == "M", "green", "red")  ##alternating red and green
+# with(mydf,  text( age, salary, labels = subjects, col = myColors))
+text(salary ~ age, data = mydf, labels = subjects, col = myColors)
+@
+
+<<ex90points, include=F, echo=T>>=
+## with(mydf, points(age, salary, pch = 4, cex=2)) ##same as:
+points(salary ~ age, data = mydf, pch = 4, cex = 2)
+@
+
+\begin{itemize}
+\item Insert a column of names into the data frame
+  \input{plots/t-ex90names}
+\item Redraw the base plot
+  \input{plots/t-ex3prepplot}
+\item Write the names into the plot region
+  \input{plots/t-ex90plotnames}
+\end{itemize}
+\end{frame}
+
+% ___________________________________________
+
+\begin{frame}
+  \frametitle{Write the names on the plot}
+<<ex90, fig=T, include=F>>=
+<<ex3prepplot>>
+<<ex90plotnames>>
+@
+
+\includegraphics[width=10cm]{plots/t-ex90}
+
+\end{frame}
+
+
+
+%_________________________________________
+
+\begin{frame}
+  \frametitle{Plot Some Giant X's Too!}
+
+<<ex92, fig=T, include=F>>=
+<<ex3prepplot>>
+<<ex90plotnames>>
+<<ex90points>>
+@
+
+
+\input{plots/t-ex90points}
+\includegraphics[width=10cm]{plots/t-ex92}
+
+\end{frame}
+
+
+
+%_________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Turn Off Everything Visible}
+
+
+Go completely naked! No axes, no box, no nothing.
+
+<<exnaked, include=F, echo=T>>=
+plot(salary~age , data=mydf, type="n", bty="n", axes=F, xlab="", ylab="")
+@
+
+\input{plots/t-exnaked}
+
+\end{frame}
+
+
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{The Blank Canvas Is So Intimidating}
+
+
+\end{frame}
+% _______________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{But Its Not \textsl{Really} Naked.  It is ``scaled'' drawing area}
+
+<<exgetmeans,include=F,echo=T>>=
+ma <- round(mean(mydf$age), 2)
+ms <- round(mean(mydf$salary), 2)
+@
+
+<<exmtext, echo=T, include=F>>=
+text( ma, ms, label=paste("I'm centered on (",ma,",",ms,"), the means of age and salary", sep=""))
+@
+
+<<outeredge, echo=T, include=F>>=
+box(which="outer", col="gray90", lty=1)
+@
+
+<<ex5, echo=F, fig=T, include=F>>=
+<<exnaked>>
+<<exmtext>>
+<<outeredge>>
+@
+
+\includegraphics[width=10cm]{plots/t-ex5}
+
+\end{frame}
+
+%____________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Marking on a Canvas}
+
+<<exmaxmin, echo=T, include=F>>=
+text(max(mydf$age), max(mydf$salary), "MAX", offset=0)
+text(min(mydf$age), min(mydf$salary), "MIN", offset=0)
+@
+
+<<exbox, echo=T, include=F>>=
+box(which="plot", col="red",lty=2)
+legend("topleft", legend=paste("The Plot Region:", "axes would lie on this edge"), lty=c(2),col=c("red"), bty="n")
+@
+
+\begin{itemize}
+
+\item Place words ``MAX'' and ``MIN'' at the edges of the data.
+
+  \input{plots/t-exmaxmin}
+
+\item Put a red dotted rectangle for the outer edge of the Plot Region
+
+  \input{plots/t-exbox}
+
+
+
+\end{itemize}
+
+\end{frame}
+%____________________________________________
+
+\begin{frame}
+
+<<ex6, fig=T, echo=F, include=F>>=
+<<exnaked>>
+<<exmaxmin>>
+<<exbox>>
+<<outeredge>>
+@
+
+\includegraphics[width=10cm]{plots/t-ex6}
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Some monkey business at the outer edges}
+  \begin{itemize}
+  \item Ask the plot for the ``plot region's dimensions''
+<<puser, include = F, echo = T>>=
+(pu <- par("usr"))
+text(pu[1], pu[4], label = paste("TL"), cex = 3)
+text(pu[2], pu[3], label = paste("BR"), cex = 3)
+@
+
+<<ex6b, fig=T, echo=F, include=F>>=
+<<exnaked>>
+<<exbox>>
+<<outeredge>>
+<<puser>>
+@
+
+\input{plots/t-puser.tex}
+\includegraphics[width=8cm]{plots/t-ex6b}
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Color outside the Lines}
+  \begin{itemize}
+  \item Run ``par(xpd = TRUE)'' before the plot commands if you need
+    to write outside the plot region.
+
+<<ex6c, fig=T, echo=F, include=F>>=
+par(xpd = TRUE)
+<<exnaked>>
+<<exbox>>
+<<outeredge>>
+<<puser>>
+@
+
+\includegraphics[width=8cm]{plots/t-ex6c}
+
+  \end{itemize}
+\end{frame}
+
+%_________________________________________________
+
+\begin{frame}
+  \frametitle{Keep decorating}
+
+<<exmean,echo=T, include=F>>=
+<<exgetmeans>>
+points(ma, ms, pch=18)
+@
+
+<<exarrow, echo=T, include=F>>=
+arrows(1.01*ma, 1.01*ms, 1.03*ma, 1.03*ms, code=1, length=0.1)
+@
+
+<<exarrowtext, echo=T, include=F>>=
+text(1.03*ma, 1.03*ms, pos=4, label="The means")
+@
+\begin{itemize}
+\item Put plotting character 18 at the means.
+
+  \input{plots/t-exmean}
+
+\item This will draw an arrow pointing at the means
+
+  \input{plots/t-exarrow}
+
+\item This will add a label for the arrow
+
+  \input{plots/t-exarrowtext}
+\end{itemize}
+\end{frame}
+
+
+%____________________________________________
+
+\begin{frame}
+
+<<ex8, fig=T, echo=F, include=F>>=
+<<exnaked>>
+<<exmaxmin>>
+<<exmean>>
+<<exbox>>
+<<exarrow>>
+<<exarrowtext>>
+@
+
+\includegraphics[width=10cm]{plots/t-ex8}
+\end{frame}
+
+%___________________________________________________
+\begin{frame}
+  \frametitle{Could we Reproduce the Original Scatter?}
+
+<<ex84pre, echo=T, include=F>>=
+<<exnaked>>
+axis(1); mtext("Age (years)", side = 1, line = 3)
+axis(2); mtext("Hourly Wage (US)", side = 2, line = 3)
+box()
+with(mydf, points(age, salary, pch=1, cex=1))
+@
+<<ex84, fig=T, echo=F, include=F>>=
+<<ex84pre>>
+@
+
+\input{plots/t-ex84pre}
+\end{frame}
+
+%___________________________________________________
+\begin{frame}
+  \frametitle{Could we Reproduce the Original Scatter?}
+
+<<ex84, fig=T, echo=F, include=F>>=
+<<exnaked>>
+axis(1)
+mtext("Age (years)", side = 1, line = 3)
+axis(2)
+mtext("Hourly Wage (US)", side = 2, line = 3)
+box()
+with(mydf, points( age, salary, pch = 1, cex = 1))
+@
+\includegraphics[width=10cm]{plots/t-ex84}
+\end{frame}
+
+%%____________________________________________________
+\section{Histograms}
+
+\begin{frame}
+  \frametitle{Please Try This}
+  \begin{itemize}
+
+   \item First, generate some example data
+
+<<createnorm,include = T, echo=T>>=
+set.seed(1234321)
+myx <- rnorm(1000, mean=50, sd=20)
+@
+   \item Then explore myx with these commands
+
+<<eval=F>>=
+rockchalk::summarize(myx) ## or summary(myx)
+hist(myx)
+dev.new(height=3, width=8) ## fiddle values
+hist(myx)
+hist(myx, breaks = seq(min(myx), max(myx), length = 5))
+hist(myx, breaks = c(min(myx), 0, 40, 50, max(myx)))
+hist(myx, xlim = c(-200, 200))
+hist(myx, xlim = c(-200, 200), ylim = c(0, 350))
+text(-200, 300, pos = 4, labels = c("If you typed all this \nin I think you are the \nmost dedicated and well \nadjusted person who ever \ntook my course"))
+@
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Let's Beautify a Histogram!}
+
+<<mstd,include=F,echo=T>>=
+myxm <- mean(myx)
+myxsd <- sd(myx)
+@
+  \begin{itemize}
+  \item The expected value is 50, standard deviation is 20
+    \input{plots/t-createnorm}
+
+    \item Incidentally, observed mean is \Sexpr{myxm}, std. dev.=\Sexpr{myxsd}
+
+    \item I'll  need the observed mean and standard deviation later:
+
+\input{plots/t-mstd}
+
+\end{itemize}
+\end{frame}
+
+%__________________________________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Create A Histogram}
+
+<<hist2, fig=T, echo=T,include=F>>=
+hist(myx)
+@
+\input{plots/t-hist2}
+\includegraphics[width=10cm]{plots/t-hist2}
+\end{frame}
+
+
+\begin{frame}[plain,containsverbatim]
+  \begin{exampleblock}{That's not awesome yet}
+
+<<hist3, fig=T, echo=T, include=F>>=
+hist(myx , prob=T)
+@
+    Tell it you want ``density'' values, not counts
+    \input{plots/t-hist3}
+    \includegraphics[width=10cm]{plots/t-hist3}
+  \end{exampleblock}
+\end{frame}
+
+%______________________________________________________
+\begin{frame}[plain,containsverbatim]
+  \begin{exampleblock}{I like narrower bars, so specify breaks}
+
+<<hist4, fig=T, echo=T, include=F>>=
+hist(myx , breaks=30, prob=T)
+@
+\input{plots/t-hist4}
+\includegraphics[width=10cm]{plots/t-hist4}
+\end{exampleblock}
+\end{frame}
+
+%______________________________________________________
+\begin{frame}[plain, containsverbatim]
+
+\begin{exampleblock}{We Might As Well Be Informative}
+
+<<histfinal,echo=T,fig=T,include=F>>=
+hist(myx , breaks=30, prob=T, xlab="Perfect Scale", ylab="Density", main="The Great Histogram")
+@
+\input{plots/t-histfinal}
+\includegraphics[width=10cm]{plots/t-histfinal}
+\end{exampleblock}
+\end{frame}
+%_______________________________________________________
+
+\begin{frame}
+  \frametitle{How Do I Know Hist Can Do Those Things?}
+
+  \begin{itemize}
+  \item Experience: Most R plot methods have same/similar options
+  \item Read ?hist
+  \item try this: RSiteSearch(``histogram'')
+  \end{itemize}
+
+\end{frame}
+
+%__________________________________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Now Add Some Annotation}
+
+  \begin{itemize}
+  \item Re-run the hist command to re-draw the whole graph
+  \item Use the text() command to write the mean in the ``white space''
+  \item text command has this format
+
+    > text(x, y, label="some word")
+
+  \item In this case, I used
+
+    \begin{Schunk}
+      \begin{Sinput}
+text(80, 0.02, label=paste("Mean = ", myxm))
+      \end{Sinput}
+    \end{Schunk}
+
+    \item Note text is ``vectorized'' so you can give it vectors for
+      x,y, and label and it will write all of those combinations.
+  \end{itemize}
+\end{frame}
+
+%_____________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Oh, Bother. Too Many Small Numbers}
+
+<<hist6, fig=T, echo=F, include=F>>=
+<<histfinal>>
+text(80, 0.02, label=paste("Mean = ", myxm))
+@
+
+\includegraphics[width=10cm]{plots/t-hist6}
+
+\end{frame}
+
+% ______________________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Maybe we like to see the standard deviation as well?}
+
+<<textfinal,echo=T, include=F>>=
+text(80, 0.020, label=paste("Mean = ", round(myxm,2)))
+text(82, 0.018, label=paste("Std. Dev. = ", round(myxsd,2)))
+@
+\begin{itemize}
+
+\item I am tempted to round the variables ahead of time,
+<<eval=F>>=
+myxm <- round(myxm, 2)
+myxsd <- round(myxsd, 2)
+@
+but I'm reluctant, so I'll round the numbers when I need them.
+
+  \item First, the figure has to be redrawn
+    \input{plots/t-histfinal}
+
+  \item Then add the corrected text commands
+    \input{plots/t-textfinal}
+
+<<hist8, fig=T, echo=T, include=F>>=
+<<histfinal>>
+<<textfinal>>
+@
+
+\end{itemize}
+\end{frame}
+%___________________________________________________
+\begin{frame}[containsverbatim]
+
+  \includegraphics[width=10cm]{plots/t-hist8}
+
+\end{frame}
+
+% ______________________________________________________
+\begin{frame}[plain,containsverbatim]
+  \begin{block}{As Good as it Gets: Add Density Lines and a Legend}
+
+<<densityline,echo=F>>=
+denx <- density(myx)
+lines(denx, lty=2, col="red")
+@
+<<pdfline, echo=F>>=
+rangx <- range(myx)
+testseq <- seq(rangx[1], rangx[2], by=1)
+pdfseq <- dnorm(testseq, mean=50, sd=20)
+lines(testseq, pdfseq)
+@
+<<histlegend, echo=F>>=
+legend("topleft", legend = c("Theoretical density", "Observed density"), lty = c(1,2), col = c("black","red"))
+@
+<<hist10, fig=T, include=F, echo=F>>=
+<<histfinal>>
+<<textfinal>>
+<<densityline>>
+<<pdfline>>
+<<histlegend>>
+@
+\includegraphics[width=10cm]{plots/t-hist10}
+\end{block}
+\end{frame}
+
+
+%%____________________________________________________
+
+\begin{frame}
+  \frametitle{Wow. How did he do that density line?}
+
+<<hist11>>=
+<<densityline>>
+@
+ Explanation:
+
+  \begin{itemize}
+  \item Use \texttt{density()}  to do whatever it does :)
+  \item Use the \texttt{lines()}  to do whatever it does :)
+    \begin{itemize}
+    \item lty is ``line type''
+    \item col is ``color''
+    \end{itemize}
+  \item Somehow  \texttt{lines()} notices we gave it a a density object and
+    ``knows what to do''.
+  \end{itemize}
+
+\end{frame}
+
+%%____________________________________________________
+
+\begin{frame}
+  \frametitle{What about the pdf line?}
+
+This is tougher. lines is going to want this information
+
+     lines(xcoordinates, ycoordinates)
+
+so it can ``connect the dots''. And we don't have it.
+
+
+<<hist12>>=
+<<pdfline>>
+@
+  \begin{itemize}
+  \item Create xcoordinates by getting the range of the observed x
+  \item and then create a sequence between the min and max
+  \item Give that sequence to the ``dnorm'' function, which calculates
+    the ``true density value''.
+  \item Supply $x$, $y$ to lines()
+  \end{itemize}
+
+\end{frame}
+%%____________________________________________________
+
+\begin{frame}
+  \frametitle{And The Legend. Its so Awesome!}
+    \begin{itemize}
+      \item Ordinarily, legend wants to know coordinates, x and y
+      \item Shortcuts have been created, like ``topleft'' or
+        ``topright'', to replace x,y.
+      \item Everything else is detail work
+      \end{itemize}
+
+<<hist13>>=
+<<histlegend>>
+@
+\end{frame}
+
+%% ____________________________________________________
+
+
+\section{Barplots}
+
+\begin{frame}
+  \frametitle{Perhaps the Finest Barplot Ever}
+  \includegraphics[width=7cm]{importfigs/plot-bar-partisanvoting}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Before I tell you how to do that...}
+
+  I Want You To Do This:
+
+  In the folder
+
+  \url{http://pj.freefaculty.org/R/WorkingExamples}
+
+  you should find lot of R files. Find the one called
+
+  \texttt{plot-barplot-1.R}
+
+  Open that and step through it.
+
+\end{frame}
+
+
+
+
+% ________________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{ barplot() wants an R table as input }
+
+<<getGSS2006,echo=F, include=T>>=
+##library(foreign)
+##dat <- read.spss("gss-pspp.sav", to.data.frame=T)
+
+##dat <- subset (dat, select=c(hrs1, wrkslf, wrkgovt, marital, sex, race, educ, padeg, partyid , age, polint, news, newsfrom, income06, coninc, conrinc, realinc, gunlaw, owngun, vote00, pres00,  vote04, pres04, sexfreq, polviews, sei, mhgvthlt, mhgvthme, lessreg, numwomen, nummen, sexsex5, evstray ))
+
+##save(dat, file="examples/gss-subset.RData")
+load("examples/gss-subset.RData")
+@
+
+
+<<bar01, echo=T, include=F>>=
+t1 <- with(dat, table(pres04, partyid))
+t1
+@
+
+
+\begin{itemize}
+\item Create a table object called t1
+\end{itemize}
+\begin{multicols}{2}
+\tiny{
+  \input{plots/t-bar01}
+  }
+\end{multicols}
+\end{frame}
+
+
+
+
+
+%______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{But that makes an ugly barplot}
+
+
+<<bar02, include=F, fig=T, echo=T>>=
+barplot(t1)
+@
+\input{plots/t-bar02}
+
+\includegraphics[width=10cm]{plots/t-bar02}
+
+\end{frame}
+
+%_________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{First, clean up partyid, a factor variable}
+
+<<bar021, echo=T>>=
+  levels(dat$partyid)
+@
+
+\end{frame}
+
+%______________________________________
+\begin{frame}[containsverbatim]
+\frametitle{Set other to missing, beautify text for levels}
+
+<<bar03, echo=T, include=T>>=
+plev <- levels(dat$partyid)
+dat$partyid[dat$partyid %in% plev[8]] <- NA
+dat$partyid <- factor(dat$partyid)
+levels(dat$partyid) <- c("Strong Dem.", "Dem.", "Ind. Near Dem.", "Independent", "Ind. Near Repub.", "Repub.", "Strong Repub.")
+@
+
+\end{frame}
+
+%_________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Second, clean up the pres04 variable}
+
+<<bar041, echo=T, include=T>>=
+levels(dat$pres04)
+@
+
+\end{frame}
+
+%________________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Get rid of minor candidates}
+
+<<bar042,echo=T, include=T>>=
+preslev <- levels(dat$pres04)
+dat$pres04[dat$pres04 %in% preslev[3:10]]<- NA
+dat$pres04 <- factor(dat$pres04)
+levels(dat$pres04) <- c("Kerry", "Bush")
+@
+
+\end{frame}
+
+
+%_______________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Third, make a new table, with proportions}
+<<bar05, echo=T, include=T>>=
+oldtable <- with(dat, table(pres04, partyid))
+t1 <- prop.table(oldtable,2)
+t1
+@
+
+\end{frame}
+
+%______________________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{I prefer ``beside'' barplots}
+<<bar06, include=F, fig=T,echo=T,height=3.5,width=4>>=
+barplot(t1, beside=T)
+@
+
+  \input{plots/t-bar06}
+
+\end{frame}
+%______________________________________________
+
+\begin{frame}[plain]
+  \includegraphics[width=10cm]{plots/t-bar06}
+\end{frame}
+
+%_____________________________________________
+\begin{frame}
+  \frametitle{I want the y axis to have range from 0 to 1}
+<<bar07,include=F, fig=T,echo=T,height=3.5,width=4>>=
+barplot(t1, beside=T, ylim=c(0,1), ylab="Proportion")
+@
+ \input{plots/t-bar07}
+
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}[plain]
+  \includegraphics[width=10cm]{plots/t-bar07}
+\end{frame}
+
+%_________________________________________________
+\begin{frame}
+  \frametitle{Turn the labels on X to ``vertical'' with las=2}
+<<bar08, include=F, fig=T,echo=T,height=3.5,width=4>>=
+barplot(t1,beside=T, las=2, ylim=c(0,1), ylab="Proportion")
+@
+
+\input{plots/t-bar08}
+
+\end{frame}
+%______________________________________________
+
+\begin{frame}
+  \frametitle{Poop. The X labels run off the bottom}
+  \includegraphics[width=10cm]{plots/t-bar08}
+\end{frame}
+
+
+%______________________________________________
+\begin{frame}
+  \frametitle{Illustration of Margins in R plot Devices}
+
+<<margins01,echo=T, include=F>>=
+GenericFigure <- function(ID, size1, size2){
+  plot(0:10, 0:10, type="n", xlab="X", ylab="Y")
+  text(5,5, ID, col="red", cex=size1)
+  box("plot", col="red")
+  mtext("Figure",
+        SOUTH<-1, line=3, adj=1.0, cex=size2,   col="blue")
+}
+@
+
+<<margins02A,fig=T, include=F, echo=F>>=
+# Figure 2A.  R Plot Area / Figure Area with Outer Margin Area present
+par(mar=c(5.1,4.1,4.1,2.1))
+Figure2A <- function(){
+  par(oma=c(2,2,2,2))
+  GenericFigure("Plot Area", 3,2)
+
+  Margins <- capture.output( par()$mar )
+  Margins <- substr(Margins, 5, nchar(Margins))
+  Margins <-
+       paste("mar = c(", gsub(" ",",",Margins), ")", sep="")
+  mtext(Margins,
+        NORTH<-3, line=2, adj=0.0, cex=1.5, col="blue")
+
+  # "figure" box and "inner" margin box same for single figure plot
+  box("figure",lty="dashed", col="blue")
+  box("inner", lty="dotted", col="green")
+
+  mtext("Outer Margin Area",
+        SOUTH<-1, line=0.4, adj=1.0, cex=1.5, col="green", outer=TRUE)
+  box("outer", lty="solid", col="green")
+
+  OuterMargins <- capture.output( par()$oma )
+  OuterMargins <- substr(OuterMargins, 5, nchar(OuterMargins))
+  OuterMargins <-
+       paste("oma = c(", gsub(" ",",",OuterMargins), ")", sep="")
+  mtext(OuterMargins,
+        NORTH<-3, line=0.4, adj=0.0, cex=1.5, col="green", outer=TRUE)
+}
+Figure2A()
+@
+
+\includegraphics[width=10cm]{plots/t-margins02A}
+
+<<echo=F,include=F>>=
+options(SweaveHooks=list(fig=function() par(mar=pjmar)))
+@
+
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}
+  \frametitle{Use par to make a bigger bottom margin}
+
+<<bar10pre,include=F,echo=T>>=
+par(mar=c(7.1, 4.1, 2, 2.1))
+barplot(t1,beside=T, las=2, ylim=c(0,1))
+@
+
+<<bar10,include=F,fig=T,echo=T,height=3.5,width=4>>=
+<<bar10pre>>
+@
+
+\input{plots/t-bar10}
+<<bar10post,include=F,echo=T>>=
+par(mar=pjmar)
+@
+
+\end{frame}
+
+%______________________________________________
+
+\begin{frame}[plain]
+  \includegraphics[totalheight=90mm]{plots/t-bar10}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}
+  \frametitle{I like those light dotted horizontal lines}
+
+<<bar11pre,echo=T,include=F>>=
+abline(h=seq(0.1, 0.9, by=0.10), lty=3,  lwd=0.2)
+@
+<<bar11, include=F, fig=T,echo=T,height=3.5,width=4>>=
+<<bar10pre>>
+<<bar11pre>>
+@
+
+Add this: \input{plots/t-bar11pre}
+
+\end{frame}
+
+%_______________________________
+
+\begin{frame}[plain]
+  \includegraphics[totalheight=90mm]{plots/t-bar11}
+\end{frame}
+%___________________________________________
+
+\begin{frame}
+  \frametitle{Nobody Hates Legends. Right?}
+<<bar12pre, include=F, fig=F, echo=T>>=
+legend("top", legend=c("J.Kerry","G.W.Bush"), fill=gray.colors(2),bg="white")
+@
+
+<<bar12, include=F, fig=T,echo=F,height=3.5,width=4>>=
+<<bar10pre>>
+<<bar11pre>>
+<<bar12pre>>
+@
+
+\input{plots/t-bar12pre}
+
+\end{frame}
+
+%________________________________
+
+\begin{frame}[plain]
+  \includegraphics[totalheight=90mm]{plots/t-bar12}
+\end{frame}
+
+
+%________________________________
+\begin{frame}
+  \frametitle{Write inside the bars}
+@
+<<bar70pre,include=F,echo=T>>=
+par(mar=c(7.1, 4.1, 2, 2.1))
+par(xpd=T) ##write outside plot region
+bp1 <- barplot(t1,beside=T, las=2, ylim=c(0,1))
+@
+<<bar71, include=F, fig=F,echo=T>>=
+<<bar70pre>>
+<<bar11pre>>
+<<bar12pre>>
+bp1
+text(bp1,t1,label=round(t1,2), pos=1,cex=0.7,col=rbind(rep("white",7),rep("black",7)))
+
+@
+
+<<bar72, include=F, fig=T,echo=F,height=3.5,width=4>>=
+<<bar71>>
+@
+
+\input{plots/t-bar71}
+
+\end{frame}
+
+%_____________________________________________
+
+\begin{frame}
+  \frametitle{Color Coded Characters In There}
+  \includegraphics[totalheight=80mm]{plots/t-bar72}
+
+\end{frame}
+
+%_____________________________________________
+
+\begin{frame}
+  \frametitle{Write outside the margin area}
+
+<<bar70pre,include=F,echo=T>>=
+par(mar=c(7.1, 4.1, 2, 2.1))
+bp1 <- barplot(t1,beside=T, las=2, ylim=c(0,1))
+@
+
+<<bar72pre, include=F, echo=T>>=
+par(xpd=TRUE)
+text(bp1,t1,label=round(t1,2), pos=3,cex=0.7,col="black")
+@
+
+<<bar72, include=F, fig=F,echo=T>>=
+<<bar70pre>>
+<<bar11pre>>
+<<bar12pre>>
+@
+
+<<bar73, include=F, fig=T,echo=F, height=3.5, width=4>>=
+<<bar72>>
+<<bar72pre>>
+@
+ \input{plots/t-bar72pre}
+ \begin{itemize}
+
+ \item  Put the Numbers on Top of the Bars (pos=3)
+
+ \item par(xpd=TRUE) needed to force R to actually write
+   outside its normal plot region.
+ \end{itemize}
+\end{frame}
+
+%_________________________________________
+\begin{frame}[plain]
+
+  \includegraphics[totalheight=90mm]{plots/t-bar73}
+
+\end{frame}
+
+
+
+
+
+%==========================================================
+
+\end{document}

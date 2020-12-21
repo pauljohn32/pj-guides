@@ -1,0 +1,826 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Revision History --
+%  2011-02-08 2011-05-22  2012-09-18
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+%\usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+{
+  \usetheme{Antibes}
+  \usecolortheme{dolphin} %dark blues
+}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+
+%=============================================================================
+%
+
+
+\title[Functions II] % (short title, use only with long paper titles)
+{Troubleshooting for R Functions}
+
+\subtitle{Fixing Mistakes, Preventing Them}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[2015] % (optional, should be abbreviation of conference name)
+{2015}
+
+\subject{More advanced R function advice}
+
+%====================================
+
+\begin{document}
+
+\AtBeginSection[]{
+
+  \frame<beamer>{ 
+
+    \frametitle{Outline}   
+
+    \tableofcontents[currentsection,currentsubsection] 
+
+  }
+
+}
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=3,width=4.75}
+\def\Sweavesize{\normalsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+<<Roptions, echo=F>>=
+options(width=150, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+\section{debugging}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{"Debugger", Generally Speaking}
+  \begin{itemize}
+  \item Most programming languages have debuggers.
+    \begin{itemize}
+    \item "gdb" is the GNU debugger for C, C++, etc
+    \end{itemize}
+  \item Key idea: Run a program "inside" the debugger
+  \item "break point": halt a program at a place in the code to
+    inspect the condition of the variables.
+  \item  "back trace": When a program crashes, recover the last few
+    commands that were run. 
+  \item Many programs can create "core files" that can inspected
+    after a program crash
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{R has Interactive Debugging}
+  \begin{description}
+  \item [debug(func)] An R function that asks the interpreter to stop
+    whenever a function named "func" is called. 
+    
+  \item Caution: The function must be "in" the R session.
+    
+   \item Example
+\begin{Schunk}
+\begin{Sinput}
+debug(lm)
+mod1 <- lm(y1 <- x1 + x2, data = mydata)
+\end{Sinput}
+\end{Schunk}
+   
+   \item [browser()] Inserting the function "browser()" into your code creates a
+      break point. R interpreter will act as if we had run debug().
+      
+\begin{Schunk}
+\begin{Sinput}
+myGiantFn <- function(x, y, z, a, b){
+  qq <- x + y
+  browser()
+  }
+\end{Sinput}
+\end{Schunk}    
+      
+      
+    \end{description}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{To Learn More}  
+  \begin{itemize}
+  \item  R Core Team, Writing R Extensions (run "help.start()")
+  \item  John Chambers, \emph{Software for Data Analysis}
+  \item  Hadley Wickham, \emph{Advanced R}, Chap 9
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{What to do inside the debugger}
+  \begin{itemize}
+
+  \item Type into the R console
+    \begin{description}
+    \item [{n <Ret>}] next. Steps "into" the next level of code
+    \item [{<Ret>}] Similar to next, but does not step "into" a for loop
+    \item [{c<Ret>}] continue (starts R running from there)
+    \item [{where}] recent commands (usu. after trouble)
+    \item[{Q}] quit debugging
+      
+   \end{description}
+   
+  \item Important feature: User can Run R commands
+    \begin{itemize}
+    \item [ls()] displays currently available object
+    \item [print(x)] displays contents of x (same as typing "x")
+    \end{itemize}
+    
+  \item In ESS tracebug mode, use these keys in the source code file
+    (M means the Meta (Alt) key. All are capitalized): 
+    \begin{itemize}
+    \item [{M-N}] Next step
+    \item [{M-C}] continue (starts R running from there)
+    \item [{M-U}] Step up one frame (get out of for loop)
+    \item [{M-Q}] continue (starts R running from there)
+    \item see \url{http://ess.r-project.org/Manual/ess.html#ESS-tracebug}
+    \end{itemize}
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{debug}
+
+  \begin{itemize}
+  \item Try running
+  \end{itemize}
+<<eval=F, include=T, echo=T>>=
+set.seed(234234)
+y <- rnorm(100)
+x <- rnorm(100)
+debug(lm)
+m1 <- lm( y ~ x )
+@
+ \begin{itemize}
+  \item In the R terminal, computation will stop at the start of lm
+  \item The whole function will print out, then we step into it
+  \end{itemize}
+  
+
+\begin{Schunk}
+  \begin{Soutput}
+> m1 <- lm(y ~ x)
+debugging in: lm(y ~ x)
+debug: {
+    ret.x <- x
+    ret.y <- y
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data", "subset", "weights", "na.action",
+        "offset"), names(mf), 0L)
+    ## SNIP 100s of lines cut
+    z
+}
+
+  \end{Soutput}
+\end{Schunk}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Interact with lm in the Debugger/Browser}
+\begin{itemize}
+   
+  \item "n" steps into a lower level of detail (inside "if" or "for")  
+  \item Just hit Enter after first "n" to stay in same level
+  \begin{Schunk}
+    \begin{Soutput}
+     
+Browse[2]> n
+debug at <tmp>#5: ret.x <- x
+Browse[2]> n
+debug at <tmp>#6: ret.y <- y
+Browse[2]> 
+debug at <tmp>#7: cl <- match.call()
+Browse[2]> 
+debug at <tmp>#8: mf <- match.call(expand.dots = FALSE)
+Browse[2]> 
+debug at <tmp>#9: m <- match(c("formula", "data", "subset", "weights", "na.action", 
+    "offset"), names(mf), 0L)
+Browse[2]> 
+debug at <tmp>#11: mf <- mf[c(1L, m)]
+Browse[2]> 
+debug at <tmp>#12: mf$drop.unused.levels <- TRUE
+%$
+ \end{Soutput}
+\end{Schunk}     
+
+\item Inspect objects inside the running function
+  \begin{Schunk}
+    \begin{Soutput}
+Browse[2]> ls()
+ [1] "cl"          "contrasts"   "data"        "formula"     "method"
+ [6] "mf"          "model"       "na.action"   "offset"      "qr"
+[11] "ret.x"       "ret.y"       "singular.ok" "subset"      "weights"
+[16] "x"           "y"
+Browse[2]> model
+[1] TRUE
+Browse[2]> mf
+lm(formula = y ~ x)
+Browse[2]> formula
+y ~ x
+Browse[2]> contrasts
+NULL
+Browse[2]> method
+[1] "qr"
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{How do you insert "browser()" into the middle of a function?}
+  \begin{itemize}
+    
+  \item Insert "browser()" in the middle of your function, re-load the function,
+    and run the command that calls the function.
+    
+  \item If you want to insert browser into a function from a package,
+    can do in a few ways.
+    
+   \item R allows "in memory" changes to a function. Consider \texttt{fix()}.
+
+     \begin{Schunk}
+       \begin{Sinput}
+fix(lm)
+       \end{Sinput}
+     \end{Schunk}
+
+   \item The program you are using to interact with R will decide how to open that
+     function.  
+     \begin{itemize}
+     \item In an R console in Linux, the
+     function opens in vi. Edit, then close to launch it back into the session.
+     \item Emacs 24.4 refuses to edit the file until I run
+\begin{Sinput}       
+M-x server start
+\end{Sinput}       
+      After that, a new buffer pops up with the code. 
+    \item If you want to edit functions in this way, Emacs-ESS
+      suggests instead
+        \begin{itemize}
+          \item \texttt{C-c C-e C-d}  to "dump"
+             a function as a text file
+          \item \texttt{C-c C-l <Ret>} to load the edited function back.
+         \end{itemize}
+         
+     \item Rstudio pops open a new editor frame. The "save" button
+       at the bottom loads the function into the R session.
+      \end{itemize}
+ \item Changes we make in this way are purely temporary.
+ \end{itemize}
+\end{frame}
+
+
+\section{Running Through Errors}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{try and tryCatch}
+  \begin{itemize}
+    \item Suppose a command inside your function causes a function to fail.
+      Ordinarily, R processing will stop
+    \item Most programming have some ``try'' ``catch'' logic so that
+      commands may fail without destroying the progress of the larger function.
+    \item Examples
+      \begin{itemize}
+        \item Try to run something, ignore error entirely
+\begin{Sinput}          
+try(file.symlink(normalizePath("../ppimages"), tmpdir), silent = TRUE)
+\end{Sinput}
+    \item Try to run something, check for class of result
+\begin{Sinput}          
+h11a <- try(solve(g11),silent=TRUE)
+
+if (inherits(h11a,"try-error")) {
+          h11a <- mpinv(g11)
+}
+\end{Sinput}
+
+   \item tryCatch can put those chores together. This runs lrm, if
+     that fails it returns a vector of NA
+\begin{Sinput}     
+out1 <- tryCatch( lrm( ...whatever ...), error = function(x) {rep(NA, 6)})
+\end{Sinput}  
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\section{Defensive Coding}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Advice 1: checkUsage}
+  A Description of the Problem
+  \begin{itemize}
+
+  \item R searches from inside out for variables and functions
+  \item If a function accidentally uses an object from the larger
+    environment, you may have a hard-to-find bug. 
+
+  \item Best practice: isolate function from "accidental" access to
+    environment variables.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{An Example of the Problem}
+
+   \begin{itemize}
+
+  \item Here's a function with an undefined variable "x"
+<<def10,echo=T>>=
+myf <- function(z){
+   log(z) + 2*x
+}
+@
+
+  \item It will fail if no x exists
+\begin{Schunk}
+  \begin{Sinput}
+rm(x)
+myf(1)
+  \end{Sinput}
+  \begin{Soutput}
+Error in myf(1) : object 'x' not found
+  \end{Soutput}
+\end{Schunk}
+
+\item But if x happens to be floating about, it succeeds
+<<def30,echo=T>>=
+x <- c(1,2,3)
+myf(1)
+@
+
+\item Dangers are obvious, yes? Other people will get errors if you
+give them myf().
+
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Use codetools::checkUsage}
+  \begin{itemize}
+
+  \item install codetools (by Luke Tierney)
+
+  \item Run checkUsage
+
+    \begin{quotation}
+       ‘checkUsage’ checks a single R closure.  Options control which
+     possible problems to report.  The default settings are moderately
+     verbose. $\ldots$
+
+     ‘checkUsageEnv’ and ‘checkUsagePackage’ are convenience functions
+     that apply ‘checkUsage’ to all closures in an environment or a
+     package.
+    \end{quotation}
+
+
+
+<<def40,echo=T>>=
+library(codetools)
+rm(x)
+checkUsage(myf)
+@
+
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+\section{Profiling (for speed)}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Optimization Intuitions and Facts}
+  
+  \begin{itemize}
+  \item New programmers sometimes fixate on simple ideas about what is "fast"
+  \item Experienced programmers develop 
+    \begin{itemize}
+    \item intuitions about what might be "fast"
+      \item suspicion that their intuitions are probably wrong
+    \end{itemize}
+   \item General Advice
+       \begin{itemize}
+       \item Design code that is clear, well organized, separates
+         chores understandably. 
+       \item If it really is SLOW, run a profiler to find out why.
+      \end{itemize}
+   \item Donald Knuth's comment widely cited
+      "We should forget about small efficiencies, say about 97\% of the time: premature optimization is the root of all evil."
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Faster R}
+  \begin{itemize}
+  \item I started a webpage "Faster R: Things to not forget" about ways to
+  make R go faster \url{http://pj.freefaculty.org/blog/?p=122}
+  \item Coming away from this, we have a few clear principles and a
+    lot of examples.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Clear Principles}
+   \begin{itemize}
+   \item Allocating memory is slow, so do it infrequently if possible
+   \item Take advantage of optimizations that the R Core Team has
+     built into the R code base
+   \item Some functions that "seem" harmless are unnecessary and can
+     slow down a function.
+   \end{itemize}
+ \end{frame}
+ 
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Vectorizing}
+  \begin{itemize}
+  \item This is a way of pushing a lot of calculations out of the R
+    interpreter over to the C functions
+  \item Lets review the example \url{http://pj.freefaculty.org/R/WorkingExamples/efficiency-vectorize.html}
+  \end{itemize}
+\end{frame}
+   
+ 
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Matrix algebra}
+  \begin{itemize}
+  \item If you need  $X^TX$, don't write R like
+\begin{Sinput}
+  t(X) %*% X
+\end{Sinput}
+  \item DO use crossprod. It can be called with either
+\begin{Sinput}
+  crossprod(X)
+\end{Sinput}   
+\begin{Sinput}
+  crossprod(X, X)
+\end{Sinput}   
+  \item Why faster?  Note the result is symmetric.  Hence it is only
+    necessary to calculate one triangle
+  \item similar function tcrossprod for $X y^T$.
+  \end{itemize}
+\end{frame}
+   
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Similarly, rowSum}
+  \begin{itemize}
+  \item Novices might write
+\begin{Sinput}
+  rowtotal <- X[ ,1] + X[ ,2] + X[ ,3] 
+\end{Sinput}
+  \item Better to ruse
+\begin{Sinput}
+  rowtotal <-  rowSum(X)
+\end{Sinput}
+  \item Why? rowSum sends all of the work to the faster C side in one
+    block, wherease the first one calls the "+" function over and over.  
+    
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Smarter matrix algebra}
+  \begin{itemize}
+    \item Wood, Generalized Additive Models, observes that this is
+      very slow:
+\begin{Sinput}
+      A %*% B %*% y
+\end{Sinput}
+      and this is much faster:
+\begin{Sinput}      
+      A %*% (B %*% y)
+\end{Sinput}
+ A and B are NxN, while y is Nx1. 
+   \item Each matrix calculation requires a certain number of floating
+     point operations.  ($B y$) reduces to an $N x 1$ thing, thus
+     eliminating any need to do an $N \times N$ calculation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Examples: Removing columns from a data frame}
+  \begin{itemize}
+   \item Example: Removing columns from a data frame. 
+     \begin{itemize}
+     \item This is slow if there are many columns to remove:
+ \begin{Sinput}
+ dat$A <- NULL
+ dat$B <- NULL
+ dat$C <- NULL
+ dat$D <- NULL
+ \end{Sinput}
+     
+     \item That's slow because data structure has to be repeatedly copied.
+     \item Much faster to find columns you want to keep, and keep them
+       in one step
+\begin{Sinput}
+datnames <- colnames(dat)
+keepnames <- setdiff(datnames, c("A", "B", "C", "D"))
+dat <- dat[ , keepnames]
+\end{Sinput} 
+\end{itemize}
+\end{itemize}
+\end{frame}
+ 
+ 
+ 
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Examples: appending rows on bottom of a data frame}
+
+  \begin{itemize}
+    \item Many R users are drawn to an idiom like this:
+      \begin{Sinput}
+dat <- matrix(NA, nrow = 1, ncol = 6)
+for(j in 1:100){
+    ## some huge calculation creates a row
+    x <- massive(y, z)
+    dat <- rbind(dat, x)
+}
+ \end{Sinput}
+   \item We find that the repeated use of rbind is poor
+   \item One should either 
+     \begin{enumerate}
+       \item Create a big empty matrix and fill in the rows, or
+       \item Create a list of result vectors, and rbind them together
+         all at once.
+       \end{enumerate}
+     \end{itemize}
+   Lets discuss the example here: \url{http://pj.freefaculty.org/R/WorkingExamples/efficiency-stackListItems-01.R}
+   
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Notice what they do in BLAS}
+  \begin{itemize}
+  \item Try to grab memory in big chunks, not little bites.
+    
+  \item BLAS functions will Avoid creating new matrices
+  \item They DO re-use matrices, writing results on top of input
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Examples: appending rows on bottom of a data frame}
+  \begin{itemize}
+  \item Matrices generally faster than data frames or lists
+  \item An R object with "names" will be processed more slowly
+  than the same thing with names
+
+\item Vectorization is Good. The [ function is bad
+\item Warning against "for loops" is mostly driven by concern
+  about use of "[". (That is, apply or lapply may not actually
+  be faster).
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Using the R Profiler}
+  \begin{itemize}
+    \item Begin with a chunk of R code that seems slow
+    \item Before that chunk, insert code like this
+ \begin{Sinput}
+ Rprof("Jones_Project-2015-1.out")  
+ \end{Sinput}
+    \item Your R code chunk should run for a "while" so the profiler
+      has a chance to study it. Give it a big enough sample of the
+      slow function's use so it can diagnose the problem.
+     \item After your chunk, add this
+ \begin{Sinput}
+ Rprof(NULL)
+ summaryRprof("Jones_Project-2015-1.out")  
+ \end{Sinput}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Chasing Amelia}
+  \begin{itemize}
+    \item December 2012, we noticed Amelia (an MI) package became very slow
+    \item Alex Schoemann made a test case and we profiled it:
+      
+   \url{http://pj.freefaculty.org/scraps/profile/prof-puzzle-1.Rout}
+   
+   
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{system.time() is not the greatest}
+  but it is the easiest.
+  
+  Wrap any code inside
+  
+  system.time( )
+  
+  and you'll get back a clock time estimate:
+\begin{Sinput}
+  > system.time(
++     impA <- amelia(datM, m = 5, idvars="group", p2s = 0)
++     )
+   user  system elapsed 
+141.805   0.360 142.151 
+\end{Sinput}  
+\end{frame}
+
+
+
+
+%% \section{Profiling (for memory)}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{I'm sorry I did not write anything out yet}
+%%   \begin{itemize}
+%%     \item I'm so sorry
+%%   \end{itemize}
+%% \end{frame}
+
+
+% % ________________________________________
+% \begin{frame}[containsverbatim]
+%   \frametitle{ff}
+%   \begin{itemize}
+%   \end{itemize}
+% \end{frame}
+
+
+
+
+%% \begin{frame}[containsverbatim, allowframebreaks]
+%%   \frametitle{Use "debug" Package }
+%%   \begin{itemize}
+%%   \item debug package (by Mark V. Bravington (BVR))
+%%     \begin{quotation}
+%%       Debugger for R functions, with code display,
+%%       graceful error recovery, line-numbered conditional
+%%       breakpoints, access to exit code, flow control, and
+%%       full keyboard input.
+%%     \end{quotation}
+
+%%   \end{itemize}
+%% \end{frame}
+
+
+%% \begin{frame}[containsverbatim, allowframebreaks]
+%%   \frametitle{\texttt{mtrace()} is like \texttt{browser()} on Steroids}
+%%   \begin{itemize}
+
+%%     \item Install the package called "debug"
+%%     \item mtrace(lm) has the effect of editing lm and inserting
+%%       browser() at the top.
+
+%%     \item Use mtrace like so
+
+%%     \begin{Sinput}
+%%       library(debug)
+%%       mtrace(lm)
+%%       mod <- lm(y ~ x)
+%%     \end{Sinput}
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{\texttt{mtrace()}}
+%%     \begin{itemize}
+%%     \item That "pops open" a new Code Browser window for the lm function
+%%     \item In the *R* window, a prompt appears
+%%       \begin{Soutput}
+%%         D(1) >
+%%       \end{Soutput}
+
+%%     \item User should hit the "Enter" key at the  D(1) > prompt, and
+%%       \begin{itemize}
+%%       \item R runs the next command and
+%%       \item  the Code Browser window's highlight bar steps to the next
+%%         command that will run.
+%%     \end{itemize}
+
+%%   \end{itemize}
+%%   \begin{description}
+%%   \item [{mtrace.off()}] turns off mtrace processes
+%%   \item [{qqq()}]  exit from BVR debugger
+%%   \end{description}
+%% \end{frame}
+
+
+%===================================================
+\end{document}

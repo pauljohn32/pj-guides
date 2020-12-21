@@ -1,0 +1,1526 @@
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/SVN/SVN-guides/Rcourse/regression-plots-1//}}
+\makeatother
+\documentclass[10pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+ \def\lyxframeend{} % In case there is a superfluous frame end
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\usetheme{Antibes}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\normalsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.95}}
+
+\mode<presentation>
+
+\newcommand\makebeamertitle{\frame{\maketitle}}%
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+<<echo=F>>=
+##unlink("plots", recursive=T)
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.97}}
+
+<<Roptions, echo=F>>=
+options(width=160, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+op <- par() 
+pjmar <- c(5.1, 5.1, 1.5, 2.1) 
+#pjmar <- par("mar")
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
+pdf.options(onefile=FALSE,family="Times",pointsize=12)
+@
+
+
+\title[Descriptive]{Regression Presentations: Plots }
+
+
+\author{Paul E. Johnson\inst{1} \and \inst{2}}
+
+
+\institute[K.U.]{\inst{1}Department of Political Science\and \inst{2}Center for
+Research Methods and Data Analysis, University of Kansas}
+
+
+\date[2013]{2013}
+
+\makebeamertitle
+
+\lyxframeend{}
+
+\AtBeginSubsection[]{
+  \frame<beamer>{ 
+    \frametitle{Outline}   
+    \tableofcontents[currentsection,currentsubsection] 
+  }
+}
+
+\begin{frame}
+
+\frametitle{Presenting Regressions}
+
+We Need
+\begin{itemize}
+\item Nice Looking Regression Tables (that's a separate set of notes. Look
+for regression-tables-1)
+\item Calculate \& plot predicted values and confidence intervals
+\item This lecture is about 2-d plots
+\item For 3-d plots, look for plots-3d
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Orientation \#1}
+\begin{itemize}
+\item One of the primary points of emphasis in the S \& R languages is the
+development of a consistent framework for the estimation and probing
+of regression models.
+\item We fit a model, then ``interrogate'' it.
+\item A predict method should be supplied with \emph{any }regression model. 
+
+\begin{itemize}
+\item provides predicted values (and, hopefully, confidence intervals) for
+user-specified input values. 
+\item If there is no predict method, then we are in the stone age. We have
+to manually extract the slope coefficients (\texttt{coef(m1)}), create
+a matrix of interesting predictor values (\texttt{X}), and calculate
+\texttt{X \%*\% coef(m1)}. 
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{predict method: key arguments}
+
+predict() is a generic function, each regression model is responsible
+to implement predict.''model''()
+\begin{description}
+\item [{object:}] a fitted regression model
+\item [{newdata:}] values of predictors for which predictions are sought
+\item [{interval:}] possibly a confidence or prediction interval (may not
+be available, depending on model type)
+\item [{type:}] Predictions may be supplied on various scales. In GLM,
+for example ``response'' or ``link''
+\end{description}
+\end{frame}
+
+\begin{frame}
+\frametitle{The creation of a "newdata" object is a struggle}
+\begin{itemize}
+\item If \texttt{X \%*\% coef(m1)} is the stone age, then predict with
+newdata is the golden age of Rock and Roll. 
+\item Various suggestions have been offered to streamline the creation of
+newdata objects and calculate predictions. These things put us in
+the Space Age.
+
+\begin{description}
+\item [{Space~Age:}] technological things work well, except when they
+don't, and we all feel helpless when that happens.
+\end{description}
+\item Because the Space Age tools sometimes fail, we still teach the ``older
+ways'' of predict and newdata. But we wish we didn't have to because
+it makes the students cry.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Glimpse the Space Age}
+\begin{itemize}
+\item Let's stop right here to get an orientation. Lets all run this:
+
+
+<<eval=F, include=T>>=
+library(rockchalk)
+example(predictOMatic)
+## Or create a fresh example for yourself with:
+dat <- genCorrelatedData2(1000, 
+    means = c(100,200,100, 40), 
+    sds = c(10, 20, 20, 5), 
+    rho = 0.2, 
+    beta = c(0.1, 0.3, 0.3, 0.1, -0.14, 0, 0.025), 
+    stde = 140)
+dat$xcat1 <- factor(sample(c("No","Yes","Yes"), 1000, replace = TRUE))
+m1 <- lm(y ~ x1 + x2 + x3 + x4 + xcat1, data = dat)
+summary(m1)
+predictOMatic(m1)
+predictOMatic(m1, divider = "std.dev.")
+predictOMatic(m1, divider = "seq", n = 7)
+@
+
+\item In the following, I want to help you understand what's going on in
+there and why it is useful.
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{Data}
+
+\begin{frame}
+
+\frametitle{Example Data Used in these Notes}
+\begin{itemize}
+\item American National Election Study (2004), recoding details follow.
+\item Chile dataset in car package
+\item Simulated data (rockchalk package genCorrelatedData)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Re-use the Coding for the American National Election Study 2004}
+
+<<echo=T, include=F>>=
+library(rockchalk)
+library(foreign)
+library(car)
+filename <- "/home/pauljohn/SVN/SVN-guides/Rcourse/04245-0001-Data.dta"
+#if(!file.exists("../04245-0001-Data.dta"))
+if(!file.exists(filename)){
+  download.file(url="http://pj.freefaculty.org/guides/Rcourse/04245-0001-Data.dta", dest = "../04245-0001-Data.dta")
+mydta1 <- read.dta("../04245-0001-Data.dta")
+} else {
+mydta1 <- read.dta(filename)
+}
+@
+
+\inputencoding{latin9}\begin{lstlisting}[basicstyle={\footnotesize}]
+## V043038     B1a. Feeling Thermometer: GW Bush
+## V043039     B1b. Feeling Thermometer: John Kerry
+## V043210     R1. R position on gay marriage
+## V043213     S3. National economy better/worse since GW Bush took ofc
+## V045117     G4a. Liberal/conservative 7-point scale: self-placement
+## V045145X    H5x. Summary: Pre-Post US flag makes R feel
+## V041109A    HHListing.9a. Respondent gender
+## V043116     J1x. Summary: R party ID
+## V043250     Y1x. Summary: Respondent age
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Thermometer Scores for Bush and Kerry}
+
+<<anes10,fig=T,include=F,echo=T>>=
+plot(V043038 ~ V043039, data = mydta1, xlab = "V043039: Kerry Thermo", ylab = "V043039: Bush Thermo")
+@
+
+\includegraphics[width=10cm]{plots/t-anes10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Create a New Dependent Variable}
+
+<<anes20,include=F,echo=T>>=
+mydta1$th.bush.kerry <- mydta1$V043038 - mydta1$V043039
+@
+
+The difference in thermometer scores:
+
+\input{plots/t-anes20.tex}
+
+<<anes30,include=F,echo=T>>=
+##Party
+mydta1$V043116 <- mydta1$V043116[,drop = TRUE]
+levels(mydta1$V043116) <- c("SD","WD","ID","I","IR","WR","SR","O")
+mydta1$V043116[ mydta1$V043116 %in% levels(mydta1$V043116)[8] ] <- NA
+mydta1$V043116 <- mydta1$V043116[, drop=TRUE]
+table(mydta1$V043116)
+
+##IDEO
+mydta1$V045117 <- mydta1$V045117[ ,drop = TRUE]
+levels(mydta1$V045117) <- c("EL","L","SL","M","SC","C","EC")
+table(mydta1$V045117)
+
+##Gender
+levels(mydta1$V041109A) <- c("M","F")
+
+## Gay Marriage
+levels(mydta1$V043210) 
+mydta1$V043210[ mydta1$V043210 %in% levels(mydta1$V043210)[4:10] ] <-NA  
+mydta1$V043210 <- mydta1$V043210[, drop = TRUE]
+levels(mydta1$V043210) <- c("Allow","No","Med") 
+
+## Economy
+mydta1$V043213 <- mydta1$V043213[ ,drop = TRUE]
+l <- levels(mydta1$V043213)
+econnew <- factor(mydta1$V043213, levels=c(l[2],l[3],l[1]), labels=c("Worse","Same","Better"))
+table(mydta1$V043213, econnew)
+mydta1$V043213 <- econnew
+rm(econnew)
+##Flag
+mydta1$V045145X <- mydta1$V045145X[,drop = TRUE] 
+@
+
+Clean up a bunch of variables \& value labels
+
+\input{plots/t-anes30.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Plotting Regressions (2d)}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plotting Regressions: Here is the General Plan}
+
+<<plot10,include=F,fig=T,echo=T>>=
+## Step 1
+mod1age <- lm(th.bush.kerry ~ V043250, data = mydta1)
+## Step 2
+plot(th.bush.kerry ~ V043250, type = "p", xlab = "V403250: Age", ylab = "Bush-Kerry thermometers", data = mydta1, col = gray(.7))
+## Step 3
+abline(mod1age, lwd = 1.5)
+@
+\begin{topcolumns}%{}
+
+
+\column{5cm}
+\begin{itemize}
+\item Put a continuous predictor on the horizontal axis ($x1_{i}$)
+\item Put the dependent variable on the vertical axis ($y_{i}$)
+\item Calculate $\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}$ and plot that
+``predicted line''
+\end{itemize}
+
+\column{7cm}
+
+\includegraphics[width=7cm]{plots/t-plot10}
+\end{topcolumns}%{}
+\end{frame}
+
+
+\lyxframeend{}\subsection{abline}
+
+\begin{frame}[containsverbatim]
+\frametitle{Previous plot requires 3 Easy Steps (That \emph{Almost Every} R user has taken)}
+
+1) lm 2) plot 3) abline.
+
+Example:
+
+\input{plots/t-plot10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{abline: behind the scenes.}
+\begin{itemize}
+\item abline() is a general purpose ``straight line drawing tool''. It
+can receive input in the form of coefficients, or, if you provide
+it with a regression object, it will notice and try to get the coefficients
+from the regression object.
+\item At the command line, run abline, you'll see it. Look for ``if (is.object(a)
+|| is.list(a)) \{''
+\end{itemize}
+<<ablinecode, include=T>>=
+abline
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Getting away from abline()}
+
+This lecture, it turns out, is mostly about getting away from the
+limitations of abline()!
+\begin{itemize}
+\item limitations of abline()
+
+\begin{enumerate}
+\item Doesn't work when there are more predictors.
+\item Doesn't work with nonlinear models or glm or ....
+\end{enumerate}
+\item The R paradigm suggests instead a 3 step sequence.
+
+\begin{enumerate}
+\item newdata: create an exemplar data set of interesting values for which
+we might want predictions
+\item predict w/newdata: calculate predictions
+\item plot!
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{We want to produce a plot like this}
+
+<<include=F>>=
+library(rockchalk)
+@
+
+<<rcps10, fig=T, include=F, width=8, height=5>>=
+plotSlopes(mod1age, plotx = "V043250", lwd = 0.3)
+@
+
+\input{plots/t-rcps10.tex}
+
+\includegraphics[width=11cm]{plots/t-rcps10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Request the 95\% Confidence Interval}
+
+<<rcps20, include=F, fig=T, width=8, height=5>>=
+plotSlopes(mod1age, plotx = "V043250", interval = "confidence", lwd = 0.3)
+@
+
+\input{plots/t-rcps20.tex}
+
+\includegraphics[width=11cm]{plots/t-rcps20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{The newdata -> predict -> plot }
+
+I made that with rockchalk::plotSlopes(). In a model with only 1 predictor,
+it is pretty easy to make a plot like that.
+\begin{enumerate}
+\item Create a set of ``focal values'': possible values of ``x'' for
+which we need predictions. 
+
+\begin{itemize}
+\item In a one-predictor linear model, ``two points define a straight line''.
+We might as well take the target values at the edges of the data: 
+
+\begin{itemize}
+\item \inputencoding{latin9}
+\begin{lstlisting}
+V03250r <- range(mydta1$V03250, na.rm = TRUE)
+\end{lstlisting}
+\inputencoding{utf8}
+\end{itemize}
+\item However, if we want confidence intervals, we'll need an evenly spaced
+sequence of points, something like
+
+\begin{itemize}
+\item \inputencoding{latin9}
+\begin{lstlisting}
+V03250r <- rockchalk::plotSeq(mydta1$V03250, length.out = 40)	
+\end{lstlisting}
+\inputencoding{utf8}
+\end{itemize}
+\end{itemize}
+\item Create a new data frame using the new sequence as the independent
+variable
+
+
+\inputencoding{latin9}\begin{lstlisting}
+ndf <- data.frame(V03250 = V03250r)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item Use predict to get predictions, one for each row in the new data frame.
+
+
+\inputencoding{latin9}\begin{lstlisting}
+predict(m0, newdata = ndf)
+\end{lstlisting}
+\inputencoding{utf8}
+
+
+or possibly
+
+
+\inputencoding{latin9}\begin{lstlisting}
+predict(m0, newdata = ndf, interval = "confidence")
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{This Code Would Work}
+
+<<plot12,include=F,fig=T,echo=T>>=
+ndf <- data.frame(V043250 = range(mydta1$V043250))
+ndf$fit <- predict(mod1age, newdata = ndf )
+head(ndf)
+plot(th.bush.kerry ~ V043250, data = mydta1, xlab = "V403250: Age", ylab = "th.bush.kerry = Bush-Kerry thermometers",  col = gray(.7)) ## Scatterplot
+lines(fit ~ V043250, data = ndf, lwd = 1.5)
+@
+
+\input{plots/t-plot12.tex}
+
+\end{frame}
+
+
+\lyxframeend{}\subsection{Confidence Intervals from predict}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals}
+\begin{itemize}
+\item predict methods for some regression models can calculate 95\% intervals
+of various type.
+\item lm: 
+
+\begin{itemize}
+\item interval=''confidence'' to obtain the 95\% confidence intervals
+for the estimate of the expected value of $y$ given the predictors
+\item interval=''predict'' to obtain the 95\% confidence intervals for
+the outcome $y_{i}$ given the predictors.
+\end{itemize}
+\item When intervals are requested, predict returns a matrix with columns
+called
+
+
+\inputencoding{latin9}\begin{lstlisting}
+fit lwr upr
+\end{lstlisting}
+\inputencoding{utf8}
+
+
+Predicted (``fitted'') values, and the lower and upper limits of
+the intervals.
+
+\item R's predict.glm does not supply intervals (complicated statistical
+controversy behind that), but they will provide standard errors of
+fitted values, from which we can create our own confidence intervals
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Simple example to plot Confidence and Prediction Intervals}
+
+<<plint10, include=F, fig=T, width=8, height=5.5>>=
+x <- rnorm(100, m = 50, s = 20)
+y <- 3 + 0.2 * x + 15 * rnorm(100)
+mp1 <- lm(y ~ x)
+ndf <- data.frame(x = plotSeq(x,40))
+p1 <- as.data.frame(predict(mp1, interval="conf", newdata = ndf))
+p2 <- as.data.frame(predict(mp1, interval="pred", newdata = ndf))
+plot(x, y, ylim = magRange(y, 1.3))
+lines(ndf$x, p1$fit, col = "black", lwd=3)
+lines(ndf$x, p1$lwr, col = "red", lwd = 3, lty = 4)
+lines(ndf$x, p1$upr, col = "red", lwd = 4, lty = 4)
+lines(ndf$x, p2$lwr, col = "purple", lwd = 4, lty = 3)
+lines(ndf$x, p2$upr, col = "purple", lwd = 4, lty = 3)
+legend("topleft", legend = c("predicted","Conf. Interval", "Pred. Interval"), col = c("black", "red", "purple"), lty = c(1, 4,3), cex = 0.8, lwd = 3)
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-plint10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Difference b/t Conf and Pred Intervals}
+
+\includegraphics[width=11cm]{plots/t-plint10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Confidence Intervals for the Bush-Kerry Regression}
+
+<<plot15,include=F,fig=F,echo=F>>=
+plot(th.bush.kerry ~ V043250, type="n",xlab="V403250: Age", ylab="th.bush.kerry= Bush-Kerry thermometers", data=mydta1, ylim=c(-100,120))
+points(th.bush.kerry ~ V043250, data=mydta1, col=gray(.7), lwd=0.5, cex=0.7)
+@
+
+<<plot16,include=F,fig=T,eval=F, echo=T>>=
+ndf1 <- data.frame(V043250 = range(mydta1$V043250))
+mod1pred <- predict(mod1age, newdata = ndf1, interval="confidence")
+ndf1 <- cbind(ndf1, mod1pred)
+lines(fit ~ V043250, data = ndf1, lwd = 3, lty = 1)
+lines(lwr ~ V043250, data = ndf1, lwd = 2, lty = 2)
+lines(upr ~ V043250, data = ndf1, lwd = 2, lty = 2)
+legend("topleft", legend = c("predicted","95% CI"), lty = c(1,2), lwd = c(3,2), bg = "white")
+@
+
+<<plot17,include=F,fig=T,echo=F>>=
+<<plot15>>
+<<plot16>>
+@
+
+\input{plots/t-plot16.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Fitted (Predicted) Value and 95\% Confidence Interval}
+
+\includegraphics[width=11cm]{plots/t-plot17}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Multiple Predictors}
+
+
+\lyxframeend{}\subsection{newdata}
+
+\begin{frame}[containsverbatim]
+\frametitle{What's that "newdata" argument in predict?}
+\begin{itemize}
+\item Run predict without 'newdata', what do you get?
+
+\begin{itemize}
+\item one prediction for each row in the data, same as output from fitted()
+
+
+<<plot11,include=T,echo=T>>=
+fit <- predict(mod1age)
+head(fit)
+head(fitted(mod1age))
+@
+
+\end{itemize}
+\item That does not simplify anything. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{The Transition to Multiple Regression}
+\begin{itemize}
+\item We want a prediction for a particular combination of predictors, to
+answer ``what would happen if?'' questions.
+
+\begin{itemize}
+\item e.g., I need to know what young left-handed women feel about something
+\end{itemize}
+\item How to choose particular values of predictors? 
+
+\begin{itemize}
+\item quantiles?
+\item mean +/- standard deviation?
+\end{itemize}
+\item Making a newdata objects that work requires some discipline because
+values must be included for all variables.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Building a newdata object}
+\begin{itemize}
+\item Step 1. For each variable in the model, create a collection of one
+or more example values for which predictions are to be calculated
+(can use quantiles, means, medians, or anything else).
+\item Step 2. R's expand.grid() will create a ``mix and match'' data frame. 
+
+
+<<>>=
+focalValues <- data.frame(x1 = c(1, 2, 3, 4), x2 = c(100,200))
+mAndM <- expand.grid(focalValues)
+mAndM[1:8, ]
+@
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Tricky Thing about newdata argument}
+
+predict(m1, newdata = mAndM) will fail if
+\begin{itemize}
+\item newdata does not include one named column for each variable included
+in the model (here, m1)
+\item any values for factor variables included in mAndM are not valid labels. 
+\item The model was specified in an unexpected way.
+
+\begin{description}
+\item [{BAD:}] \inputencoding{latin9}\lstinline!m1 <- lm(dat$y ~ dat$x1 + dat$x2)!\inputencoding{utf8}
+\item [{GOOD:}] \inputencoding{latin9}\lstinline!m1 <- lm(y ~ x1 + x2, data = dat)!\inputencoding{utf8}
+\end{description}
+\item The model includes transformations like \texttt{as.numeric(x)} or
+\texttt{as.factor(x)}. These complicate the creation of newdata quite
+a bit.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Here's an example that works with the Chile data}
+\begin{itemize}
+\item Using the Chile data from the car package, with 2 numeric (income,
+age) and 1 factor (sex).
+
+
+<<chile05,echo=T,include=T>>=
+require(car)
+data(Chile)
+Chile$income <- Chile$income/1000
+m2 <- lm(statusquo ~ income + age + sex, data=Chile)
+@
+
+\item statusquo : scale score of support for the status quo
+\item sex: M or F
+\item income (pesos, rescaled to 1000s of pesos)
+\item region (5 regions of Chile)
+\end{itemize}
+<<chile15,echo=F, include=F,results=tex>>=
+outreg(m2, tight=FALSE, title = "Chile Voter Survey (1972)", modelLabels=c("Status Quo Support"), varLabels=list(income = "Income (10000s pesos)", sexM = "Male"))
+@
+\begin{itemize}
+\item Could use means, medians, or whatever else strikes our fancy. This
+creates just one example row
+
+
+<<eval=T>>=
+newdf <- data.frame(income = mean(Chile$income, na.rm=TRUE), age=median(Chile$age, na.rm = TRUE), sex = "M")
+newdf$fit <- predict(m2, newdata = newdf)
+newdf
+@
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Incidentally, Concerning Factors in newdata}
+\begin{itemize}
+\item If we spell the factor levels incorrectly, this won't run.
+\item Thus there is an argument in favor of not spelling them, but rather
+asking for the valid levels and then using them in the newdata 
+
+
+<<plot14E, eval=F>>=
+sexlev <- levels(Chile$sex)
+newdf <- data.frame(income=c(mean(Chile$income, na.rm = T)),  age = c(55), sex = sexlev[1])
+newdf$fit <- predict(m1, newdata = newdf)
+@
+
+\item The valid levels are held in sexlev, and sexlev{[}1{]} is the first
+valid level.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Getting good results with newdata will require practice}
+\begin{itemize}
+\item Be patient, it can be made to work.
+\item Lets pause for some practice. There are several WorkingExamples that
+have newdata elements. I suggest that everybody should step through
+number 1, then pick randomly between 2-4.
+
+\begin{enumerate}
+\item regression-plot-factor-01.R
+\item regression-predictedPlots-01.R
+\item regression-predictedPlots-02.R
+\item regression-quadratic-1.R
+\end{enumerate}
+\item Please open one and ``step through'' to see what happens
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{termplot}
+
+\begin{frame}
+\frametitle{termplot is provided with R}
+\begin{itemize}
+\item Because termplot is provided with R, it is my favorite tool for a
+``first quick look'' at the regression model.
+\item It
+
+\begin{itemize}
+\item has proper displays for both numeric and factor predictors
+\item has many arguments for customization of plots
+\item Automatically graphs each predictor, one after the other
+\end{itemize}
+\item Disadvantages
+
+\begin{itemize}
+\item does not handle models with interaction effects
+\item does not respond correctly to some complicated model formulae
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Look at a small model on the Chile data}
+
+<<echo=T, eval=F>>=
+termplot(m2)
+@
+
+Will prepare a simple line plot for each variable, I'll show you ``income''
+
+<<tpchile05, eval=T, fig=T, include=F>>=
+termplot(m2, terms = "income")
+@
+
+\includegraphics[width=10cm]{plots/t-tpchile05}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{I almost always add se and partial.resid arguments}
+
+Richer display results
+
+<<echo=T, eval=F>>=
+termplot(m2, se = TRUE, partial.resid = TRUE)
+@
+
+<<tpchile10, eval=T, fig=T, include = F>>=
+termplot(m2, se = TRUE, partial.resid = TRUE, terms = "income")
+@
+
+\includegraphics[width=10cm]{plots/t-tpchile10}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Look at a small model on the Chile data}
+
+<<tpchile20, eval=T, fig=T, include = F>>=
+termplot(m2, se = TRUE, partial.resid = TRUE, terms = "age")
+@
+
+\includegraphics[width=10cm]{plots/t-tpchile20}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Look at a small model on the Chile data}
+
+<<tpchile30, eval=T, fig=T, include = F>>=
+termplot(m2, se = TRUE, partial.resid = TRUE, terms = "sex")
+@
+
+\includegraphics[width=10cm]{plots/t-tpchile30}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Run a big model}
+
+<<termplot09,include=FALSE,echo=TRUE>>=
+m3 <- lm (th.bush.kerry ~ V045117 + V043116 + V043210 + V043213 + V045145X + V041109A, data = mydta1)
+@
+<<termplot10,include=FALSE,echo=FALSE,results=tex>>=
+outreg(m3, tight = FALSE, modelLabels = c("Bush-Kerry Thermometer Differential"), varLabels=list(V045117L = "Liberal", V045117SL = "Slight Lib.", V045117M = "Moderate", V045117SC = "Slight Con.", V045117C = "Conservative", V045117EC = "Ext. Cons.", V043116WD = "Weak Dem.", V043116WD = "Weak Dem.", V043116ID = "Indep. Lean Dem.", V043116I = "Independent", V043116IR = "Indep. Lean Rep.", V043116WR = "Weak Rep.", V043116R = "Republican", V043116SR = "Str. Repub.", V043210No = "No Gay Marr", V043210med = "Civ Union", V043213Same = "Econ. Same", V043213Better = "Econ. Better", V041109AF = "Female"))
+@
+
+\input{plots/t-termplot09.tex}
+\begin{itemize}
+\item The interesting thing about this is that the model generates a huge
+set of coefficients, but
+\item termplot notices which variable corresponds to each set and makes
+a graceful plot
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{The Fitted Regression Model}
+
+\scriptsize{
+\input{plots/t-termplot10.tex}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot will try to show these to you, one at a time}
+\begin{itemize}
+\item You run 
+
+
+\inputencoding{latin9}\begin{lstlisting}
+termplot(m3, se = TRUE, partial.resid = TRUE)
+\end{lstlisting}
+\inputencoding{utf8}
+
+
+to see all of them. 
+
+
+I have to ask ``by name'' in order to put this presentation together
+
+\item se=T prints the 95\% ``confidence intervals'' for the predicted
+values
+\item partial.resid=T plots the ``partial residuals''
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Ideology}
+
+<<termplot40,fig=T,include=F,echo=T>>=
+termplot(m3, se = TRUE, partial.resid=TRUE, terms="V045117",xlab="V045117: Ideology")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot40}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Party ID}
+
+<<termplot41,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, partial.resid=TRUE, terms="V043116",xlab="V043116: Party ID")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot41}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Gay Marriage}
+
+<<termplot42,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, partial.resid=T, terms="V043210",xlab="V043210: Gay Marriage")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot42}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: National Economy}
+
+<<termplot43,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, partial.resid=TRUE, terms="V043213",xlab="V043213: Economy")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot43}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: The Flag}
+
+<<termplot44,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, partial.resid=TRUE, terms="V045145X",xlab="V045145X: The Flag Makes Me Feel")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot44}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Gender}
+
+<<termplot45,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, partial.resid=T, terms="V041109A",xlab="V041109a: Gender")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot45}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Gender w/o partial residuals}
+
+<<termplot46,fig=T,include=F,echo=T>>=
+termplot(m3, se=TRUE, terms="V041109A",xlab="V041109A: Gender")
+@
+
+\includegraphics[width=10cm]{plots/t-termplot46}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Frustrating Detour: Why is the Vertical Axis called "partial"?}
+\begin{itemize}
+\item The ?termplot manual is difficult to understand, the meaning of a
+``term predictions'' and ``partial residual'' is not stated. 
+\item So I went and read the code. (Then we are more sympathetic to the
+manual writer, because this is a complicated idea.)
+\item Summary of the idea: Aim is to plot $y_{i}$ on $X1_{i}$, after ``subtracting
+out'' effects of $X2_{i}$\textrm{, $X3{}_{i}$}
+\item A ``Partial Residual'' is what is left unaccounted for by one variable
+when the predictive effects of all of the other input variables have
+been taken into account. 
+\item If you are satisfied with that ``story'', skip the next few slides.
+Otherwise, be brave and keep trying.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Huh? What is the Partial Predicted Value?}
+\begin{itemize}
+\item Consider model \textrm{}\inputencoding{latin9}
+\begin{lstlisting}
+mod <- lm(y ~ X1 + X2 + X3, data = dat)
+\end{lstlisting}
+\inputencoding{utf8}
+\item The ordinary ``predicted value'' is 
+
+
+\[
+\hat{y_{i}}=\hat{b}_{0}+\hat{b}_{1}X1_{i}+\hat{b}_{2}X2_{i}+\hat{b}_{3}X3_{i}
+\]
+
+
+\item The ``mean prediction'' is: 
+\[
+\hat{b}_{0}+\hat{b}_{1}\overline{X1}+\hat{b}_{2}\overline{X2}+\hat{b}_{3}\overline{X3}
+\]
+
+\item One old math professor trick is to add and subtract the same thing
+from one side of an equation and then rearrange so that some new insight
+flows out. Here, I will add and subtract the mean prediction from
+the predicted value.
+\item After re-grouping, we see the ``full model'' is the sum of the ``mean
+prediction'' and ``term'' predictions
+\begin{eqnarray}
+\hat{y}_{i}= & \{\hat{b}_{0}+\hat{b}_{1}\overline{X1}+\hat{b}_{2}\overline{X2}+\hat{b}_{3}\overline{X3}\}\nonumber \\
+ & +\{\hat{b}_{1}(X1_{i}-\overline{X1})+\hat{b}_{1}(X2_{i}-\overline{X2})+\hat{b}_{3}(X3_{i}-\overline{X3})\}
+\end{eqnarray}
+
+\item In R, predict(mod, type=''terms'') returns the last ``term predictions''
+as separate columns:
+\end{itemize}
+\begin{equation}
+\begin{array}{cccccc}
+ & X1 &  & X2 &  & X3\\
+ & \overbrace{\hat{b}_{1}(X1_{i}-\overline{X1})} & , & \overbrace{\hat{b}_{2}(X2_{i}-\overline{X2})} & , & \overbrace{\hat{b}_{3}(X3_{i}-\overline{X3})}
+\end{array}
+\end{equation}
+
+\begin{itemize}
+\item These are the predicted values used by termplot in its internal calculations
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{And a partial residual is...}
+\begin{itemize}
+\item begin with the ``full model residual''
+\end{itemize}
+\begin{equation}
+y_{i}-\hat{y}_{i}=y_{i}-\{\hat{b}_{0}+\hat{b}_{1}X1_{i}+\hat{b}_{2}X2_{i}+\hat{b}_{3}X3_{i}\}
+\end{equation}
+
+\begin{itemize}
+\item Get the \textrm{$partial\, residual_{i}$} by replacing $X1_{i}$
+with $\overline{X1}$: \textrm{
+\begin{equation}
+y-\{\hat{b}_{0}+\hat{b}_{1}\overline{X1}+\hat{b}_{2}X2_{i}+\hat{b}_{3}X3_{i}\}
+\end{equation}
+}
+
+\begin{itemize}
+\item If we ``do not allow variations in $X1$ to play a predictive role,
+what remains unexplained?''
+\end{itemize}
+\item Another interpretation (See the source code in ``residuals.lm''):
+
+\begin{itemize}
+\item the partial residual = ``full residual'' + ``term prediction''
+\begin{eqnarray*}
+partial\, residual(X1_{i}) & =y_{i} & -\{\hat{b}_{0}+\hat{b}_{1}X1_{i}+\hat{b}_{2}X2_{i}+\hat{b}_{3}X3_{i}\}\\
+ &  & +\{\hat{b}_{1}(X1_{i}-\overline{X1})\}\\
+ & =y_{i}-\{ & \hat{b}_{0}+\hat{b}_{1}\overline{X1}+\hat{b}_{2}X2_{i}+\hat{b}_{3}X3_{i}\}
+\end{eqnarray*}
+
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Reminder}
+\begin{itemize}
+\item termplot is a wonderful tool, but it suffers from one crippling flaw:
+it does handle interaction terms.
+\item That lead to
+
+\begin{itemize}
+\item many hours of teaching about predict and newdata in our intro regression
+class
+\item the creation of the rockchalk package to automate the management of
+some common cases.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\lyxframeend{}\section{rockchalk}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{rockchalk functions}
+\begin{description}
+\item [{plotSlopes}] was the first effort there, and later it became apparent
+that a general approach to automatically create newdata objects would
+be a tremendous help (and allows predictOMatic to ``just work'').
+\item [{newdata:}] scan regression model and construct ``newdata'' objects
+that can be used by predict methods
+
+
+This is user friendly, flexible. The focal values of several predictors
+can be selected (by quantile, by standard deviations, a sequence that
+walks across the observed values).
+
+\item [{predictOMatic:}] Calculates predicted values for various predictor
+values
+\item [{plotCurves:}] handles nonlinear formulae and interactions among
+nonlinear terms.
+\end{description}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{newdata()}
+\begin{itemize}
+\item newdata() tries to do the right thing, allowing easy customization.
+\item Consider the Chile data, with statusquo \textasciitilde{} income +
+age + sex
+\end{itemize}
+<<>>=
+newdata(m2, predVals = c("income"))
+newdata(m2, predVals = c("income"), n = 5)
+## income data not continuous, barely numeric
+sort(unique(Chile$income))
+newdata(m2, predVals = list(income = "table", "sex" = c("M","F")), n = 5)
+newdata(m2, predVals = list(income = "quantile", age = "std.dev."), n = 3)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{predictOMatic shows marginal effects}
+
+If no particulars are requested, predictOMatic shows the marginal
+effects of each separate predictor, keeping the other values at their
+means (numeric variables) or modes (factor variables).
+
+<<>>=
+predictOMatic(m2)
+@
+
+<<>>=
+predictOMatic(m3)
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{plotSlopes uses that framework}
+\begin{itemize}
+\item We want to estimate an interactive model, by changing this:
+
+
+\textrm{}\inputencoding{latin9}
+\begin{lstlisting}
+th.bush.kerry ~ V043250 + V041109A
+\end{lstlisting}
+\inputencoding{utf8}
+
+
+$V041109A$ is respondent gender, coded ``M'' and ``F''. $V043250$
+is age.
+
+\item To this:
+
+
+\textrm{}\inputencoding{latin9}
+\begin{lstlisting}
+th.bush.kerry ~ V043250 * V041109A
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item We can plot an age, thermometer line for each ``value'' of gender
+
+\begin{itemize}
+\item one line for ``M''
+\item one line for ``F''. 
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{plotSlopes uses that information}
+
+<<plotslopes10, fig=T, include=F>>=
+m6 <- lm(th.bush.kerry ~ V043250 * V041109A, data=mydta1)
+plotSlopes(m6, plotx = "V043250", modx = "V041109A", plotPoints = FALSE, plotLegend = FALSE,  xlab = "Age", ylab = "Bush-Kerry Thermometer", ylim = c(-100,150), col = c("black","gray60"), llwd=c(2,3))
+legend("topleft", legend = levels(mydta1$V041109A), col=c("black","gray60"), lty=c(1,2), lwd=c(2,3))
+@
+
+\includegraphics[width=10cm]{plots/t-plotslopes10}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{How Did I Make That Plot?}
+\begin{itemize}
+\item Students thought it was very tedious to calculate predictions for
+various moderators
+\item TaDa! plotSlopes rockchalk simplifies this work.
+
+
+\inputencoding{latin9}\begin{lstlisting}
+plotSlopes(m2, plotx = "numericPredictor", modx = "aModeratorVariable")
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item It figures out which values of aModeratorVariable should be considered,
+calculates predicted values for subgroups and draws them.
+\item It returns an object that includes the newdata object.
+\end{itemize}
+\input{plots/t-plotslopes10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Sometimes We Want To See The Points}
+
+<<plotslopes20, fig=T, include=F>>=
+plotSlopes(m6, plotx = "V043250", modx = "V041109A", xlab = "Age", ylab = "Bush-Kerry Thermometer", ylim = c(-100, 150), col = c("black","gray60"), llwd = c(2,3))
+@
+
+\includegraphics[width=8cm]{plots/t-plotslopes20}
+
+Notice the non-beautified ``automatic'' legend
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{Write that out completely, without plotSlopes}
+
+<<plot22B, include=F, fig=T, echo=T>>=
+m6 <- lm(th.bush.kerry~V043250 + V041109A, data=mydta1)
+mycols <- c(gray(.7), rgb(0.7, 0.1, 0.1), "black", "red") 
+V043250r <- range(mydta1$V043250)
+newdf1 <- expand.grid(V043250 = V043250r,  V041109A = levels(mydta1$V041109A))
+newdf1$fit <- predict(m6, newdata = newdf1)
+plot(th.bush.kerry ~ V043250, type = "n", data = mydta1, xlab = "V043250: Age (years)", ylab = "Bush-Kerry Thermometer Differential")
+points(th.bush.kerry ~ V043250, data = mydta1,  lwd = 0.6, col = ifelse(V041109A %in% c("M"), mycols[1], mycols[2]))
+by(newdf1, newdf1$V041109A, function(x) lines(fit~V043250, data = x, col = mycols[2+as.numeric(x$V041109A)], lty = as.numeric(x$V041109A), lwd = 3 ))
+legend("topleft", legend = c("Male", "Female"), col = mycols[3:4], lty = c(1,2), bg = "white", lwd = 3)
+@
+
+\input{plots/t-plot22B.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Plot Predicted values by Gender}
+
+\includegraphics[width=10cm]{plots/t-plot22B}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Chile data: statusquo $\sim$ income * region + sex}
+
+<<chile40,echo=T, fig=T, include=F>>=
+m6 <- lm(statusquo ~ income * region + sex, data = Chile)
+plotSlopes(m6, plotx = "income", modx = "sex", plotLegend = FALSE, ylim = magRange(Chile$statusquo, c(1,1.3)), llwd = c(2,2), cex = 1.0, lwd = 0.5)
+legend("topleft", c("Female", "Male"), col = c(1, 2), lty = 1:2, bg = "white") 
+@
+
+\def\Sweavesize{\scriptsize}
+\input{plots/t-chile40.tex}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Gender, Income, and Chilean Voter Attitudes}
+
+\includegraphics[width=10cm]{plots/t-chile40}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+\frametitle{}
+
+<<chile70,echo=T, include=F, fig=T, height=5, width=8>>=
+m6ps <- plotSlopes(m6, plotx = "income", modx = "region", ylim = magRange(Chile$statusquo, c(1, 1.3)), llwd = c(2, 2), cex = 1.0)
+m6ps$newdata
+@
+
+\input{plots/t-chile70}
+
+\includegraphics[width=10cm]{plots/t-chile70}
+
+\end{frame}
+
+
+\lyxframeend{}\section{effects}
+
+\begin{frame}[containsverbatim]
+\frametitle{effects Package}
+\begin{itemize}
+\item There are several other R packages that help us to explore predicted
+values.
+\item One of the first packages for this purpose was effects, by John Fox,
+Sanford Weisberg, and others.
+\item rockchalk is doing same/similar set of calculations, but user interface
+of rockchalk is (perhaps, just IMHO) more flexible \& pleasant.
+\item plots from effects are not so nice as plots from termplot.
+\item Other packages that have a similar orientation are rms and Zelig
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{effects Package}
+
+
+
+\input{plots/t-effects10.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Effects Plot: Gender}
+
+\includegraphics[width=10cm]{plots/t-effects11}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{effects Package}
+
+
+
+\input{plots/t-effects20.tex}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Effects Plot: Party Identification}
+
+\includegraphics[width=10cm]{plots/t-effects21}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Effects Plot: Ideology}
+
+
+
+\includegraphics[width=10cm]{plots/t-effects25}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Effects Plot: Gay Marriage}
+
+
+
+\includegraphics[width=10cm]{plots/t-effects30}
+
+\end{frame}
+
+
+\lyxframeend{}\section{Ordinal versus Numeric}
+
+\begin{frame}[containsverbatim]
+\frametitle{R Emphasizes Factors}
+  \begin{itemize}
+    \item Importing Data: Any non-numeric score -> "factor" treatment
+    \item Age-old question: Is a 7 point scale numeric or merely ordinal?
+    \item Plots \& regressions seem tidier if we use numeric scorings
+    \item Possible to formally test the numeric versus the factor scorings
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Create Numeric Predictors}
+
+<<numer05,echo=T,include=F>>=
+mydta1$V045117n <- as.numeric(mydta1$V045117)
+mydta1$V043116n <- as.numeric(mydta1$V043116)
+mydta1$V043210n <- as.numeric(mydta1$V043210)
+mydta1$V043213n <- as.numeric(mydta1$V043213)
+mydta1$V045145Xn <- as.numeric(mydta1$V045145X)
+m3n <- lm (th.bush.kerry ~ V045117n + V043116n + V043210n + V043213n + V045145Xn + V041109A, data=mydta1) 
+@
+
+<<numer09, echo=T, include=F, eval=F>>=
+outreg(m3n, tight=FALSE, modelLabels=c("Numeric Predictors"), varLabels=list(V045117n="Ideology", V043116n="Party ID", V043210n="AntiGay", V043213n="Economy", V045145Xn="Flag Love", V041109AF="Female"))
+@
+
+<<numer10, echo=F, include=F, results=tex>>=
+<<numer09>>
+@
+
+\input{plots/t-numer05}
+\input{plots/t-numer09}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Beautiful Outreg Output}
+
+\scriptsize{
+\input{plots/t-numer10.tex}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Ideology}
+
+<<numer20,fig=T,include=F,echo=T>>=
+termplot(m3n, se=TRUE, partial.resid=T, terms="V045117n",xlab="V045117n: Ideology")
+@
+
+\includegraphics[width=10cm]{plots/t-numer20}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Compare to ordinary R plot(bush-kerry,ideology)}
+
+<<numer21,fig=T,include=F,echo=T>>=
+plot(th.bush.kerry~V045117, data=mydta1)
+@
+
+\includegraphics[width=10cm]{plots/t-numer21}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{termplot: Party ID}
+
+<<numer30,fig=T,include=F,echo=T>>=
+termplot(m3n, se=TRUE, partial.resid=TRUE, terms="V043116n",xlab="V043116n: Party ID")
+@
+
+\includegraphics[width=10cm]{plots/t-numer30}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Compare to ordinary R plot(bush-kerry, party))}
+
+<<numer40,fig=T,include=F,echo=T>>=
+plot(th.bush.kerry~V043116, data=mydta1)
+@
+
+\includegraphics[width=10cm]{plots/t-numer40}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Should you use the Numeric Model?}
+\begin{itemize}
+\item My humble opinion: not without checking first
+\item Look at ``termplot'' output to see if the relationship really is
+linear
+\item Conduct hypothesis tests
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{An F test will work (these are nested models)}
+
+<<numer50,echo=T, include=F>>=
+anova(m3,m3n, test="F")
+@
+
+\input{plots/t-numer50}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{What does that Significance Test Mean?}
+\begin{itemize}
+\item Something's wrong, at last one variable should not be treaded as a
+linear effect.
+\item Difficult to say with confidence what to do next. 
+\item I would look at individual variables.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+\frametitle{Party, for example}
+
+<<numer65,echo=T,include=F>>=
+mod2 <- lm (th.bush.kerry ~ V045117n + V043116 + V043210n + V043213n + V045145Xn + V041109A, data=mydta1) 
+mod2n <- lm (th.bush.kerry ~ V045117n + V043116n + V043210n + V043213n + V045145Xn + V041109A, data=mydta1) 
+@
+
+<<numer69, echo=T, include=F, eval=F>>=
+outreg(list(mod2, mod2n), tight=FALSE, modelLabels=c("Party Factor","Numeric Predictors"), varLabels=list(V045117n="Ideology", V043116="Party ID", V043210n="AntiGay", V043213n="Economy", V045145Xn="Flag Love", V041109AF="Female"))
+@
+
+<<numer70, echo=F, include=F, results=tex>>=
+<<numer69>>
+@
+
+\input{plots/t-numer65}
+\input{plots/t-numer69}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Beautiful Outreg Output}
+
+\scriptsize{
+\input{plots/t-numer70.tex}
+}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{An F test will work}
+
+<<numer75,echo=T, include=F>>=
+anova(mod2, mod2n, test="F")
+@
+
+\input{plots/t-numer75}
+
+\end{frame}
+
+
+\lyxframeend{}\section{3d Plots}
+
+\begin{frame}[containsverbatim]
+\frametitle{Kinds of 3d Plot}
+\begin{itemize}
+\item Please see the separate lecture notes on plotting in 3 dimensions.
+After inserting that material into this file, it simply became too
+unwieldy for editing.
+\end{itemize}
+\end{frame}
+\end{document}

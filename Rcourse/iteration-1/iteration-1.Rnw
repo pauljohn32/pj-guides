@@ -1,0 +1,1089 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: iteration-1.Rnw
+%   Author: Paul Johnson
+%   Initiated 2013-05-23
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[Iterators] % (short title, use only with long paper titles)
+{Iteration: for, appply, etc}
+
+\subtitle{Efficiency and Clarity}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents{}
+\end{frame}
+
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+\section{Introduction}
+
+
+\begin{frame}
+  \frametitle{R Frame of Mind}
+  \begin{itemize}
+  \item Iteration is commonly needed
+    \begin{itemize}
+    \item repeat the same thing over and over with new samples
+    \item process several subgroups of data (compare cities)
+    \item apply various functions to one data set
+    \end{itemize}
+  \item Some idioms make code faster.
+  \item Some idioms make code more understandable.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Fit These Notes Into Context}
+
+  \begin{itemize}
+  \item Use of iterators requires the ability to write small
+    functions.
+  \item If you have never written a small function for R, please
+    review the lecture functions-1 before tackling this material.
+  \item This lecture was once part of functions-1. In fact, it was
+    the major motivation for functions-1, because I had to teach
+    people how to write functions before using R apply statements.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Clarity and Understandability}
+
+  \begin{itemize}
+  \item Especially in the early years of R, people who used for loops
+    were ridiculed and urged to use \texttt{apply()} instead.
+  \item Some ridicule was justified because code based on
+    \texttt{for()} often makes heavy use of '[' to access data, and
+    that is a very slow operator.
+  \item I have examples of silly/slow code using \texttt{for()}
+  \item However, if you have only a few situations to loop through,
+    there is not usually a substantial speedup by recoding from
+    \texttt{for()} to \texttt{apply()} (see Chambers, \emph{Software for Data Analysis})
+
+  \item On the other hand, \texttt{for()} loops, especially nested
+    loops, are prone to user-error and miscalculations, and they will
+    be more difficult to read.
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Bootstrapping is at the End}
+
+  \begin{itemize}
+  \item Difficult to be sure bootstrapping should be included in this lecture
+  \item It is included here because people who are frustrated with R's
+    apply concepts are also usually frustrated with bootstrapping in R.
+  \item Why this makes a difference: Efficiency! People who do
+    bootstrapping in the literal, obvious way, are generally wasting
+    memory and time.
+
+  \end{itemize}
+\end{frame}
+% _____________________________________________
+\section{Survey}
+
+\begin{frame}[containsverbatim]
+  \frametitle{R has lots of ways to do things over and over}
+
+  \begin{itemize}
+    \item for loop: process by ``i'' or by ``element''
+    \item apply: process rows and/or columns in a matrix
+    \item lapply: process each element in a list
+    \item sapply: attempts to simplify output from lapply
+    \item replicate: shorthand for sapply for simple simulations
+    \item mapply: for functions that need several arguments,
+      separately drawn from separate vectors or lists
+    \end{itemize}
+  \end{frame}
+
+\subsection{for}
+\begin{frame}[containsverbatim]
+  \frametitle{for looping}
+
+  \begin{itemize}
+  \item First, I initialize x1, then
+  \item loop over elements to set their values
+<<rep10,echo=T,include=T>>=
+doubleMe <- function(input = 0){
+  newval <- 2 * input
+}
+x1 <- vector(mode = "numeric", length = 57)
+for(i in 1:57) {x1[i] <- doubleMe(i)}
+@
+
+  integers i from 1 to 57 are sent to double me, results collect
+
+  \item Note, it is not necessary to actually do this for loop in R, because
+  R is vectorized.
+
+<<>>=
+  x2 <- doubleMe(1:57)
+  all.equal(x1,x2)
+@
+
+\item Using vectorized code is much faster.
+\end{itemize}
+\end{frame}
+
+
+
+%___________________________________________
+
+
+\subsection{apply}
+
+\begin{frame}[containsverbatim]
+  \frametitle{ ``apply()''}
+  \begin{itemize}
+  \item useRs are urged to avoid ``for loops'' when possible
+  \item Why? Accessing particular values with  ``['' (vector or matrix indexes)
+    is SLOW. Better to exploit R's ``vectorization''
+  \item apply() is one of a family of functions that can replace a for loop.
+  \item apply() takes a matrix, and does ``the same FUN'' to all of
+    its rows or columns (or both).
+  \item Definition: MARGIN=1 means ``work row by row'', MARGIN=2 means
+    ``column by column''
+  \end{itemize}
+\end{frame}
+
+%___________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example of ``apply()'' With a Built-In FUN}
+
+  \begin{itemize}
+    \item Given a matrix xyz with columns ``x'', ``y'', and ``z''
+    \item On the columns, MARGIN=2, apply the R ``mean'' function.
+<<apply10,echo=T>>=
+xyz <- matrix( rnorm(9), ncol=3)
+xyz
+colnames(xyz) <- c("x", "y", "z")
+apply(xyz, MARGIN = 2, FUN = mean)
+@
+
+  \item If there is no ``built in'' function that does what you
+    want, then you have to write your own.
+\end{itemize}
+\end{frame}
+
+
+%___________________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Write your own Function for apply}
+
+  \begin{itemize}
+  \item Suppose you want the second-highest score from
+    each column.
+  \item Write a little function called ``second()''
+
+<<apply20,echo=T>>=
+second <- function(acol = NULL){
+    sort(acol)[2]
+}
+print(xyz)
+apply(xyz, MARGIN = 2, FUN = second)
+@
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Apply the normedEntropy function to rows}
+
+  \begin{itemize}
+    \item The normedEntropy() function is presented in the lecture
+      functions-1. I reproduce it for completeness here
+<<normedEntropy, echo=T, include=T>>=
+divr <- function(p = 0){
+  ifelse ( p > 0 & p < 1, -p * log2(p), 0)
+}
+entropy <- function(p){
+    sum( divr(p) )
+}
+maximumEntropy <- function(N) - log2(1 / N)
+normedEntropy <- function(x) entropy(x) / maximumEntropy(length(x))
+@
+
+    \item First, create a matrix in which the sum of each row is 1.0
+
+<<apply30,echo=T,include=F>>=
+  xmat <- matrix(rmultinom(6, size = 20, prob = c(1,2,3,4,5)), byrow = T, ncol = 5)
+  xmat <- prop.table(xmat, 1)
+  print(round(xmat,3 ))
+@
+\input{plots/t-apply30}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Entropy for each row!}
+  \begin{itemize}
+  \item apply normed Entropy to each Row with apply
+
+<<apply31,echo=T, include=F>>=
+
+apply(xmat, MARGIN = 1, FUN = normedEntropy)
+@
+
+\input{plots/t-apply31}
+\end{itemize}
+\end{frame}
+
+%______________________________________
+
+
+\subsection{lapply}
+
+\begin{frame}[containsverbatim]
+  \frametitle{``lapply()'': Do same thing to all Elements of a List}
+
+  \begin{itemize}
+  \item \texttt{lapply()} will take a list of things and apply a given function to each item, returning a new list.
+
+    Generally,
+
+    aNewList <- lapply( someList, FUN = someFunction )
+
+  \item someFunction MUST accept the elements from someList\emph{ as the
+    first argument}
+  \item Additional arguments to someFunction are allowed
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example Use of lapply}
+  \begin{itemize}
+
+  \item Create a list with 5 sets of random uniform normal variables
+
+<<lapply10, echo=T>>=
+sampleList <- lapply(rep(1000,5), rnorm)
+sampleList[[1]][888]
+@
+
+   \item Same as
+
+  \begin{Sinput}
+    sampleList <- list() ## or <- vector(``list'', 5)
+    sampleList[[1]] <- rnorm(1000)
+    sampleList[[2]] <- rnorm(1000)
+    sampleList[[3]] <- rnorm(1000)
+    sampleList[[4]] <- rnorm(1000)
+    sampleList[[5]] <- rnorm(1000)
+ \end{Sinput}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example Use of lapply}
+  \begin{itemize}
+  \item Get the mean of sets 1 and 2 individually
+
+<<lapply11, echo=T>>=
+mean(sampleList[[1]])
+mean(sampleList[[2]])
+@
+
+\item Grab means of all sets with lapply
+<<lapply12,echo=T>>=
+(aNewList <- lapply(sampleList, mean))
+@
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Why lapply, Not apply?}
+
+  \begin{itemize}
+    \item Sometimes our ``data'' is not an even set of columns that
+      fits in a data.frame or matrix
+    \end{itemize}
+<<lapply15, echo=T>>=
+
+xlist <- list(x1 = c(1,1,1,2,3,3), x2 = rpois(10,lambda=3), x3 = round(rnorm(20,m=100,s=1),0))
+elist <- lapply(xlist, function(x) { y <- table(x)/length(x); normedEntropy(y)})
+@
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Why lapply, not apply?}
+<<lapply18,echo=T>>=
+   for(i in 1:length(xlist)){
+     cat("Given List")
+     print(xlist[[i]])
+     cat("Normed Entropy")
+     print(round(elist[[i]],3))
+     cat("\n")
+     }
+@
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example with additional arguments}
+
+  \begin{itemize}
+    \item One NA wrecks mean (by default)
+<<lapply20, echo=T>>=
+sampleList <- lapply( rep(1000,5), rnorm)
+sampleList[[1]][77] <- NA
+(aNewList <- lapply(sampleList, mean))
+@
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example (cont.): Fix that Missing Value Problem}
+
+<<lapply30, echo=T>>=
+(aNewList <- lapply(sampleList, mean, na.rm = TRUE))
+@
+\end{frame}
+
+
+\subsection{lapply: Extended Example \#1}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example: lapply to Simulate Regressions.}
+
+  \begin{itemize}
+  \item The question:
+    \begin{itemize}
+    \item Create 100 regression models from 100 data sets
+    \item Study the sampling distribution of the $R^2$ statistic
+      from those regressions.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Step 1.}
+  \begin{itemize}
+  \item The following generates 100 data frames in a list ``mydatasets''.
+
+<<regex05,echo=T>>=
+exs <- 10
+exq <- 0.345
+exstde <- 20
+createOneDF <- function(run, s = NA, q = NA, stde = NA){
+  x <- 18 + 43*runif(1000)
+  y <- s + q * x + rnorm(1000, mean = 0, sd = stde)
+  mydf <- data.frame(run,x,y)
+}
+mydatasets <- lapply(1:100, createOneDF, exs, exq, exstde)
+@
+\item Here the ``list'' is just a sequence 1,2,3,...
+\item lapply automatically gives each list element to function
+  as first argument. (In this case, ``run'' number).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Step 2.}
+
+  \begin{itemize}
+  \item Now apply a function to each data frame, make list ``myregressions''
+
+<<regex06,echo=T>>=
+myregressions <- lapply(mydatasets, FUN = function(mydf) lm(y ~ x, data = mydf))
+@
+  \item Note: small functions can be written ``inline''
+  \item Could as well have written
+
+\begin{Schunk}
+\begin{Soutput}
+  calcReg <- function(adf = NULL){
+    mod <- lm(y ~ x, data = adf)
+    }
+  myregressions <- lapply(mydatasets, FUN = calcReg)
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Take Stock of What We Have}
+
+  \begin{itemize}
+
+\item Each element in the list ``mydatasets'' really is
+      a data frame:
+<<myregex20,echo=T>>=
+head( mydatasets[[33]])
+@
+
+    \item Each element in ``myregressions'' really is a
+      regression result object
+
+<<myreg30,echo=T>>=
+myregressions[[33]]
+@
+
+\item Which can be summarized thus:
+\end{itemize}
+
+\footnotesize{
+<<myreg40,echo=T>>=
+summary ( myregressions[[33]] )
+@
+}
+
+Note, the $R^2$ value that we need is sitting there, in the
+middle of the summary output.  We'll need that.
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Step 3.}
+
+  \begin{itemize}
+  \item Grab the $R^2$ from each regression in the list.
+  \item The estimate of the $R^2$ is an element in the returned
+      object from summary.
+
+    \item One strategy: create an R list of summary objects
+
+<<regex50,echo=T>>=
+mysummaries <- lapply(myregressions, FUN= summary)
+@
+
+\item Getting the $R^2$ out of each one of those requires some
+  tedious grabbing, such as
+
+<<regex55,echo=T>>=
+myrsq <- lapply(mysummaries, FUN = function(mr) {mr$r.square})
+myrsq[1:5]
+myrsq <- unlist(myrsq)
+str(myrsq)
+@
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Sapply will do that in one shot}
+  \begin{itemize}
+  \item sapply is the ``simplified apply'', it attempts to convert a list
+    into a vector or matrix.
+  \item snoop through the regressions, grab the $R^2$.
+
+<<regex60,echo=T>>=
+myrsq <- sapply(mysummaries, FUN = function(mr) {mr$r.square})
+mean(myrsq)
+sd(myrsq)
+median(myrsq)
+@
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Everybody Still Loves Histograms}
+<<regex70,fig=T, echo=F, include=F>>=
+h1 <- hist(myrsq, plot = F, breaks = 10)
+plot(h1, freq = F, ylim = c(0,1.2* max(h1$density)), xlim = c(0,0.10), xlab = "R-Squares From 100 Regressions")
+lines(density(myrsq), lty = 2, col = "red")
+legend("topleft", legend = c("observed density"), lty = c(2), col = c("red"))
+@
+  \includegraphics[width=10cm]{plots/t-regex70}
+
+\end{frame}
+
+
+
+\subsection{lapply: Extended Example \#2}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example: Balance in Logistic Regression}
+  \begin{itemize}
+  \item Two years ago, I wondered (while auditing the categorical class),
+    ``what if we run a logistic regression comparing men and women and
+    there are not very many men?''
+  \item Write functions to
+    \begin{itemize}
+    \item manufacture data
+    \item analyze data
+    \item summarize \& plot data
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Create Output Data: Need to convert real numbers to 0's and 1's}
+
+  $\eta$ ``eta'' is input, the proclivity to ``vote democratic''
+
+<<logit10,echo=T,include=F>>=
+
+simLogit <- function(myeta){
+   mypi <- exp(myeta) / (1 + exp(myeta)) ## SAME AS 1/(1+exp(-myeta))
+   myunif <- runif(length(myeta))
+   y <- ifelse(myunif < mypi, 1, 0)
+}
+@
+\input{plots/t-logit10}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example Use: Creates 1000 Observations}
+
+<<logit20,echo=T,include=F>>=
+N <- 1000
+A <- -1
+B <- 0.3
+x <- 1 + 10 * rnorm(N)
+myeta <- A + B * x
+y <- simLogit(myeta)
+@
+\input{plots/t-logit20}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Illustration of Simulated Data}
+
+<<logit30,echo=T,include=F,fig=T>>=
+plot(x,y, main = bquote(eta[i] == .(A) +  .(B) * x[i] ))
+
+text ( 0.5*max(x), 0.5, expression( Prob( y[i] == 1) == frac( 1 , 1 + exp(-eta[i] ))))
+@
+\input{plots/t-logit30}
+\includegraphics[width=9cm]{plots/t-logit30}
+\end{frame}
+
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Fitted Line from glm}
+
+<<logit35,echo=T,include=F,fig=T>>=
+
+### This calculates just one logistic regression
+myglm1 <- glm (y ~ x, family = binomial(link = "logit") )
+xr <- range(x)
+xseq <- seq(xr[1], xr[2], length = 100)
+p1 <- predict(myglm1, newdata = data.frame(x = xseq), type = "response")
+
+<<logit30>>
+lines(xseq, p1)
+@
+\includegraphics[width=9cm]{plots/t-logit35}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{We are Interested in the Difference Between Two Groups}
+
+<<logit50,echo=T,include=F,fig=T>>=
+
+### This calculates just one logistic regression
+myglm1 <- glm ( y ~ x, family = binomial(link = "logit"))
+xr <- range(x)
+xseq <- seq(xr[1], xr[2], length = 100)
+p2 <- predict(myglm1, newdata = data.frame(x = xseq+2.3), type = "response")
+<<logit30>>
+lines(xseq, p1)
+lines(xseq, p2,lty = 2)
+@
+\includegraphics[width=10cm]{plots/t-logit50}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Now Automate That Process}
+\begin{itemize}
+ \item Manufacture data
+ \item Run Regression
+ \item Return row of estimates
+ \end{itemize}
+
+<<logit60,echo=T,include=F>>=
+simUnbalanced <- function(iter=0, parm){
+  A <- parm$A; B<- parm$B; C<- parm$C; PrFem <- parm$PrFem
+  sex <- ifelse(runif(N) < PrFem,0,1)
+  myeta <- A + B * x + C * sex
+  sex <- factor(sex, levels = c(0,1), labels = c("M","F"))
+  y <- simLogit(myeta)
+  myglm2 <- glm( y ~ x + sex, family = binomial)
+  myglm2sum <- coef(summary(myglm2))
+  est <- myglm2sum[3,]
+}
+@
+\input{plots/t-logit60}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Use sapply to run 1000 Regressions}
+
+<<logit70,echo=T,include=F,eval=T>>=
+p <- list()
+p$A <- -1; p$B <- 0.3; p$C <- 0.4
+p$PrFem <- 0.5
+result45 <- list(sapply(1:1000, simUnbalanced, parm = p), parm = p)
+@
+\input{plots/t-logit70}
+
+Note: I'm combining the sapply result, along with ``p'', for record-keeping
+
+<<logit80,echo=T,include=F,eval=T>>=
+p$PrFem <- 0.9
+result49 <- list(sapply(1:1000, simUnbalanced, parm = p), parm = p)
+@
+\input{plots/t-logit80}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Now Plan to Draw Some Figures}
+
+<<logit90,echo=T,include=F>>=
+
+createFigs <- function(result){
+  dat <- result[[1]]
+  C <- result$parm$C
+  PrFem <- result$parm$PrFem
+  mybeta <- dat[1,]
+
+  hrow1 <- hist(mybeta, breaks=50, plot=F)
+  mybreaks <- hrow1$breaks
+
+  breakMember <- cut(dat[1,], mybreaks)
+
+  mypval <- dat[4,]
+  mysignif <- ifelse((mypval < 0.05 ), 1, 0)
+  df <- data.frame(mybeta, mypval, mysignif, breakMember)
+
+  propsig <- by(df$mysignif, INDICES = list(df$breakMember), mean, simplify = TRUE)
+  mytrat <- dat[3,]
+  mycounts <- hrow1$counts
+  plot(dat[1,], dat[4,], xlab = "beta estimate", ylab = "estimated p", cex = 0.7, main = paste("True Beta=",C, "Prop. Fem.=", PrFem))
+  gc <- c("gray98","gray70","gray50","gray40")
+
+  cut(propsig, breaks=c(-1,0.1,0.5,0.9,1.1))
+
+  catpropsig <- cut(propsig, breaks = c(-1,0.1,0.5,0.9,1.1), ordered = T, labels = c("0","lth","mth","1"))
+  barplot(hrow1$density, col = gc[as.numeric(catpropsig)], names = hrow1$mids)
+}
+@
+\input{plots/t-logit90}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{For Balanced Data}
+
+<<logit100,fig=T,echo=T,include=F,eval=T>>=
+par(mfrow = c(1,2))
+createFigs(result45)
+@
+\includegraphics[width=10cm]{plots/t-logit100}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{For Unbalanced Data}
+
+<<logit110,fig=T,echo=T,include=F,eval=T>>=
+
+par(mfrow = c(1,2))
+createFigs(result49)
+par(mfrow = c(1,1))
+@
+\includegraphics[width=10cm]{plots/t-logit110}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Final Cautionary Note}
+
+  \begin{itemize}
+  \item At some point, this approach will start to ``bog down''
+    under the weight of memory usage and CPU delays
+  \item I'd suggest re-designing so that we separately create the
+    data frames and run all of the analysis on each separately
+  \item That would allow us to 1) stay within memory limits and
+    2) parallelize the work across separate cores or computers (see
+    the R parallel package).
+  \end{itemize}
+\end{frame}
+
+
+\subsection{mapply: a secret weapon}
+
+\begin{frame}
+  \frametitle{mapply}
+  \begin{itemize}
+  \item I never used mapply for the first 5 years of using R
+  \item Now I see need for it at least once per month
+  \item The documentation may be difficult to understand,
+    but once you appreciate the beauty of it, you will like it.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{When is mapply needed}
+  \begin{itemize}
+  \item You have several vectors or lists of the same length
+  \item You want to take the first element from each and do something.
+  \item Then take the second element from each and do something
+  \item Don't write nested ``for'' loops, as users are often tempted
+    to do.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Example of mapply usage in rockchalk package}
+  \begin{itemize}
+  \item rockchalk has many functions that are doing the same thing
+    over and over for subsets of data.
+  \item Run the examples for the \texttt{addLines()} function, you
+    should see it integrates plotSlopes() and plotPlane() by
+    transferring information.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Example use of mapply in rockchalk 1.8}
+  \begin{itemize}
+    \item  dataSplits is a collection of data frames. We want to do the plot for
+ each with the correct colors, which are stored in linesFrom variables
+ col and lty.
+
+    \item The small function drawLine accepts 3 arguments, one from
+      data, one from col, one from lty.
+
+\begin{Sinput}
+ if (!missing(linesFrom)) {
+   dataSplits <- split(linesFrom$newdata, f = linesFrom$newdata[[linesFrom$call[["modx"]]]])
+   drawLine <- function(nd, mycol, mylty) {
+     lines(trans3d(nd[[plotx1]], nd[[plotx2]], nd$fit, pmat=res), col = mycol, lwd = lflwd, lty = mylty)
+   }
+   mapply(drawLine, dataSplits, linesFrom$col, linesFrom$lty)
+}
+\end{Sinput}
+
+  \item Note we are free to name the variables inside drawLine however
+    we want. That help keep our minds clear about whether we are
+    talking about just one color or a vector of colors.
+  \end{itemize}
+\end{frame}
+
+
+
+%___________________________________________
+
+\section{Bootstrapping}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Bootstrapping: Some ``Do it Yourself'' Work Is Required}
+  \begin{itemize}
+  \item Many R functions require users to write little functions
+    that do little things.
+
+  \item In many cases (like lapply or apply), look for FUN as an argument.
+
+  \item Sometimes no builtin-exists. useR must create!
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{boot Function Requires a Special Function ``statistic''}
+\begin{Sinput}
+  library(boot)
+  ?boot
+\end{Sinput}
+
+\def\Sweavesize{\scriptsize}
+\begin{Soutput}
+Bootstrap Resampling
+
+Description:
+
+Generate 'R' bootstrap replicates of a statistic applied to data.
+Both parametric and nonparametric resampling are possible. ...
+
+boot(data, statistic, R, sim = ''ordinary'', stype = ''i'',
+strata=rep(1, n), L = NULL, m = 0, weights = NULL,
+ran.gen=function(d, p) d, mle = NULL, simple = FALSE, ...)
+
+statistic: A function which when applied to data returns a vector
+containing the statistic(s) of interest...
+\end{Soutput}
+\end{frame}
+
+% _______________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Bootstrap: Background Explanation}
+  \begin{itemize}
+  \item Bootstrap: draw samples repeatedly and re-estimate $\theta$
+  \item Resulting values approximate a sampling distribution $\theta$
+  \item The ``boot'' package asks for a data frame and a special
+    function ``statistic''. statistic must
+    \begin{itemize}
+      \item accept a data frame as the first argument
+      \item accept an ``index vector'' as the second argument
+      \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Don't Panic: This is Confusing to Everybody}
+    Example usage
+
+\begin{Sinput}
+    boot(data, statistic = yourFunction, R = 1000)
+\end{Sinput}
+
+\begin{itemize}
+
+\item boot will iterate 1000 times, and yourFunction will provide the
+  statistic of interest.
+
+\item You write yourFunction to make required calculation.
+
+\item boot will tell yourFunction which
+  lines to use in the data frame, \emph{over-and-over}.
+\end{itemize}
+\end{frame}
+
+%___________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Median of a Poisson Distribution}
+  \begin{itemize}
+  \item Suppose you have a sample from a Poisson Process:
+
+<<poisson10,echo=T>>=
+samp <- rpois(20, lambda=3)
+@
+
+\item And you calculate the median:
+<<poisson20,echo=T>>=
+median(samp)
+@
+
+\item How confident are you in that estimate of the median?
+
+\end{itemize}
+\end{frame}
+
+%_____________________
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Bootstrap Your Median}
+  \begin{itemize}
+
+  \item Here is yourFunction:
+
+<<poisson30,echo=T>>=
+calcMed <- function(dat, ind){
+  median(dat[ind])
+}
+@
+
+\item dat[ind] has the effect of ``pulling'' rows that match ``ind''
+  from ``dat''
+\item The boot function will send 1000 ``case indexes'' to your function.
+
+<<poisson90, echo=T>>=
+library(boot)
+bpois <- boot(samp, calcMed, R = 1000)
+bpois
+@
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Let's plot that}
+
+<<poisson100,fig=T,echo=T,include=F>>=
+  plot(bpois)
+@
+
+\includegraphics[width=10cm]{plots/t-poisson100}
+\end{frame}
+
+
+% _________________________________________
+\begin{frame}[containsverbatim]
+  \frametitle{Why Do They Do It That Way?}
+
+  \begin{itemize}
+  \item Your instinct is to do this the ``simple'' way
+    \begin{itemize}
+    \item (Just) ``Manually'' draw new random samples of rows from a data frame.
+    \item But: Creating 1000s of ``new'' re-sampled data sets would
+      ``waste'' (exhaust?) memory
+    \item Would be especially slow if separate data sets have to be
+      copied between systems.
+     \end{itemize}
+    \item More efficient to keep 1 data frame, but 1000's of vectors
+      of row numbers.
+   \end{itemize}
+ \end{frame}
+
+
+
+
+
+
+
+
+
+%===================================================
+\end{document}

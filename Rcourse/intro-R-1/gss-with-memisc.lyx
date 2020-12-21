@@ -1,0 +1,446 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\end_preamble
+\use_default_options true
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%suggested by Ihaka's note on Improving Sweave 
+\end_layout
+
+\begin_layout Plain Layout
+
+%http://www.stat.auckland.ac.nz/~stat782/downloads/Sweave-customisation.pdf
+\end_layout
+
+\begin_layout Plain Layout
+
+%%%tighten up text output from R
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0pt}}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewenvironment{Schunk}{
+\backslash
+vspace{
+\backslash
+topsep}}{
+\backslash
+vspace{
+\backslash
+topsep}}
+\end_layout
+
+\begin_layout Plain Layout
+
+%shorten line length
+\end_layout
+
+\begin_layout Plain Layout
+
+<<echo=false>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+system("rm -rf gss; mkdir gss")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=gss/t,split=T, ae=F,height=4,width=6}
+\end_layout
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>= 
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=60, continue="  ") 
+\end_layout
+
+\begin_layout Plain Layout
+
+###Leave less white space at top
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(mar=c(5.1, 4.1, 0.5, 2.1))))
+\end_layout
+
+\begin_layout Plain Layout
+
+###Sweave appears to ignore following settings 2010-03-20
+\end_layout
+
+\begin_layout Plain Layout
+
+ps.options(horizontal=F, onefile=F, family="Times",    paper="special", height=4,
+ width=6 ) 
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=F,family="Times",paper="special",height=4,width=6)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(papersize="special")
+\end_layout
+
+\begin_layout Plain Layout
+
+@ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<import,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+library(memisc)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+### reads SPSS varnames and labels 
+\end_layout
+
+\begin_layout Plain Layout
+
+idat <- spss.system.file("/home/pauljohn/ps/ps706/DataExample-GSS2006/gss2006.sav")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+### Caution: Following is huge output! 
+\end_layout
+
+\begin_layout Plain Layout
+
+# codebook(idat)
+\end_layout
+
+\begin_layout Plain Layout
+
+### Forces R to read whole numbers 
+\end_layout
+
+\begin_layout Plain Layout
+
+idat2 <- as.data.set(idat)
+\end_layout
+
+\begin_layout Plain Layout
+
+### Watch out: # names(idat2) ### will show 5137 variables
+\end_layout
+
+\begin_layout Plain Layout
+
+### Can push that into a standard R data frame ### 
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- as.data.frame(idat2)
+\end_layout
+
+\begin_layout Plain Layout
+
+### free up memory used by idat objects 
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(idat2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+rm(idat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rtable,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+table( dat$vote00)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gmodel1, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(gmodels)
+\end_layout
+
+\begin_layout Plain Layout
+
+CrossTable(dat$vote00) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<gtabl2, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ CrossTable(dat$vote00 ,dat$sex) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mtable1, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+gt <- genTable( percent(vote00) ~ sex, data=dat )
+\end_layout
+
+\begin_layout Plain Layout
+
+gt
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mtable2,echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+toLatex(gt)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

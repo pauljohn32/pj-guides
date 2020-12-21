@@ -1,0 +1,2453 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+\title[Writing Functions I] % (short title, use only with long paper titles)
+{Writing Functions In R}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[2013] % (optional, should be abbreviation of conference name)
+{2013}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents{}
+\end{frame}
+
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+
+
+<<echo=F>>=
+dir.create("plots", showWarnings=F)
+@
+
+% In document Latex options:
+\SweaveOpts{prefix.string=plots/t,split=T,ae=F,height=4,width=6}
+
+<<Roptions, echo=F>>=
+options(width=200, prompt=" ", continue=" ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+op <- par()
+pjmar <- c(5.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=10)))
+pdf.options(onefile=F,family="Times",pointsize=6)
+ps.options(horizontal=F, onefile=F, family="Times", paper="special", height=3, width=4.75)
+options(papersize="special")
+@
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+%===================================================
+\section{Introduction}
+
+
+\begin{frame}
+  \frametitle{Did You Ever Write a Program?}
+  \begin{itemize}
+    \item If Yes: R's different than that.
+    \item If No: Its not like other things you've done.
+    \item In either case, don't worry about it :)
+    \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{R is a little bit like an elephant}
+
+ \includegraphics[scale=0.5]{importfigs/blind-men-elephant-web}
+
+ Its a tree trunk! Its a snake! Its a brush!
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The R Language is like S, of course}
+  \begin{columns}
+    \column{7cm}
+
+    \begin{itemize}
+    \item The S Language-- John Chambers, et al. at Bell Labs, mid 1970s.
+
+      See Richard Becker's {}``Brief History of S'' about the AT\&T years
+
+    \item There have been 4 generations of the S language.
+    \item Many packages now were written in S3, but S4 has been
+      recommended for new packages for at least 5 years.
+    \item A new framework known as ``reference classes'' is now being
+      developed (was jokingly referred to as ``R5'' at one time)
+    \end{itemize}
+
+    \column{5cm}
+    \includegraphics[scale=0.35]{importfigs/BeckerNewSLanguage}
+
+    S3: \emph{The New S Language} 1988
+
+  \end{columns}
+\end{frame}
+
+%__________________________________________
+
+\begin{frame}
+   \frametitle{Is R a Branch from S?}
+   \begin{columns}
+     \column{7cm}
+     \begin{itemize}
+     \item R can be seen as a competing implementation of S.
+
+       Ross Ihaka and Robert Gentleman. 1996. {}``R: A language for data
+       analysis and graphics.''\emph{ Journal of Computational and Graphical
+         Statistics}, 5(3):299-314.
+
+     \item Open Source, Open Community, open repository CRAN
+     \end{itemize}
+
+
+     \column{6cm}
+     S pioneers now work to advance R.
+     \includegraphics[scale=0.35]{importfigs/ChambersSoftwareForDataAnalysis}
+
+     S4: John Chambers,\emph{Software for Data Analysis: Programming with R}, Springer, 2008
+
+   \end{columns}
+\end{frame}
+
+
+%_______________________________________________
+
+
+% \begin{frame}
+%   \frametitle{Important to Remember Difference between Language and Program}
+
+%   R competes with S+ (and possibly other programs that accept similar code)
+
+%   \begin{itemize}
+%   \item \emph{S-plus} is a commercial product that answers to S syntax commands
+%     and has a nice GUI
+%   \item There's no ``guarantee'' that the same code will work in both,
+%     but they often do
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Example: From \_ To $<-$}
+%    \begin{itemize}
+%    \item Original S syntax used the ``underscore'' for assignment, as in
+
+%      \texttt{myoutput \_ myinput}
+
+%    \item Then they changed to recommend ``$<-$'' for assignment,  but
+%      allowed \_
+
+%    \item So many people made the mistake of using ``$=$'' that the
+%      programmers rewrote S \& R to work even if people use ``$=$''
+%      when they should have used ``$<-$''.
+
+%    \item Use of \_ for assignment is now forbidden, not just discouraged.
+
+%    \item ``$=$'' is allowed, but discouraged.
+
+%    \end{itemize}
+
+%  \end{frame}
+
+%____________________________________________
+
+\section{Write Functions!}
+
+\begin{frame}
+  \frametitle{Overview: 3 reasons to write functions}
+
+
+  \begin{itemize}
+  \item Preserve your sanity: isolate specific work.
+    \begin{itemize}
+      \item Side benefit: preserve sanity of others who have to read
+        your code
+      \end{itemize}
+    \item Facilitate re-use of your ideas
+    \item Co-operate with R functions like \texttt{lapply()} and
+    \texttt{boot()} which REQUIRE functions from us.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Functions: Separate Calculations Meaningfully}
+  \begin{itemize}
+  \item New programmers tempted to craft a giant sequence of 1000 commands
+  \item Just Don't!
+    \begin{description}
+    \item [{Problem}] No other human can comprehend that mess
+    \item [{Solution}] Write functions to calculate separate parts
+    \end{description}
+  \item I don't feel comfortable with any function until I have a
+    small ``working example'' to explore it (many available
+    \url{http://pj.freefaculty.org/R})
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Re-use your work}
+  \begin{itemize}
+
+  \item If you write a function, you can put it to use in many
+    different contexts
+  \item If you write a gigantic stream of 1000 commands, you can't.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Avoid for loops with lots of meat inside}
+
+  Instead of this:
+
+\begin{Sinput}
+  for(i in 1:1000}{
+       1000s of lines here full of x[i], z[i], and so forth
+       }
+\end{Sinput}
+
+ We want:
+
+\begin{Sinput}
+    fn1 <- function( arguments ) { ... }
+    fn2 <- function( arguments ) { ... }
+    for(i in 1: 1000){
+       y <- fn1(x, ... )
+       z <- fn2(y, ...)
+       }
+\end{Sinput}
+
+   This is easier to read, understand, and more re-usable!
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Personal confession}
+
+  \begin{itemize}
+  \item My first attack at any problem is often a long string of
+    commands that are not separable, not readable
+  \item The revision process usually causes me to segregate code
+    into separate pieces
+  \item One hint that you need a function: constant cutting and
+    pasting of code scraps from one place to another
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{When finished, I Wish Your R program would look like this}
+
+\begin{Sinput}
+
+myfn1 <- function (argument1, argument2, ...){
+   ## lines here using argument1, argument2
+ }
+myfn2 <- function (argument3, argument4){
+   ## lines here
+ }
+## Try to perfect the above. Then use them
+##
+ a <- 7
+ b <- c(4, 4, 4, 4, 2)
+ great1 <- myfn1(a, b, parm3 = TRUE)
+ great2 <- myfn2(b, great1)
+
+\end{Sinput}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks, containsverbatim]
+  \frametitle{How to Create a Function}
+  \begin{itemize}
+  \item R allows us to create functions ``on the fly''.  This is the
+    essential difference between a compiled language like C and an
+    interpreted language like R.  While an R session is running, we
+    can add new capabilities to it.
+
+  \item The artist Escher would like this one:
+    \begin{quote}
+      The word \texttt{function} is a function that creates functions!
+    \end{quote}
+
+  \item A new function \texttt{somethingGood()} is defined by a stanza
+    that begins like so:
+
+    \begin{Sinput}
+somethingGood <- function(arguments){
+    \end{Sinput}
+
+  \item \texttt{somethingGood} is a name we choose
+
+  \item The terms \texttt{arguments} and \texttt{parameters} are
+    interchangeable. I often say \texttt{inputs}. In R, do not say
+    ``options'', that confuses people because R has a function called
+    \texttt{options()} that governs the working session.
+
+
+  \item \texttt{arguments} \emph{may} be specified with default values, as in
+  \begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+    \end{Sinput}
+
+  \item After the squiggly brace, any valid R code can be used. We can
+    even define functions inside the function!
+
+  \item What happens in the function stays in the function.  Things
+    you create inside there do not escape the closure unless you
+    really want them to.
+
+  \item Return results: When when the function's work is finished, a
+    single object's name is included on the last line.
+    \begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+   ## suppose really interesting calculations create res, a result
+   res
+   }
+    \end{Sinput}
+
+   \item There are some little wrinkles about returns that will be
+     discussed later. But, for now, I plant some seeds in your mind.
+     \begin{itemize}
+       \item The return includes one object
+       \item The result will ordinarily print in the R terminal when
+         the function runs, but we can prevent that by using the last
+         line as
+
+\begin{Sinput}
+somethingGood <- function(x1 = 0, x2 = NULL){
+## suppose really interesting calculations create \texttt{res}, a result
+   invisible(res)
+   }
+ \end{Sinput}
+
+      \item It is possible to exit sooner, to short-circuit the calculations
+        before they have all run their course.  That is what the
+        \texttt{return()} function is for.
+
+
+\begin{Sinput}
+  somethingGood <- function(x1 = 0, x2 = NULL){
+  ##  suppose you created res
+   if (someLogicalCondition) return(invisible(res))
+  ## otherwise, go on and revise res further.
+   invisible(res)
+   }
+ \end{Sinput}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R Functions pass information ``by value''}
+  \begin{itemize}
+  \item The basic premise is that users should organize their
+    information ``here'', in the current environment, and it is
+    important that the function should not accidentally damage it.
+  \item Thus, we send info ``over there'' to a function
+  \item We get back a new something.
+  \item The function \textbf{DOES NOT} change variables we give to the function
+  \item The super assignment $<<-$ allows an exception to this, but
+    R Core recommends we avoid it. Only experts should use it.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{A simple example of a new function: doubleMe}
+
+<<doubleMe,echo=T>>=
+doubleMe <- function(input = 0){
+  newval <- 2 * input
+}
+@
+
+The function's name is ``doubleMe''
+
+I choose a name for the incoming variable ``input''.
+
+Other names would do (must start with a letter, etc.):
+
+<<doubleMe04, echo=T, eval=F>>=
+doubleMe <- function(x){
+    out <- 2 * x
+}
+@
+
+The last named thing is the one that comes back from the function.
+
+Note, explicit use of a return function is NOT REQUIRED. The last
+named thing comes back to us.
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Key Elements of doubleMe}
+
+  \input{plots/t-doubleMe}
+
+  \begin{columns}
+    \column{6cm}
+
+\begin{description}
+\item [doubleMe] a name with which to access this function.
+
+  Because of my background in ``Objective C'', I like this style of
+  name. Don't put periods in function names unless you know about
+  ``classes'' and are using them.
+
+\end{description}
+\column{6cm}
+\begin{description}
+\item [input] a name used INTERNALLY while making calculations
+
+\item [= 0] An \emph{optional} default value.
+\item [newval] Last calculation is returned.
+\end{description}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{How to Call doubleMe}
+  \begin{itemize}
+
+  \item What is 2 * 7?
+
+<<callDoubleMe10, echo=T>>=
+(doubleMe(7))
+@
+
+  \item The caller may name the arguments explicitly:
+
+<<callDoubleMe10b, echo=T>>=
+(doubleMe(input = 8))
+@
+
+\item Wonder why I use parentheses around everything?  Its just a
+  presentational trick. The default action is ``print'', and that's
+  what happens when you put something in parentheses without a
+  function name.
+
+  \item The alternatives are:
+
+<<callDoubleMe10c, echo=T>>=
+print(doubleMe(input = 3))
+@
+
+   \item or
+<<callDoubleMe10d, echo=T>>=
+x <- doubleMe(input = 2)
+x
+@
+
+ \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Generally, I Prefer Clarity in the Call}
+  \begin{itemize}
+
+    \item The ``call'' is the code statement that puts a function to
+      use. The call includes the function's name and all arguments.
+
+    \item This works
+<<callDoubleMe40, echo=T, eval=F>>=
+    doubleMe(10)
+@
+
+   \item But wouldn't you rather be clear?
+<<callDoubleMe50, echo=T, eval=F>>=
+doubleMe(input = 10)
+@
+
+   \item When there are many arguments, naming them often helps
+     prevent accidental matching of input to arguments (R's positional
+     matching can be fooled).
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Function Calls}
+  \begin{itemize}
+  \item  But if you name the argument wrong, it breaks
+    \begin{Schunk}
+      \begin{Soutput}
+> doubleMe(myInput = 7)
+Error in doubleMe(myInput = 7) :
+unused argument(s) (myInput = 7)
+
+      \end{Soutput}
+    \end{Schunk}
+
+  \item What if you feed it something unsuitable?
+\begin{Schunk}
+\begin{Soutput}
+> doubleMe(lm(rnorm(100) ~ rnorm(100)))
+Error in 2 * input : non-numeric argument to binary operator
+In addition: Warning messages:
+1: In model.matrix.default(mt, mf, contrasts) :
+  the response appeared on the right-hand side and was dropped
+2: In model.matrix.default(mt, mf, contrasts) :
+  problem with term 1 in model.matrix: no columns are assigned
+
+\end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Vectorization}
+
+This is not always true, but OFTEN:
+  \begin{itemize}
+
+\item We get ``free'' ``vectorization''
+
+<<callDoubleMe60,echo=T>>=
+(doubleMe(c(1,2,3,4,5)))
+@
+
+\item But it won't allow you to specify too many inputs:
+\begin{Schunk}
+\begin{Soutput}
+> doubleMe(1,2,3,4,5)
+  Error in doubleMe(1, 2, 3, 4, 5) :
+       unused argument(s) (2, 3, 4, 5)
+\end{Soutput}
+\end{Schunk}
+
+Vectorization: vector in $\Longrightarrow{}$ vector out
+\item Oops. I forgot the input
+<<callDoubleMe25,echo=T,eval=F,include=T>>=
+doubleMe()
+@
+Gives the default value.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{print.function magic}
+  \begin{itemize}
+\item Oops. I forgot the parentheses
+<<callDoubleMe70,echo=T>>=
+doubleMe
+@
+  \item Similarly, type ``lm'' and hit return. Or
+    ``predict.glm''. Don't add parentheses.
+
+  \item When you type a function's name, R thinks you want to print
+    that thing, and it invokes a ``print method'' for you, called
+    \texttt{print.function()}. (That's \texttt{print} as applied to an
+    object of class function.)
+
+  \item Generally, \texttt{print.function()} will display the R internal
+    functions in a ``tidied up'' format.  Your functions--the ones you
+    have created in your session--are generally not tidied up.  That
+    is discussed in the Rstyle vignette distributed with rockchalk.
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{predict.glm, for example}
+<<>>=
+predict.glm
+@
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Function Calls: Local versus Global}
+  \begin{itemize}
+
+    \item The variables we create in ``our'' session are generally in
+      the Global Environment.
+
+    \item Local variables in functions.
+      \begin{itemize}
+      \item Function arguments are local variables
+
+      \item Variables created inside are local variables
+      \end{itemize}
+    \item Local variables cease to exist once R returns
+      from the function
+
+    \item After playing with \texttt{doubleMe()}, we note
+      that the variable \texttt{input} does not exist in the
+      current environment.
+\begin{Schunk}
+  \begin{Soutput}
+> ls()
+[1] "doubleMe"
+> input
+Error: object 'input' not found
+\end{Soutput}
+\end{Schunk}
+
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check Point: write your own function}
+
+  \begin{itemize}
+  \item Write a function ``myGreatFunction'' that takes a vector and
+    returns the arithmetic average.
+  \item Generate your own input data, x1, like so
+
+<<echo=T, include=T, eval=F>>=
+set.seed(234234)
+x1 <- rnorm(10000, m = 7, sd = 19)
+@
+  \item In \texttt{myGreatFunction()}, you can use any R functions you
+    want, it is not necessary to re-create the \texttt{mean()} function (unless
+    you really want to :))
+
+  \item After you've written \texttt{myGreatFunction()}, use it:
+<<echo=T, include=T, eval=F>>=
+x1mean <- myGreatFunction(x1)
+x1mean
+@
+  \item Now stress test your function by changing x1
+
+<<echo=T, include=T, eval=F>>=
+x1[c(13, 44, 99, 343, 555)]  <- NA
+myGreatFunction(x1)
+@
+\end{itemize}
+
+\end{frame}
+
+
+% __________________________________________
+
+\section{Example: Calculate Entropy}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Entropy can summarize diversity for a categorical variable}
+
+  \begin{itemize}
+  \item Entropy in Physics means disorganization
+  \item Sometimes called Shannon's Information Index
+  \item Basic idea. List the possible outcomes and their probabilities
+
+  \item The amount of diversity in a collection of observations
+    depends on the equality of the proportions of cases observed within each type.
+  \end{itemize}
+\end{frame}
+
+
+%_____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{A Reasonable Person Would Agree $\ldots$}
+
+  \begin{itemize}
+  \item This distribution is ``less diverse''
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      outcome name & t1 & t2 & t3 & t4 & t5\tabularnewline
+      \hline
+      prob(outcome) & 0.1 & 0.3 & 0.05 & 0.55 & 0.0\tabularnewline
+      \hline
+    \end{tabular}
+
+  \item than this distribution:
+
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      outcome name & t1 & t2 & t3 & t4 & t5\tabularnewline
+      \hline
+      prob(outcome) & 0.2 & 0.2 & 0.2 & 0.2 & 0.2\tabularnewline
+      \hline
+    \end{tabular}
+  \end{itemize}
+\end{frame}
+
+%__________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Information Index}
+
+  \begin{itemize}
+  \item For each type, calculate the following information (or can I
+    say ``diversity''?)  value
+
+
+\begin{equation}
+-p_{t}*log_{2}(p_{t})\end{equation}
+
+    \item Note that if $p_{t} = 0$, the diversity value is 0
+    \item If $p_{t} = 1$, then diversity is also 0
+
+    \item Sum those values across the $m$ categories
+
+\begin{equation}
+\sum_{t=1}^{m}-p_{t}*log_{2}(p_{t})\end{equation}
+
+  \item Diversity is at a maximum when $p_t$ are all equal
+  \end{itemize}
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Calculate Diversity for One Type}
+
+<<entropy10,echo=T>>=
+divr <- function(p = 0){
+  ifelse ( p > 0 & p < 1, -p * log2(p), 0)
+}
+@
+
+\end{frame}
+
+%________________________________
+<<entropy20, echo=T, fig=T, include=F>>=
+  pseq <- seq(0.001, 0.999, length=999)
+  pseq.divr <- divr(pseq)
+  plot(pseq.divr ~ pseq, xlab = "p", ylab = "Diversity Contribution of One Observation",  main = expression(paste("Diversity: ", -p %*% log[2](p))), type = "l")
+@
+
+\begin{frame}[containsverbatim]
+  \frametitle{Let's plot that}
+
+ \input{plots/t-entropy20.tex}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \includegraphics[width=10cm]{plots/t-entropy20}
+\end{frame}
+ % ________________________________
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Diversity Function}
+
+  \begin{itemize}
+
+  \item Define an Entropy function that sums those values
+
+<<entropy40,echo=T>>=
+entropy <- function(p){
+    sum( divr(p) )
+}
+@
+
+
+\item Calculate some test cases
+<<entropy41,echo=T>>=
+entropy( c(1/5, 1/5, 1/5, 1/5, 1/5) )
+
+entropy( c(3/5, 1/5, 1/5, 0/5, 0/5) )
+@
+\end{itemize}
+\end{frame}
+
+%______________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{There's a Little Problem With This Approach}
+  \begin{itemize}
+    \item Diversity is sensitive to the number of categories
+
+      8 equally likely outcomes (rep(x,y): repeats x y times.)
+<<entropy50, echo=T>>=
+entropy(rep(1/8, 8))
+@
+      14 equally likely outcomes
+<<entropy51, echo=T>>=
+entropy(rep(1/14, 14))
+@
+   \item Write it out for a 3 category case
+
+
+\begin{equation}
+-\frac{1}{3}log_{2}(\frac{1}{3})-\frac{1}{3}log_{2}(\frac{1}{3})-\frac{1}{3}log_{2}(\frac{1}{3})=-log_{2}(\frac{1}{3})\end{equation}
+
+
+   \item The highest possible diversity with 3 types is $-log_2(\frac{1}{3})$
+
+   \item The highest possible diversity for N types is $-log_2(\frac{1}{N})$
+   \end{itemize}
+ \end{frame}
+
+\begin{frame}
+  \frametitle{We Might As Well Plot That}
+
+<<entropy59,echo=T,fig=T,include=F>>=
+maximumEntropy <- function(N) - log2(1/N)
+Nmax <- 15
+M <- 2:Nmax
+plot(M, maximumEntropy(M), xlab = "N of Possible Types", ylab = "Maximum Possible Diversity",  main = "Maximum Possible Entropy For N Categories", type = "h", axes = FALSE)
+axis(1)
+axis(2)
+points(M, maximumEntropy(M), pch=19)
+@
+
+\input{plots/t-entropy59}
+
+\end{frame}
+
+
+%________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Maximum Entropy as a Function of the Number of Types}
+
+   \includegraphics[width=10cm]{plots/t-entropy59}
+
+\end{frame}
+
+%_______________________________
+
+\begin{frame}
+  \frametitle{Final Result: Normed Entropy as a Diversity Summary}
+<<entropy60,echo=T>>=
+normedEntropy <- function(x) entropy(x)/ maximumEntropy(length(x))
+@
+
+
+Compare some cases with 4 possible outcomes
+<<entropy61,echo=T>>=
+normedEntropy(c(1/4,1/4,1/4,1/4))
+
+normedEntropy(c(1/2, 1/2, 0, 0))
+
+normedEntropy(c(1, 0, 0, 0))
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{How about 7 types of outcomes:}
+
+<<entropy62, echo=T>>=
+
+normedEntropy(rep(1/7, 7))
+
+normedEntropy((1:7)/(sum(1:7)))
+
+normedEntropy(c(2/7, 2/7, 3/7, 0, 0, 0, 0))
+
+normedEntropy(c(5/7, 2/7, 0, 0, 0, 0, 0))
+
+@
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Compare 3 test cases}
+
+<<entropy90, echo=T,fig=T, include=F, height = 3.5, width =7>>=
+### Save par values so we can put them back later
+saveParVals <- par(no.readonly=T)
+
+par(mfcol=c(1,3), xpd=T)
+
+testcase1 <- c( 1/10, 1/10, 1/10, 1/10, 2/10, 2/10, 2/10, 0/10, 0/10, 0/10)
+testcase2 <- c( 1/5, 2/5, 2/5, 0, 0)
+testcase3 <- (1:7)/sum(1:7)
+
+et1 <- round(normedEntropy(testcase1),2)
+et2 <- round(normedEntropy(testcase2),2)
+et3 <- round(normedEntropy(testcase3),2)
+
+
+bp1 <- barplot( testcase1, names.arg=1:(length(testcase1)), density=12, ylim=c(0,0.5))
+
+legend("topright", legend=paste("Normed Entropy=", et1) )
+
+### Can slip xpd=T into text command, instead of running par(xpd=T)
+text(bp1, testcase1, testcase1, pos=3,  cex=0.7, xpd=T)
+
+bp2 <- barplot( testcase2, names.arg= 1:(length(testcase2)), density=12, ylim=c(0,0.5))
+
+legend("topleft", legend=paste("Normed Entropy=", et2 ))
+
+text(bp2, testcase2, testcase2, pos=3, cex=0.7, xpd=T)
+
+bp3 <- barplot( testcase3, names.arg= 1:(length(testcase3)), density=12, ylim=c(0,0.5))
+
+legend("topleft", legend=paste("Normed Entropy=", et3) )
+
+text(bp3, testcase3, round(testcase3,2), pos=3, cex=0.7, xpd=T, las=2)
+
+### Restore par values to default
+par(saveParVals)
+@
+
+\includegraphics[width=12cm]{plots/t-entropy90}
+
+Subjectively, I wrestle with the question of whether comparison across
+variables with different M is meaningful.
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{Entropy is reported in \texttt{summarize()} and
+    \texttt{summarizeFactors()} in the rockchalk package}
+  Manufacture a variable to re-produce testcase3
+<<>>=
+round(testcase3,2)
+@
+<<>>=
+library(rockchalk)
+testcase3v <- factor(c(1,2,2,3,3,3, 4,4,4,4, 5,5,5,5,5, 6,6,6,6,6,6, 7,7,7,7,7,7,7 ))
+round((table(testcase3v)/length(testcase3v)), 2)
+dat <- data.frame(testcase3v)
+summarizeFactors(dat)
+@
+
+\end{frame}
+
+%_______________________________
+
+\section{Arguments and Returns}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Function Anatomy}
+  Arguments: The Arguments of a function
+
+  \begin{Sinput}
+    someWork <- function(what1, what2, what3)
+  \end{Sinput}
+
+  what1, what2, and what3 become ``local variables'' inside the function.
+
+  \begin{itemize}
+  \item named arguments must begin with letters, may include numbers,
+    or ``\_'' or ``-'' or ``.'', but no ``\!'' or ``,'' or ``*''
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Arguments: named and unnamed R variables}
+  \begin{Sinput}
+    someWork <-  function(what1, what2, what3, ...)
+  \end{Sinput}
+
+  \begin{itemize}
+  \item In R, everything is an ``object''. what1, what2, what3 can be \emph{ANYTHING!}
+  \item That is a blessing and a curse
+    \begin{itemize}
+    \item Blessing: Flexibility! Let an argument be a vector, matrix,
+      list, whatever. The function declaration does not care.
+    \item Curse: Difficulty managing the infinite array of possible
+      ways users might break your functions.
+    \end{itemize}
+  \item It is your choice, whether your function should receive
+    \begin{itemize}
+    \item  2 integers (x, y), or
+    \item  one vector of 2 integers (x)
+    \item For examples of this, look at the arguments of
+      plot.default, arrows, segments, lines, and matplot.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Peculiar spellings like $\ldots$}
+  Functions may have an argument ``$\ldots$''
+  \begin{itemize}
+  \item It seems funny, but ``...'' is actually a word made up of
+    \emph{three legal} characters
+  \item If the caller includes any named arguments that are not
+    \texttt{what1}, \texttt{what2}, or \texttt{what3}, then the R
+    runtime will put them in a list and give them to ``...''
+  \item The ``...'' argument requires special effort.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Function Arguments: R is VERY Lenient}
+  \begin{itemize}
+      \item R is lenient. Perhaps too lenient!
+        \begin{itemize}
+        \item Arguments are not type-defined. In
+          \begin{Sinput}
+            myF <- function(x1, x2){
+          \end{Sinput}
+          x1 could be an integer vector, a character string, a regression model, or anything
+
+        \item Function writer may declare default values, but need
+          not. These are acceptable definitions
+
+\begin{Sinput}
+someWork <- function(what1, what2, what3, what4, what5)
+
+someWork <- function(what1 = 0, what2 = NULL, what3 = c(1,2,3), what4 = 3 * what1, what5)
+
+someWork <- function(what1 = 0, what2, what3, what4 = 3 * what1, what5)
+\end{Sinput}
+
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R is Lenient toward Users as Well}
+  \begin{itemize}
+
+\item R is lenient on format of function calls
+
+\begin{Sinput}
+someWork(1)
+someWork(what=1, someObject)
+someWork(what5 = fred, what4 = jim, what3 = joe)
+\end{Sinput}
+    \begin{itemize}
+    \item Not all parameters must be provided
+    \item Partial argument matching
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R is Lenient About Undefined Variables}
+
+  \begin{exampleblock}{This is a convenience and a curse}
+    Variables inside functions might not be resolved the way you expect.
+
+  \begin{itemize}
+  \item If a variable is used, but not defined inside the function, R
+    will ``look outward'' for it
+  \item This is ``lexical scope'' in action. The runtime engine
+    searches through a sequence of ``frames'', ending up at the user's
+    workspace (which is the Global Environment).
+
+  \end{itemize}
+   \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example of the Undefined Variable Problem}
+  \begin{itemize}
+
+  \item Suppose ``dat'' exists in your workspace.
+
+  \item Here is a function that will find ``dat'', even if that's not
+    what you intend.
+
+\begin{Sinput}
+myFn <- function(x, y, z){
+    dat1 <- 2 * x + 3 * y
+    res <- sqrt(dat)
+}
+\end{Sinput}
+
+Note my typographical error (dat where dat1 should be). The function
+should crash, but it will not.
+   \item R will find the wrong ``dat'' and the result we get will be unhelpful
+
+   \item In my experience, this is the single most important cause of
+     hard-to-find flaws in user code.
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Inside the function, Check Arguments}
+
+  \begin{itemize}
+  \item Check and Re-format
+
+    \begin{itemize}
+    \item ``argument checking'': diagnose what arguments the
+      user provided
+    \item Figure out if they are ``correct'' for what the function
+      requires.
+    \end{itemize}
+  \item You choose how sympathetic you want to be toward users. Do you
+    want to accept incomplete input and re-format it? (In
+    rockchalk/R/genCorrelatedData.R, find may ``re-formatter''
+    functions like \texttt{makeVec()},  \texttt{vech2mat()}).
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Arguments: When to Use Defaults?}
+
+  \begin{itemize}
+    \item I don't know, but $\ldots$
+  \item As an R beginner, I took a very conservative strategy of
+    putting defaults on everything!
+
+\begin{Sinput}
+function(what1 = NULL, what2 = NULL, what3 = 3, what4 = ``a'')
+\end{Sinput}
+
+  \item That way, if a user forgets to provide
+    ``what3'', then the system will not go looking for it.
+  \item If the defaults usually work, this is concise, easy to read.
+
+  \item Most functions in R base code don't set defaults for all, or
+    even most, variables.
+
+  \item Instead, we manage arguments with more delicacy.  Insisting on
+    NULL defaults is ``throwing the baby out with the bath water.''
+ \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Functions that Help while Checking  Arguments}
+
+  \begin{exampleblock}{missing()}
+    \begin{itemize}
+    \item Inside a function, \texttt{missing()} is a way to
+      ask if the user supplied a value for an argument.
+
+\begin{Sinput}
+doSomething <- function(what1, what2, what3, what4){
+   if (missing(what1)) stop(``you forgot to specify what1'')
+}
+\end{Sinput}
+
+   \item I've found this conservative approach to be an
+     error-preventer. If x is not provided, or if the user gave us a
+     NULL, we better adapt!
+\begin{Sinput}
+if (missing(x) || is.null(x)) ## do something
+\end{Sinput}
+\end{itemize}
+\end{exampleblock}
+
+
+\begin{exampleblock}{Type Checks}
+     There are many ``is.'' functions. Ask if x is a
+  certain type of thing:
+  \begin{description}
+  \item [is.vector()] TRUE or FALSE: are you a vector?
+  \item [is.list()] TRUE or FALSE: are you a list?
+  \item [is.numeric()] TRUE or FALSE: are you numeric?
+  \item You get the general idea, I hope
+  \end{description}
+\end{exampleblock}
+
+
+\begin{exampleblock}{Look at all of these is. functions!}
+  \begin{Soutput}
+is.array         is.loaded              is.object
+is.atomic        is.logical             is.ordered
+is.call          is.matrix              is.package_version
+is.character     is.mts                 is.pairlist
+is.complex       is.na                  is.primitive
+is.data.frame    is.na<-                is.qr
+is.double        is.na.data.frame       is.R
+is.element       is.na<-.default        is.raster
+is.empty.model   is.na<-.factor         is.raw
+is.environment   is.name                is.recursive
+is.expression    is.nan                 is.relistable
+is.factor        is.na.numeric_version  is.single
+is.finite        is.na.POSIXlt          is.stepfun
+is.function      is.null                is.symbol
+is.infinite      is.numeric             is.table
+is.integer       is.numeric.Date        is.ts
+is.language      is.numeric.difftime    is.tskernel
+is.leaf          is.numeric.POSIXt      is.unsorted
+is.list          is.numeric_version     is.vector
+\end{Soutput}
+\end{exampleblock}
+
+\begin{alertblock}{Size Checks}
+  \begin{description}
+  \item [length()]
+  \item [nrow(), ncol()] number of rows (columns) from a matrix
+  \item [NROW(), NCOL()] Works if input is matrix, but will treat a
+    vector as a one column matrix.
+  \item [dim()] Returns 2 dimensional vector, works with matrices and arrays
+  \end{description}
+\end{alertblock}
+
+\begin{alertblock}{Stop, Warn}
+  \begin{description}
+  \item[stop(), stopifnot()] Ways to abend the function
+  \item[warning] Will return, but throws a message onto the R
+    warning log. User can run warnings() to see messages.
+  \end{description}
+\end{alertblock}
+
+\end{frame}
+
+
+
+
+%___________________________
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{The Return Has To Be Singular}
+  \begin{itemize}
+  \item When  you use a function, it is necessary to ``catch'' the
+    output with a single object name, as in
+
+<<doubleMe80a,echo=T>>=
+newthing <- doubleMe(32)
+newthing
+is.numeric(newthing)
+is.vector(newthing)
+@
+
+  \item We expect ``doubleMe(32)'' should return 64, and it does.
+
+  \item The ``vectorization for free'' gives us a hint of what is to follow.
+
+<<doubleMe80b,echo=T>>=
+newthing <- doubleMe(c(1,2,3,4,5))
+newthing
+is.numeric(newthing)
+is.vector(newthing)
+@
+
+
+\item R allows us to return one ``thing'', but ``thing'' can be a
+  rich, informative thing!
+\end{itemize}
+
+\end{frame}
+
+%______________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Generalization. Return a list}
+  \begin{itemize}
+
+  \item A list may include numbers, characters, vectors ,etc
+  \item or data frames or other lists
+  \item Read code for function ``lm''
+  \item Almost ALL interesting R functions return a list of elements.
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Check Point: revise your function}
+
+  \begin{itemize}
+  \item Create ``myGreatFunction2'' by revising
+    ``myGreatFunction''. Make it return a vector of 3 values: the
+    maximum, the minimum, and the median.
+  \item Generate your own input data, x1, like so
+
+<<echo=T, include=T, eval=F>>=
+x1 <- rnorm(10000, m=7, sd=19)
+@
+  \item After you've written myGreatFunction, use it:
+<<echo=T, include=T, eval=F>>=
+myGreatFunction(x1)
+@
+  \item Now stress test your function by changing x1
+
+<<echo=T, include=T, eval=F>>=
+x1[c(13, 44, 99, 343, 555)]  <- NA
+myGreatFunction(x1)
+@
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Check Point: Run this example function}
+  Admittedly, this is a dumb example, but $\ldots$
+  \begin{itemize}
+  \item This function returns a regression object
+<<regex10, echo=T, eval=F>>=
+aRegMod <- function(xin1, xin2, yout){ lm(yout ~ xin1 + xin2) }
+@
+  \item Generate some data, run \texttt{aRegMod()}
+<<regex10b, echo=T, eval = F>>=
+dat <- rockchalk::genCorrelatedData(N = 100, rho = 0.3, beta = c(1, 1.0, -1.1, 0.0))
+m1 <- with(dat, aRegMod(x1, x2, y))
+@
+
+  \item m1 is a ``single object''
+  \item Run ``class(m1)'',  ``attributes(m1)'', ``summary(m1)'', `str(m1)'',
+  \end{itemize}
+\end{frame}
+
+%________________________________________
+
+%% \begin{frame}[containsverbatim, allowframebreaks]
+%%   \frametitle{Almost All Substantial R Functions Return A Diverse List of Items}
+%%   \begin{itemize}
+%%   \item An R function can return an R ``list'' object.  Basically,
+%%     that means a combination of anything.
+
+%%   \item Look at the end of R's glm function, for example. After it has
+%%     done a bunch of calculations, it has an object ``fit'' and then
+%%     more and more details are wedged together with ``fit''
+
+%% \begin{Sinput}
+%% fit <- eval(call(if (is.function(method)) "method" else method,
+%%     x = X, y = Y, weights = weights, start = start, etastart = etastart,
+%%     mustart = mustart, offset = offset, family = family,
+%%     control = control, intercept = attr(mt, "intercept") >
+%%         0L))
+%% if (length(offset) && attr(mt, "intercept") > 0L) {
+%%     fit$null.deviance <- eval(call(if (is.function(method)) "method" else method,
+%%         x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights,
+%%         offset = offset, family = family, control = control,
+%%         intercept = TRUE))$deviance
+%% }
+%% if (model)
+%%     fit$model <- mf
+%% fit$na.action <- attr(mf, "na.action")
+%% if (x)
+%%     fit$x <- X
+%% if (!y)
+%%     fit$y <- NULL
+%% fit <- c(fit, list(call = call, formula = formula, terms = mt,
+%%     data = data, offset = offset, control = control, method = method,
+%%     contrasts = attr(X, "contrasts"), xlevels = .getXlevels(mt,
+%%         mf)))
+%% class(fit) <- c(fit$class, c("glm", "lm"))
+%% fit
+%% \end{Sinput}
+
+%% \end{itemize}
+%% \end{frame}
+
+%% % $
+
+
+
+
+%_____________________________________________
+
+\section{R Style}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The Unofficial Official R Style Guide}
+  \begin{itemize}
+  \item This is discussed in rockchalk vignette Rstyle
+  \item There is not much ``official style guidance'' from the R Core Team
+  \item Don't mistake that as permission to write however you want.
+  \item There ARE very widely accepted standards for the way that code
+    should look
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Inductive Style Guide}
+  \begin{itemize}
+    \item To see that R really does have an implicitly stated Style,
+      inspect the R source code.
+    \item The code follows a uniform pattern of indentation, the use
+      of white space, and so forth.
+    \item Recall that \texttt{print.function()} will be called if you
+      type the name of a function without parentheses. That is a
+      tidied up view of R's internal structural represenation of a function.
+    \item. This time, lets look at ``lm'' inside R:
+\end{itemize}
+
+\def\Sweavesize{\scriptsize}
+<<lmcode, echo=T>>=
+lm
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Why Neatness Counts}
+
+  \begin{itemize}
+  \item You can write messy code, but you can't make anybody read it.
+  \item Finding bugs in a giant undifferentiated mass of commands is difficult
+  \item Chance of error rises as clarity decreases
+  \item If you want people to help you, or use your code, you should
+    write neatly!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Style Fundamentals}
+
+  \begin{itemize}
+  \item WHITE SPACE:
+    \begin{itemize}
+    \item indentation. R Core Team recommends 4 spaces
+    \item one space around operators like <- = *
+    \end{itemize}
+  \item ``$<-$'' should be used for assignments. ``='' was used by
+    mistake so often by novices that the R interpreter was
+    re-written to allow =. However, it may still fail in some
+    cases.
+  \item Use helpful variable names
+  \item Separate calculations into functions. Sage advice from one of
+    my programming mentors:
+    \begin{quotation}
+      Don't allow a calculation to grow longer than the space on one
+      screen. Break it down into smaller, well defined pieces.
+    \end{quotation}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Be Careful about line endings}
+  \begin{itemize}
+  \item Unlike C (or other languages), R does not require an ``end
+    of line character'' like ``;''.
+  \item That's convenient, but sometimes code can
+    ``fool'' R into believing that a command is finished.
+  \item From the help page for ``if''
+    \begin{quote}
+      Note that it is a common mistake to forget to put braces (‘\{
+      .. \}’) around your statements, e.g., after ‘if(..)’ or
+      ‘for(....)’.  In particular, you should not have a newline
+      between ‘\}’ and ‘else’ to avoid a syntax error in entering a ‘if
+    ... else’ construct at the keyboard or via ‘source’.  For that
+    reason, one (somewhat extreme) attitude of defensive programming
+    is to always use braces, e.g., for ‘if’ clauses.
+  \end{quote}
+
+\item The \texttt{``} else {``} Policy. I strongly recommend this format:
+\begin{Sinput}
+if (a-logical-condition) {
+  ## if TRUE, do this
+  } else {
+    ## if FALSE, the other thing
+    }
+\end{Sinput}
+to close the previous if and begin else on same line.
+
+  \item ``if-else'' is very troublesome. If R thinks the ``if'' is
+    finished, it may not notice the else.
+
+\begin{Sinput}
+   if (x > 7) y <- 3
+   else y <- 2
+\end{Sinput}
+
+Causes ``Error: unexpected 'else' in ``else''
+
+  \item  When running code line-by-line, the ``naked else'' always
+    causes an error.
+
+  \end{itemize}
+\end{frame}
+
+%____________________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Google Doc on R Coding is Just ``somebody's'' Opinion}
+  \begin{itemize}
+    \item The Easily Googled Google R Standards
+     \includegraphics[scale=0.35]{importfigs/GoogleRsnap}
+ \end{itemize}
+\end{frame}
+
+
+%___________________________
+\begin{frame}[containsverbatim]
+  \frametitle{How To Name Functions}
+  \begin{itemize}
+    \item Don't use names for functions that are already in widespread
+      use, like lm, seq, rep, etc.
+  \item I like Objective C style variable and function names that
+    smash words together, as in \texttt{myRegression} \texttt{myCode}
+  \item R uses periods in function names to represent ``object
+    orientation'' or ``subclassing'', thus I avoid periods for simple punctuation.
+
+    Ex: doSomething() is better than do.something
+
+  \item Underscores are now allowed in function names.
+
+    Ex: do\_something() would be OK
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{How To Name Variables}
+
+  \begin{itemize}
+  \item Use clear names always
+  \item Use short names where possible
+  \item Never use names of common functions for variables
+  \item Never name a variable T or F (doing so tramples R symbols)
+  \item ``Name by suffix'' strategy I'm using now:
+ \end{itemize}
+\begin{Sinput}
+  m1 <- lm( y ~ x, data=dat)
+  m1sum <- summary(m1)
+  m1vif <- vif(m1)
+  m1inf <- influence.measures(m1)
+
+\end{Sinput}
+
+
+\end{frame}
+
+%_____________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Expect Some Variations in My Code}
+  \begin{itemize}
+  \item I don't mind adding squiggly braces, even if not required
+
+    \texttt{if (whatever == TRUE) \{x <- y\}}
+
+  \item Sometimes I will use 3 lines where one would do
+
+\begin{Verbatim}
+  if (whatever == TRUE){
+             x <- y
+  }
+\end{Verbatim}
+
+  \item When in doubt, I like to explicitly name arguments, but not always.
+
+
+    \item I sometimes forget to write TRUE and FALSE when T and F
+      will suffice
+   \item Here's why that's a big deal. Suppose a some user mistakenly redefines T or F:
+ \begin{Sinput}
+    T <- 7
+    F <- myTerrificFunction
+ \end{Sinput}
+     then my functions that use ``T'' and ``F'' will die.
+  \end{itemize}
+\end{frame}
+
+%____________________________________________
+
+
+\section{Writing Better R Code}
+
+\begin{frame}[containsverbatim]
+  \frametitle{What is this Section?}
+  \begin{itemize}
+  \item Tips from the school of hard knocks
+  \item Criticisms of R code I've found or written
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Functions replace ``cut and paste'' editing}
+
+  If you find yourself using ``copy and paste'' to repeat stanzas with
+  slight variations, \textbf{you are almost certainly doing the wrong
+    thing}.
+  \begin{itemize}
+  \item Re-conceptualize, write a function that does the right thing
+  \item Use the function over and over
+  \end{itemize}
+  Why is this important: AVOIDING mistakes due to editing mistakes
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{We Learn By Criticizing}
+
+I keep a folder of R code that troubles me.
+
+This example is a more-or-less
+literal translation from SAS into R that does not use R's special
+features.
+
+\begin{Sinput}
+
+#---------------SPECIFICATIONS------------------------#
+iter=1000                      #how many iterations per condition
+set.seed(7913025)                  # set random seed
+#--------------END SPECIFICATIONS---------------------#
+#n per cluster sample size
+for (perclust in c(100)) {
+#number of clusters - later for MLM application
+	for (nclust in c(1) ){
+#common correlation
+		for (setcorr in c(1:8) ){
+			if(setcorr == 1){
+				corr.10 <-1
+				corr.20 <-0
+				corr.30 <-0
+				corr.40 <-0
+				corr.50 <-0
+				corr.60 <-0
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 2){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-0
+				corr.40 <-0
+				corr.50 <-0
+				corr.60 <-0
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 3){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-0
+				corr.50 <-0
+				corr.60 <-0
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 4){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-1
+				corr.50 <-0
+				corr.60 <-0
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 5){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-1
+				corr.50 <-1
+				corr.60 <-0
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 6){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-1
+				corr.50 <-1
+				corr.60 <-1
+				corr.70 <-0
+				corr.80 <-0
+				}
+			if(setcorr == 7){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-1
+				corr.50 <-1
+				corr.60 <-1
+				corr.70 <-1
+				corr.80 <-0
+				}
+			if(setcorr == 8){
+				corr.10 <-1
+				corr.20 <-1
+				corr.30 <-1
+				corr.40 <-1
+				corr.50 <-1
+				corr.60 <-1
+				corr.70 <-1
+				corr.80 <-1
+     }
+\end{Sinput}
+
+   That project defined several variables in that way, consuming 100s
+   of lines.
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Quick Exercise}
+
+  How would you convert that into a vector in R, without writing 300 lines.
+
+  Hint. You want to end up with a vector \texttt{setcorr} with 0
+  elements, all either 0 or 1.
+
+  Requirement: You need some easy, flexible way to adjust the number of
+  0's and 1's
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Another ``noisy code'' example}
+
+  Note in the following
+
+  \begin{enumerate}
+  \item the author does not declare functions
+
+  Rather, treats comments ahead of blocks of code as if they
+  were function declarations.
+
+  \item repeated use of cat() with same file argument is an example of
+    cut-and-paste coding.
+\end{enumerate}
+
+\begin{Sinput}
+##########################################
+#       WRITE GENERATION CODE            #
+##########################################
+
+pathGEN <- paste(dirroot,perclust,nclust,setcorr,sep="\\")
+gen <- paste(pathGEN,"generatecorrdata.inp",sep="\\")
+testdata1 <- paste(pathGEN,"data1.dat",sep="\\")
+
+cat('MONTECARLO: \n', file=gen)
+cat('NAMES ARE x y q1-q8; \n', file=gen, append=T)
+cat('NOBSERVATIONS = 1000 ; \n', file=gen, append=T)
+cat(' NREPS = ',iter,'; \n', file=gen, append=T)
+cat(' SEED = ',round(runif(1)*10000000), '; \n', file=gen, append=T)
+cat(' REPSAVE=ALL; \n', file=gen, append=T)
+cat(' SAVE=\n', pathGEN,'\\data*.dat; \n', file=gen, append=T, sep="")
+cat('MODEL POPULATION: \n', file=gen, append=T)
+cat('[q1-q8*0 x*0 y*0]; \n', file=gen, append=T)
+cat('q1-q8*1; x*1; y*1;  \n', file=gen, append=T)
+cat('q1-q8 with q1-q8*.50;  \n', file=gen, append=T)
+cat('x with y*.50; \n', file=gen, append=T)
+cat('x with q1-q8*.50; \n', file=gen, append=T)
+cat('y with q1-q8*', .0+(corr.10*(.10+corr.20*.10+corr.30*.10+corr.40*+corr.40*.10+corr.50*.10+corr.60*.10+corr.70*.10+corr.80*.10)), '; \n', file=gen, append=T, sep="")
+
+if(file.exists(testdata1)){
+} else {
+shell (paste("mplus.exe",gen, paste(pathGEN,"save1.out", sep="\\"), sep=" "))
+       }
+
+#---------------------------------------------------------------------#
+
+##########################################
+#          GENERATE SAS CODE             #
+##########################################
+pathSAS <- paste(dirroot,perclust,nclust,setcorr,setpattern,percentmiss,aux,auxnumber,sep="\\")
+pathSASdata <- paste(dirroot,perclust,nclust,setcorr,setpattern,percentmiss,sep="\\")
+smcarmiss <- paste(pathSAS,"modifydata.sas",sep="\\")
+testdata2 <- paste(pathSASdata,"data1.dat",sep="\\")
+
+#-------------------------------------------------------#
+#------------- import SIM data into SAS ----------------#
+#-------------------------------------------------------#
+
+if(file.exists(testdata2)){
+} else {
+
+cat('proc printto \n', file=smcarmiss, append=T)
+cat('log="R:\\users\\username\\data\\simLOG2\\LOGLOG.log" \n', file=smcarmiss, append=T)
+cat('print="R:\\users\\username\\data\\simLOG2\\LSTLST.lst" \n', file=smcarmiss, append=T)
+cat('new; \n', file=smcarmiss, append=T)
+cat('run; \n', file=smcarmiss, append=T)
+cat(' \n', file=smcarmiss, append=T)
+
+cat('%macro importMPLUS; \n', file=smcarmiss, append=T)
+cat('%do i=1 %to ', file=smcarmiss, append=T)
+cat(paste(iter) , file=smcarmiss, append=T)
+cat('; \n', file=smcarmiss, append=T)
+cat('data work.data&i; \n', file=smcarmiss, append=T)
+cat('infile ', file=smcarmiss, append=T)
+cat('"', file=smcarmiss, append=T)
+cat(paste(pathGEN,"data&i..dat",sep="\\") , file=smcarmiss, append=T)
+cat('" ; \n', file=smcarmiss, append=T)
+cat('INPUT x y q1 q2 q3 q4 q5 q6 q7 q8; /*<---insert variables here*/ \n', file=smcarmiss, append=T)
+cat('RUN; \n', file=smcarmiss, append=T)
+cat('%end; \n', file=smcarmiss, append=T)
+cat('%mend; \n', file=smcarmiss, append=T)
+cat('%importMPLUS \n', file=smcarmiss, append=T)
+cat(' \n', file=smcarmiss, append=T)
+
+##########################################
+#     Draw random sample of size N       #
+##########################################
+cat('%macro samplesize; \n', file=smcarmiss, append=T)
+cat('%do i=1 %to ', file=smcarmiss, append=T)
+cat(paste(iter) , file=smcarmiss, append=T)
+cat('; \n', file=smcarmiss, append=T)
+cat('Proc surveyselect data=work.data&i out=work.sampledata&i method=SRS \n', file=smcarmiss, append=T)
+if(perclust == 50) {
+cat('sampsize=50 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 75) {
+cat('sampsize=75 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 100) {
+cat('sampsize=100 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 200) {
+cat('sampsize=200 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 400) {
+cat('sampsize=400 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 800) {
+cat('sampsize=800 \n', file=smcarmiss, append=T)
+}
+else if(perclust == 1000) {
+cat('sampsize=1000 \n', file=smcarmiss, append=T)
+}
+cat('SEED = ',round(runif(1)*10000000), '; \n', file=smcarmiss, append=T)
+cat('RUN; \n', file=smcarmiss, append=T)
+cat('%end; \n', file=smcarmiss, append=T)
+cat('%mend; \n', file=smcarmiss, append=T)
+cat('%samplesize \n', file=smcarmiss, append=T)
+cat(' \n', file=smcarmiss, append=T)
+  \end{Sinput}
+ \end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{This could be much better}
+
+  \begin{itemize}
+  \item Weird indentation
+  \item Use "/", not "backslash", even on Windows
+  \item Use vectors
+  \item Prolific copying and pasting of "cat" lines.
+  \item Avoid system except where truly necessary. R has OS neutral
+    functions to create directorys and such.
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{I found the prototype for that code in a previous project}
+
+  \begin{Sinput}
+
+gen <- paste(path,"generate.inp",sep="\\")
+
+cat('MONTECARLO: \n', file=gen)
+cat('NAMES ARE y1-y6; \n', file=gen, append=T)
+cat(' NOBSERVATIONS = ',perclust*nclust, '; \n', file=gen, append=T)
+if (perclust != 7.5) {
+cat(' NCSIZES = 1; \n', file=gen, append=T)
+cat(' CSIZES = ',nclust, '(', perclust, '); \n', file=gen, append=T)
+}
+if (perclust == 7.5) {
+cat(' NCSIZES = 2; \n', file=gen, append=T)
+cat(' CSIZES = ',nclust/2, ' (7) ',nclust/2, ' (8); \n', file=gen, append=T)
+}
+
+#user-specified iterations
+cat(' NREPS = ',iter,'; \n', file=gen, append=T)
+cat(' SEED = 791305; \n', file=gen, append=T)
+cat(' REPSAVE=ALL; \n', file=gen, append=T)
+cat(' SAVE=\n', path,'\\data*.dat; \n', file=gen, append=T, sep="")
+cat(' ANALYSIS: TYPE = TWOLEVEL; \n', file=gen, append=T)
+
+cat('MODEL POPULATION: \n', file=gen, append=T)
+
+cat('%WITHIN% \n', file=gen, append=T)
+# baseline loadings are all .3, add .4 if 'within' = 1, but change based on mod/strong
+cat('FW BY y1-y2*', .3+(within*(.4+strong*.1)), ' \n', file=gen, append=T, sep="")
+cat('y3-y4*', .3+(within*(.4-mod*.3)), ' \n', file=gen, append=T, sep="")
+cat('y5-y6*', .3+(within*(.4-strong*.1)), '; \n', file=gen, append=T, sep="")
+cat('FW@1;  \n', file=gen, append=T)
+# residuals are just 1-loading^2
+cat('y1-y2*', 1-(.3+(within*(.4+strong*.1)))^2, '; \n', file=gen, append=T, sep="")
+cat('y3-y4*', 1-(.3+(within*(.4-mod*.3)))^2, '; \n', file=gen, append=T, sep="")
+cat('y5-y6*', 1-(.3+(within*(.4-strong*.1)))^2, '; \n', file=gen, append=T, sep="")
+cat(' \n',file=gen, append=T, sep="")
+cat('%BETWEEN% \n', file=gen, append=T)
+
+# the ICC bit multiplies by .053 when ICC is low, by 1 when ICC is high
+cat('FB BY y1-y2*', sqrt((.3+(between*(.4+strong*.1)))^2*(1+(icc*(.053-1)))), ' \n', file=gen, append=T, sep="")
+cat('y3-y4*', sqrt((.3+(between*(.4-mod*.3)))^2 *(1+(icc*(.053-1)))), ' \n',file=gen, append=T, sep="")
+cat('y5-y6*', sqrt((.3+(between*(.4-strong*.1)))^2 *(1+(icc*(.053-1)))), '; \n', file=gen, append=T, sep="")
+cat('FB@1;  \n', file=gen, append=T)
+
+#residuals are total variance (1 or .053, depending on  ICC) loading^2
+cat('y1-y2*', 1+(icc*(.053-1))-sqrt((.3+(between*(.4+strong*.1)))^2*(1+(icc*(.053-1))))^2, '; \n', file=gen, append=T, sep="")
+cat('y3-y4*', 1+(icc*(.053-1))-sqrt((.3+(between*(.4-mod*.3)))^2 *(1+(icc*(.053-1))))^2, '; \n', file=gen, append=T, sep="")
+cat('y5-y6*', 1+(icc*(.053-1))-sqrt((.3+(between*(.4-strong*.1)))^2 *(1+(icc*(.053-1))))^2, '; \n', file=gen, append=T, sep="")
+cat(' \n',file=gen, append=T, sep="")
+
+#run the above syntax using Mplus
+
+#shell (paste("cd", mplus, sep=" "))
+shell (paste("mplus.exe",gen, paste(path,"save.out", sep="\\"), sep=" "))
+
+\end{Sinput}
+\end{frame}
+
+%"  to close an open paren somewhere
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Here was my Suggestion}
+
+  Create separate functions to do separate parts of the work.
+
+  Avoid so much ``cut and paste'' coding.  The cat function can include MANY separate quoted strings or values,
+  there is no reason to write separate cat statements for each line.
+
+  Here was my suggestion for part of the revision
+
+\def\Sweavesize{\scriptsize}
+<<eval=F, include=T,echo=T>>=
+
+##Create one MPlus Input file corresponding to following parameters.
+createInpFile <- function(path="apath", gen="afilename.inp", perclust=2, nclust=100, iter=1000, mod=1, strong=1, between=1, within=1){
+    cat("MONTECARLO:
+      NAMES ARE y1-y6;
+      NOBSERVATIONS = ", perclust*nclust, "; \n",
+        ifelse(perclust != 7.5 ,
+               paste("NCSIZES = 1; \n    CSIZES =", nclust, "(", perclust, ");\n"),
+               paste("  NCSIZES = 2; \n   CSIZES = ", nclust/2, " (7) ", nclust/2 , " (8); \n" ) ), file=gen,   append=T,
+        sep="")
+
+  ##user-specified iterations
+    cat( "NREPS = ", iter, ";
+       SEED = 791305;
+       REPSAVE=ALL;
+       SAVE=", path, "\\data*.dat;
+       ANALYSIS: TYPE = TWOLEVEL;
+       MODEL POPULATION:
+       %WITHIN% \n", file=gen, append=T, sep="")
+
+    ## baseline loadings are all .3, add .4 if "within" = 1, but change based on mod/strong
+
+    cat("FW BY y1-y2*", .3+(within*(.4+strong*.1)),
+        "y3-y4*", .3+(within*(.4-mod*.3)),
+        "y5-y6*", .3+(within*(.4-strong*.1)),
+        "FW@1; \n",
+        "y1-y2*", 1-(.3+(within*(.4+strong*.1)))^2, "; \n",
+        "y3-y4*", 1-(.3+(within*(.4-mod*.3)))^2, "; \n",
+        "y5-y6*", 1-(.3+(within*(.4-strong*.1)))^2, "; \n",
+        " %BETWEEN% ",
+        "FB BY y1-y2*", sqrt((.3+(between*(.4+strong*.1)))^2*(1+(icc*(.053-1)))),
+        "y3-y4*", sqrt((.3+(between*(.4-mod*.3)))^2 *(1+(icc*(.053-1)))),
+        "y5-y6*", sqrt((.3+(between*(.4-strong*.1)))^2 *(1+(icc*(.053-1)))),"; FB@1;  \n",
+        "y1-y2*", 1+(icc*(.053-1))-sqrt((.3+(between*(.4+strong*.1)))^2*(1+(icc*(.053-1))))^2, ";",
+        "y3-y4*", 1+(icc*(.053-1))-sqrt((.3+(between*(.4-mod*.3)))^2 *(1+(icc*(.053-1))))^2, ";",
+       "y5-y6*", 1+(icc*(.053-1))-sqrt((.3+(between*(.4-strong*.1)))^2 *(1+(icc*(.053-1))))^2, ";",
+       "\n", file=gen, append=T, sep="")
+}
+@
+
+\end{frame}
+
+% $ " '
+
+\begin{frame}[containsverbatim]
+  \frametitle{Critique that!}
+  \begin{itemize}
+
+    \item Benefit of re-write is isolation of code writing into a
+      separate function
+    \item We need to work on cleaning up use of ``cat'' to write files.
+
+  \end{itemize}
+\end{frame}
+
+
+
+\section{Object Oriented Programming}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Object Oriented Programming}
+
+  \begin{itemize}
+  \item A re-conceptualization of programming to reduce programmer error
+  \item OO includes a broad set of ideas, only a few of which are
+    directly applicable to R programming
+  \item The ``rise'' to pre-eminance of OO indicated by the
+    \begin{itemize}
+    \item introduction of object frameworks in existing languages
+      (C++, Objective-C)
+    \item growth of
+      wholly new object-oriented languages (Java)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Decipher R OO by Intuition}
+
+  Run the command
+
+\begin{Sinput}
+  methods(print)
+\end{Sinput}
+
+What do you see? I see 170 lines, like so:
+
+\def\Sweavesize{\scriptsize}
+\begin{Schunk}
+  \begin{Soutput}
+  [1] print.acf*
+  [2] print.anova
+  [3] print.aov*
+  [4] print.aovlist*
+...
+[167] print.warnings
+[168] print.xgettext*
+[169] print.xngettext*
+[170] print.xtabs*
+
+   Non-visible functions are asterisked
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{170 print.??? Methods.}
+
+  \begin{itemize}
+  \item Yes: there are really 170 print ``methods''
+  \item No: the R team does not expect or want you to know all of
+    them. Users just run
+    \begin{Sinput}
+    print(x)
+    \end{Sinput}
+    Try not to worry about ``how'' the
+    printing is achieved.
+  \item Yes: R team wants package writers to create specialized print
+    methods to control presentation of their output for the object
+    they create.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{The R Runtime System Handles the Details}
+  \begin{itemize}
+  \item The user runs
+
+\begin{Schunk}
+  \begin{Sinput}
+    print(x)
+  \end{Sinput}
+\end{Schunk}
+  \item The R runtime system
+  \begin{enumerate}
+  \item  notices that x is of a certain type, say
+  ``classOfx''
+  \item   and then the runtime system uses print.classOfX to handle
+    the user's request
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{print is a ``Generic Function''}
+
+  Definition of ``Generic Function'': the function that users call
+  which causes an object-specific function to be called for the work
+  to get done. Examples:``print'', ``plot'', ``summary'', ``anova''
+  \begin{itemize}
+  \item Generic Function is terminology unique to R(AFAIK)
+  \item In the standard case, a generic function does not do any
+    work. It sends the work to the appropriate ``implementation'' in a method.
+    \begin{quotation}
+      ``A standard generic function does no computation other than
+      dispatching a method, but R generic functions can do other
+      coumputations as well before and/or after method
+      dispatch''(Chambers, \emph{Software for Data Analysis}, p. 398)
+    \end{quotation}
+  \item UseMethod() is the function that declares a function as
+    generic: The R runtime system is warned to ``be alert'' to usage
+    of the function.
+
+  \item Example: the print generic function from R source (base package).
+
+\begin{Sinput}
+print <- function(x, ...) UseMethod("print")
+    \end{Sinput}
+
+  \item Example: the plot generic function from R source (graphics package).
+
+\begin{Sinput}
+plot <- function (x, y, ...)  UseMethod("plot")
+\end{Sinput}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Here's Where R Gains its Analytical Power}
+  \begin{itemize}
+  \item The generic is just a place holder. User runs
+    print(x), then R knows it is supposed to ask x for its class and
+    then the appropriate thing is supposed to happen. No Big Deal.
+
+  \item But the statisticians in the S \& R projects saw enormous
+    simplifying potential in developing a battery is standard generic
+    accessor functions
+    \begin{itemize}
+    \item summary()
+    \item anova()
+    \item predict()
+    \item plot()
+    \item aic()
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Object}
+
+  Object:  self-contained ``thing''. A container for data.
+    \begin{itemize}
+    \item Operationally, in R: just about anything on the left hand side in an
+      assignment ``<-''
+    \item Each ``thing'' in R carries with it enough information so
+      that generic functions ``know what to do.''.
+    \item If there is no function specific to an object, the work is
+      sent to a default method (see print.default).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Class}
+
+  Definition: As far as R with S3 is concerned, class is a
+  characteristic label assigned to an object (an object can have a
+  vector of classes, such as c(``lm'', ``glm'')).
+  \begin{itemize}
+    \item The class information is used by R do decide which method
+      should be used to fulfill the request.
+    \item Run class(x), ask x what class it inherits from.
+    \item In R, the principal importance of the ``class'' of an object
+      is that it is used to decide which function should be used to
+      carry out the required work when a generic function is used.
+    \item Classes called ``numeric'', ``integer'', ``character'' are
+      all vector classes
+\end{itemize}
+\begin{Soutput}
+> y <- c(1, 10, 23)
+> class(y)
+[1] "numeric"
+> x <- c("a", "b", "c")
+> x
+[1] "a" "b" "c"
+> class(x)
+[1] "character"
+> x <- factor(x)
+> class(x)
+[1] "factor"
+> m1 <- lm(y ~ x)
+> class(m1)
+[1] "lm"
+> m2 <- glm( y ~ x, family=Gamma)
+> class(m2)
+[1] "glm" "lm"
+
+\end{Soutput}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Method, a.k.a, ``Method Function''}
+  Definition: The ``implementation'': the function that does the
+  work for an object of a particular type.
+
+  \begin{itemize}
+  \item When the user runs print(m1), and m1 is from class ``lm'',
+    the work is sent to a method print.lm()
+  \item   Methods are always named
+  in the format ``generic.class'', such as ``print.default'',
+  ``print.lm'', etc.
+  \item Note: Most methods do not ``double-check'' whether the
+    object they are given is from the proper class. They count in
+    R's runtime system to check and then call print.whatever for
+    obejcts of type whatever
+  \item That's why many methods are ``hidden'' (can only access via
+    ::: notation)
+  \item Accessing methods directly
+    \begin{itemize}
+    \item If a method is ``exported'', can be called directly via
+      ``package::method.class()'' format
+    \item If a package is ``attached'' to the search path, then
+      ``method.class()'' will suffice, but is not as clear
+      \item If a method is NOT exported, then user can reach into the
+        package and grab it by running ``package:::method.class()''
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Detour: attributes() Function and Confusing Output}
+
+  The class is stored as an attribute in many object types. Run attributes()
+\def\Sweavesize{\scriptsize}
+\begin{Soutput}
+> attributes(x)
+$levels
+[1] "a" "b" "c"
+
+$class
+[1] "factor"
+
+> attributes(m1)
+$names
+ [1] "coefficients"  "residuals"     "effects"       "rank"
+ [5] "fitted.values" "assign"        "qr"            "df.residual"
+ [9] "contrasts"     "xlevels"       "call"          "terms"
+[13] "model"
+
+$class
+[1] "lm"
+
+> attributes(y)
+NULL
+> is.object(y)
+[1] FALSE
+
+\end{Soutput}
+
+\begin{itemize}
+\item puzzle: why has y no attribute?  Why is it not an object?
+\item Honestly, I'm baffled, I thought "everything in R is an object."
+  (And I still do.)
+\end{itemize}
+  \begin{quotation}
+    If the object does not have a class attribute, it has an implicit
+    class, ``matrix'', ``array'' or the result of ``mode(x)'' (except
+    that integer vectors have the implicit class ``integer''). (from ?class
+    in R-2.15.1)
+  \end{quotation}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{How Objects get ``into'' Classes}
+
+  \begin{itemize}
+   \item In older S3 terminology, user is allowed to simply
+      claim that x is from one or more classes
+      \begin{Sinput}
+class(x) <- c(``lm'', ``glm'', class(x))
+      \end{Sinput}
+    \item That would say x's class includes ``lm'' and ``glm'' as new
+      classes, and also would keep x's old classes as well.
+    \item The class is an attribute, can be set thusly
+      \begin{Sinput}
+attr(x, ``class'') <- c(``lm'', ``whateverISay'')
+      \end{Sinput}
+     \item When a generic method ``run'' is called with x, the R runtime will
+       first try to use run.lm. If run.lm is not found, then
+       run.whateverISay will be tried, and if that fails, it falls
+       back to run.default.
+    \end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{How Objects get ``into'' Classes: S4}
+
+  \begin{itemize}
+   \item S4 has more structure, makes classes \& methods work more
+     like truly object oriented programs.
+   \item S4 classes are defined with a list of variables BEFORE
+     objects are created.
+   \item Variables are typed!
+   \item Example imitates Matloff, p. 223
+
+<<s410, include=T, echo=T>>=
+ setClass("pjfriend", representation(
+ name="character",
+ gender="factor",
+ food="factor",
+ age="integer"))
+@
+
+
+   \item Create an instance of class pjfriend (Note: to declare an
+     integer, add letter ``L'' to end of number).
+
+<<s420, include=T, echo=T>>=
+william <- new("pjfriend", name = "william", gender =
+  factor("male"), food=factor("pizza"), age=33L)
+william
+
+jane <- new("pjfriend", name="pumpkin", gender = factor("female"), food=factor("hamburger"), age=21L)
+jane
+@
+ \item jane and william are \emph{instances} of class ``pjfriend''
+    \item The variables inside an S4 object are called \emph{``slots''} in R
+    \item ``slot'' would be called
+      ``instance variable'' in most OO-languages)
+    \item values in slots can be retrieved with symbol @, not \$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Implement an S4 method}
+
+  \begin{itemize}
+  \item Step 1. Write a function that can receive a function of type
+    ``pjfriend'' and do something with it.
+  \item Step 2. Use setMethod to tell the R system that the function
+    implements the method that is called for.
+  \item setMethod ``wraps'' a function.
+<<s450, eval=F, include=T, echo=T>>=
+setMethod("some-generic-function-name", "pjfriend",
+          function(x) {
+              #do something with x
+              }
+)
+@
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Difficult to Account For Changes between S3 and S4}
+
+  I think it is difficult to explain some of the notational and
+  terminological changes between S3 and S4.
+  \begin{itemize}
+  \item If you type an S4 object's name on the command line
+\begin{Sinput}
+  > x
+\end{Sinput}
+  the R runtime looks for a method ``show.class'' (where class is the
+  class of x).
+\item Why change from ``print'' to ``show''? (IDK)
+  \item Why change the ``accessor'' symbol from \$ to @ ?
+  \item Why call things accessed with @ ``slots'' rather than instance
+    variables?
+
+  \end{itemize}
+
+\end{frame}
+
+
+
+
+
+%===================================================
+\end{document}

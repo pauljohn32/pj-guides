@@ -1,0 +1,24 @@
+\begin{Schunk}
+\begin{Sinput}
+ load("/home/pauljohn/SVN/SVN-guides/Rcourse/DataSets/titanic0.rda")
+ set.seed(234234)
+ titanic <- titanic0
+ titanic$sex[sample(nrow(titanic), 400)] <- NA 
+ titanic$pclass[sample(nrow(titanic), 400)] <- NA 
+ titanic$survived[sample(nrow(titanic), 400)] <- NA
+ miceTitanic <- mice( subset( titanic, select = c('survived', 'pclass', 'sex', 'age', 'embarked')), m = 10, maxit  = 10, printFlag=FALSE) 
+ miceFitTitanic <- with(data = miceTitanic, exp = glm(survived ~ pclass + sex + age, family = binomial))
+ pool(miceFitTitanic)
+\end{Sinput}
+\begin{Soutput}
+Call: pool(object = miceFitTitanic)
+
+Pooled coefficients:
+(Intercept)     pclass2     pclass3        sex2         age 
+       3.97       -1.24       -2.81       -2.31       -0.05 
+
+Fraction of information about the coefficients missing due to nonresponse: 
+(Intercept)     pclass2     pclass3        sex2         age 
+       0.92        0.75        0.77        0.81        0.93 
+\end{Soutput}
+\end{Schunk}

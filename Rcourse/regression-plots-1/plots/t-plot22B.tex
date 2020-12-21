@@ -1,0 +1,22 @@
+\begin{Schunk}
+\begin{Sinput}
+ m6 <- lm(th.bush.kerry~V043250 + V041109A, data=mydta1)
+ mycols <- c(gray(.7), rgb(0.7, 0.1, 0.1), "black", "red") 
+ V043250r <- range(mydta1$V043250)
+ newdf1 <- expand.grid(V043250 = V043250r,  V041109A = levels(mydta1$V041109A))
+ newdf1$fit <- predict(m6, newdata = newdf1)
+ plot(th.bush.kerry ~ V043250, type = "n", data = mydta1, xlab = "V043250: Age (years)", ylab = "Bush-Kerry Thermometer Differential")
+ points(th.bush.kerry ~ V043250, data = mydta1,  lwd = 0.6, col = ifelse(V041109A %in% c("M"), mycols[1], mycols[2]))
+ by(newdf1, newdf1$V041109A, function(x) lines(fit~V043250, data = x, col = mycols[2+as.numeric(x$V041109A)], lty = as.numeric(x$V041109A), lwd = 3 ))
+\end{Sinput}
+\begin{Soutput}
+newdf1$V041109A: M
+NULL
+------------------------------------------------------------------------------------------------------------------------ 
+newdf1$V041109A: F
+NULL
+\end{Soutput}
+\begin{Sinput}
+ legend("topleft", legend = c("Male", "Female"), col = mycols[3:4], lty = c(1,2), bg = "white", lwd = 3)
+\end{Sinput}
+\end{Schunk}

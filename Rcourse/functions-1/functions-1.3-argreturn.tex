@@ -1,0 +1,836 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filename: template.Rnw
+%   Author: Paul Johnson
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,english]{beamer}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{url}
+\usepackage{graphicx}
+
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage{Sweavel}
+ \newenvironment{topcolumns}{\begin{columns}[t]}{\end{columns}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{dcolumn}
+\usepackage{booktabs}
+
+% use 'handout' to produce handouts
+%\documentclass[handout]{beamer}
+\usepackage{wasysym}
+\usepackage{pgfpages}
+\newcommand{\vn}[1]{\mbox{{\it #1}}}\newcommand{\vb}{\vspace{\baselineskip}}\newcommand{\vh}{\vspace{.5\baselineskip}}\newcommand{\vf}{\vspace{\fill}}\newcommand{\splus}{\textsf{S-PLUS}}\newcommand{\R}{\textsf{R}}
+
+
+\usepackage{graphicx}
+\usepackage{listings}
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+%
+%In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize}
+\def\Rcolor{\color{black}}
+\def\Rbackground{\color[gray]{0.95}}
+
+% \usetheme{Warsaw}
+% or ...
+
+%\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+\mode<presentation>
+  \usetheme{KU}
+  \usecolortheme{dolphin} %dark blues
+
+\setbeamertemplate{frametitle continuation}[from second]
+\renewcommand\insertcontinuationtext{...}
+
+%%for presentations
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+ \insertshorttitle\hfill\insertframenumber\,/\,\inserttotalframenumber}
+
+%=============================================================================
+%
+
+
+
+\title[Writing Functions I] % (short title, use only with long paper titles)
+{Writing Functions In R}
+
+\subtitle{Necessity Really is a Mother}
+
+\author[Johnson] { Paul E. Johnson\inst{1}\inst{2}}
+
+\institute[University of Kansas]{\inst{1}
+  University of Kansas, Department of
+  Political Science \inst{2} Center for Research Methods and Data Analysis}
+
+\date[\today] % (optional, should be abbreviation of conference name)
+{\today}
+
+\subject{R functions}
+
+%====================================
+
+\begin{document}
+
+\AtBeginSection[]{
+  \frame<beamer>{
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  }
+}
+
+
+
+
+% In document Latex options:
+
+
+\input{plots/t-Roptions}
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Outline}
+
+\tableofcontents{}
+
+\end{frame}
+
+
+%_______________________________
+
+\section{Arguments}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Function Anatomy}
+  Arguments: The Arguments of a function
+
+  \begin{Sinput}
+    someWork <- function(what1, what2, what3)
+  \end{Sinput}
+
+  what1, what2, and what3 become ``local variables'' inside the function.
+
+  \begin{itemize}
+  \item named arguments must begin with letters, may include numbers,
+    or ``\_'' or ``-'' or ``.'', but no ``\!'' or ``,'' or ``*''
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Arguments: named and unnamed R variables}
+  \begin{Sinput}
+    someWork <-  function(what1, what2, what3, ...)
+  \end{Sinput}
+
+  \begin{itemize}
+  \item In R, everything is an ``object''. what1, what2, what3 can be \emph{ANYTHING!}
+  \item That is a blessing and a curse
+    \begin{itemize}
+    \item Blessing: Flexibility! Let an argument be a vector, matrix,
+      list, whatever. The function declaration does not care.
+    \item Curse: Difficulty managing the infinite array of possible
+      ways users might break your functions.
+    \end{itemize}
+  \item It is your choice, whether your function should receive
+    \begin{itemize}
+    \item  2 integers (x, y), or
+    \item  one vector of 2 integers (x)
+    \item For examples of this, look at the arguments of
+      plot.default, arrows, segments, lines, and matplot.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Peculiar spellings like $\ldots$}
+  Functions may have an argument ``$\ldots$''
+  \begin{itemize}
+  \item It seems funny, but ``...'' is actually a word made up of
+    \emph{three legal} characters
+  \item If the caller includes any named arguments that are not
+    \texttt{what1}, \texttt{what2}, or \texttt{what3}, then the R
+    runtime will put them in a list and give them to ``...''
+  \item The ``...'' argument requires special effort.
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Function Arguments: R is VERY Lenient}
+  \begin{itemize}
+      \item R is lenient. Perhaps too lenient!
+        \begin{itemize}
+        \item Arguments are not type-defined. In
+          \begin{Sinput}
+            myF <- function(x1, x2){
+          \end{Sinput}
+          x1 could be an integer vector, a character string, a regression model, or anything
+
+        \item Function writer may declare default values, but need
+          not. These are acceptable definitions
+
+\begin{Sinput}
+someWork <- function(what1, what2, what3, what4, what5)
+
+someWork <- function(what1 = 0, what2 = NULL, what3 = c(1,2,3), what4 = 3 * what1, what5)
+
+someWork <- function(what1 = 0, what2, what3, what4 = 3 * what1, what5)
+\end{Sinput}
+
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R is Lenient toward Users as Well}
+  \begin{itemize}
+
+\item R is lenient on format of function calls
+
+\begin{Sinput}
+someWork(1)
+someWork(what=1, someObject)
+someWork(what5 = fred, what4 = jim, what3 = joe)
+\end{Sinput}
+    \begin{itemize}
+    \item Not all parameters must be provided
+    \item Partial argument matching
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{R is Lenient About Undefined Variables}
+
+  \begin{exampleblock}{This is a convenience and a curse}
+    Variables inside functions might not be resolved the way you expect.
+
+  \begin{itemize}
+  \item If a variable is used, but not defined inside the function, R
+    will ``look outward'' for it
+  \item This is ``lexical scope'' in action. The runtime engine
+    searches through a sequence of ``frames'', ending up at the user's
+    workspace (which is the Global Environment).
+
+  \end{itemize}
+   \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Example of the Undefined Variable Problem}
+  \begin{itemize}
+
+  \item Suppose ``dat'' exists in your workspace.
+
+  \item Here is a function that will find ``dat'', even if that's not
+    what you intend.
+
+\begin{Sinput}
+myFn <- function(x, y, z){
+    dat1 <- 2 * x + 3 * y
+    res <- sqrt(dat)
+}
+\end{Sinput}
+
+Note my typographical error (dat where dat1 should be). The function
+should crash, but it will not.
+   \item R will find the wrong ``dat'' and the result we get will be unhelpful
+
+   \item In my experience, this is the single most important cause of
+     hard-to-find flaws in user code.
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Inside the function, Check Arguments}
+
+  \begin{itemize}
+  \item Check and Re-format
+
+    \begin{itemize}
+    \item ``argument checking'': diagnose what arguments the
+      user provided
+    \item Figure out if they are ``correct'' for what the function
+      requires.
+    \end{itemize}
+  \item You choose how sympathetic you want to be toward users. Do you
+    want to accept incomplete input and re-format it? (In
+    rockchalk/R/genCorrelatedData.R, find my ``re-formatter''
+    functions like \texttt{makeVec()},  \texttt{vech2mat()}).
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Arguments: When to Use Defaults?}
+
+  \begin{itemize}
+    \item I don't know, but $\ldots$
+  \item As an R beginner, I took a very conservative strategy of
+    putting defaults on everything!
+
+\begin{Sinput}
+function(what1 = NULL, what2 = NULL, what3 = 3, what4 = ``a'')
+\end{Sinput}
+
+  \item That way, if a user forgets to provide
+    ``what3'', then the system will not go looking for it.
+  \item If the defaults usually work, this is concise, easy to read.
+
+  \item Most functions in R base code don't set defaults for all, or
+    even most, variables.
+
+  \item Instead, we manage arguments with more delicacy.  Insisting on
+    NULL defaults is ``throwing the baby out with the bath water.''
+ \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Functions that Help while Checking  Arguments}
+
+  \begin{exampleblock}{missing()}
+    \begin{itemize}
+    \item Inside a function, \texttt{missing()} is a way to
+      ask if the user supplied a value for an argument.
+
+\begin{Sinput}
+doSomething <- function(what1, what2, what3, what4){
+   if (missing(what1)) stop(``you forgot to specify what1'')
+}
+\end{Sinput}
+
+   \item I've found this conservative approach to be an
+     error-preventer. If x is not provided, or if the user gave us a
+     NULL, we better adapt!
+\begin{Sinput}
+if (missing(x) || is.null(x)) ## do something
+\end{Sinput}
+\end{itemize}
+\end{exampleblock}
+
+
+\begin{exampleblock}{Type Checks}
+     There are many ``is.'' functions. Ask if x is a
+  certain type of thing:
+  \begin{description}
+  \item [is.vector()] TRUE or FALSE: are you a vector?
+  \item [is.list()] TRUE or FALSE: are you a list?
+  \item [is.numeric()] TRUE or FALSE: are you numeric?
+  \item You get the general idea, I hope
+  \end{description}
+\end{exampleblock}
+
+
+\begin{exampleblock}{Look at all of these is. functions!}
+  \begin{Soutput}
+is.array         is.loaded              is.object
+is.atomic        is.logical             is.ordered
+is.call          is.matrix              is.package_version
+is.character     is.mts                 is.pairlist
+is.complex       is.na                  is.primitive
+is.data.frame    is.na<-                is.qr
+is.double        is.na.data.frame       is.R
+is.element       is.na<-.default        is.raster
+is.empty.model   is.na<-.factor         is.raw
+is.environment   is.name                is.recursive
+is.expression    is.nan                 is.relistable
+is.factor        is.na.numeric_version  is.single
+is.finite        is.na.POSIXlt          is.stepfun
+is.function      is.null                is.symbol
+is.infinite      is.numeric             is.table
+is.integer       is.numeric.Date        is.ts
+is.language      is.numeric.difftime    is.tskernel
+is.leaf          is.numeric.POSIXt      is.unsorted
+is.list          is.numeric_version     is.vector
+\end{Soutput}
+\end{exampleblock}
+
+\begin{alertblock}{Size Checks}
+  \begin{description}
+  \item [length()]
+  \item [nrow(), ncol()] number of rows (columns) from a matrix
+  \item [NROW(), NCOL()] Works if input is matrix, but will treat a
+    vector as a one column matrix.
+  \item [dim()] Returns 2 dimensional vector, works with matrices and arrays
+  \end{description}
+\end{alertblock}
+
+\begin{alertblock}{Stop, Warn}
+  \begin{description}
+  \item[stop(), stopifnot()] Ways to abend the function
+  \item[warning] Will return, but throws a message onto the R
+    warning log. User can run warnings() to see messages.
+  \end{description}
+\end{alertblock}
+
+\end{frame}
+
+\section{dots. I see dots}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{dot management strategies I use}
+  \begin{itemize} 
+  \item Get the dots. The R parser notices all named
+    arguments that seem to be ``unclaimed'' by other arguments.
+  \item If you have an argument named ``...'', those arguments
+    go into a list named ``...''.
+  \item So you should run:
+    \begin{Sinput}
+      dots <- list(...)
+    \end{Sinput}
+ 
+  \end{itemize}
+\end{frame} 
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Inspect and filter the dots}
+  \begin{itemize} 
+  \item In some functions, I need to pass in ``...'' that are
+    aimed at several different subroutines.
+  \item examples
+    \begin{enumerate}
+      \item rockchalk::plotSlopes
+      \item kutils::peek
+      \end{enumerate}
+    \item Find out what arguments a function might want:
+  \item So you should run:
+    \begin{Sinput}
+      formals(function_name_here)
+      ## Possibly just
+      names(formals(function_name_here))
+    \end{Sinput}
+    or read the documentation
+  \end{itemize}
+\end{frame} 
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Manually pick-and-choose items out of dots}
+  
+  \begin{itemize}
+  \item I will type in the names of the arguments I
+    know I want to keep
+  \item Put them (and their values) into a separate list
+  \item then use ``modifyList'' to place the user-provided
+    dots ``on top'' of my favorite settings.
+  \end{itemize}
+  
+  \begin{Sinput}
+    drawHist <- function(x, normal = TRUE, pois = FALSE, 
+    kde = TRUE, nbinom = FALSE, ...){
+      dots <- list(...)
+      pjfavoriteDefaults <- list(right = FALSE, prob = TRUE, 
+      border = gray(.80), include.lowest = TRUE, 
+      plot = FALSE)
+      
+    histNames <- c("breaks", "freq", "probability", 
+                   "include.lowest", "right", "density", 
+                   "angle", "col", "border", "main", 
+                    "xlim", "ylim", "xlab", "ylab", "axes", 
+                    "plot", "labels", "nclass")
+    argsForHist <- dots[ names(dots) [names(dots) %in% histNames]]
+    argsForHist <- modifyList(pjfavoriteDefaults, argsForHist)
+    \end{Sinput}
+    
+    \begin{itemize}
+    \item Then we may want to purge those particular arguments
+      from the dots list (not possibly needed for other functions).
+      This prevents accidentally sending an argument for hist 
+      to an lm function, for example.
+    \end{itemize}
+\end{frame}
+  
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Trust the formals}
+  
+   \begin{itemize}
+     \item Typing in the names seems stupid.
+     \item If the R functions change, then this code will be outdated.
+     \item If I'm in a gambling mood, then I'll not type
+       in all of the names and I'll use the formals function
+       to get the names of arguments. Be careful.
+    \item Example usage
+   \begin{Sinput}
+     histNames <- names(formals(function_name_here))
+   \end{Sinput}
+
+  \item
+    After that, you may have to clean out ones you
+    don't want to keep. Observe:
+\input{plots/t-formals1}
+  \item Quick way to get the argument names into a vector:
+    
+\input{plots/t-formals2}
+   and then edit that for use in a function. Cut out the dots!   
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Pruning argument lists}
+\begin{itemize}  
+  \item Usually, I want to check for some arguments and
+    keep them for use, as described above.
+    
+  \item In order to explain this fully, I'd need you to understand the
+    use of R's ``do.call'', which is a deep thought that we should
+    probably investigate in a separate talk.
+    
+  \item I understood the beauty of that in this example code:
+    \url{http://pj.freefaculty.org/R/WorkingExamples/efficiency-stackListItems-01.R}
+
+  \item There is quite a bit of discussion of do.call in the essay
+    ``Rchaeology'' that is included in the \texttt{rockchalk} package.
+    
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{The kutils::peek example}
+  
+  \begin{itemize}
+  \item The peek function has 2 nested functions
+    \begin{itemize}
+    \item one for creating histograms
+    \item  one for creating barplots
+    \end{itemize}
+    
+  \item The dots argument may be users to pass in
+    arguments intended for hist, barplot, or pdf.
+  \end{itemize}
+  
+\def\Sweavesize{\tiny}
+\begin{Sinput}
+peek <-
+    function(dat, sort = TRUE, file = NULL, textout = FALSE, ask, ...,
+             xlabstub = "kutils peek: ", freq = FALSE,
+             histargs = list(probability = !freq),
+             barargs = list(horiz = TRUE, las = 1))
+{
+    quickhist <- function(i){
+        args <- list(xlab = paste0(xlabstub, i),
+                     main = i)
+        histargz <- modifyList(args, dots)
+        histargz <- modifyList(histargz, histargs)
+        qqq <- modifyList(list(x = dat[ , i]), histargz)
+        h1 <- do.call("hist", qqq)
+        if (textout){
+            df1 <- data.frame("midpoints" = h1$mids, "density" = h1$density)
+            cat(i, "\n")
+            print(df1)
+        }
+    }
+    
+    quickbar <- function(i){
+        targs <- list(dat[ , i], exclude = NULL,
+                      dnn =  if (!freq) "Proportion" else "Frequency")
+        targz <- modifyList(targs, dotsForTable)
+        ## don't allow hist or barplot arguments to to to table, silences warning
+        ## targz[c(names.par, names.barplot.unique, names.hist.unique)] <- NULL
+        t1 <- do.call("table", targz)
+        if (!freq) t1 <- t1/margin.table(t1)
+        names(t1) <- ifelse(is.na(names(t1)), "NA", names(t1))
+        ## decision 1: brute force chop
+        ## names(t1) <- shorten(names(t1), k = LIMIT, unique = TRUE)
+        names(t1) <- sapply(names(t1), stringbreak, k = LIMIT)
+        args <- list(t1, main = i,
+                     xlab = paste(xlabstub,  i, if (freq)"Frequencies" else "(Proportion)"))
+        barargz <- modifyList(args, dots)
+        barargz <- modifyList(barargz, barargs)
+        ## Remove args that would have gone to hist
+        barargz[names.hist.unique] <- NULL
+        par.old <- par(no.readonly = TRUE)
+        ## if longest name exceeds guess of space in margin,
+        ## then pad the margin left side.
+        marinch <- par("mai")
+        marrequired <- max(strwidth(names(t1), units = "inches"))
+        if (marrequired + 0.35 > marinch[2]) {
+            marinch[2] <- marrequired + 0.5
+            par(xpd = TRUE)
+            par("mai" = marinch)
+        }
+        do.call("barplot", barargz)
+                
+        par(par.old)
+        if (textout) {
+            cat(i, "\n")
+            print(t1)
+        }
+    }
+
+    ## limit on character strings for barplots
+    LIMIT <- 30
+    
+    ## We get lots of warnings about inappropriate arguments to functions.
+    ## Focus on most likely objections by getting names unique to
+    ## hist and removing them from the bar portion, and
+    ## names unique to bar and removing from the hist portion
+    names.par <- names(par())
+    names.hist <- removeMatches(names(formals(hist.default)), "...")
+    names.barplot <- removeMatches(names(formals(barplot.default)), "...")
+    names.barplot.unique <- names.barplot[!names.barplot %in% names.hist]
+    names.hist.unique <- names.hist[!names.hist %in% names.barplot]
+    
+    varType <- function(x){
+        ifelse(is.numeric(x), "numeric",
+        ifelse(is.character(x) | is.factor(x), "factor", "noneoftheabove"))
+    }
+
+    if (is.atomic(dat)){
+        xclean <- xname <- deparse(substitute(dat))
+        dat <- as.data.frame(dat)
+        if (length(grep("\\$", xname) > 0)){
+            xsplit <- unlist(strsplit(xname, "\\$"))
+            xclean <- xsplit[length(xsplit)]
+        }
+        colnames(dat) <- xclean
+    } else {
+        if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+    }
+    
+    namez <- colnames(dat)
+    namez <- if(sort) sort(namez) else namez
+    
+    colTypes <- sapply(dat, varType)
+    colTypes <- colTypes[namez]
+
+    if (length(colTypes[colTypes == "noneoftheabove"]) > 0) {
+        cat(paste("These variables are being omitted because they are",
+                  "neither numbers nor can they be interpreted as factors: \n"))
+        cat(paste(names(colTypes[colTypes == "noneoftheabove"]), "\n"))
+        ## remove unrecognized types
+        colTypes <- colTypes[colTypes != "noneoftheabove"]
+    }
+     
+    dots <- list(...)
+      
+    ## copy args for table, remove from dots
+    tableFormals <- c("exclude", "dnn", "useNA", "deparse.level")
+    dotsForTable <- dots[tableFormals[tableFormals %in% names(dots)]]
+    dots[names(dotsForTable)] <- NULL
+
+    ## copy args for pdf, remove from dots
+    pdfFormals <- c("width", "height", "onefile", "family", "title", "fonts",
+                    "version", "paper", "encoding", "bg", "fg", "pointsize",
+                    "pagecentre", "colormodel", "useDingbats", "useKerning",
+                    "fillOddEven", "compress")
+    dotsForPDF <- dots[pdfFormals[pdfFormals %in% names(dots)]]
+
+    deviceFormals <- c("width", "height")
+    dotsForDevice <- dots[deviceFormals[deviceFormals %in% names(dots)]]
+    dots[names(dotsForPDF)] <- NULL
+
+     
+    
+    ## Unless user sets ask, we assume TRUE if there is no file argument
+    if (missing(ask)) {
+        if (is.null(file)) ask <- TRUE else ask <- FALSE
+    }
+    
+    if (!is.null(file)){
+        if (!is.character(file)) stop("Sorry, file has to be a character string")
+        pdfargs <- list(file = file, onefile = TRUE)
+        pdfargz <- modifyList(pdfargs, dotsForPDF)
+        do.call("pdf", pdfargz)
+    } else {
+        do.call("dev.new", dotsForDevice)
+    }
+    
+    if (is.null(file) || isTRUE(ask)) devAskNewPage(TRUE)
+    
+    for (i in names(colTypes)){
+        if ( colTypes[i] == "numeric" ){
+            quickhist(i)
+        } else {
+            quickbar(i)
+        }
+    }
+    if (!is.null(file)) dev.off()
+    namez
+}
+\end{Sinput}
+  
+  
+  
+  
+\end{frame}
+
+%___________________________
+
+\section{Returns}
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{The Return Has To Be Singular}
+  \begin{itemize}
+  \item When  you use a function, it is necessary to ``catch'' the
+    output with a single object name, as in
+
+\input{plots/t-doubleMe80a}
+
+  \item We expect ``doubleMe(32)'' should return 64, and it does.
+
+  \item The ``vectorization for free'' gives us a hint of what is to follow.
+
+\input{plots/t-doubleMe80b}
+
+
+\item R allows us to return one ``thing'', but ``thing'' can be a
+  rich, informative thing!
+\end{itemize}
+
+\end{frame}
+
+%______________________________
+
+\begin{frame}[containsverbatim]
+  \frametitle{Generalization. Return a list}
+  \begin{itemize}
+
+  \item A list may include numbers, characters, vectors ,etc
+  \item or data frames or other lists
+  \item Read code for function ``lm''
+  \item Almost ALL interesting R functions return a list of elements.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,allowframebreaks]
+  \frametitle{Hide details in attributes}
+  \begin{itemize}
+    \item R objects can have attributes, which are, well, anything.
+      
+    \item Ever run \texttt{attributes(some\_object\_name)}?
+      
+    \item In S3, an object's class is simply determined by an attribute.
+  \end{itemize}
+  
+\input{plots/t-attr1}
+    
+ 
+\end{frame}
+
+
+
+% \begin{frame}[containsverbatim]
+%   \frametitle{Check Point: revise your function}
+
+%   \begin{itemize}
+%   \item Create ``myGreatFunction2'' by revising
+%     ``myGreatFunction''. Make it return a vector of 3 values: the
+%     maximum, the minimum, and the median.
+%   \item Generate your own input data, x1, like so
+
+% <<echo=T, include=T, eval=F>>=
+% x1 <- rnorm(10000, m=7, sd=19)
+% @
+%   \item After you've written myGreatFunction, use it:
+% <<echo=T, include=T, eval=F>>=
+% myGreatFunction(x1)
+% @
+%   \item Now stress test your function by changing x1
+
+% <<echo=T, include=T, eval=F>>=
+% x1[c(13, 44, 99, 343, 555)]  <- NA
+% myGreatFunction(x1)
+% @
+% \end{itemize}
+% \end{frame}
+
+
+
+\begin{frame}[containsverbatim, allowframebreaks]
+  \frametitle{Check Point: Run this example function}
+  Admittedly, this is a dumb example, but $\ldots$
+  \begin{itemize}
+  \item This function returns a regression object
+\input{plots/t-regex10}
+  \item Generate some data, run \texttt{aRegMod()}
+\input{plots/t-regex10b}
+
+  \item m1 is a ``single object''
+  \item Run ``class(m1)'',  ``attributes(m1)'', ``summary(m1)'', `str(m1)'',
+  \end{itemize}
+\end{frame}
+
+%________________________________________
+
+%% \begin{frame}[containsverbatim, allowframebreaks]
+%%   \frametitle{Almost All Substantial R Functions Return A Diverse List of Items}
+%%   \begin{itemize}
+%%   \item An R function can return an R ``list'' object.  Basically,
+%%     that means a combination of anything.
+
+%%   \item Look at the end of R's glm function, for example. After it has
+%%     done a bunch of calculations, it has an object ``fit'' and then
+%%     more and more details are wedged together with ``fit''
+
+%% \begin{Sinput}
+%% fit <- eval(call(if (is.function(method)) "method" else method,
+%%     x = X, y = Y, weights = weights, start = start, etastart = etastart,
+%%     mustart = mustart, offset = offset, family = family,
+%%     control = control, intercept = attr(mt, "intercept") >
+%%         0L))
+%% if (length(offset) && attr(mt, "intercept") > 0L) {
+%%     fit$null.deviance <- eval(call(if (is.function(method)) "method" else method,
+%%         x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights,
+%%         offset = offset, family = family, control = control,
+%%         intercept = TRUE))$deviance
+%% }
+%% if (model)
+%%     fit$model <- mf
+%% fit$na.action <- attr(mf, "na.action")
+%% if (x)
+%%     fit$x <- X
+%% if (!y)
+%%     fit$y <- NULL
+%% fit <- c(fit, list(call = call, formula = formula, terms = mt,
+%%     data = data, offset = offset, control = control, method = method,
+%%     contrasts = attr(X, "contrasts"), xlevels = .getXlevels(mt,
+%%         mf)))
+%% class(fit) <- c(fit$class, c("glm", "lm"))
+%% fit
+%% \end{Sinput}
+
+%% \end{itemize}
+%% \end{frame}
+
+%% % $
+
+
+%===================================================
+\end{document}
