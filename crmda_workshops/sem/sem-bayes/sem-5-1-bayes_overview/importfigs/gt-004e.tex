@@ -1,0 +1,50 @@
+\documentclass[border=10pt]{standalone}
+%% Source: https://tex.stackexchange.com/a/406814/95014%
+%% Author: "cfr"%
+%% Comment: Uses forest package for tikz%%
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{forest}
+\usetikzlibrary{calc}
+
+\tikzset{
+  % Two node styles for game trees: solid and hollow
+  solid node/.style={circle,draw,inner sep=1.5,fill=black},
+  hollow node/.style={circle,draw,inner sep=1.5}
+}
+\begin{document}
+\forestset{
+  small_edge_label/.style 2 args={
+    edge label={node[midway, font=\sffamily\scriptsize, #1]{#2}},
+  },
+  big_edge_label/.style 2 args={
+    edge label={node[midway, font=\sffamily\normalsize, #1]{#2}},
+  },
+}
+
+\begin{forest}
+  for tree={
+    parent anchor = east,
+    child anchor = west,
+    grow' = east,
+    l sep'+=25pt,
+    s sep'+=35pt,
+    for children={
+      l sep+=40pt,
+      s sep+=30pt,
+    }
+  },
+  [, hollow node, label=left:My beliefs
+  [, hollow node, big_edge_label={left}{$0.1$}
+  [, solid node, small_edge_label={above}{$0.6$}, label=right:{\textbf{a}: $0.1\times0.6=0.06$}]
+  [, solid node, small_edge_label={below}{$0.4$}, label=right:{\textbf{b}: $0.1\times0.4=0.04$}]
+  ]
+  [, hollow node, big_edge_label={left}{$0.9$}
+  [, solid node, small_edge_label={above}{$0.2$}, label=right:{\textbf{c}: $0.9\times0.2=0.18$}]
+  [, solid node, small_edge_label={below}{$0.8$}, label=right:{\textbf{d}: $0.9\times0.8=0.72$}]
+  ]
+  ]
+  %% \node [font=\itshape] at (!r |- !r1) {Governo};
+\end{forest}
+\end{document}

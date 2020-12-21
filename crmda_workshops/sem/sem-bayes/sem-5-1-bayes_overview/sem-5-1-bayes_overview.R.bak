@@ -1,0 +1,177 @@
+### R code from vignette source 'sem-5-1-bayes_overview-uniquebackupstring.Rnw'
+### Encoding: UTF-8
+
+###################################################
+### code chunk number 1: tmpout
+###################################################
+tdir <- "tmpout"
+if(!dir.exists(tdir)) dir.create(tdir, showWarnings=FALSE)
+
+
+###################################################
+### code chunk number 2: excludemeRoptions
+###################################################
+opts.orig <- options()
+options(width=100, prompt="> ")
+options(useFancyQuotes = FALSE)
+set.seed(12345)
+par.orig <- par(no.readonly = TRUE) 
+pjmar <- c(4.1, 4.1, 1.5, 2.1)
+options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12, xpd=F)))
+pdf.options(onefile=F,family="Times",pointsize=12)
+if(!file.exists("theme")) file.symlink("../../../../template/theme", "theme")
+
+
+###################################################
+### code chunk number 3: spike10
+###################################################
+drawPMF <- function(x, labels, prob, main){
+    plot(x=c(0, 1), y=c(0, 1.0), type="n", axes=F, xlim = c(-0.2, 1.2), 
+       xlab="", ylab="", main=main)
+    axis(1, at = x, labels)
+    axis(2, at = seq(0, 1, by=0.1))
+    for(i in seq_along(x)){
+        lines(c(x[i],x[i]), c(0, prob[i]))
+        points(x[i], prob[i])
+    }
+}
+x <- c(0,1)
+xlabels <- c("yes", "no")
+prior <- c(0.10, 0.90)
+drawPMF(x, xlabels, prior, main = "Prior")
+
+
+###################################################
+### code chunk number 4: spike20
+###################################################
+x <- c(0, 0.3, 0.7, 1)
+likeli <- c(0.6, 0.40, 0.2, 0.8)
+llabels <- c("pos|no", "neg|no", "pos|yes", "neg|yes")
+drawPMF(x, labels = llabels, likeli, main = "Test Probabilities")
+
+
+###################################################
+### code chunk number 5: spike30
+###################################################
+x <- c(0,1)
+post <- c(0.25, 0.75)
+plabels <- c("yes|pos", "no|pos")
+drawPMF(x, plabels, post, main = "Posterior if test = positive")
+
+
+###################################################
+### code chunk number 6: pdf10
+###################################################
+x <- seq(-3, 4, by = 0.01)
+px <- dnorm(x, m=1, s=1)
+plot(px ~ x, type = "l", ylim = c(0,1), ylab = "probability", xlab = expression(beta),  main = expression(paste("Normal  Beliefs: ", list(E * group("[", beta, "]")==1), ",", V * group("[", beta,"]")==3)))
+
+
+###################################################
+### code chunk number 7: pdf20
+###################################################
+xl <- seq(-3, 4, by = 0.01)
+pxl <- dnorm(xl, m=2.75, s=sqrt(0.35))
+plot(pxl ~ xl, type = "l", ylab = "probability", xlab = expression(beta),
+lty = 2, ylim = c(0,1))
+lines(px ~ x)
+legend('topleft', legend = c("prior", "likelihood"), lty = c(1,2))
+
+
+###################################################
+### code chunk number 8: pdf30
+###################################################
+xl <- seq(-3, 4, by = 0.01)
+pxl <- dnorm(xl, m=2.75, s=sqrt(0.35))
+plot(pxl ~ xl, type = "l", ylab = "probability", xlab = expression(beta),
+lty = 2, lwd=2, ylim = c(0,1), col = "orange")
+lines(px ~ x, lty = 4, lwd=2, col = "green")
+ppost <- px * pxl
+lines(ppost ~ x, lty = 1, lwd = 2, col = "black")
+legend('topleft', legend = c("posterior", "prior", "likelihood"), lty = c(1, 4, 2), col = c("black", "green", "orange"), lwd=c(2,2,2))
+title("Unnormalized posterior: prior * likelihood")
+
+
+###################################################
+### code chunk number 9: pdf31
+###################################################
+plot(pxl ~ xl, type = "l", ylab = "probability", xlab = expression(beta),
+lty = 2, lwd=2, ylim = c(0,1), col = "orange")
+lines(px ~ x, lwd = 2, lty = 4, col = "green")
+ppost <- px * pxl
+ppostnorm <- ppost/(sum(ppost)/100)
+## 100 needed above because width of x is 0.01, numerical integral
+## could be calculated more gracefully
+lines(ppostnorm ~ x, lty = 1, lwd = 2, col = "black")
+legend('topleft', legend = c("posterior", "prior", "likelihood"), lty = c(1, 4, 2),
+col = c("black", "green", "orange"))
+title("Normalized posterior: prior * likelihood / marginal")
+
+
+###################################################
+### code chunk number 10: pdf40
+###################################################
+plot(ppostnorm ~ xl, type = "l", ylab = "probability", xlab = expression(beta),
+lty = 1, lwd = 2, ylim = c(0,.8), col = "blue")
+lines(ppost ~ xl, lty = 4, lwd = 2, col = "black") 
+legend('topleft', legend = c("posterior = prior x likelihood", "normalized posterior"), lty = c(4,1),
+col = c("black", "blue"))
+title("posterior")
+
+
+###################################################
+### code chunk number 11: pdf50
+###################################################
+plot(ppostnorm ~ xl, type = "l", ylab = "probability", xlab = expression(beta),
+lty = 1, lwd = 2, ylim = c(0,.8), col = "blue")
+lines(ppost ~ xl, lty = 4, lwd = 2, col = "black") 
+legend('topleft', legend = c("not normalized", "normalized posterior"), lty = c(4,1),
+col = c("black", "blue"))
+indexmode <- which.max(ppost)
+xmode <- x[indexmode]
+ppostcum <- cumsum(ppost)/max(cumsum(ppost))
+##which(ppostcum < 0.025)
+hpd975 <- x[min(which(ppostcum >  0.975))]
+hpd025 <- x[max(which(ppostcum < 0.0275))]
+abline(v = c(hpd025, hpd975), lty = 2, col = "red")
+title("posterior with 95% HPD")
+
+
+###################################################
+### code chunk number 12: mvn10
+###################################################
+library(mvtnorm) 
+N <- 100 
+myProbX <- function(x1, x2){
+    dmvnorm( cbind(x1,x2), mean = meanX, sigma= varX)
+  }
+meanX <- c( 0, 0 )
+varX <- matrix ( c( 1, .3, .3, 1), nrow=2 , byrow = TRUE) 
+x1 <- seq( meanX[1]-2.5*varX[1,1], meanX[1]+2.5*varX[1,1], length.out=N)
+x2 <- seq(  meanX[2]-2.5*varX[2,2], meanX[2]+2.5*varX[2,2] , length.out=N)
+probX <- outer(x1,x2, FUN="myProbX")
+persp(x1, x2, probX, theta = 120, phi = 20, zlim=c(0,.3), zlab="density", xlab="beta_0",ylab=expression(beta_1), col="gray90", ticktype="detailed")
+
+
+###################################################
+### code chunk number 13: mvn20
+###################################################
+contour(x1, x2, probX)
+
+
+###################################################
+### code chunk number 14: sess10
+###################################################
+sessionInfo()
+
+
+###################################################
+### code chunk number 15: opts20
+###################################################
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+options(par.orig)
+
+
