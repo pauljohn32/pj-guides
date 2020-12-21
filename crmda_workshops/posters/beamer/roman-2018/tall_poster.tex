@@ -1,0 +1,329 @@
+
+% Zack Roman <Zroman@ku.edu>
+
+\documentclass[final,hyperref={pdfpagelabels=false}]{beamer}
+
+\usepackage[orientation=portrait,size=a0,scale=1.4]{beamerposter} % Use the beamerposter package for laying out the poster with a portrait orientation and an a0 paper size
+
+
+
+\usetheme{I6pd2} % Use the I6pd2 theme supplied with this template
+
+\usepackage[english]{babel} % English language/hyphenation
+
+\usepackage{amsmath,amsthm,amssymb,latexsym} % For including math equations, theorems, symbols, etc
+
+\usepackage{times}\usefonttheme{professionalfonts}  % Uncomment to use Times as the main font
+\usefonttheme[onlymath]{serif} % Uncomment to use a Serif font within math environments
+
+\boldmath % Use bold for everything within the math environment
+
+\usepackage{booktabs} % Top and bottom rules for tables
+
+\graphicspath{{figures/}} % Location of the graphics files
+
+
+
+\usecaptiontemplate{\scriptsize\structure{\insertcaptionname~\insertcaptionnumber: }\insertcaption} % A fix for figure numbering
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION 
+%----------------------------------------------------------------------------------------
+
+\title{\huge Investigating Chain Decisions and Convergence in Monte Carlo Markov-Chain Estimated Analysis} % Poster title
+
+\author{Zachary J. Roman \& Holger Brandt} % Author(s)
+
+\institute{University of Kansas Psychology Department} % Institution(s)
+
+%----------------------------------------------------------------------------------------
+%	FOOTER TEXT
+%----------------------------------------------------------------------------------------
+
+\newcommand{\leftfoot}{www.zacharyroman.com} % Left footer text
+
+\newcommand{\rightfoot}{zroman@ku.edu} % Right footer text
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
+
+\begin{frame}[t] % The whole poster is enclosed in one beamer frame
+
+\begin{columns}[t] % The whole poster consists of two major columns, each of which can be subdivided further with another \begin{columns} block - the [t] argument aligns each column's content to the top
+
+\begin{column}{.02\textwidth}\end{column} % Empty spacer column
+
+\begin{column}{.465\textwidth} % The first column
+
+%----------------------------------------------------------------------------------------
+%	Intro
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Introduction}
+
+\begin{itemize}
+\small{\item In MCMC estimated analysis users specify a number of stochastic chains. The first step in determining model success is convergence. Convergence occurs when the random chains reach identical solutions (post burn in). However, the number of chains used has an effect on estimates of convergence \cite{gelman2011inference}. Looking through literature, one is hard pressed to find any substantiated recommendation other than more  than one \cite{gelman2011inference}. Although, \cite{gilks1996introducing} suggested that multiple chains are more informative due to the possibility of a single chain finding local maxima as a solution. While they suggest choosing a chain number greater than one, no evidence is supplied to suggest a specific number for any given situation.}
+\end{itemize}
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%	Objectives
+%----------------------------------------------------------------------------------------
+            
+\begin{block}{Objectives}
+
+\begin{itemize}
+\item Explore the relationship between chain number and convergence decisions
+\begin{itemize}
+	\item How does this relationship change in regard to chain length
+	\item How does this relationship change with varying prior specifications
+\end{itemize}
+\end{itemize}
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%	Design
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Simulation Design}
+
+\begin{columns} % Subdivide the first main column
+\begin{column}{.56\textwidth} % The first subdivided column within the first main column
+\begin{enumerate}\small{
+\item A balanced clustered data set was simulated N = 900 with 30 groups $\quad y_{ij} = 0 + u_{0j} + 0.5x_{1ij}  +u_{1j}x_{1ij} + \epsilon_{ij}$
+\item An MCMC analysis was conducted using Stan \cite{carpenter2017stan}, 3 times, under 3 prior conditions with 20 chains specified 
+\item Entire chains were sampled (disregarding burn-in) in differing amounts (2:10) 1,000 times
+\item Each condition (Prior, Chain Number,\& Chain Length) was aggregated and summarized}
+\end{enumerate}
+
+
+\begin{itemize}
+\small{
+	\item To describe convergence $\hat{R}$ was computed under each condition
+	\item To account for convergence on improper solutions parameter bias was computed for the fixed effect $\beta_{x}$}
+\end{itemize}
+\end{column}
+
+
+\begin{column}{.43\textwidth} % The second subdivided column within the first main column
+\centering
+\begin{figure}
+\includegraphics[width=0.7\linewidth]{simdat.pdf}
+\tiny{\caption{Simulated data by group ID}}
+\end{figure}
+\end{column}
+\end{columns} % End of the subdivision
+
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%	Conditions
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Simulation Conditions}
+\begin{columns} % Subdivide the first main column
+	\begin{column}{.50\textwidth} % The first subdivided column within the first main column
+\begin{itemize}
+	\item 9 chain number conditions 
+	\begin{itemize}
+		\item 2 through 10 chains
+	\end{itemize}
+	\item 2 chain lengths post burn in.
+	\begin{itemize}
+		\item 2,000 and 4,000
+	\end{itemize}
+	\item 3 prior conditions for $\beta_{x}$
+	\begin{itemize}
+		\item Diffuse, Realistic, Strong and Incorrect
+	\end{itemize}
+	\item 54 total conditions
+\end{itemize}						
+	\end{column}
+	
+	\begin{column}{.48\textwidth} % The second subdivided column within the first main column
+\begin{itemize}
+	\item All Prior Conditions:
+	\begin{itemize}
+	\item	$var(\beta_{x}) \sim t(3,0)$
+    \item	$var(\beta_{0}) \sim t(3,0)$
+    \item	$\sigma \sim t(3,0)$
+    \item   $cov(u) \sim LKJ(1)$
+	\end{itemize}
+	\item Diffuse
+		\begin{itemize}
+			\item  $\beta_{x} \sim unif(-1000,1000)$
+		\end{itemize}
+			\item Realistic
+			\begin{itemize}
+				\item  $\beta_{x} \sim N(0,1)$
+			\end{itemize}
+						\item Strong Incorrect
+						\begin{itemize}
+							\item  $\beta_{x} \sim N(10,0.1)$
+						\end{itemize}
+\end{itemize}
+	\end{column}
+\end{columns} % End of the subdivision
+\small{The specified model includes both random intercepts and slopes for the effect of group  $\quad y_{ij} = \beta_{0} + u_{0j} + \beta_{1}x_{1ij}  +u_{1j}x_{1ij} + \epsilon_{ij}$}
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%	MATHEMATICAL SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Measuring Performance}
+		
+				\begin{columns} % Subdivide the first main column
+					\begin{column}{.32\textwidth} % The first subdivided column within the first main column
+
+		$$ \sqrt{\hat{R}} = \sqrt{\frac{\frac{n-1}{n}W + \frac{1}{n}B}{W}}$$
+			\end{column}
+			\begin{column}{.27\textwidth} % The first subdivided column within the first main column
+		$$W = \frac{1}{J}\stackrel{J}{\underset{j = 1}{\Sigma}} S_{J}^2$$
+			\end{column}
+			\begin{column}{.40\textwidth} % The first subdivided column within the first main column
+		$$B = \frac{n}{J-1}\stackrel{n}{\underset{i = 1}{\Sigma}}(\psi_{\bar{.j}}- \psi_{\bar{..}})^2$$
+			\end{column}
+		\end{columns} % End of the subdivision
+		\begin{center}
+		\scriptsize{Where: $\psi_{\bar{.j}}$ is the chain mean, $\psi_{\bar{..}}$ is the grand mean of the chains $S_{J}^2$ summarizes the average squared distance of each retained draw from the chain mean. $j$ is chain length, while $n$ is the number of chains. $W$ is a summary of within chain variation while $B$ is a summary of between chain variation}
+				\end{center}	
+			\begin{itemize}
+					\item Convergence was assessed using the popular $\hat{R}$ statistic \cite{gelman1992inference}. Where $\hat{R}$ values greater than 1.10 are regarded as non convergent, an estimate of 1.0 is said to be perfectly mixed. See the above equation.
+			\end{itemize}
+			\begin{itemize}
+		\item Bias was calculated as the mean squared summed deviation from the population value. Higher values of bias reflect poor estimates, while a bias of 0 reflects a perfect estimate.
+	\end{itemize}
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of the first column
+
+\begin{column}{.03\textwidth}\end{column} % Empty spacer column
+ 
+\begin{column}{.465\textwidth} % The second column
+
+%----------------------------------------------------------------------------------------
+%	RESULTS
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Results: Convergence \& Bias}
+\begin{columns} % Subdivide the first main column
+	\begin{column}{.50\textwidth} % The first subdivided column within the first main column
+		
+		\begin{figure}
+			\includegraphics[width=\linewidth]{prop_lines.pdf}
+			\caption{ \scriptsize{Proportion of samples with $\hat{R} > 1.10$}}
+		\end{figure}
+
+
+		\begin{figure}
+			\includegraphics[width=\linewidth]{RhatOverall.pdf}
+			\caption{ \scriptsize{$\hat{R}$ for the overall model}}
+		\end{figure}
+	\end{column}
+\begin{column}{.50\textwidth} % The second subdivided column within the first main column
+				\begin{figure}
+					\includegraphics[width=\linewidth]{Bias_Beta_plot.pdf}
+					\caption{ \scriptsize{Bias of $\beta_{x}$}}
+				\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{RhatBeta.pdf}
+	\caption{ \scriptsize{$\hat{R}$ for $\beta_{x}$}}
+\end{figure}
+
+	\end{column}
+\end{columns} % End of the subdivision
+
+\end{block}
+
+%----------------------------------------------------------------------------------------
+%	CONCLUSION
+%----------------------------------------------------------------------------------------
+
+\begin{block}{Conclusion}
+
+\begin{itemize}
+\item More chains lead to more favorable estimates of model convergence under all prior conditions
+\begin{itemize}
+\item Under the \emph{Diffuse} \& \emph{Realistic} conditions the inclusion of more chains provides more favorable convergence estimates above and beyond the overall iteration count. 
+\item Under the \emph{Strong Incorrect} condition, the trend is the same, however, the model was more likely to reach favorable convergence on  improper solutions.
+\end{itemize}
+\item Increasing the number of chains (between chain samples) leads to more favorable estimates of convergence as compared to increasing chain length (within chain samples).
+\begin{itemize}
+\item One Major benefit to between chain information is the ability to run parallel computation. With little effort we can distribute the MCMC chains across multiple cores, whereas increasing iteration counts has no added computational benefit with multi-core processing. 
+\end{itemize}
+\end{itemize}
+
+\end{block}
+
+
+
+%----------------------------------------------------------------------------------------
+%	Future
+%----------------------------------------------------------------------------------------
+
+
+\begin{block}{Future Research}
+	
+	\begin{itemize}
+		\item Further simulation studies are needed to better define the benefits of favoring high chain numbers over post burn-in iteration counts
+			
+		\item Reasonably there are limits to the benefits of between chain samples over chain length, where are these boundaries? Under which modeling conditions do they change?
+			
+
+	\end{itemize}
+	
+\end{block}
+
+
+
+%----------------------------------------------------------------------------------------
+%	REFERENCES
+%----------------------------------------------------------------------------------------
+
+\begin{block}{References}
+        
+\nocite{*} % Insert publications even if they are not cited in the poster
+\small{\bibliographystyle{unsrt}
+\bibliography{posterbib}}
+
+\end{block}
+
+
+--------------------------------------------------------------------------------
+%	CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+\setbeamercolor{block title}{fg=black,bg=orange!70} % Change the block title color
+
+\begin{block}{Contact Information}
+	
+	\begin{itemize}
+		\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
+		\item Email: \href{mailto:john@smith.com}{john@smith.com}
+		\item Phone: +1 (000) 111 1111
+	\end{itemize}
+	
+\end{block}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of the second column
+
+\begin{column}{.015\textwidth}\end{column} % Empty spacer column
+
+\end{columns} % End of all the columns in the poster
+
+\end{frame} % End of the enclosing frame
+
+\end{document}
