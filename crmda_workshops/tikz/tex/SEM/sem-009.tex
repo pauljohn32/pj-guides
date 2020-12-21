@@ -1,0 +1,52 @@
+%% Prof. Ed Merkle, University of Missouri
+%% Charlie Redmon, University of Kansas
+%% 20170918
+%% SEM path diagram
+
+% standalone class for individual image to be included in a document
+% border=15pt controls the whitespace padding around the diagram
+\documentclass[border=15pt]{standalone}
+
+% load custom style configurations from separate file
+\input{setupSEMstyle.tex}
+
+\begin{document}
+
+%% ">=stealth" sets the arrow head style
+%% "semithick" sets the line width (0.6 pt)
+\begin{tikzpicture}[>=stealth,semithick]
+
+% observed variables
+\node[ov] (y1) at (0,-1)      {$y_1$};
+\node[ov] (y2) [below of=y1]  {$y_2$};
+\node[ov] (y3) [below of=y2]  {$y_3$};
+\node[ov] (y4) [below of=y3]  {$y_4$};
+\node[ov] (y5) [below of=y4]  {$y_5$};
+\node[ov] (y6) [below of=y5]  {$y_6$};
+
+% latent variables
+\node[lv] (f1) at (3, -2)  {$\eta_1$};
+\node[lv] (f2) at (3, -5)  {$\eta_2$};
+
+% paths with loadings (rotated to align with path)
+\path[->] (f1) edge node[above,scale=0.45, rotate=-20, pos=0.4] {0.93} (y1)
+          (f1) edge node[above,scale=0.45, pos=0.41] {0.74} (y2)
+          (f1) edge node[above,scale=0.45, rotate=20, pos=0.38] {0.84} (y3)
+          (f1) edge node[above,scale=0.45, rotate=25, pos=0.35] {$\approx 0$} (y4)
+          (f1) edge node[above,scale=0.45, rotate=35, pos=0.3] {$\approx 0$} (y5)
+          (f1) edge node[above,scale=0.45, rotate=45, pos=0.25] {$\approx 0$} (y6)
+          (f2) edge node[above,pos=0.25,scale=0.45, rotate=-50] {$\approx 0$} (y1)
+          (f2) edge node[above,pos=0.3,scale=0.45, rotate=-45] {$\approx 0$} (y2)
+          (f2) edge node[above,pos=0.35,scale=0.45, rotate=-35] {$\approx 0$} (y3)
+          (f2) edge node[above,pos=0.38,scale=0.45, rotate=-20] {1.20} (y4)
+          (f2) edge node[above,pos=0.39,scale=0.45] {0.89} (y5)
+          (f2) edge node[above,pos=0.37,scale=0.45, rotate=20] {1.10} (y6);
+
+% path between latent variables
+\path[<->] (f1.east) edge [bend left=45] node[left,scale=0.8] {} (f2.east);
+
+
+\end{tikzpicture}
+
+
+\end{document}

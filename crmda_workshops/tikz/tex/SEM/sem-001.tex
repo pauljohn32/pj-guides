@@ -1,0 +1,67 @@
+%% Charlie Redmon
+%% 20170907
+%% SEM path diagram: no latent variables, with and without error term shown
+
+% standalone class for individual image to be included in a document
+% border=15pt controls the whitespace padding around the diagram
+\documentclass[border=15pt]{standalone}
+
+% load custom style configurations from separate file
+\input{setupSEMstyle.tex}
+
+\begin{document}
+
+%% ">=stealth" sets the arrow head style
+%% "semithick" sets the line width (0.6 pt)
+\begin{tikzpicture}[>=stealth,semithick]
+% predictor nodes (x)
+\node[ov] (intercept)  {1};
+\node[ov] (x1) [below of=intercept] {$x_{1}$};
+\node[ov] (x2) [below of=x1]  {$x_{2}$};
+\node[ov] (x3) [below of=x2]  {$x_{3}$};
+\node[ov] (x4) [below of=x3]  {$x_{4}$};
+
+% response node (y)
+\begin{scope}[xshift=2cm]
+\node[av] (y) at (0,-2) {$y$};
+\end{scope}
+
+% error node (epsilon)
+\begin{scope}[xshift=3cm]
+\node[lv] (epsilon) at (0,-1) {$\epsilon$};
+\end{scope}
+
+% paths (arrows) between x's and y and error and y
+\path[->] (intercept) edge node[above,scale=0.6] {$\beta_0$} (y)
+          (epsilon) edge node[above,scale=0.6] {} (y)
+          (x1) edge node[above,scale=0.6] {$\beta_1$} (y)
+          (x2) edge node[above,scale=0.6] {$\beta_2$} (y)
+          (x3) edge node[above,scale=0.6] {$\beta_3$} (y)
+          (x4) edge node[above,scale=0.6] {$\beta_4$} (y);
+
+% start new diagram beside previous one (shifted 5cm to the right)
+\begin{scope}[xshift=5cm]
+
+% simplified model without intercept or error represented
+% predictors
+\node[ov] (x1) at (0,-0.5) {$x_{1}$};
+\node[ov] (x2) [below of=x1]  {$x_{2}$};
+\node[ov] (x3) [below of=x2]  {$x_{3}$};
+\node[ov] (x4) [below of=x3]  {$x_{4}$};
+
+% response
+\begin{scope}[xshift=2cm]
+\node[av] (y) at (0,-2) {$y$};
+\end{scope}
+
+% paths
+\path[->] (x1) edge node[above,scale=0.6] {} (y)
+          (x2) edge node[above,scale=0.6] {} (y)
+          (x3) edge node[above,scale=0.6] {} (y)
+          (x4) edge node[above,scale=0.6] {} (y);
+\end{scope}
+
+\end{tikzpicture}
+
+
+\end{document}

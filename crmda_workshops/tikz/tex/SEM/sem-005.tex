@@ -1,0 +1,41 @@
+%% Charlie Redmon
+%% 20170914
+%% SEM path diagram
+
+% standalone class for individual image to be included in a document
+% border=15pt controls the whitespace padding around the diagram
+\documentclass[border=15pt]{standalone}
+
+% load custom style configurations from separate file
+\input{setupSEMstyle.tex}
+
+\begin{document}
+
+%% ">=stealth" sets the arrow head style
+%% "semithick" sets the line width (0.6 pt)
+\begin{tikzpicture}[>=stealth,semithick]
+
+% response variables
+\node[ov] (y1) at (0,-1)      {$y_1$};
+\node[ov] (y2) [below of=y1]  {$y_2$};
+\node[ov] (y3) [below of=y2]  {$y_3$};
+
+% error terms
+\node[lv,dashed] (e1) at (-1.5, -1) {$\epsilon_1$};
+\node[lv,dashed] (e2) at (-1.5, -2) {$\epsilon_2$};
+\node[lv,dashed] (e3) at (-1.5, -3) {$\epsilon_3$};
+
+% latent variable
+\node[lv] (f1) at (1.5, -2)  {$\eta$};
+
+% paths
+\path[->] (f1) edge node[above,scale=0.6] {} (y1)
+          (f1) edge node[above,scale=0.6] {} (y2)
+          (f1) edge node[above,scale=0.6] {} (y3);
+\path[->,dashed] (e1) edge node[above,scale=0.6] {} (y1)
+          (e2) edge node[above,scale=0.6] {} (y2)
+          (e3) edge node[above,scale=0.6] {} (y3);
+\end{tikzpicture}
+
+
+\end{document}

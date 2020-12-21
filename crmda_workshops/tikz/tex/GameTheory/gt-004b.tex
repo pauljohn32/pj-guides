@@ -1,0 +1,47 @@
+\documentclass[border=10pt]{standalone}
+%% Source: https://tex.stackexchange.com/a/406814/95014%
+%% Author: "cfr"%
+%% Comment: Uses forest package for tikz%%
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{forest}
+\usepackage{lmodern}
+\usetikzlibrary{calc}
+
+\tikzset{
+  % Two node styles for game trees: solid and hollow
+  solid node/.style={circle,draw,inner sep=1.5,fill=black},
+  hollow node/.style={circle,draw,inner sep=1.5}
+}
+\begin{document}
+\forestset{
+  small_edge_label/.style 2 args={
+    edge label={node[midway, font=\scriptsize, #1]{#2}},
+  },
+  big_edge_label/.style 2 args={
+    edge label={node[midway, font=\normalsize, #1]{#2}},
+  },
+}
+
+\begin{forest}
+  for tree={
+    parent anchor = east,
+    child anchor = west,
+    grow' = east,
+    l sep'+=85pt,
+    s sep'+=100pt,
+    for children={
+      l sep+=180pt,
+      s sep+=30pt,
+    }
+  },
+  [, hollow node, label=left:My belief
+  [, hollow node, small_edge_label ={right}{$Pr(yes)=0.1$},
+  ]
+  [, hollow node, small_edge_label={right}{$Pr(no)=0.9$}
+  ]
+  ]
+  %% \node [font=\itshape] at (!r |- !r1) {Governo};
+\end{forest}
+\end{document}
