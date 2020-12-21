@@ -1,0 +1,103 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: SEM Structural Models in Mplus - Example 2
+#+AUTHOR: Ben Kite and Chong Xing
+#+EMAIL: bakite@ku.edu; cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to fit a structural equation model with measurement and structural components. In this example, both the predictor and the outcome variables are latent factors. The model results can be compared to the same model fitted with lavaan (see SEM Structural Models in R - Example 2).
+#+KEYWORDS: Structural Equation Modeling, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* The lavaan Example
+[[file:../../R/Ex-05-SEM/sem-02.html][The lavaan Example Link]]
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 5 - Structural Equation Model 2
+#+END_SRC
+
+* DATA Command
+In this example a ".dat" file being used.  It is the same as using a
+".csv" file. 
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/insomnia.dat";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  names are insom1-insom7 cesd1-cesd20 phy psy soc env;
+  usevariables are insom1-insom7 phy psy soc env;
+  missing all (999);
+#+END_SRC
+
+* MODEL Command
+Here the first four lines are used to set up the measurement of the
+four latent variables. For each latent variable the first indicator
+variable to the right of the "BY" statement has a factor loading set
+to 1 (the Mplus default). The last line sets up the regression
+component of the model. Notice that the latent variable covariance is
+not specified, Mplus will provide that automatically. 
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+!A three-indicator measurement model for Impact;
+  Impact BY insom5* insom6 insom7;
+  Impact@1.0;
+
+!A three-indicator measuremenrt model for Severity;
+  Severity BY insom1* insom2 insom3;
+  Severity@1.0;
+
+!A three-indicator measurement model for Satisf;
+  Satisf BY insom4* insom1 insom7;
+  Satisf@1.0;
+
+!A four-indicator measurement model for Qol;
+  Qol BY phy* psy soc env;
+  Qol@1.0;
+
+!The structural paths of the model;
+!Regressing Qol onto Impact Severity and Stisf;
+  Qol ON Impact Severity Satisf;
+#+END_SRC
+
+* OUTPUT Command
+As always, additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT; 
+  TECH1;
+  STDYX;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus8 sem-02.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'sem-02.inp'...
+
+     Beginning Time:  10:19:43
+        Ending Time:  10:19:43
+       Elapsed Time:  00:00:00
+
+     Output saved in 'sem-02.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:sem-02.out][sem-02.out]] to see the output.

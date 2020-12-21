@@ -1,0 +1,79 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Multiple Linear Regression (MLR) Example - 01-2 Multiple Outcomes
+#+AUTHOR: Chong Xing
+#+EMAIL: cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE: 
+#+ABSTRACT: This guide outlines how to fit a linear regression model using Mplus. The results of the linear model (seven predictors and two outcomes) fitted with Mplus can be compared to the same model fitted with lavaan (see Multiple Linear Regression Example in lavaan - 01). 
+#+KEYWORDS: Linear Regression, Multiple Predictors, Multiple Outcomes, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* TITLE Command
+This example is for multiple linear regression conducted in Mplus.
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 4 - Multiple Linear Regression - 01-2 Multiple Outcomes
+#+END_SRC
+
+* DATA Command
+Nothing changes with the data importation. 
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+The data are imported the same way as before, but notice the change
+under the USEVARIABLES ARE statement. 
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wjspl wjcalc edlevel newschl suspend expelled haveld female age;
+
+  MISSING ARE all(99999);
+#+END_SRC
+
+* MODEL Command
+The only thing that is new in this example is in the MODEL command.
+Here the MLR model is specified with three lines. The ON command tells
+Mplus to regress the two outcome variables on the right side onto the
+variables on the left side. In this model there are seven variables
+used as predictors of wjspl and wjcalc.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  wjspl ON edlevel newschl suspend expelled haveld female age;
+  wjcalc ON edlevel newschl suspend expelled haveld female age;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus reg-01-2.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'reg-01-2.inp'...
+
+     Beginning Time:  13:55:47
+        Ending Time:  13:55:47
+       Elapsed Time:  00:00:00
+
+     Refer to 'reg-01-2.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:reg-01-2.out][reg-01-2.out]] to see the output.

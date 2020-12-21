@@ -1,0 +1,103 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: SEM Structural Models in Mplus - Example 1
+#+AUTHOR: Ben Kite and Chong Xing
+#+EMAIL: bakite@ku.edu; cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Anslysis, University of Kansas
+#+SUBTITLE: 
+#+ABSTRACT: This guide outlines how to fit a structural equation model with measurement and structural components. In other words, a model where latent variables are measured and then used in a regression model. The model results can be compared to the same model fitted with lavaan (see SEM Structural Models in R - Example 1) 
+#+KEYWORDS: Structural Equation Modeling, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* The lavaan Example
+[[file:../../R/Ex-05-SEM/sem-01.html][The lavaan Example Link]]
+
+* TITLE Command
+This is an example of a structural equation model with latent
+variables being evaluated an dependent variables in regression.  
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 5 - Structural Equation Model 1
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+The data are imported the same way as before, but notice the change
+under the "USEVARIABLES ARE" statement. 
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  MISSING ARE all(99999);
+#+END_SRC
+
+* MODEL Command
+Here is an example of a SEM with measurement (CFA) and prediction
+(MLR) components combined. The first three lines set up the
+measurement of the MATH and SPELL latent variables.  The remaining
+lines build the structural portion of the model in which each latent
+variable is predicted by seven observed variables and the latent
+variables are allowed to correlate (this is done by the WITH
+statement). 
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  MATH@1.0;
+
+  SPELL BY wratspl* wjspl waisspl;
+  SPELL@1.0;
+
+  MATH ON edlevel newschl suspend expelled haveld female age;
+  SPELL ON edlevel newschl suspend expelled haveld female age;
+
+  MATH WITH SPELL;
+#+END_SRC
+
+* OUTPUT Command
+As always, additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT; 
+  TECH1;
+  STDYX;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus sem-01.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'sem-01.inp'...
+
+     Beginning Time:  15:27:53
+        Ending Time:  15:27:53
+       Elapsed Time:  00:00:00
+
+     Refer to 'sem-01.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:sem-01.out][sem-01.out]] to see the output.

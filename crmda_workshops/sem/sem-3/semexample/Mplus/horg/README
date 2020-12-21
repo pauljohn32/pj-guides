@@ -1,0 +1,73 @@
+* What is horg?
+Horg stands for /handling org/, which is a program written in =shell= and =elisp= to
+automate a series of actions in =org mode=.
+
+** workflow
+1. insert the crmda template; (make sure this is the first step)
+   When running this command, you will see a pop up that asks you to direct to the
+   directory where the css files are located. Just point it to the right
+   direction, everything else will be taken care of.
+   #+BEGIN_EXAMPLE
+     M-x insert-crmda-template
+   #+END_EXAMPLE
+
+2. tangle the source blocks in the org file
+   This step will generate the Mplus input file that will be inserted in the
+   output section.
+   #+BEGIN_EXAMPLE
+     M-x org-babel-tangle ;; or C-c C-v t if you prefer
+   #+END_EXAMPLE
+
+3. insert the output section
+   #+BEGIN_EXAMPLE
+     M-x auto-insert-output-section
+   #+END_EXAMPLE
+
+4. execute the shell source code block that runs Mplus
+   This step will generate the output file that will be referenced in the
+   results section.
+   #+BEGIN_EXAMPLE
+     M-x auto-execute-shell-mplus-block
+   #+END_EXAMPLE
+
+5. insert the results section
+   This step will insert a results section to the org file that includes a link
+   to the output file we have generated in step 4.
+   #+BEGIN_EXAMPLE
+     M-x auto-insert-results-section
+   #+END_EXAMPLE
+
+6. export to an html file
+   This step will export the org file into a html file.
+   #+BEGIN_EXAMPLE
+     M-x org-html-export-to-html ;; or C-e h h if you prefer
+   #+END_EXAMPLE
+
+7. If you are lazy like me, I have made all the steps accessible within one
+   step.
+   #+BEGIN_EXAMPLE
+     M-x auto-crmda
+   #+END_EXAMPLE
+
+** structure
+#+BEGIN_SRC sh :results output :exports results
+tree -d ../
+#+END_SRC
+
+#+RESULTS:
+
+* Setup
+1. put the =horg= folder anywhere you like.
+2. make sure to put the following two lines in your emacs init file.
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "path_to_horg/scr/")
+     (require 'crmda-org)
+   #+END_SRC
+3. restart your emacs
+
+* Usage
+** batch export org files into html files after evaluating the code blocks inside
+#+BEGIN_SRC sh
+  ./horg_v02.sh
+#+END_SRC
+* Limitations

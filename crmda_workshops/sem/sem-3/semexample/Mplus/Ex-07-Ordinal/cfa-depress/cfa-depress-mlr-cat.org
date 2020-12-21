@@ -1,0 +1,121 @@
+#+SETUPFILE: ../../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda_org.css"/>
+#+TITLE: Confirmatory Factor Analysis of Depression
+#+SUBTITLE: ML Estimates with Categorical Data (MLcat)
+#+AUTHOR: Chong Xing, Paul Johnson, and Meghan Fager
+#+EMAIL: cxing@ku.edu, pauljohn@ku.edu, megfager@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+ABSTRACT: 
+#+KEYWORDS: 
+#+INCLUDE: ../../horg/setup/heading
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 7
+Health Behavior in School Children
+Confirmatory Factor Analysis with Ordinal-Categorical Data using MLR
+
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Depress1-Depress6;
+
+  CATEGORICAL ARE
+  Depress1-Depress6;
+
+  USEOBSERVATIONS ARE Grade EQ 6 OR Grade EQ 7;
+
+  MISSING ARE all(-999);
+#+END_SRC
+
+* ANALYSIS Command
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  ESTIMATOR = MLR;
+#+END_SRC
+
+* MODEL Command
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+Depress BY Depress1* Depress2-Depress6;
+Depress@1;
+#+END_SRC
+
+* OUTPUT Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT;
+  TECH1;
+  STANDARDIZED;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-depress-mlr-cat.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-depress-mlr-cat.inp'...
+
+     Dimensions of integration:                  1
+     Total number of integration points:         15
+
+
+  ITER  LOGLIKELIHOOD    ABS CHANGE   REL CHANGE  ALGO  TIME  TOTAL TIME
+     1 -0.33919635D+05    0.0000000    0.0000000  EM    0.01     0.0
+     2 -0.33241984D+05  677.6514585    0.0199781  EM    0.02     0.0
+     3 -0.33115751D+05  126.2331742    0.0037974  EM    0.03     0.1
+     4 -0.33088103D+05   27.6481525    0.0008349  EM    0.03     0.1
+     5 -0.33078680D+05    9.4227123    0.0002848  EM    0.03     0.1
+     6 -0.33074940D+05    3.7399026    0.0001131  EM    0.03     0.2
+     7 -0.33073394D+05    1.5457355    0.0000467  EM    0.03     0.2
+     8 -0.33072744D+05    0.6505722    0.0000197  EM    0.03     0.2
+     9 -0.33072467D+05    0.2765751    0.0000084  EM    0.03     0.2
+    10 -0.33072349D+05    0.1182551    0.0000036  EM    0.03     0.3
+    11 -0.33072298D+05    0.0507215    0.0000015  EM    0.03     0.3
+    12 -0.33072276D+05    0.0217851    0.0000007  EM    0.03     0.3
+    13 -0.33072267D+05    0.0093560    0.0000003  EM    0.03     0.4
+    14 -0.33072263D+05    0.0040118    0.0000001  EM    0.03     0.4
+    15 -0.33072261D+05    0.0017144    0.0000001  EM    0.03     0.4
+    16 -0.33072261D+05    0.0007282    0.0000000  EM    0.03     0.5
+     Parameters           1         2         3         6         4
+     Derivatives   0.69D-04  0.63D-04  0.50D-04  0.42D-04  0.42D-04
+     Beginning Time:  11:51:58
+        Ending Time:  11:51:58
+       Elapsed Time:  00:00:00
+
+     Refer to 'cfa-depress-mlr-cat.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-depress-mlr-cat.out][cfa-depress-mlr-cat.out]] to see the output.

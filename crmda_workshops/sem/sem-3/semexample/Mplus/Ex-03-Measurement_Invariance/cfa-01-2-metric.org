@@ -1,0 +1,101 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Multiple Group Confirmatory Factor Analysis (Metric Invariance) Example
+#+AUTHOR: Ben Kite and Chong Xing
+#+EMAIL: bakite@ku.edu; cxing@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to perform the second step/test in measurement invariance testing - metric invariance (or equal factor loadings). The model estimation results can be compared to the Measurement Invariance Example in R.
+#+KEYWORDS: SEM, Measurement Invariance, Metric Invariance, Equal Loadings, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* TITLE Command
+This is the second input file for this example.
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis (Metric Invariance)
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+
+  MISSING ARE all(99999);
+
+  GROUPING IS female(0=male 1=female);
+#+END_SRC
+
+* MODEL Command
+All of the changes come in the MODEL command. In this model the factor
+loadings need to be constrained to be equal for both males and
+females. This is accomplished by including the statements about
+factor loadings under the "MODEL:" heading, but not repeating them
+under "MODEL female:". This is telling Mplus to estimate a single
+factor loading for each item for males and females (Mplus does this by
+default). The other change is that under the "MODEL female:" heading
+the latent variable variances are no longer constrained to be equal
+to 1. The scale of the latent variables are set for the male group
+(both equal to 1) and the latent variable variances for females are
+based on that scaling. The constraints on the factor loadings allow
+for the latent variable variances for females to be freely estimated.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+  [wratspl wjspl waisspl wratcalc wjcalc waiscalc];
+  MATH@1 SPELL@1;
+  [MATH@0 SPELL@0];
+
+  MODEL female:
+  [wratspl wjspl waisspl wratcalc wjcalc waiscalc];
+  MATH SPELL;
+#+END_SRC
+
+* OUTPUT Command
+Additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+  STDYX;
+#+END_SRC 
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-01-2-metric.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-01-2-metric.inp'...
+
+     Beginning Time:  11:14:23
+        Ending Time:  11:14:23
+       Elapsed Time:  00:00:00
+
+     Output saved in 'cfa-01-2-metric.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-01-2-metric.out][cfa-01-2-metric.out]] to see the output.

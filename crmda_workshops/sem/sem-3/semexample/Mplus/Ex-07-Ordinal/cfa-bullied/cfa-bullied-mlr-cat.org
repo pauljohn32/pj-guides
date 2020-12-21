@@ -1,0 +1,119 @@
+#+SETUPFILE: ../../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda_org.css"/>
+#+TITLE: Confirmatory Factor Analysis of Bullying Indicators
+#+SUBTITLE: ML Estimates with Numeric Data
+#+AUTHOR: Chong Xing, Paul Johnson, and Meghan Fager
+#+EMAIL: cxing@ku.edu; pauljohn@ku.edu; megfager@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+ABSTRACT: 
+#+KEYWORDS: 
+#+INCLUDE: ../../horg/setup/heading
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 7
+Health Behavior in School Children
+Confirmatory Factor Analysis with Categorical Data using MLR
+with FIML 1-Factor CFA Model for Got Bullied by Others;
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Bullied1-Bullied9;
+
+  CATEGORICAL ARE
+  Bullied1-Bullied9;
+
+  USEOBSERVATIONS ARE Grade EQ 6 OR Grade EQ 7;
+
+  MISSING ARE all(-999);
+#+END_SRC
+
+* ANALYSIS Command
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  ESTIMATOR = MLR;
+#+END_SRC
+
+* MODEL Command
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  Bulliedy BY Bullied1* Bullied2-Bullied9;
+  Bulliedy@1;
+#+END_SRC
+
+* OUTPUT Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+  STDYX;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-bullied-mlr-cat.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-bullied-mlr-cat.inp'...
+
+     Dimensions of integration:                  1
+     Total number of integration points:         15
+
+
+  ITER  LOGLIKELIHOOD    ABS CHANGE   REL CHANGE  ALGO  TIME  TOTAL TIME
+     1 -0.18086390D+05    0.0000000    0.0000000  EM    0.01     0.0
+     2 -0.17320763D+05  765.6270826    0.0423317  EM    0.01     0.0
+     3 -0.17078990D+05  241.7728033    0.0139586  EM    0.02     0.0
+     4 -0.16998381D+05   80.6092170    0.0047198  EM    0.02     0.1
+     5 -0.16964081D+05   34.2994042    0.0020178  EM    0.02     0.1
+     6 -0.16947893D+05   16.1882918    0.0009543  EM    0.02     0.1
+     7 -0.16939980D+05    7.9127798    0.0004669  EM    0.02     0.1
+     8 -0.16936026D+05    3.9537331    0.0002334  EM    0.02     0.1
+     9 -0.16934011D+05    2.0149512    0.0001190  EM    0.02     0.1
+    10 -0.16932962D+05    1.0489586    0.0000619  EM    0.02     0.2
+    11 -0.16931693D+05    1.2697954    0.0000750  FS    0.02     0.2
+    12 -0.16931580D+05    0.1123412    0.0000066  FS    0.02     0.2
+    13 -0.16931564D+05    0.0160216    0.0000009  FS    0.02     0.2
+    14 -0.16931561D+05    0.0028203    0.0000002  FS    0.02     0.2
+    15 -0.16931561D+05    0.0004383    0.0000000  FS    0.02     0.2
+     Parameters           8         9        38         2        42
+     Derivatives   0.24D-03 -0.15D-03 -0.14D-03 -0.12D-03  0.93D-04
+     Beginning Time:  15:09:57
+        Ending Time:  15:09:59
+       Elapsed Time:  00:00:02
+
+     Refer to 'cfa-bullied-mlr-cat.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-bullied-mlr-cat.out][cfa-bullied-mlr-cat.out]] to see the output.

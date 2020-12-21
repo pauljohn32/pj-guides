@@ -1,0 +1,43 @@
+
+TITLE:
+  Example 7
+Health Behavior in School Children
+Mediation Analsys of Latent Variables with Continuous Data using MLR
+Bulliedied, Alcohol, and Depression;
+
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Bullied1-Bullied9 Alc1-Alc5 Depress1-Depress6;
+
+  MISSING ARE all(-999);
+
+ANALYSIS:
+  ESTIMATOR = MLR;
+
+MODEL:
+  Bulliedy BY Bullied1@1 Bullied2-Bullied9;
+  Alcohol BY Alc1@1 Alc2-Alc5;
+  Depress BY Depress1@1 Depress2-Depress6;
+
+  Depress ON Bulliedy;
+  Alcohol ON Bulliedy Depress;
+
+  Depress* Alcohol* Bulliedy@1;
+
+MODEL INDIRECT:
+  Alcohol IND Depress Bulliedy;
+
+OUTPUT:
+  TECH1;
+  STDYX;

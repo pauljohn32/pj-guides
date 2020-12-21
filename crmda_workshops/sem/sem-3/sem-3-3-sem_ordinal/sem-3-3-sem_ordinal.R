@@ -1,0 +1,336 @@
+### R code from vignette source 'sem-3-3-sem_ordinal-uniquebackupstring.Rnw'
+### Encoding: UTF-8
+
+###################################################
+### code chunk number 1: sem-3-3-sem_ordinal-uniquebackupstring.Rnw:31-32
+###################################################
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+
+
+###################################################
+### code chunk number 4: dat10
+###################################################
+## Setting working environment
+ddir <- "data"
+odir <- "output"
+list.files(ddir)
+pdf.options(onefile=FALSE, family="Times", paper="special", height=4, width=6, pointsize=10)
+
+
+###################################################
+### code chunk number 5: dat20
+###################################################
+## Loaind pakcages
+library(kutils)
+library(lavaan)
+hbsc.complete <- readRDS(file.path(ddir, "hbsc.rds"))
+hbsc <- hbsc.complete[hbsc.complete$Grade %in% c("6", "7"), ]
+
+
+###################################################
+### code chunk number 6: dat30
+###################################################
+## This function simulates a single reaction time trial, producing a named vector
+## of the reaction time and the binary response.
+sim_single_trial <- function(
+ strength = 0,           # strength of signal
+ bias = 0,               # constant added to drift (parameter)
+ startingpoint = 0,      # another bias parameter  
+ noise = 1,              # how much variance accumulates per unit time (>0)
+ bound = 1,              # how high the bounds on the accumulator (>0)
+ timestep = 0.02,        # how small the timestep
+ ndt = 0.2,              # residual decision/reaction time (>0)
+ fuzz = 0.05,            # response time fuzz (to hide timesteps) (>0)
+ nsteps = 250)
+{
+  decision_variable <- cumsum(rnorm(n = nsteps,
+                              mean = (bias + strength) * timestep,
+                              sd=sqrt(noise) * sqrt(timestep))) + startingpoint
+  escape_step <- which(abs(decision_variable) > bound)[1]
+  c(rt=ndt + escape_step * timestep + rnorm(1, sd=fuzz),
+    response = decision_variable[escape_step] > 0)
+}
+
+strengths <- as.vector((2^(10:15) / 10000) %o% c(-1, 1))
+
+require(plyr)
+rt.data <- rdply(1000, cbind(strength=strengths, ldply(strengths, sim_single_trial)))
+
+hist(rt.data$rt,
+     prob = TRUE,
+     main = "",
+     ylim = c(0, 1.1),
+     xlab = "Simulated Reaction Time Responses")
+lines(density(rt.data$rt, na.rm = TRUE))
+
+
+###################################################
+### code chunk number 7: dat40
+###################################################
+## log-transformed RT data
+hist(log(rt.data$rt),
+     prob = TRUE,
+     main = "",
+     ylim = c(0, 1),
+     xlab = "Log-Transformed Time Responses")
+lines(density(log(rt.data$rt), na.rm = TRUE))
+
+
+###################################################
+### code chunk number 8: dat50
+###################################################
+## Gender variable in the demonstration data (hbsc)
+plot(hbsc$Gender)
+
+
+###################################################
+### code chunk number 9: dat60
+###################################################
+## Depression variable in the demonstration data (hbsc)
+plot(hbsc$depre2_o,
+     ylim = c(0, 1800),
+     main = "Were you grouchy or irritable over the last 30 days?")
+
+
+###################################################
+### code chunk number 10: dat70
+###################################################
+## Got Bullied variable in the demonstration data (hbsc)
+plot(hbsc$gotBu1_o,
+     ylim = c(0, 1800),
+     main = "How often were you bullied at school in the past couple of months?")
+
+
+###################################################
+### code chunk number 11: dat90
+###################################################
+str(hbsc)
+
+
+###################################################
+### code chunk number 12: dat100
+###################################################
+## An ordered-factor variable in R should look like
+levels(hbsc$depre1_o)
+str(hbsc$depre1_o)
+
+
+###################################################
+### code chunk number 13: dat110
+###################################################
+## Specifying the model-structure object 
+cfa.01.ord <- '
+depress =~ NA*depre1_o + depre2_o + depre3_o +
+              depre4_o + depre5_o + depre6_o
+depress ~~ 1*depress '
+
+## Estimating the model
+cfa.01.ord.fit <- 
+cfa(model = cfa.01.ord, data = hbsc,
+    mimic = "Mplus", estimator = "WLSMV",
+    ordered = c("depre1_o", "depre2_o",
+                "depre3_o", "depre4_o",
+                "depre5_o", "depre6_o"))
+
+## Requesting an estimation summary
+summary(cfa.01.ord.fit, fit.measures = TRUE,
+        standardized = TRUE)
+
+
+###################################################
+### code chunk number 14: dat120
+###################################################
+## Specifying the model-structure object
+cfa.04.ord <- '
+gotBully =~ NA*gotBu1_o + gotBu2_o + gotBu3_o +
+               gotBu4_o + gotBu5_o + gotBu6_o +
+               gotBu7_o + gotBu8_o + gotBu9_o
+gotBully ~~ 1*gotBully
+
+depress =~ NA*depre1_o + depre2_o + depre3_o +
+              depre4_o + depre5_o + depre6_o
+depress ~~ 1*depress
+
+alcohol =~ NA*alc1_o + alc2_o + alc3_o +
+              alc4_o + alc5_o
+alcohol ~~ 1*alcohol '
+
+## Estimating the model
+cfa.04.ord.fit <-
+cfa(model = cfa.04.ord, data = hbsc,
+    mimic = "Mplus", estimator = "WLSMV")
+
+## Requesting an estimation summery
+summary(cfa.04.ord.fit, fit.measures = TRUE,
+        standardized = TRUE)
+
+
+###################################################
+### code chunk number 15: dat130
+###################################################
+## Specifying the model-structure object
+sem.01.ord <- '
+gotBully =~ NA*gotBu1_o + gotBu2_o + gotBu3_o +
+               gotBu4_o + gotBu5_o + gotBu6_o +
+               gotBu7_o + gotBu8_o + gotBu9_o
+gotBully ~~ 1*gotBully
+
+alcohol =~ NA*alc1_o + alc2_o + alc3_o +
+              alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+
+alcohol ~ gotBully '
+
+## Estimating the model
+sem.01.ord.fit <-
+sem(model = sem.01.ord, data = hbsc,
+    mimic = "Mplus", estimator = "WLSMV")
+
+## Requesting an estimation summery
+summary(sem.01.ord.fit, fit.measures = TRUE,
+        standardized = TRUE)
+
+
+###################################################
+### code chunk number 16: dat140
+###################################################
+## Specifying the model-structure object
+sem.02.ord <- '
+## the measurement model
+gotBully =~ NA*gotBu1_o + gotBu2_o + gotBu3_o +
+               gotBu4_o + gotBu5_o + gotBu6_o +
+              gotBu7_o + gotBu8_o + gotBu9_o
+gotBully ~~ 1*gotBully
+
+depress =~ NA*depre1_o + depre2_o + depre3_o +
+              depre4_o + depre5_o + depre6_o
+depress ~~ 1*depress
+
+alcohol =~ NA*alc1_o + alc2_o + alc3_o +
+              alc4_o + alc5_o
+alcohol ~~ 1*alcohol
+
+## the structural model
+## direct effect (the c path)
+alcohol ~ c*gotBully
+
+## mediator paths (the a and b path)
+## the a path - IV predicting ME
+depress ~ a*gotBully
+## the b path - ME predicting DV
+alcohol ~ b*depress  
+
+## indirect effect (a*b)
+## := operator defines new parameters
+ab := a*b
+
+## total effect 
+total := c + (a*b) '
+
+## Estimating the model
+Nboot <- 10
+sem.02.ord.fit <-
+sem(model = sem.02.ord, data = hbsc,
+    mimic = "Mplus", estimator = "DWLS",
+    se = "bootstrap", verbose = TRUE,
+    bootstrap = Nboot)
+
+## Requesting an estimation summary
+summary(sem.02.ord.fit, fit.measures = TRUE,
+        standardized = TRUE)
+
+
+###################################################
+### code chunk number 17: dat150
+###################################################
+## Specifying the model-structure object
+model.config.WLSMV <- '
+depress =~ depre1_o + depre2_o + depre3_o +
+           depre4_o + depre5_o + depre6_o '
+
+## Estimating the model
+fit.config.WLSMV <-
+cfa(model = model.config.WLSMV, data = hbsc,                          
+    mimic = "Mplus", estimator = "WLSMV",
+    std.lv = TRUE, group = "Grade",                         
+    ordered = c("depre1_o", "depre2_o", "depre3_o",
+                "depre4_o", "depre5_o", "depre6_o"))
+
+## Requesting an estimation summary
+summary(fit.config.WLSMV, fit.measures = TRUE, 
+        standardized = TRUE)
+
+
+###################################################
+### code chunk number 18: dat160
+###################################################
+## Specifying the model-structure object
+model.metric.WLSMV <- '
+depress =~ depre1_o + depre2_o + depre3_o +
+           depre4_o + depre5_o + depre6_o 
+depress ~~ c(1, NA)*depress '
+
+## Estimating the model
+fit.metric.WLSMV <-
+cfa(model = model.metric.WLSMV, data = hbsc,                          
+    mimic = "Mplus", estimator = "WLSMV",
+    std.lv = TRUE, group = "Grade",                         
+    ordered = c("depre1_o", "depre2_o", "depre3_o", "depre4_o", "depre5_o", "depre6_o"),
+    group.equal = "loadings")
+
+## Requesting an estimation summary
+summary(fit.metric.WLSMV, fit.measures = TRUE, 
+        standardized = TRUE)
+
+## Conducting a corrected chi-square test
+## Comparing the configural and the metric model
+lavTestLRT(fit.config.WLSMV, fit.metric.WLSMV, 
+           method = "satorra.bentler.2010",
+           A.method = "delta")
+
+
+###################################################
+### code chunk number 19: dat170
+###################################################
+## Specifying the model-structure object
+model.scalar.WLSMV <- '
+depress =~ depre1_o + depre2_o + depre3_o +
+           depre4_o + depre5_o + depre6_o 
+depress ~~ c(1, NA)*depress
+depress ~ c(0, NA)*1'
+
+## Estimating the model
+fit.scalar.WLSMV <-
+cfa(model = model.scalar.WLSMV, data = hbsc,                          
+    mimic = "Mplus", estimator = "WLSMV",
+    std.lv = TRUE, group = "Grade",                         
+    ordered = c("depre1_o", "depre2_o", "depre3_o", "depre4_o", "depre5_o", "depre6_o"),
+    group.equal = c("loadings", "thresholds"))
+
+## Requesting an estimation summary
+summary(fit.scalar.WLSMV, fit.measures = TRUE, 
+        standardized = TRUE)
+
+## Conducting a corrected chi-square test
+## Comparing the metric and the scalar model
+lavTestLRT(fit.metric.WLSMV, fit.scalar.WLSMV, 
+           method = "satorra.bentler.2010",
+           A.method = "delta")
+
+
+###################################################
+### code chunk number 20: sess10
+###################################################
+sessionInfo()
+
+
+###################################################
+### code chunk number 21: opts20
+###################################################
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+options(par.orig)
+
+

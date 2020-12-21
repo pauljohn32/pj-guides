@@ -1,0 +1,109 @@
+#+SETUPFILE: ../../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../../horg/setup/crmda_org.css"/>
+#+TITLE: A Two-Factor Structural Model: Bullying Victimazation Predicts Alcohol Use
+#+SUBTITLE: ML Estimates with Categorical Data and Listwise Deletion
+#+AUTHOR: Chong Xing, Paul Johnson, and Meghan Fager
+#+EMAIL: cxing@ku.edu; pauljohn@ku.edu; megfager@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+ABSTRACT:
+#+KEYWORDS: 
+#+INCLUDE: ../../horg/setup/heading
+
+* The lavaan Example
+[[file:../../../R/Ex-07-Ordinal/ordinal-01-hbsc.html][The lavaan Example Link: sem.01.ord.wlsmv.listwise]]
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 7
+Health Behavior in School Children
+A Two-Factor Structural Model with Categorical Data using WLSMV
+with Listwise Deletion Bulling Victimization Predicts Alcohol Use;
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../../data/hbsc-subset2/hbsc-subset2.dat";
+  LISTWISE = ON;
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  stud_id schl_id Gender Age Grade body1r body2 body3r body4 body5r
+  phyhlth1 phyhlth2 phyhlth3 phyhlth4 phyhlth5 phyhlth6 phyhlth7
+  phyhlth8 Depress1 Depress2 Depress3 Depress4 Depress5 Depress6
+  Bullied1 Bullied2 Bullied3 Bullied4 Bullied5 Bullied6 Bullied7
+  Bullied8 Bullied9 Bullier1 Bullier2 Bullier3 Bullier4 Bullier5
+  Bullier6 Bullier7 Bullier8 Bullier9 Alc1 Alc2 Alc3 Alc4 Alc5;
+
+  USEVARIABLES ARE
+  Bullied1-Bullied9 Alc1-Alc5 Depress1-Depress6;
+  
+  CATEGORICAL ARE
+  Bullied1-Bullied9 Alc1-Alc5 Depress1-Depress6;
+
+  USEOBSERVATIONS ARE (Grade == 6 OR Grade == 7);
+
+  MISSING ARE all(-999);
+#+END_SRC
+
+* ANALYSIS Command
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  ESTIMATOR = WLSMV;
+#+END_SRC
+
+* MODEL Command
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  Bullied BY Bullied1* Bullied2 Bullied3
+             Bullied4  Bullied5 Bullied6
+             Bullied7  Bullied8 Bullied9;
+  Bullied@1.0;
+
+  Alcohol BY Alc1* Alc2 Alc3 Alc4 Alc5;
+  Alcohol@1.0;
+
+  Alcohol ON Bullied;
+#+END_SRC
+
+* OUTPUT Command
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  SAMPSTAT;
+  TECH1;
+  STANDARDIZED;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus sem-01-ord-wlsmv-listwise.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'sem-01-ord-wlsmv-listwise.inp'...
+
+     Beginning Time:  09:28:33
+        Ending Time:  09:28:34
+       Elapsed Time:  00:00:01
+
+     Refer to 'sem-01-ord-wlsmv-listwise.out' for warning(s).
+#+END_SRC
+
+* Review the Results
+Click [[file:sem-01-ord-wlsmv-listwise.out][sem-01-ord-wlsmv-listwise.out]] to see the output.

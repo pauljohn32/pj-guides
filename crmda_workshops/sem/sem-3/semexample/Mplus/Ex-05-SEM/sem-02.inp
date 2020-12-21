@@ -1,0 +1,37 @@
+
+TITLE:
+  Example 5 - Structural Equation Model 2
+
+DATA:
+  FILE IS "../../data/insomnia.dat";
+
+VARIABLE:
+  names are insom1-insom7 cesd1-cesd20 phy psy soc env;
+  usevariables are insom1-insom7 phy psy soc env;
+  missing all (999);
+
+MODEL:
+!A three-indicator measurement model for Impact;
+  Impact BY insom5* insom6 insom7;
+  Impact@1.0;
+
+!A three-indicator measuremenrt model for Severity;
+  Severity BY insom1* insom2 insom3;
+  Severity@1.0;
+
+!A three-indicator measurement model for Satisf;
+  Satisf BY insom4* insom1 insom7;
+  Satisf@1.0;
+
+!A four-indicator measurement model for Qol;
+  Qol BY phy* psy soc env;
+  Qol@1.0;
+
+!The structural paths of the model;
+!Regressing Qol onto Impact Severity and Stisf;
+  Qol ON Impact Severity Satisf;
+
+OUTPUT:
+  SAMPSTAT; 
+  TECH1;
+  STDYX;

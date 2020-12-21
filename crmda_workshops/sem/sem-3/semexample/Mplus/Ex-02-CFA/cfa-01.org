@@ -1,0 +1,109 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Confirmatory Factor Analysis (CFA) Example in Mplus
+#+AUTHOR: Ben Kite
+#+EMAIL: bakite@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to conduct a confirmatory factor analysis in Mplus. An example with six  manifest variables measuring two latent factors is presented. The model estimation results can be compared to the same model fitted with the R lavaan package.
+#+KEYWORDS: SEM, CFA, R, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* TITLE Command
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 2 - Confirmatory Factor Analysis
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+
+  MISSING ARE all(99999);
+#+END_SRC
+
+* MODEL Command
+There is typically no ANALYSIS command when conducting a basic CFA,
+instead the user needs a MODEL command. Here the CFA model to be
+tested is specified. There are two latent variables of interest,
+"MATH" and "SPELL". The "MATH" variable is measured by the "wratcalc",
+"wjcalc", and "waiscalc" variables; and "SPELL" is measured by
+"wratspl", "wjspl", and "waisspl" variables. The first two lines tell
+Mplus that the latent variables are measured by the listed manifest
+variables. The "BY" statement that separates the latent and manifest
+variables is what specifies that the variables on the left side are
+indicated or measured by the variables on the right. Further, the
+first variable in each indicator variable list is followed by an
+astrisk; this is used to indicate that those variables should have
+freely estimated factor loadings (the Mplus default is to set the
+factor loading for the first item to be 1 for identification
+purposes).
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  SPELL BY wratspl* wjspl waisspl;
+#+END_SRC
+
+Because all factor loadings are freely estimated, the variances for
+each latent variable must be specified by the user in order for the
+model to be identified.  The last line of this chapter shows that
+the variance for each latent variable is set to be equal to 1.
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+  MATH@1 SPELL@1;
+#+END_SRC
+
+Mplus will also estimate the covariance between the latent variables
+by default.
+
+* OUTPUT Command
+Here the user can request additional output.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+  STDYX;
+#+END_SRC
+
+* Run the Model
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-01.inp
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+
+     Mplus VERSION 8.2 (Linux)
+     MUTHEN & MUTHEN
+
+     Running input file 'cfa-01.inp'...
+
+     Beginning Time:  13:19:42
+        Ending Time:  13:19:43
+       Elapsed Time:  00:00:01
+
+     Output saved in 'cfa-01.out'.
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-01.out][cfa-01.out]] to see the output.
+
+* The lavaan Example
+[[file:../../R/Ex-02-CFA/cfa-01.html][The lavaan Example Link]]

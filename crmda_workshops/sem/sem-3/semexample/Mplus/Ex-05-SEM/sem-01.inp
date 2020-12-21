@@ -1,0 +1,34 @@
+
+TITLE:
+  Example 5 - Structural Equation Model 1
+
+DATA:
+  FILE IS "../../data/job_placement.csv";
+
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  MISSING ARE all(99999);
+
+MODEL:
+  MATH BY wratcalc* wjcalc waiscalc;
+  MATH@1.0;
+
+  SPELL BY wratspl* wjspl waisspl;
+  SPELL@1.0;
+
+  MATH ON edlevel newschl suspend expelled haveld female age;
+  SPELL ON edlevel newschl suspend expelled haveld female age;
+
+  MATH WITH SPELL;
+
+OUTPUT:
+  SAMPSTAT; 
+  TECH1;
+  STDYX;

@@ -1,0 +1,80 @@
+#+SETUPFILE: ../horg/setup/level-1
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda.css"/>
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../horg/setup/crmda_org.css"/>
+#+TITLE: Multiple Group Confirmatory Factor Analysis Shortcut Example
+#+AUTHOR: Ben Kite
+#+EMAIL: bakite@ku.edu
+#+INSTITUTE: Center for Research Methods and Data Analysis, University of Kansas
+#+SUBTITLE:
+#+ABSTRACT: This guide outlines how to perform measurement invariance testing, all three steps, in one Mplus script. The model estimation results can be compared to the Measurement Invariance Example in R.
+#+KEYWORDS: SEM, Measurement Invariance, Mplus
+#+INCLUDE: ../horg/setup/heading
+
+* TITLE Command
+This is the first of three input files for this example
+#+NAME: TITLE
+#+BEGIN_SRC inp :tangle yes
+TITLE:
+  Example 3 - Multiple Group Confirmatory Factor Analysis 
+#+END_SRC
+
+* DATA Command
+#+NAME: DATA
+#+BEGIN_SRC inp :tangle yes
+DATA:
+  FILE IS "../../data/job_placement.csv";
+#+END_SRC
+
+* VARIABLE Command
+#+NAME: VARIABLE
+#+BEGIN_SRC inp :tangle yes
+VARIABLE:
+  NAMES ARE
+  id wjcalc wjspl wratspl wratcalc waiscalc waisspl
+  edlevel newschl suspend expelled haveld female age;
+
+  USEVARIABLES ARE
+  wratcalc wjcalc waiscalc wratspl wjspl waisspl;
+
+  MISSING ARE all(99999);
+
+  GROUPING IS female(0=male 1=female);
+#+END_SRC
+
+* ANALYSIS Command
+Add this command and the "Model = ..." command to request multiple
+models for comparison. 
+#+NAME: ANALYSIS
+#+BEGIN_SRC inp :tangle yes
+ANALYSIS:
+  Model = configural metric scalar;
+#+END_SRC
+
+* MODEL Command
+In order to use the multiple model shortcut, the user should use the
+Mplus default of marker-variable identification.  Notice how simple
+the model syntax becomes, the user simply needs to specify the latent
+variables and their indicators.  
+#+NAME: MODEL
+#+BEGIN_SRC inp :tangle yes
+MODEL:
+  MATH BY wratcalc wjcalc waiscalc;
+  SPELL BY wratspl wjspl waisspl;
+
+#+END_SRC
+
+* OUTPUT Command
+Additional output can be requested.
+#+NAME: OUTPUT
+#+BEGIN_SRC inp :tangle yes
+OUTPUT:
+  TECH1;
+#+END_SRC
+
+* Output
+#+BEGIN_SRC sh :results output org :exports both
+	mplus cfa-01-4-shortcut.inp
+#+END_SRC
+
+* Review the Results
+Click [[file:cfa-01-4-shortcut.out][cfa-01-4-shortcut.out]] to see the output.
